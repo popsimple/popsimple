@@ -14,7 +14,7 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.48.0 r9654"
-   sodipodi:docname="New document 1">
+   sodipodi:docname="toolbox-icons.svg">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -24,9 +24,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.009229"
-     inkscape:cx="217.93508"
-     inkscape:cy="816.90709"
+     inkscape:zoom="2.018458"
+     inkscape:cx="232.66968"
+     inkscape:cy="870.07186"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -55,7 +55,10 @@
        xml:space="preserve"
        id="flowRoot2985"
        style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-       transform="translate(0,-10.763729)"><flowRegion
+       transform="translate(0,-10.763729)"
+       inkscape:export-filename="C:\source\canvas\canvas\src\com\project\canvas\client\resources\images\bitmaps\a.png"
+       inkscape:export-xdpi="70.779999"
+       inkscape:export-ydpi="70.779999"><flowRegion
          id="flowRegion2987"><rect
            id="rect2989"
            width="93.175163"
@@ -64,12 +67,15 @@
            y="103.79076" /></flowRegion><flowPara
          id="flowPara2991"
          style="font-weight:bold">A</flowPara></flowRoot>    <g
-       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#b3b3b3;fill-opacity:1;stroke:none;font-family:Sans"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#cccccc;fill-opacity:1;stroke:none;font-family:Sans"
        id="text2993"
-       transform="matrix(0.72193097,0,0,1.5312419,6.7780906,-46.7837)">
+       transform="matrix(0.72193097,0,0,1.5312419,6.7780906,-46.7837)"
+       inkscape:export-filename="C:\source\canvas\canvas\src\com\project\canvas\client\resources\images\bitmaps\a.png"
+       inkscape:export-xdpi="70.779999"
+       inkscape:export-ydpi="70.779999">
       <path
-         d="m 136.50061,116.30634 0,-1.29314 6.73828,0 0,-22.472307 -6.73828,0 0,-1.293144 17.34375,0 0,1.293144 -6.73828,0 0,22.472307 6.73828,0 0,1.29314 z"
-         style="font-variant:normal;font-stretch:normal;fill:#b3b3b3;font-family:Lucida Console;-inkscape-font-specification:Lucida Console"
+         d="m 136.50061,116.30634 0,-0.4924 7.70879,0 0,-24.073783 -7.70879,0 0,-0.492408 17.34375,0 0,0.492408 -7.70879,0 0,24.073783 7.70879,0 0,0.4924 z"
+         style="font-variant:normal;font-stretch:normal;fill:#cccccc;font-family:Lucida Console;-inkscape-font-specification:Lucida Console"
          id="path2998"
          inkscape:connector-curvature="0"
          sodipodi:nodetypes="ccccccccccccc" />
