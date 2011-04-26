@@ -3,8 +3,16 @@
 package com.project.canvas.client.resources;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.CssResource.ClassName;
-interface MainStyles extends CssResource {
+public interface MainStyles extends CssResource {
   
   String canvasContainer();
+  
+  String toolbox();
+  
+  String toolboxHeader();
+  
+  String worksheet();
+  
+  String worksheetHeader();
 }
 

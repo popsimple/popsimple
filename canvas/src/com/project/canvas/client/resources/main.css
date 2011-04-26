@@ -1,3 +1,26 @@
 .canvasContainer {
+    height:100%;
+    width:100%;
 }
-.test {}
+
+.worksheet {
+	min-height:100%;
+	margin-left:120px;
+	border-left: 2px solid black;
+}
+.worksheetHeader {
+	margin-left:10px;
+	font-size:1.5em;
+    padding:5px;
+}
+
+.toolbox {
+	float:left;
+    width:120px;
+}
+
+.toolboxHeader {
+	font-size:1.5em;
+	padding:5px;
+	text-align: center;
+}
