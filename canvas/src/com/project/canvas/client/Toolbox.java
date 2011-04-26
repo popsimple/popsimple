@@ -29,6 +29,7 @@ public class Toolbox extends Composite {
 	final ArrayList<CanvasToolFactory<?>> toolFactories = new ArrayList<CanvasToolFactory<?>>();
 	final SimpleEvent<CanvasToolFactory<?>> toolChosenEvent = new SimpleEvent<CanvasToolFactory<?>>();
 
+	final ArrayList<Widget> toolIconHolders = new ArrayList<Widget>();
 	
 	public Toolbox() {
 		initWidget(uiBinder.createAndBindUi(this));
@@ -44,16 +45,25 @@ public class Toolbox extends Composite {
 
 	private void addTool(final CanvasToolFactory<?> factory) {
 		this.toolFactories.add(factory);
+		final FlowPanel outerElem = new FlowPanel();
 		Label elem = new Label();
-		elem.addStyleName(CanvasResources.INSTANCE.main().toolboxCommonIconStyle());
+		outerElem.add(elem);
+		this.toolsPanel.add(outerElem);
+		this.toolIconHolders.add(outerElem);
+		outerElem.addStyleName(CanvasResources.INSTANCE.main().toolboxCommonIconStyle());
+		outerElem.setTitle(factory.getToolboxIconToolTip());
+		
 		elem.addStyleName(factory.getToolboxIconStyle());
 		elem.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
+				for (Widget w : toolIconHolders) {
+					w.removeStyleName(CanvasResources.INSTANCE.main().toolboxCommonSelectedIconStyle());
+				}
+				outerElem.addStyleName(CanvasResources.INSTANCE.main().toolboxCommonSelectedIconStyle());
 				toolChosenEvent.dispatch(factory);
 			}
 		});
-		this.toolsPanel.add(elem);
 	}
 
 }

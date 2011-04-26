@@ -12,6 +12,7 @@ public interface MainStyles extends CssResource {
   String toolbox();
   
   String toolboxCommonIconStyle();
+  String toolboxCommonSelectedIconStyle();
   
   String toolboxHeader();
   

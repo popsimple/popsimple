@@ -40,6 +40,11 @@ public class TextEditTool extends FlowPanel implements CanvasTool {
 		public TextEditTool create() {
 			return new TextEditTool();
 		}
+
+		@Override
+		public String getToolboxIconToolTip() {
+			return "Text tool";
+		}
 	}
 
 	private static final int MINIMUM_EDITBOX_VISIBLE_LENGTH = 10;

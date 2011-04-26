@@ -6,4 +6,5 @@ public interface CanvasToolFactory<T extends CanvasTool> extends Factory<T> {
 	public String getToolboxIconStyle();
 	public String getDragIconStyle();
 	public String getCanvasStyleInCreateMode();
+	public String getToolboxIconToolTip();
 }
