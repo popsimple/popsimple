@@ -4,5 +4,6 @@
     <ui:with field='res' type='com.project.canvas.client.resources.CanvasResources'/>
 	<g:HTMLPanel addStyleNames="{res.main.toolbox}">
 	   <div class="{res.main.toolboxHeader}">Toolbox</div>
+	   <g:FlowPanel ui:field="toolsPanel" addStyleNames="{res.main.toolboxTools}"></g:FlowPanel>
 	</g:HTMLPanel>
 </ui:UiBinder> 

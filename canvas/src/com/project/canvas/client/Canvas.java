@@ -1,7 +1,6 @@
 package com.project.canvas.client;
 
 import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.user.client.impl.WindowImplIE.Resources;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.project.canvas.client.resources.CanvasResources;
 

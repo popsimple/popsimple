@@ -4,7 +4,7 @@
 }
 
 .worksheet {
-	min-height:100%;
+	height:100%;
 	margin-left:120px;
 	border-left: 2px solid black;
 }
@@ -12,6 +12,11 @@
 	margin-left:10px;
 	font-size:1.5em;
     padding:5px;
+}
+.worksheetPanel {
+	height:100%;
+	width:100%;
+	position:relative;
 }
 
 .toolbox {
@@ -23,4 +28,27 @@
 	font-size:1.5em;
 	padding:5px;
 	text-align: center;
+	margin-bottom:10px;
+}
+
+.toolboxTools {
+	padding:5px;
+	text-align:center;
+}
+
+.toolboxCommonIconStyle {
+	margin-left:auto;
+	margin-right:auto;
+}
+
+.textEdit {
+	position:absolute;
+}
+
+@sprite .toolboxTextIconStyle {
+	gwt-image: "toolboxTextIcon";
+}
+
+.textBoxCreateModeCanvasStyle {
+	cursor: text;
 }

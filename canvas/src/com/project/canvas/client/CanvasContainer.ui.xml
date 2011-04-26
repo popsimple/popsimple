@@ -8,7 +8,7 @@
 	
 	
 	<g:HTMLPanel addStyleNames="{res.main.canvasContainer}" >
-	   <my:Toolbox/>
-	   <my:Worksheet/>
+	   <my:Toolbox ui:field="toolbox"/>
+	   <my:Worksheet ui:field="worksheet"/>
 	</g:HTMLPanel>
 </ui:UiBinder> 

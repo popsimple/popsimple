@@ -7,12 +7,24 @@ public interface MainStyles extends CssResource {
   
   String canvasContainer();
   
+  String textBoxCreateModeCanvasStyle();
+  
   String toolbox();
   
+  String toolboxCommonIconStyle();
+  
   String toolboxHeader();
+  
+  String toolboxTextIconStyle();
+  
+  String toolboxTools();
   
   String worksheet();
   
   String worksheetHeader();
+  
+  String worksheetPanel();
+
+  String textEdit();
 }
 

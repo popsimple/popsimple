@@ -4,5 +4,6 @@
     <ui:with field='res' type='com.project.canvas.client.resources.CanvasResources'/>
    	<g:HTMLPanel addStyleNames="{res.main.worksheet}">
 		<div class="{res.main.worksheetHeader}">Worksheet</div>
+		<g:FlowPanel ui:field="worksheetPanel" addStyleNames="{res.main.worksheetPanel}"></g:FlowPanel>
 	</g:HTMLPanel>
 </ui:UiBinder> 
