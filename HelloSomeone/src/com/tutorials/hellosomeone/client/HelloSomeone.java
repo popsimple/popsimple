@@ -12,9 +12,11 @@ public class HelloSomeone implements EntryPoint {
 	 */
 	
 	MainWidget mainWidget = new MainWidget();
+	TaskListWidget taskListWidget = new TaskListWidget();
 	
 	public void onModuleLoad() 
 	{
-		RootPanel.get("root").add(mainWidget);
+//		RootPanel.get("root").add(mainWidget);
+		RootPanel.get("root").add(taskListWidget);
 	}
 }

@@ -1,0 +1,16 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+		
+	</ui:style>
+	<g:HTMLPanel>
+		<div>
+			<g:Image ui:field="imageTask" addStyleNames="TaskImage"></g:Image>
+			<g:TextBox ui:field="textTask" addStyleNames="TaskText">Type your task here...</g:TextBox>
+			<g:CheckBox ui:field="checkTask" addStyleNames="TaskCheckBox"></g:CheckBox>
+			<g:Image ui:field="imageRemove" addStyleNames="TaskRemoveButton" 
+				url="http://t1.gstatic.com/images?q=tbn:ANd9GcQtzwGgiBkvYnaIJhJuK8gyiK1EdbQYAlCdJq7Dbxb1hYkTOfMXNA" ></g:Image>
+		</div>
+	</g:HTMLPanel>
+</ui:UiBinder> 

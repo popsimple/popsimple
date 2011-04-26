@@ -11,8 +11,33 @@
 
 .ClickLabel
 {
+}
+
+.ClickImage
+{
+	height: 32px;
+	width: 32px;
+}
+
+.ClickPanel
+{
 	position: absolute;
-	border-color : blue;
-	border-style : ridge;
-	border-width : 50px;
+}
+
+.TaskImage
+{
+	height: 32px;
+	width: 32px;
+}
+
+.TaskRemoveButton
+{
+	cursor: pointer;
+}
+
+.TaskChecked
+{
+	border-style: none;
+	text-decoration: line-through;
+	
 }

@@ -1,7 +1,6 @@
 package com.tutorials.hellosomeone.client;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
@@ -13,7 +12,9 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -40,6 +41,8 @@ public class MainWidget extends Composite {
 	
 	boolean isClicked = false;
 
+	ImageProvider imageProvider = new ImageProvider();
+		
 	public MainWidget() 
 	{
 		initWidget(uiBinder.createAndBindUi(this));
@@ -62,7 +65,25 @@ public class MainWidget extends Composite {
 		});
 	}
 	
+	
+	
 	private void OnRootClick(ClickEvent event)
+	{
+		if (event.isControlKeyDown())
+		{
+			this.OnClickText(event);
+		}
+		else
+		{
+			this.OnClickTaskList(event);
+		}
+	}
+	
+	private void OnClickTaskList(ClickEvent event)
+	{
+	}
+	
+	private void OnClickText(ClickEvent event)
 	{
 		final TextBox textBox = new TextBox();
 		textBox.addStyleName("ClickWriteBox");
@@ -96,11 +117,20 @@ public class MainWidget extends Composite {
 	
 	private void CreateLabel(TextBox textBox)
 	{
+		FlowPanel panel = new FlowPanel();
+		panel.addStyleName("ClickPanel");
+		panel.getElement().getStyle().setTop(textBox.getAbsoluteTop() , Unit.PX);
+		panel.getElement().getStyle().setLeft(textBox.getAbsoluteLeft(), Unit.PX);
+		
+		Image image = new Image(this.imageProvider.GetImageUrl(textBox.getText()));
+		image.addStyleName("ClickImage");
+		panel.add(image);
+		
 		InlineLabel label = new InlineLabel(textBox.getText());
 		label.addStyleName("ClickLabel");
-		label.getElement().getStyle().setTop(textBox.getAbsoluteTop() , Unit.PX);
-		label.getElement().getStyle().setLeft(textBox.getAbsoluteLeft(), Unit.PX);
+		panel.add(label);
+		
 		this.rootPanel.remove(textBox);
-		this.rootPanel.add(label);
+		this.rootPanel.add(panel);
 	}
 }
