@@ -15,6 +15,8 @@ public interface MainStyles extends CssResource {
   
   String toolboxHeader();
   
+  String textEditEditing();
+  
   String toolboxTextIconStyle();
   
   String toolboxTools();
@@ -26,5 +28,7 @@ public interface MainStyles extends CssResource {
   String worksheetPanel();
 
   String textEdit();
+
+  String monospace();
 }
 

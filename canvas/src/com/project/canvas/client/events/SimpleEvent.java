@@ -23,7 +23,8 @@ public class SimpleEvent<T> {
 	}
 	
 	public void dispatch(T arg) {
-		for (Handler<T> handler : this.handlers) {
+		// Iterate a copy to prevent ConcurrentModificationException
+		for (Handler<T> handler : new ArrayList<Handler<T>>(this.handlers)) {
 			handler.onFire(arg);
 		}
 	}
