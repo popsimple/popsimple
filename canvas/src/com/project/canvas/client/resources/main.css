@@ -86,19 +86,11 @@
     font-size:1em;
     line-height:1.3em;
 }
-/* .textEditLabelBox:HOVER { */
-/*     padding:2px 1px; */
-/*     background-color:#f4f4f4; */
-/*     border-width:1px; */
-/*     border-color:#ccc; */
-/*     border-style:solid; */
-/* } */
-	
 
 @sprite .toolboxTextIconStyle {
 	gwt-image: "toolboxTextIcon";
-	
 }
+
 
 .textBoxCreateModeCanvasStyle {
 	cursor: text;

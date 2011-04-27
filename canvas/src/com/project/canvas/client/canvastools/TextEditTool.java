@@ -25,8 +25,8 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.Widget;
-import com.project.canvas.client.events.SimpleEvent;
 import com.project.canvas.client.resources.CanvasResources;
+import com.project.canvas.client.shared.events.SimpleEvent;
 
 public class TextEditTool extends FlowPanel implements CanvasTool {
 	public static class Maker implements CanvasToolFactory<TextEditTool> {

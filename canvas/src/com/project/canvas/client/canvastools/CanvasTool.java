@@ -2,7 +2,7 @@ package com.project.canvas.client.canvastools;
 
 import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.IsWidget;
-import com.project.canvas.client.events.SimpleEvent;
+import com.project.canvas.client.shared.events.SimpleEvent;
 
 
 public interface CanvasTool extends IsWidget, Focusable {

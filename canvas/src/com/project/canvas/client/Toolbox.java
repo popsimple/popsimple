@@ -13,8 +13,8 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.canvastools.BuiltinTools;
 import com.project.canvas.client.canvastools.CanvasToolFactory;
-import com.project.canvas.client.events.SimpleEvent;
 import com.project.canvas.client.resources.CanvasResources;
+import com.project.canvas.client.shared.events.SimpleEvent;
 
 public class Toolbox extends Composite {
 
