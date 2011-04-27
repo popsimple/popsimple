@@ -8,10 +8,14 @@ import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.maps.client.MapWidget;
+import com.google.gwt.maps.client.Maps;
+import com.google.gwt.maps.client.geom.LatLng;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.canvastools.CanvasTool;
 import com.project.canvas.client.canvastools.CanvasToolFactory;
@@ -49,6 +53,23 @@ public class Worksheet extends Composite {
 			public void onClick(ClickEvent event) {
 				workSheetClicked(event);
 			}}, ClickEvent.getType());
+		Image image = new Image();
+		
+		Maps.loadMapsApi("ABQIAAAAgmVZY68S6q-9FtWqJ_KMBhT2yXp_ZAY8_ufC3CFXhHIE1NvwkxQx_FlB9zHGvDGvTIqG1I6Ms1SYSQ",
+				"2", false, new Runnable() {
+					public void run() {
+						MapWidget widget = new MapWidget();
+						widget.setGoogleBarEnabled(true);
+						widget.setInfoWindowEnabled(true);
+						widget.setHeight("300px");
+						widget.setWidth("300px");
+						widget.checkResize();
+						worksheetPanel.add(widget);
+					}
+		});
+		
+//		image.setUrl("http://www.mashkaot.co.il/files/catalogTmb/12331357817812.jpg");
+		this.worksheetPanel.add(image);
 	}
 
 	protected void workSheetClicked(ClickEvent event) {
