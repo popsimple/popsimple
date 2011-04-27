@@ -27,6 +27,7 @@
 .toolbox {
 	float:left;
     width:120px;
+    height: 100%;
 }
 
 .toolboxHeader {
