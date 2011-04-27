@@ -1,0 +1,105 @@
+.monospace {
+	font-family:monospace;
+}
+
+.canvasContainer {
+    height:100%;
+    width:100%;
+}
+
+.worksheet {
+	height:100%;
+	margin-left:120px;
+	border-left: 2px solid black;
+}
+.worksheetHeader {
+	margin-left:10px;
+	font-size:1.5em;
+    padding:5px;
+    height:20px;
+}
+.worksheetPanel {
+    height: 100%;
+    margin-top: -30px;
+    position: relative;
+}
+
+.toolbox {
+	float:left;
+    width:120px;
+}
+
+.toolboxHeader {
+	font-size:1.5em;
+	padding:5px;
+	text-align: center;
+	margin-bottom:10px;
+}
+
+.toolboxTools {
+	padding:5px;
+	text-align:center;
+}
+
+.toolboxCommonIconStyle {
+	margin-left:auto;
+	margin-right:auto;
+	display:inline-block;
+	
+    padding: 5px;
+}
+
+.toolboxCommonIconStyle:hover {
+    padding: 4px;
+	border-color: #ddd;
+    border-radius: 5px 5px 5px 5px;
+    border-width: 1px;
+	border-style: solid;
+}
+
+.toolboxCommonSelectedIconStyle, .toolboxCommonSelectedIconStyle:hover {
+    padding: 4px;
+    border-color: #aaa;
+    border-radius: 5px 5px 5px 5px;
+    border-width: 1px;
+    border-style: solid;
+}
+
+.textEdit {
+	position:absolute;
+    border-width:1px;
+}
+.textEditEditBox {
+	margin-top:-1px;
+	margin-left:-2px;
+    background-color:#eee;
+    border-width:1px;
+    border-color:#ddd;
+    border-style:solid;
+	padding:2px;
+    font-size:1em;
+    line-height:1.3em;
+}
+.textEditLabelBox {
+    white-space: pre;
+	padding:2px;
+    font-size:1em;
+    line-height:1.3em;
+}
+/* .textEditLabelBox:HOVER { */
+/*     padding:2px 1px; */
+/*     background-color:#f4f4f4; */
+/*     border-width:1px; */
+/*     border-color:#ccc; */
+/*     border-style:solid; */
+/* } */
+	
+
+@sprite .toolboxTextIconStyle {
+	gwt-image: "toolboxTextIcon";
+	
+}
+
+.textBoxCreateModeCanvasStyle {
+	cursor: text;
+}
