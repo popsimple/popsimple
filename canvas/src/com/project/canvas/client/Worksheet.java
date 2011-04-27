@@ -76,7 +76,6 @@ public class Worksheet extends Composite {
 	protected void removeToolInstance(CanvasTool tool) {
 		ToolInstanceInfo info = this.toolRegsMap.remove(tool);
 		this.worksheetPanel.remove(tool);
-		this.worksheetPanel.removeStyleName(info.factory.getCanvasStyleInCreateMode());
 		info.killRegistration.removeHandler();
 	}
 

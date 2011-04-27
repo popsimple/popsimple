@@ -174,26 +174,23 @@ public class TextEditTool extends FlowPanel implements CanvasTool {
 		// http://stackoverflow.com/questions/1288297/jquery-auto-size-text-input-not-textarea/1288475#1288475
 		int comfortZone = 40;
 		int minWidth = 0;
-		int maxWidth = 1000;
 		Style widgetStyle = widget.getElement().getStyle();
 		copyTextSizingProps(targetStyle, widgetStyle);
 		if (usePreWhiteSpace) {
 			targetStyle.setProperty("whiteSpace", "pre");
 		}
 		
-		// append a character so that if the last one is a newline, make space for another line
-		if (text.endsWith("\n")) {
-			text += ".";
-		}
+		// append a char after every newline. fixes some PRE formatting bugs (esp. last empty line)
+		text.replace("\n", "\nM");
 		// Also prepend a character 
 		// (if the text begins with whitespace the browser may strip it in the test widget)
-		testWidget.setText("." + text);
+		testWidget.setText("M" + text + "M");
 		
 		int testerWidth = testWidget.getOffsetWidth();
 		int newWidth = (testerWidth + comfortZone) >= minWidth ? testerWidth + comfortZone : minWidth;
 		int currentWidth = widget.getOffsetWidth();
 		boolean isValidWidthChange = (newWidth < currentWidth && newWidth >= minWidth)
-									|| (newWidth > minWidth && newWidth < maxWidth);
+									|| (newWidth > minWidth);
 		
 		int newHeight = testWidget.getOffsetHeight();
 		

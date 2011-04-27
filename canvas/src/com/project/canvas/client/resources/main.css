@@ -72,17 +72,19 @@
 .textEditEditBox {
 	margin-top:-1px;
 	margin-left:-2px;
-	padding:2px;
     background-color:#eee;
     border-width:1px;
     border-color:#ddd;
     border-style:solid;
+	padding:2px;
     font-size:1em;
+    line-height:1.3em;
 }
 .textEditLabelBox {
-    padding:2px;
-    font-size:1em;
     white-space: pre;
+	padding:2px;
+    font-size:1em;
+    line-height:1.3em;
 }
 /* .textEditLabelBox:HOVER { */
 /*     padding:2px 1px; */
