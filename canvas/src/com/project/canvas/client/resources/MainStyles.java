@@ -16,7 +16,6 @@ public interface MainStyles extends CssResource {
   
   String toolboxHeader();
   
-  String textEditEditing();
   
   String toolboxTextIconStyle();
   
@@ -31,5 +30,9 @@ public interface MainStyles extends CssResource {
   String textEdit();
 
   String monospace();
+
+String textEditLabelBox();
+
+String textEditEditBox();
 }
 

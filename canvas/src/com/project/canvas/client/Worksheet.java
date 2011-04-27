@@ -1,5 +1,6 @@
 package com.project.canvas.client;
 
+import java.util.Date;
 import java.util.HashMap;
 
 import com.google.gwt.core.client.GWT;
@@ -33,9 +34,11 @@ public class Worksheet extends Composite {
 			super();
 			this.factory = factory;
 			this.killRegistration = killRegistration;
+			this.createdOn = new Date();
 		}
 		CanvasToolFactory<?> factory;
-		HandlerRegistration killRegistration; 
+		HandlerRegistration killRegistration;
+		Date createdOn;
 	}
 	final HashMap<CanvasTool, ToolInstanceInfo> toolRegsMap = new HashMap<CanvasTool, ToolInstanceInfo>();
 	
