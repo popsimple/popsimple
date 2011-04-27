@@ -7,4 +7,6 @@ import com.project.canvas.client.shared.events.SimpleEvent;
 
 public interface CanvasTool extends IsWidget, Focusable {
 	SimpleEvent<String> getKillRequestedEvent();
+
+	void setFocus(boolean isFocused);
 }

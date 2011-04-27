@@ -26,7 +26,6 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.canvastools.CanvasTool;
-import com.project.canvas.client.canvastools.CanvasToolFactory;
 import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.events.SimpleEvent;
 
@@ -47,20 +46,17 @@ public class TextEditTool extends FlowPanel implements CanvasTool {
 
 	private void registerHandlers() {
 		this.editBox.addBlurHandler(new BlurHandler() {
-			@Override
 			public void onBlur(BlurEvent event) {
 				editBlur();
 			}
 		});
 		this.labelBox.addClickHandler(new ClickHandler() {
-			@Override
 			public void onClick(ClickEvent event) {
 				setFocus(true);
 				event.stopPropagation();
 			}
 		});
 		this.labelBox.addMouseOverHandler(new MouseOverHandler() {
-			@Override
 			public void onMouseOver(MouseOverEvent event) {
 				add(editBox);
 				remove(labelBox);
@@ -68,7 +64,6 @@ public class TextEditTool extends FlowPanel implements CanvasTool {
 			}
 		});
 		this.editBox.addMouseOutHandler(new MouseOutHandler() {
-			@Override
 			public void onMouseOut(MouseOutEvent event) {
 				if ((false == editing) && (0 == editBox.getSelectionLength())) {
 					remove(editBox);
@@ -77,31 +72,26 @@ public class TextEditTool extends FlowPanel implements CanvasTool {
 			}
 		});
 		this.editBox.addClickHandler(new ClickHandler() {
-			@Override
 			public void onClick(ClickEvent event) {
 				event.stopPropagation();
 			}
 		});
 		this.editBox.addFocusHandler(new FocusHandler() {
-			@Override
 			public void onFocus(FocusEvent event) {
 				editing = true;
 			}
 		});
 		this.editBox.addValueChangeHandler(new ValueChangeHandler<String>() {
-			@Override
 			public void onValueChange(ValueChangeEvent<String> event) {
 				updateEditBoxVisibleLength();
 			}
 		});
 		this.editBox.addKeyUpHandler(new KeyUpHandler() {
-			@Override
 			public void onKeyUp(KeyUpEvent event) {
 				updateEditBoxVisibleLength();
 			}
 		});
 		this.editBox.addKeyDownHandler(new KeyDownHandler() {
-			@Override
 			public void onKeyDown(KeyDownEvent event) {
 				updateEditBoxVisibleLength();
 			}
@@ -205,7 +195,6 @@ public class TextEditTool extends FlowPanel implements CanvasTool {
 		this.setFocus(false);
 	}
 
-	@Override
 	public void setFocus(boolean isFocused) {
 		this.editing = isFocused;
 		if (isFocused) {
@@ -225,22 +214,18 @@ public class TextEditTool extends FlowPanel implements CanvasTool {
 		}
 	}
 
-	@Override
 	public SimpleEvent<String> getKillRequestedEvent() {
 		return this.killRequestEvent;
 	}
 
-	@Override
 	public int getTabIndex() {
 		return this.editBox.getTabIndex();
 	}
 
-	@Override
 	public void setAccessKey(char key) {
 		this.editBox.setAccessKey(key);
 	}
 
-	@Override
 	public void setTabIndex(int index) {
 		this.editBox.setTabIndex(index);
 	}
