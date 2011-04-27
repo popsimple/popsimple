@@ -7,15 +7,23 @@ public interface MainStyles extends CssResource {
   
   String canvasContainer();
   
+  String monospace();
+  
   String textBoxCreateModeCanvasStyle();
+  
+  String textEdit();
+  
+  String textEditEditBox();
+  
+  String textEditLabelBox();
   
   String toolbox();
   
   String toolboxCommonIconStyle();
+  
   String toolboxCommonSelectedIconStyle();
   
   String toolboxHeader();
-  
   
   String toolboxTextIconStyle();
   
@@ -26,13 +34,5 @@ public interface MainStyles extends CssResource {
   String worksheetHeader();
   
   String worksheetPanel();
-
-  String textEdit();
-
-  String monospace();
-
-String textEditLabelBox();
-
-String textEditEditBox();
 }
 

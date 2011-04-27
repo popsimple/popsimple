@@ -15,7 +15,6 @@ public class SimpleEvent<T> {
 	public HandlerRegistration addHandler(final Handler<T> handler) {
 		this.handlers.add(handler);
 		return new HandlerRegistration() {
-			@Override
 			public void removeHandler() {
 				handlers.remove(handler);
 			}

@@ -55,7 +55,6 @@ public class Toolbox extends Composite {
 		
 		elem.addStyleName(factory.getToolboxIconStyle());
 		elem.addClickHandler(new ClickHandler() {
-			@Override
 			public void onClick(ClickEvent event) {
 				for (Widget w : toolIconHolders) {
 					w.removeStyleName(CanvasResources.INSTANCE.main().toolboxCommonSelectedIconStyle());
