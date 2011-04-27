@@ -42,10 +42,8 @@
 }
 
 .toolboxCommonIconStyle {
-	margin-left:auto;
-	margin-right:auto;
-	display:inline-block;
-	
+	margin: 10px auto;
+    width: 32px;
     padding: 5px;
 }
 
@@ -91,7 +89,22 @@
 	gwt-image: "toolboxTextIcon";
 }
 
+@sprite .toolboxCursorIconStyle {
+	gwt-image: "toolboxCursorIcon";
+}
+
+@sprite .toolboxTaskListIconStyle {
+	gwt-image: "toolboxTaskListIcon";
+}
 
 .textBoxCreateModeCanvasStyle {
 	cursor: text;
+}
+
+.cursorCreateModeCanvasStyle {
+	cursor: default;
+}
+
+.taskListCreateModeCanvasStyle {
+	cursor: crosshair;
 }

@@ -15,6 +15,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.canvastools.CanvasTool;
 import com.project.canvas.client.canvastools.CanvasToolFactory;
+import com.project.canvas.client.canvastools.ToolboxItem;
 import com.project.canvas.client.shared.events.SimpleEvent;
 
 public class Worksheet extends Composite {
@@ -27,7 +28,7 @@ public class Worksheet extends Composite {
 	@UiField
 	FlowPanel worksheetPanel;
 	
-	CanvasToolFactory<?> activeToolFactory;
+	ToolboxItem activeToolboxItem;
 
 	private class ToolInstanceInfo {
 		public ToolInstanceInfo(CanvasToolFactory<?> factory, HandlerRegistration killRegistration) {
@@ -52,14 +53,19 @@ public class Worksheet extends Composite {
 	}
 
 	protected void workSheetClicked(ClickEvent event) {
-		if (null == this.activeToolFactory) {
+		if (null == this.activeToolboxItem) {
 			return;
 		}
-		createToolInstance(event);
+		CanvasToolFactory<?> toolFactory = this.activeToolboxItem.getToolFactory();
+		if (null == toolFactory)
+		{
+			return;
+		}
+		createToolInstance(event, toolFactory);
 	}
 
-	private void createToolInstance(ClickEvent event) {
-		final CanvasTool tool = this.activeToolFactory.create();
+	private void createToolInstance(ClickEvent event, CanvasToolFactory<?> toolFactory) {
+		final CanvasTool tool = toolFactory.create();
 		tool.asWidget().getElement().getStyle().setLeft(event.getRelativeX(this.worksheetPanel.getElement()), Unit.PX);
 		tool.asWidget().getElement().getStyle().setTop(event.getRelativeY(this.worksheetPanel.getElement()), Unit.PX);
 		this.worksheetPanel.add(tool);
@@ -69,7 +75,7 @@ public class Worksheet extends Composite {
 				removeToolInstance(tool);
 			}
 		});
-		this.toolRegsMap.put(tool, new ToolInstanceInfo(this.activeToolFactory, reg));
+		this.toolRegsMap.put(tool, new ToolInstanceInfo(toolFactory, reg));
 		tool.setFocus(true);
 	}
 
@@ -79,8 +85,12 @@ public class Worksheet extends Composite {
 		info.killRegistration.removeHandler();
 	}
 
-	public void setActiveTool(CanvasToolFactory<?> factory) {
-		this.activeToolFactory = factory;
-		this.worksheetPanel.addStyleName(factory.getCanvasStyleInCreateMode());
+	public void setActiveTool(ToolboxItem toolboxItem) {
+		if (null != this.activeToolboxItem)
+		{
+			this.worksheetPanel.removeStyleName(this.activeToolboxItem.getCanvasStyleInCreateMode());
+		}
+		this.activeToolboxItem = toolboxItem;
+		this.worksheetPanel.addStyleName(toolboxItem.getCanvasStyleInCreateMode());
 	}
 }

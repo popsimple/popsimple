@@ -1,4 +1,4 @@
-package com.project.canvas.client.canvastools;
+package com.project.canvas.client.canvastools.TextEdit;
 
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
@@ -25,36 +25,12 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.Widget;
+import com.project.canvas.client.canvastools.CanvasTool;
+import com.project.canvas.client.canvastools.CanvasToolFactory;
 import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.events.SimpleEvent;
 
 public class TextEditTool extends FlowPanel implements CanvasTool {
-	public static class Maker implements CanvasToolFactory<TextEditTool> {
-		@Override
-		public String getToolboxIconStyle() {
-			return CanvasResources.INSTANCE.main().toolboxTextIconStyle();
-		}
-
-		@Override
-		public String getCanvasStyleInCreateMode() {
-			return CanvasResources.INSTANCE.main().textBoxCreateModeCanvasStyle();
-		}
-
-		@Override
-		public String getDragIconStyle() {
-			return "";
-		}
-
-		@Override
-		public TextEditTool create() {
-			return new TextEditTool();
-		}
-
-		@Override
-		public String getToolboxIconToolTip() {
-			return "Text tool";
-		}
-	}
 	
 	private final TextArea editBox = new TextArea();
 	private final Label labelBox = new Label();

@@ -6,6 +6,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.canvastools.CanvasToolFactory;
+import com.project.canvas.client.canvastools.ToolboxItem;
 import com.project.canvas.client.shared.events.SimpleEvent;
 
 public class CanvasContainer extends Composite {
@@ -24,9 +25,9 @@ public class CanvasContainer extends Composite {
 	
 	public CanvasContainer() {
 		initWidget(uiBinder.createAndBindUi(this));
-		this.toolbox.getToolChosenEvent().addHandler(new SimpleEvent.Handler<CanvasToolFactory<?>>() {
+		this.toolbox.getToolChosenEvent().addHandler(new SimpleEvent.Handler<ToolboxItem>() {
 			@Override
-			public void onFire(CanvasToolFactory<?> arg) {
+			public void onFire(ToolboxItem arg) {
 				worksheet.setActiveTool(arg);
 			}
 		});

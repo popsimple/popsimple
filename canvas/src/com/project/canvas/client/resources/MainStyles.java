@@ -7,7 +7,11 @@ public interface MainStyles extends CssResource {
   
   String canvasContainer();
   
+  String cursorCreateModeCanvasStyle();
+  
   String monospace();
+  
+  String taskListCreateModeCanvasStyle();
   
   String textBoxCreateModeCanvasStyle();
   
@@ -23,7 +27,11 @@ public interface MainStyles extends CssResource {
   
   String toolboxCommonSelectedIconStyle();
   
+  String toolboxCursorIconStyle();
+  
   String toolboxHeader();
+  
+  String toolboxTaskListIconStyle();
   
   String toolboxTextIconStyle();
   

@@ -12,4 +12,10 @@ public interface CanvasResources extends ClientBundle {
 
 	@Source("com/project/canvas/client/resources/images/bitmaps/a.png")
 	ImageResource toolboxTextIcon();
+	
+	@Source("com/project/canvas/client/resources/images/bitmaps/cursor.png")
+	ImageResource toolboxCursorIcon();
+	
+	@Source("com/project/canvas/client/resources/images/bitmaps/tasklist.png")
+	ImageResource toolboxTaskListIcon();
 }
