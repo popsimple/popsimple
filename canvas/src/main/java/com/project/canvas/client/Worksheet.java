@@ -46,7 +46,6 @@ public class Worksheet extends Composite {
 	public Worksheet() {
 		initWidget(uiBinder.createAndBindUi(this));
 		this.worksheetPanel.addDomHandler(new ClickHandler(){
-			@Override
 			public void onClick(ClickEvent event) {
 				workSheetClicked(event);
 			}}, ClickEvent.getType());
@@ -70,7 +69,6 @@ public class Worksheet extends Composite {
 		tool.asWidget().getElement().getStyle().setTop(event.getRelativeY(this.worksheetPanel.getElement()), Unit.PX);
 		this.worksheetPanel.add(tool);
 		HandlerRegistration reg = tool.getKillRequestedEvent().addHandler(new SimpleEvent.Handler<String>() {
-			@Override
 			public void onFire(String arg) {
 				removeToolInstance(tool);
 			}
