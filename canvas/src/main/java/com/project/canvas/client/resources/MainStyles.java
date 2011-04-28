@@ -41,5 +41,27 @@ public interface MainStyles extends CssResource {
   String worksheetHeader();
   
   String worksheetPanel();
+  
+  String taskList();
+  
+  String taskListRemoveImage();
+	
+  String taskListTextChecked();
+  
+  String taskListBody();
+  
+  String taskListHeader();
+  
+  String taskListFooter();
+  
+  String hoverTextBoxView();
+  
+  String hoverTextBoxEdit();
+  
+  String taskImageContainer();
+  
+  String taskImageChecked();
+  
+  String taskImage();
+  
 }
-

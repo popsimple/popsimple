@@ -42,7 +42,7 @@ public class Toolbox extends Composite {
 	public SimpleEvent<ToolboxItem> getToolChosenEvent() {
 		return this.toolChosenEvent;
 	}
-
+	
 	private void addTool(final ToolboxItem toolboxItem) {
 		this.toolboxItems.add(toolboxItem);
 		final FlowPanel outerElem = new FlowPanel();

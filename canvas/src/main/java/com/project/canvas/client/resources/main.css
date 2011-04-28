@@ -86,26 +86,102 @@
     line-height:1.3em;
 }
 
-@sprite .toolboxTextIconStyle {
-	gwt-image: "toolboxTextIcon";
-}
-
-@sprite .toolboxCursorIconStyle {
-	gwt-image: "toolboxCursorIcon";
-}
-
-@sprite .toolboxTaskListIconStyle {
-	gwt-image: "toolboxTaskListIcon";
-}
-
 .textBoxCreateModeCanvasStyle {
 	cursor: text;
+}
+
+@sprite .toolboxTextIconStyle {
+	gwt-image: "toolboxTextIcon";
 }
 
 .cursorCreateModeCanvasStyle {
 	cursor: default;
 }
 
-.taskListCreateModeCanvasStyle {
-	cursor: crosshair;
+@sprite .toolboxCursorIconStyle {
+	gwt-image: "toolboxCursorIcon";
 }
+
+.taskImage
+{
+	width: 32px;
+	height: 32px;
+}
+
+.taskImageContainer
+{
+	display:inline-block;
+	width: 32px;
+	height: 32px;
+	vertical-align: middle;
+}
+
+.taskImageChecked
+{
+	opacity:0.2;
+}
+
+.taskListCreateModeCanvasStyle {
+}
+
+.taskList {
+	position: absolute;
+	border-radius: 5px 5px 5px 5px;
+    border-width: 1px;
+    border-style: solid;
+    background-color: #FFFFC9;
+}
+
+@sprite .taskListRemoveImage{
+	cursor: pointer;
+	gwt-image: "taskListRemoveIcon";
+	border-style: none;
+	height:16px;
+	width:16px;
+	vertical-align: middle;
+}
+
+.taskListTextChecked{
+	border-style: none;
+	text-decoration: line-through;
+	background-color: transparent;
+}
+
+.taskListBody
+{
+	position:relative;
+	padding: 5px 5px 5px 5px;
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+	height:100%;
+}
+
+.taskListHeader {
+	
+	background-color: #EEE;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+    border-width: 1px;
+    text-align: center;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.taskListFooter
+{
+}
+
+@sprite .toolboxTaskListIconStyle {
+	gwt-image: "toolboxTaskListIcon";
+}
+
+.hoverTextBoxView
+{
+	border-style: none;
+	background-color: transparent;
+}
+
+.hoverTextBoxEdit
+{
+}
+

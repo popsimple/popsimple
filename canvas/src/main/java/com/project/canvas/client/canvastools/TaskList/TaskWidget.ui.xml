@@ -1,0 +1,19 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui"
+	xmlns:my="urn:import:com.project.canvas.client.canvastools.TaskList">
+	<ui:with field='res' type='com.project.canvas.client.resources.CanvasResources'/>
+	<ui:style>
+		
+	</ui:style>
+	<g:HTMLPanel>
+		<div>
+			<g:CheckBox ui:field="checkTask"></g:CheckBox>
+			<g:AbsolutePanel addStyleNames="{res.main.taskImageContainer}">
+				<g:Image ui:field="imageTask" addStyleNames="{res.main.taskImage}"></g:Image>
+			</g:AbsolutePanel>
+			<my:HoverTextBox ui:field="textTask">Type your task here...</my:HoverTextBox>
+			<g:Button ui:field="imageRemove" addStyleNames="{res.main.taskListRemoveImage}"></g:Button>
+		</div>
+	</g:HTMLPanel>
+</ui:UiBinder> 

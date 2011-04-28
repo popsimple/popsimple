@@ -7,6 +7,8 @@ import com.project.canvas.client.resources.CanvasResources;
 
 public class TaskListToolboxItem implements ToolboxItem 
 {
+	private static final TaskListToolFactory factory = new TaskListToolFactory();
+	
 	public String getToolboxIconStyle() {
 		return CanvasResources.INSTANCE.main().toolboxTaskListIconStyle();
 	}
@@ -23,8 +25,8 @@ public class TaskListToolboxItem implements ToolboxItem
 		return "Task List";
 	}
 
-	public CanvasToolFactory<CanvasTool> getToolFactory() {
+	public CanvasToolFactory<? extends CanvasTool> getToolFactory() {
 		// TODO Auto-generated method stub
-		return null;
+		return TaskListToolboxItem.factory;
 	}
 }
