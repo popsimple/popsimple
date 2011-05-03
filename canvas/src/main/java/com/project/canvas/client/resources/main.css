@@ -65,7 +65,6 @@
 }
 
 .textEdit {
-	position:absolute;
     border-width:1px;
 }
 .textEditEditBox {
@@ -125,7 +124,6 @@
 }
 
 .taskList {
-	position: absolute;
 	border-radius: 5px 5px 5px 5px;
     border-width: 1px;
     border-style: solid;

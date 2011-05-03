@@ -69,9 +69,12 @@ public class Worksheet extends Composite {
 
 	private void createToolInstance(ClickEvent event, CanvasToolFactory<?> toolFactory) {
 		final CanvasTool tool = toolFactory.create();
-		tool.asWidget().getElement().getStyle().setLeft(event.getRelativeX(this.worksheetPanel.getElement()), Unit.PX);
-		tool.asWidget().getElement().getStyle().setTop(event.getRelativeY(this.worksheetPanel.getElement()), Unit.PX);
-		this.worksheetPanel.add(tool);
+		CanvasToolFrame toolFrame = new CanvasToolFrame(tool);
+		
+		toolFrame.asWidget().getElement().getStyle().setLeft(event.getRelativeX(this.worksheetPanel.getElement()), Unit.PX);
+		toolFrame.asWidget().getElement().getStyle().setTop(event.getRelativeY(this.worksheetPanel.getElement()), Unit.PX);
+		
+		this.worksheetPanel.add(toolFrame);
 		HandlerRegistration reg = tool.getKillRequestedEvent().addHandler(new SimpleEvent.Handler<String>() {
 			public void onFire(String arg) {
 				removeToolInstance(tool);
