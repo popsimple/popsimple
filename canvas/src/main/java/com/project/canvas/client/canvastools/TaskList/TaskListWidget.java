@@ -38,6 +38,12 @@ public class TaskListWidget extends Composite implements CanvasTool {
 		
 		this.AddTaskWidget();
 		
+		this.addDomHandler(new ClickHandler() {
+			public void onClick(ClickEvent arg0) {
+				arg0.stopPropagation();
+			}
+		}, ClickEvent.getType());
+		
 		buttonAdd.addClickHandler(new ClickHandler() {
 			
 			public void onClick(ClickEvent event) {
