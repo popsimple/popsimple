@@ -1,6 +1,6 @@
 package com.project.canvas.client.canvastools.TextEdit;
 
-import com.project.canvas.client.canvastools.CanvasToolFactory;
+import com.project.canvas.client.canvastools.base.CanvasToolFactory;
 
 public class TextEditToolFactory implements CanvasToolFactory<TextEditTool>
 {

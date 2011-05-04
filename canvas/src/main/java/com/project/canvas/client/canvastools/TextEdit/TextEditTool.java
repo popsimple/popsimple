@@ -25,7 +25,8 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.Widget;
-import com.project.canvas.client.canvastools.CanvasTool;
+import com.project.canvas.client.canvastools.base.CanvasTool;
+import com.project.canvas.client.canvastools.base.CanvasToolCommon;
 import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.events.SimpleEvent;
 
@@ -37,6 +38,7 @@ public class TextEditTool extends FlowPanel implements CanvasTool {
 	private boolean editing = false;
 	
 	public TextEditTool() {
+		CanvasToolCommon.initCanvasToolWidget(this);
 		this.addStyleName(CanvasResources.INSTANCE.main().textEdit());
 		this.add(editBox);
 		this.editBox.addStyleName(CanvasResources.INSTANCE.main().textEditEditBox());

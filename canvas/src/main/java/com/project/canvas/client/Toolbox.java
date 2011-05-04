@@ -11,8 +11,8 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
-import com.project.canvas.client.canvastools.BuiltinTools;
-import com.project.canvas.client.canvastools.ToolboxItem;
+import com.project.canvas.client.canvastools.base.BuiltinTools;
+import com.project.canvas.client.canvastools.base.ToolboxItem;
 import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.events.SimpleEvent;
 

@@ -1,4 +1,4 @@
-package com.project.canvas.client.canvastools;
+package com.project.canvas.client.canvastools.base;
 
 public interface ToolboxItem {
 	public String getToolboxIconStyle();

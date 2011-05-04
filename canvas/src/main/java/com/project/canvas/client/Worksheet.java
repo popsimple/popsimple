@@ -13,9 +13,10 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.project.canvas.client.canvastools.CanvasTool;
-import com.project.canvas.client.canvastools.CanvasToolFactory;
-import com.project.canvas.client.canvastools.ToolboxItem;
+import com.project.canvas.client.canvastools.base.CanvasTool;
+import com.project.canvas.client.canvastools.base.CanvasToolFactory;
+import com.project.canvas.client.canvastools.base.CanvasToolFrame;
+import com.project.canvas.client.canvastools.base.ToolboxItem;
 import com.project.canvas.client.shared.events.SimpleEvent;
 
 public class Worksheet extends Composite {
@@ -64,8 +65,8 @@ public class Worksheet extends Composite {
 	}
 
 	private void createToolInstance(ClickEvent event, CanvasToolFactory<?> toolFactory) {
-		final CanvasTool tool = toolFactory.create();
-		CanvasToolFrame toolFrame = new CanvasToolFrame(tool);
+		CanvasTool tool = toolFactory.create();
+		final CanvasToolFrame toolFrame = new CanvasToolFrame(tool);
 		
 		toolFrame.asWidget().getElement().getStyle().setLeft(event.getRelativeX(this.worksheetPanel.getElement()), Unit.PX);
 		toolFrame.asWidget().getElement().getStyle().setTop(event.getRelativeY(this.worksheetPanel.getElement()), Unit.PX);
@@ -73,16 +74,16 @@ public class Worksheet extends Composite {
 		this.worksheetPanel.add(toolFrame);
 		HandlerRegistration reg = tool.getKillRequestedEvent().addHandler(new SimpleEvent.Handler<String>() {
 			public void onFire(String arg) {
-				removeToolInstance(tool);
+				removeToolInstance(toolFrame);
 			}
 		});
 		this.toolRegsMap.put(tool, new ToolInstanceInfo(toolFactory, reg));
 		tool.setFocus(true);
 	}
 
-	protected void removeToolInstance(CanvasTool tool) {
-		ToolInstanceInfo info = this.toolRegsMap.remove(tool);
-		this.worksheetPanel.remove(tool);
+	protected void removeToolInstance(CanvasToolFrame toolFrame) {
+		ToolInstanceInfo info = this.toolRegsMap.remove(toolFrame.getTool());
+		this.worksheetPanel.remove(toolFrame);
 		info.killRegistration.removeHandler();
 	}
 

@@ -1,7 +1,6 @@
 package com.project.canvas.client.canvastools.TaskList;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dev.asm.Label;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.FocusEvent;

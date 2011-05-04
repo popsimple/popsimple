@@ -1,7 +1,8 @@
-package com.project.canvas.client.canvastools;
+package com.project.canvas.client.canvastools.base;
 
 import java.util.ArrayList;
 
+import com.project.canvas.client.canvastools.CursorToolboxItem;
 import com.project.canvas.client.canvastools.TaskList.TaskListToolboxItem;
 import com.project.canvas.client.canvastools.TextEdit.TextEditToolboxItem;
 

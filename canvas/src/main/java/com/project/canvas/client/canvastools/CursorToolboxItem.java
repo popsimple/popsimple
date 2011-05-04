@@ -1,5 +1,8 @@
 package com.project.canvas.client.canvastools;
 
+import com.project.canvas.client.canvastools.base.CanvasTool;
+import com.project.canvas.client.canvastools.base.CanvasToolFactory;
+import com.project.canvas.client.canvastools.base.ToolboxItem;
 import com.project.canvas.client.resources.CanvasResources;
 
 public class CursorToolboxItem implements ToolboxItem 

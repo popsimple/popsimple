@@ -11,7 +11,8 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.project.canvas.client.canvastools.CanvasTool;
+import com.project.canvas.client.canvastools.base.CanvasTool;
+import com.project.canvas.client.canvastools.base.CanvasToolCommon;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.shared.events.SimpleEvent.Handler;
 
@@ -35,14 +36,9 @@ public class TaskListWidget extends Composite implements CanvasTool {
 	public TaskListWidget() 
 	{
 		initWidget(uiBinder.createAndBindUi(this));
+		CanvasToolCommon.initCanvasToolWidget(this);
 		
 		this.AddTaskWidget();
-		
-		this.addDomHandler(new ClickHandler() {
-			public void onClick(ClickEvent arg0) {
-				arg0.stopPropagation();
-			}
-		}, ClickEvent.getType());
 		
 		buttonAdd.addClickHandler(new ClickHandler() {
 			
@@ -52,7 +48,8 @@ public class TaskListWidget extends Composite implements CanvasTool {
 			}
 		});
 	}
-	
+
+
 	private void AddTaskWidget()
 	{
 		TaskWidget taskWidget = new TaskWidget();

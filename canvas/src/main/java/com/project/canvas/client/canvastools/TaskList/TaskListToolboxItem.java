@@ -1,8 +1,8 @@
 package com.project.canvas.client.canvastools.TaskList;
 
-import com.project.canvas.client.canvastools.CanvasTool;
-import com.project.canvas.client.canvastools.CanvasToolFactory;
-import com.project.canvas.client.canvastools.ToolboxItem;
+import com.project.canvas.client.canvastools.base.CanvasTool;
+import com.project.canvas.client.canvastools.base.CanvasToolFactory;
+import com.project.canvas.client.canvastools.base.ToolboxItem;
 import com.project.canvas.client.resources.CanvasResources;
 
 public class TaskListToolboxItem implements ToolboxItem 
