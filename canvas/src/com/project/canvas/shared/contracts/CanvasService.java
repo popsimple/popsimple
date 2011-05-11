@@ -7,7 +7,7 @@ import com.project.canvas.shared.data.CanvasPage;
 /**
  * The client side stub for the RPC service.
  */
-@RemoteServiceRelativePath("greet")
+@RemoteServiceRelativePath("canvas")
 public interface CanvasService extends RemoteService {
 	void SavePage(CanvasPage page);
 }

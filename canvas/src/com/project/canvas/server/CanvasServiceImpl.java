@@ -1,9 +1,11 @@
 package com.project.canvas.server;
 
-import com.project.canvas.shared.FieldVerifier;
+import javax.jdo.PersistenceManager;
+import javax.jdo.PersistenceManagerFactory;
+
+import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.project.canvas.shared.contracts.CanvasService;
 import com.project.canvas.shared.data.CanvasPage;
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 /**
  * The server side implementation of the RPC service.
@@ -11,9 +13,19 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 @SuppressWarnings("serial")
 public class CanvasServiceImpl extends RemoteServiceServlet implements CanvasService {
 
+	PersistenceManagerFactory pmf = PersistenceManagerFactoryWrapper.get();
+	
 	@Override
 	public void SavePage(CanvasPage page) {
-		String serverInfo = getServletContext().getServerInfo();
-		String userAgent = getThreadLocalRequest().getHeader("User-Agent");
+		//String serverInfo = getServletContext().getServerInfo();
+		//String userAgent = getThreadLocalRequest().getHeader("User-Agent");
+		PersistenceManager pm = pmf.getPersistenceManager();
+		try {
+			pm.makePersistent(page);
+		}
+		finally {
+			pm.close();
+		}
 	}
+	
 }
