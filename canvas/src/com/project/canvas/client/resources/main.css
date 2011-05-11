@@ -23,6 +23,10 @@
     margin-top: -30px;
     position: relative;
 }
+.worksheetSaveButton {
+	float:right;
+	
+}
 
 .toolbox {
 	float:left;

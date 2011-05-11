@@ -40,6 +40,8 @@ public interface MainStyles extends CssResource {
   
   String worksheetHeader();
   
+  String worksheetSaveButton();
+  
   String worksheetPanel();
   
   String taskList();

@@ -7,7 +7,7 @@
 	</ui:style>
 	<g:HTMLPanel ui:field="panelMain" addStyleNames="{res.main.taskList}" >
  		<g:FlowPanel ui:field="header" addStyleNames="{res.main.taskListHeader}">
- 			<my:HoverTextBox ui:field="label">My Task List</my:HoverTextBox>
+ 			<my:HoverTextBox ui:field="title">My Task List</my:HoverTextBox>
 		</g:FlowPanel> 
 		<g:HTMLPanel ui:field="panelTaskList" addStyleNames="{res.main.taskListBody}">
 		</g:HTMLPanel>

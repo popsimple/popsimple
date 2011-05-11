@@ -1,36 +1,23 @@
 package com.project.canvas.shared.data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
-import javax.jdo.annotations.IdGeneratorStrategy;
-import javax.jdo.annotations.IdentityType;
-import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
-import javax.jdo.annotations.PrimaryKey;
+import javax.persistence.Id;
+import javax.persistence.Transient;
 
-@PersistenceCapable(identityType = IdentityType.APPLICATION)
+import com.googlecode.objectify.annotation.Entity;
+
+
+@Entity
 public class CanvasPage  implements Serializable  {
-
-	@PrimaryKey
-	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-	private Long id;
+	private static final long serialVersionUID = 1L;
 	
-	@Persistent
-	private String title;
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
-	}
+	public @Id Long id;
+	public String title;
+	
+	@Transient
+	public ArrayList<ElementData> elements;
+	
+	public CanvasPage() {}
 }

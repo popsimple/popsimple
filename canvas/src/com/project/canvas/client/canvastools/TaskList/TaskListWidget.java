@@ -15,8 +15,9 @@ import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.canvastools.base.CanvasToolCommon;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.shared.events.SimpleEvent.Handler;
+import com.project.canvas.shared.data.TaskListData;
 
-public class TaskListWidget extends Composite implements CanvasTool {
+public class TaskListWidget extends Composite implements CanvasTool<TaskListData> {
 
 	private static TaskListWidgetUiBinder uiBinder = GWT
 			.create(TaskListWidgetUiBinder.class);
@@ -28,10 +29,15 @@ public class TaskListWidget extends Composite implements CanvasTool {
 	HTMLPanel panelTaskList;
 	
 	@UiField
+	HoverTextBox title;
+	
+	@UiField
 	Button buttonAdd;
 	
 	private SimpleEvent<String> killRequestedEvent = new SimpleEvent<String>();
 	private ArrayList<TaskWidget> taskWidgets = new ArrayList<TaskWidget>();
+
+	private TaskListData data;
 	
 	public TaskListWidget() 
 	{
@@ -104,4 +110,22 @@ public class TaskListWidget extends Composite implements CanvasTool {
 		// TODO Auto-generated method stub
 		this.getFirstTaskWidget().setFocus(isFocused);
 	}
+
+
+
+	@Override
+	public TaskListData getData() {
+		this.data.title = this.title.getText();
+		return this.data;
+	}
+
+
+	@Override
+	public void setData(TaskListData data) {
+		this.title.setText(data.title);
+		this.data = data;
+	}
+
+
+
 }

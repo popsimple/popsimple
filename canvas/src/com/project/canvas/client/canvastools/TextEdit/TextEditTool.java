@@ -29,16 +29,19 @@ import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.canvastools.base.CanvasToolCommon;
 import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.events.SimpleEvent;
+import com.project.canvas.shared.data.TextData;
 
-public class TextEditTool extends FlowPanel implements CanvasTool {
+public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 	
 	private final TextArea editBox = new TextArea();
 	private final Label labelBox = new Label();
 	private final SimpleEvent<String> killRequestEvent = new SimpleEvent<String>();
 	private boolean editing = false;
+	private TextData data;
 	
 	public TextEditTool() {
 		CanvasToolCommon.initCanvasToolWidget(this);
+		this.data = new TextData();
 		this.addStyleName(CanvasResources.INSTANCE.main().textEdit());
 		this.add(editBox);
 		this.editBox.addStyleName(CanvasResources.INSTANCE.main().textEditEditBox());
@@ -230,5 +233,19 @@ public class TextEditTool extends FlowPanel implements CanvasTool {
 
 	public void setTabIndex(int index) {
 		this.editBox.setTabIndex(index);
+	}
+
+
+	@Override
+	public TextData getData() {
+		this.data.text = this.editBox.getText();
+		return this.data;
+	}
+
+	@Override
+	public void setData(TextData data) {
+		this.data = data;
+		this.editBox.setText(this.data.text);
+		this.labelBox.setText(this.data.text);
 	}
 }

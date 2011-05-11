@@ -3,10 +3,14 @@ package com.project.canvas.client.canvastools.base;
 import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.project.canvas.client.shared.events.SimpleEvent;
+import com.project.canvas.shared.data.ElementData;
 
 
-public interface CanvasTool extends IsWidget, Focusable {
+public interface CanvasTool<T extends ElementData> extends IsWidget, Focusable {
 	SimpleEvent<String> getKillRequestedEvent();
+
+	T getData();
+	void setData(T data);
 
 	void setFocus(boolean isFocused);
 }
