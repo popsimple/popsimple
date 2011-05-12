@@ -31,6 +31,7 @@ public class CanvasServiceImpl extends RemoteServiceServlet implements CanvasSer
 		ObjectifyService.register(TextData.class);
 		ObjectifyService.register(TaskListData.class);
 		ObjectifyService.register(Task.class);
+		ObjectifyService.register(PageElement.class);
 		return ObjectifyService.factory();
 	}
 
@@ -53,15 +54,20 @@ public class CanvasServiceImpl extends RemoteServiceServlet implements CanvasSer
 			elemIds.add(elem.id);
 			elemsNotInPage.put(elem.id, elem);
 		}
-		QueryResultIterable<PageElement> pageElements = ofy.query(PageElement.class)
-														   .filter("page", page)
-														   .fetch();
-		for (PageElement pageElement : pageElements)
-		{
-			if (elemIds.contains(pageElement.data.getId())) {
-				elemsNotInPage.remove(pageElement.data.getId());
+		
+		if (null != page.id) {
+			// Not a new page.
+			QueryResultIterable<PageElement> pageElements = ofy.query(PageElement.class)
+															   .filter("page", page)
+															   .fetch();
+			for (PageElement pageElement : pageElements)
+			{
+				if (elemIds.contains(pageElement.data.getId())) {
+					elemsNotInPage.remove(pageElement.data.getId());
+				}
 			}
 		}
+		Key<CanvasPage> pageKey = ofy.put(page);
 		
 		Map<Key<ElementData>, ElementData> newElemsMap = ofy.put(newElems);
 		for (ElementData elem : newElemsMap.values()) {
@@ -69,14 +75,13 @@ public class CanvasServiceImpl extends RemoteServiceServlet implements CanvasSer
 		}
 		ArrayList<PageElement> newPageElements = new ArrayList<PageElement>();
 		for (ElementData elem : elemsNotInPage.values()) {
-			newPageElements.add(new PageElement(new Key<CanvasPage>(CanvasPage.class, page.id), 
+			newPageElements.add(new PageElement(pageKey, 
 												new Key<ElementData>(ElementData.class, elem.id)));
 		}
-		Key<CanvasPage> updatedPageKey = ofy.put(page);
 		ofy.put(page.elements);
 		ofy.put(newPageElements);
 		
-		return this.GetPage(updatedPageKey.getId());
+		return this.GetPage(pageKey.getId());
 	}
 
 	@Override

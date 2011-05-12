@@ -6,6 +6,6 @@
 	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="com.google.gdt.eclipse.managedapis.MANAGED_API_CONTAINER/gwt-maps-1.1.0"/>
-	<classpathentry kind="lib" path="C:/source/canvas/libs/objectify-3.0/objectify-3.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/objectify-3.0.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
