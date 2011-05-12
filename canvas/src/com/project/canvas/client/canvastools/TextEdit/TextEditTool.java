@@ -30,7 +30,6 @@ import com.project.canvas.client.canvastools.base.CanvasToolCommon;
 import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.shared.data.ElementData;
-import com.project.canvas.shared.data.TaskListData;
 import com.project.canvas.shared.data.TextData;
 
 public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {

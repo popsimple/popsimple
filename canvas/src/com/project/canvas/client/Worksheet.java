@@ -1,7 +1,6 @@
 package com.project.canvas.client;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,8 +22,6 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.canvastools.TaskList.TaskListToolFactory;
-import com.project.canvas.client.canvastools.TaskList.TaskListWidget;
-import com.project.canvas.client.canvastools.TextEdit.TextEditTool;
 import com.project.canvas.client.canvastools.TextEdit.TextEditToolFactory;
 import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.canvastools.base.CanvasToolFactory;
@@ -259,9 +256,14 @@ public class Worksheet extends Composite {
 	}
 
 	private void loadClicked() {
+		String idStr = loadIdBox.getText();
+		load(idStr);
+	}
+
+	public void load(String idStr) {
 		Long id = null;
 		try {
-			id = Long.valueOf(loadIdBox.getText());
+			id = Long.valueOf(idStr);
 		}
 		catch (NumberFormatException e) {
 			return;

@@ -22,6 +22,10 @@ public class CanvasContainer extends Composite {
 	@UiField
 	Worksheet worksheet;
 	
+	public Worksheet getWorksheet() {
+		return worksheet;
+	}
+
 	public CanvasContainer() {
 		initWidget(uiBinder.createAndBindUi(this));
 		this.toolbox.getToolChosenEvent().addHandler(new SimpleEvent.Handler<ToolboxItem>() {
