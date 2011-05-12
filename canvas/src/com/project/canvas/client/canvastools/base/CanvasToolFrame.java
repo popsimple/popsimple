@@ -18,16 +18,16 @@ public class CanvasToolFrame extends Composite {
 	@UiField
 	HTMLPanel toolPanel;
 	
-	protected final CanvasTool tool;
+	protected final CanvasTool<?> tool;
 	
-	public CanvasToolFrame(CanvasTool canvasTool) {
+	public CanvasToolFrame(CanvasTool<?> canvasTool) {
 		initWidget(uiBinder.createAndBindUi(this));
 		CanvasToolCommon.stopClickPropagation(this);
 		this.tool = canvasTool;
 		this.toolPanel.add(canvasTool);
 	}
 	
-	public CanvasTool getTool() {
+	public CanvasTool<?> getTool() {
 		return this.tool;
 	}
 }

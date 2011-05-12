@@ -11,4 +11,5 @@ import com.project.canvas.shared.data.CanvasPage;
 public interface CanvasService extends RemoteService {
 	CanvasPage SavePage(CanvasPage page);
 	CanvasPage GetPage(long id);
+
 }

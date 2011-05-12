@@ -11,17 +11,19 @@
 	height:100%;
 	margin-left:120px;
 	border-left: 2px solid black;
+    position: relative;
 }
 .worksheetHeader {
 	margin-left:10px;
 	font-size:1.5em;
     padding:5px;
-    height:20px;
+    height:25px;
 }
 .worksheetPanel {
-    height: 100%;
-    margin-top: -30px;
-    position: relative;
+	top:35px;
+	bottom:0px;
+	width:100%;
+    position: absolute;
 }
 .worksheetSaveButton {
 	float:right;

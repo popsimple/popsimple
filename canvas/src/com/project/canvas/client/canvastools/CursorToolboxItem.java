@@ -4,6 +4,7 @@ import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.canvastools.base.CanvasToolFactory;
 import com.project.canvas.client.canvastools.base.ToolboxItem;
 import com.project.canvas.client.resources.CanvasResources;
+import com.project.canvas.shared.data.ElementData;
 
 public class CursorToolboxItem implements ToolboxItem 
 {
@@ -23,7 +24,7 @@ public class CursorToolboxItem implements ToolboxItem
 		return "Cursor";
 	}
 
-	public CanvasToolFactory<CanvasTool> getToolFactory() {
+	public CanvasToolFactory<CanvasTool<ElementData>> getToolFactory() {
 		// TODO Auto-generated method stub
 		return null;
 	}

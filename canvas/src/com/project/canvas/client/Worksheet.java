@@ -9,15 +9,18 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.touch.client.Point;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.canvastools.base.CanvasToolFactory;
@@ -41,6 +44,9 @@ public class Worksheet extends Composite {
 
 	@UiField
 	Button saveButton;
+
+	@UiField
+	HTMLPanel worksheetContainer;
 	
 	ToolboxItem activeToolboxItem;
 
@@ -57,7 +63,7 @@ public class Worksheet extends Composite {
 		HandlerRegistration killRegistration;
 		Date createdOn;
 	}
-	final HashMap<CanvasTool<ElementData>, ToolInstanceInfo> toolRegsMap = new HashMap<CanvasTool<ElementData>, ToolInstanceInfo>();
+	final HashMap<CanvasTool<? extends ElementData>, ToolInstanceInfo> toolRegsMap = new HashMap<CanvasTool<? extends ElementData>, ToolInstanceInfo>();
 
 	protected CanvasPage page = new CanvasPage();
 	
@@ -79,7 +85,7 @@ public class Worksheet extends Composite {
 		if (null == this.activeToolboxItem) {
 			return;
 		}
-		CanvasToolFactory<?> toolFactory = this.activeToolboxItem.getToolFactory();
+		CanvasToolFactory<? extends CanvasTool<? extends ElementData>> toolFactory = this.activeToolboxItem.getToolFactory();
 		if (null == toolFactory)
 		{
 			return;
@@ -87,8 +93,8 @@ public class Worksheet extends Composite {
 		createToolInstance(event, toolFactory);
 	}
 
-	private void createToolInstance(ClickEvent event, CanvasToolFactory<?> toolFactory) {
-		CanvasTool tool = toolFactory.create();
+	private void createToolInstance(ClickEvent event, CanvasToolFactory<? extends CanvasTool<? extends ElementData>> toolFactory) {
+		CanvasTool<? extends ElementData> tool = toolFactory.create();
 		final CanvasToolFrame toolFrame = new CanvasToolFrame(tool);
 		
 		toolFrame.asWidget().getElement().getStyle().setLeft(event.getRelativeX(this.worksheetPanel.getElement()), Unit.PX);
@@ -121,34 +127,38 @@ public class Worksheet extends Composite {
 
 	protected void save() {
 		ArrayList<ElementData> activeElems = new ArrayList<ElementData>();
-		for (Entry<CanvasTool<ElementData>, ToolInstanceInfo>  entry : toolRegsMap.entrySet())
+		for (Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo>  entry : toolRegsMap.entrySet())
 		{
-			CanvasTool<ElementData> tool = entry.getKey();
+			CanvasTool<? extends ElementData> tool = entry.getKey();
 			ToolInstanceInfo toolInfo = entry.getValue();
-			int x = Integer.valueOf(toolInfo.toolFrame.getElement().getOffsetLeft());
-			int y = Integer.valueOf(toolInfo.toolFrame.getElement().getOffsetTop());
 			ElementData toolData = tool.getData();
-			toolData.position = new Point(x,y);
+			toolData.posX = Integer.valueOf(toolInfo.toolFrame.getElement().getOffsetLeft());
+			toolData.posX = Integer.valueOf(toolInfo.toolFrame.getElement().getOffsetTop());
 			activeElems.add(toolData);
 		}
 		this.page.elements.clear();
 		this.page.elements.addAll(activeElems);
 		
 		CanvasServiceAsync service = (CanvasServiceAsync)GWT.create(CanvasService.class);
-		Window.setStatus("Saving page...");
+		
+		this.saveButton.setText("Saving...");
 		this.saveButton.setEnabled(false);
+		
+	
 		service.SavePage(page, new AsyncCallback<CanvasPage>() {
 			@Override
 			public void onSuccess(CanvasPage result) {
 				saveButton.setEnabled(true);
-				Window.setStatus(null);
+				saveButton.setText("Save");
+				String newURL = Window.Location.createUrlBuilder().setHash(result.id.toString()).buildString();
+				Window.Location.replace(newURL);
 			}
 			
 			@Override
 			public void onFailure(Throwable caught) {
 				Window.alert("Save failed. Reason: " + caught.toString());
 				saveButton.setEnabled(true);
-				Window.setStatus(null);
+				saveButton.setText("Save");
 			}
 		});
 	}

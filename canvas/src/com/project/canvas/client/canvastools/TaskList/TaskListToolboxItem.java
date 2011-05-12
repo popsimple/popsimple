@@ -4,6 +4,7 @@ import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.canvastools.base.CanvasToolFactory;
 import com.project.canvas.client.canvastools.base.ToolboxItem;
 import com.project.canvas.client.resources.CanvasResources;
+import com.project.canvas.shared.data.ElementData;
 
 public class TaskListToolboxItem implements ToolboxItem 
 {
@@ -25,7 +26,7 @@ public class TaskListToolboxItem implements ToolboxItem
 		return "Task List";
 	}
 
-	public CanvasToolFactory<? extends CanvasTool> getToolFactory() {
+	public CanvasToolFactory<? extends CanvasTool<? extends ElementData>> getToolFactory() {
 		// TODO Auto-generated method stub
 		return TaskListToolboxItem.factory;
 	}

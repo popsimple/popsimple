@@ -96,5 +96,6 @@ public class CanvasServiceImpl extends RemoteServiceServlet implements CanvasSer
 		page.elements = new ArrayList<ElementData>(ofy.get(elemsToFetch).values());
 		return page;
 	}
+
 	
 }

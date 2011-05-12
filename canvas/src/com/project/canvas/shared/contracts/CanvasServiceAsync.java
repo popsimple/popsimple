@@ -9,4 +9,5 @@ public interface CanvasServiceAsync {
 
 	void GetPage(long id, AsyncCallback<CanvasPage> callback);
 
+
 }
