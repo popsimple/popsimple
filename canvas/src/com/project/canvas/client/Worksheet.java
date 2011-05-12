@@ -1,8 +1,10 @@
 package com.project.canvas.client;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map.Entry;
 
 import com.google.gwt.core.client.GWT;
@@ -21,6 +23,8 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.canvastools.TaskList.TaskListToolFactory;
+import com.project.canvas.client.canvastools.TaskList.TaskListWidget;
+import com.project.canvas.client.canvastools.TextEdit.TextEditTool;
 import com.project.canvas.client.canvastools.TextEdit.TextEditToolFactory;
 import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.canvastools.base.CanvasToolFactory;
@@ -91,10 +95,7 @@ public class Worksheet extends Composite {
 		this.loadButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				Long id = Long.valueOf(loadIdBox.getText());
-				if (null != id) {
-					load(id);
-				}
+				loadClicked();
 			}
 		});
 	}
@@ -109,11 +110,11 @@ public class Worksheet extends Composite {
 			return;
 		}
 		int x = event.getRelativeX(this.worksheetPanel.getElement());
-		int y = event.getRelativeX(this.worksheetPanel.getElement());
+		int y = event.getRelativeY(this.worksheetPanel.getElement());
 		createToolInstance(new Point2D(x,y), toolFactory);
 	}
 
-	private void createToolInstance(Point2D relativePos, CanvasToolFactory<? extends CanvasTool<? extends ElementData>> toolFactory) {
+	private CanvasTool<? extends ElementData> createToolInstance(Point2D relativePos, CanvasToolFactory<? extends CanvasTool<? extends ElementData>> toolFactory) {
 		CanvasTool<? extends ElementData> tool = toolFactory.create();
 		final CanvasToolFrame toolFrame = new CanvasToolFrame(tool);
 		
@@ -128,6 +129,7 @@ public class Worksheet extends Composite {
 		});
 		this.toolRegsMap.put(tool, new ToolInstanceInfo(toolFactory, toolFrame, reg));
 		tool.setFocus(true);
+		return tool;
 	}
 
 	protected void removeToolInstance(CanvasToolFrame toolFrame) {
@@ -218,8 +220,8 @@ public class Worksheet extends Composite {
 			updatedElements.put(elem.id, elem);
 		}
 		
-		HashMap<Long, CanvasTool<? extends ElementData>> existingElements = new HashMap<Long, CanvasTool<? extends ElementData>>();
-		for (Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo>  entry : toolRegsMap.entrySet())
+		for (Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo>  entry 
+				: new HashSet<Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo>>(toolRegsMap.entrySet()))
 		{
 			CanvasTool<? extends ElementData> tool = entry.getKey();
 			ToolInstanceInfo toolInfo = entry.getValue();
@@ -232,13 +234,40 @@ public class Worksheet extends Composite {
 				this.removeToolInstance(toolInfo.toolFrame);
 			}
 		}
+		
+		createToolInstancesFromData(updatedElements);
+	}
+
+	private void createToolInstancesFromData(HashMap<Long, ElementData> updatedElements) {
 		for (ElementData newElement : updatedElements.values()) {
+			CanvasTool<? extends ElementData> tool = null;
+			CanvasToolFactory<? extends CanvasTool<? extends ElementData>> factory = null;
 			if (newElement.getClass().equals(TextData.class)) {
-				this.createToolInstance(newElement.position, new TextEditToolFactory());
+				factory = new TextEditToolFactory();
 			}
 			else if (newElement.getClass().equals(TaskListData.class)) {
-				this.createToolInstance(newElement.position, new TaskListToolFactory());
+				factory = new TaskListToolFactory();
 			}
+			
+			if (null == factory) {
+				continue;
+			}
+			tool = this.createToolInstance(newElement.position, factory);
+			tool.setElementData(newElement);
+			tool.setFocus(false);
+		}
+	}
+
+	private void loadClicked() {
+		Long id = null;
+		try {
+			id = Long.valueOf(loadIdBox.getText());
+		}
+		catch (NumberFormatException e) {
+			return;
+		}
+		if (null != id) {
+			load(id);
 		}
 	}
 }

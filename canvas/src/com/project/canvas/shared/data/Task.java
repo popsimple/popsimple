@@ -4,11 +4,12 @@ import java.io.Serializable;
 
 import javax.persistence.Id;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Entity;
 
 @Entity
-public class Task implements Serializable {
+public class Task implements Serializable , IsSerializable {
 	private static final long serialVersionUID = 1L;
 
 	public @Id Long id;

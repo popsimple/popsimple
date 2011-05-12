@@ -249,6 +249,7 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 		this.data = data;
 		this.editBox.setText(this.data.text);
 		this.labelBox.setText(this.data.text);
+		this.updateEditBoxVisibleLength();
 	}
 
 	@Override
