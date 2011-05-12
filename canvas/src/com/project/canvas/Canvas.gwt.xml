@@ -13,7 +13,7 @@
 	<!-- Other module inherits -->
 	<inherits name='com.google.gwt.resources.Resources' />
     <inherits name="com.googlecode.objectify.Objectify" />
- 	<inherits name='com.google.gwt.maps.GoogleMaps' />
+ 	<!-- <inherits name='com.google.gwt.maps.GoogleMaps' />-->
 	<!-- Specify the app entry point class. -->
 	<entry-point class='com.project.canvas.client.Canvas' />
 
