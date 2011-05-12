@@ -10,6 +10,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.ObjectifyFactory;
+import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.Query;
 import com.project.canvas.shared.contracts.CanvasService;
 import com.project.canvas.shared.data.CanvasPage;
@@ -26,12 +27,11 @@ import com.project.canvas.shared.data.TextData;
 public class CanvasServiceImpl extends RemoteServiceServlet implements CanvasService {
 
 	private static ObjectifyFactory getObjectifyFactory() {
-		ObjectifyFactory fact = new ObjectifyFactory();
-        fact.register(CanvasPage.class);
-        fact.register(TextData.class);
-        fact.register(TaskListData.class);
-        fact.register(Task.class);
-        return fact;
+		ObjectifyService.register(CanvasPage.class);
+		ObjectifyService.register(TextData.class);
+		ObjectifyService.register(TaskListData.class);
+		ObjectifyService.register(Task.class);
+		return ObjectifyService.factory();
 	}
 
 	protected final ObjectifyFactory oFactory = getObjectifyFactory();
@@ -69,7 +69,8 @@ public class CanvasServiceImpl extends RemoteServiceServlet implements CanvasSer
 		}
 		ArrayList<PageElement> newPageElements = new ArrayList<PageElement>();
 		for (ElementData elem : elemsNotInPage.values()) {
-			newPageElements.add(new PageElement(page, elem));
+			newPageElements.add(new PageElement(new Key<CanvasPage>(CanvasPage.class, page.id), 
+												new Key<ElementData>(ElementData.class, elem.id)));
 		}
 		Key<CanvasPage> updatedPageKey = ofy.put(page);
 		ofy.put(page.elements);

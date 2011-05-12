@@ -19,5 +19,7 @@ public class CanvasPage  implements Serializable  {
 	@Transient
 	public ArrayList<ElementData> elements;
 	
-	public CanvasPage() {}
+	public CanvasPage() {
+		this.elements = new ArrayList<ElementData>();
+	}
 }

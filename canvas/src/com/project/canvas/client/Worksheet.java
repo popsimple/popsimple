@@ -14,6 +14,7 @@ import com.google.gwt.touch.client.Point;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -24,6 +25,7 @@ import com.project.canvas.client.canvastools.base.CanvasToolFrame;
 import com.project.canvas.client.canvastools.base.ToolboxItem;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.shared.contracts.CanvasService;
+import com.project.canvas.shared.contracts.CanvasServiceAsync;
 import com.project.canvas.shared.data.CanvasPage;
 import com.project.canvas.shared.data.ElementData;
 
@@ -132,11 +134,22 @@ public class Worksheet extends Composite {
 		this.page.elements.clear();
 		this.page.elements.addAll(activeElems);
 		
-		CanvasService service = GWT.create(CanvasService.class);
+		CanvasServiceAsync service = (CanvasServiceAsync)GWT.create(CanvasService.class);
 		Window.setStatus("Saving page...");
 		this.saveButton.setEnabled(false);
-		service.SavePage(page);
-		this.saveButton.setEnabled(true);
-		Window.setStatus(null);
+		service.SavePage(page, new AsyncCallback<CanvasPage>() {
+			@Override
+			public void onSuccess(CanvasPage result) {
+				saveButton.setEnabled(true);
+				Window.setStatus(null);
+			}
+			
+			@Override
+			public void onFailure(Throwable caught) {
+				Window.alert("Save failed. Reason: " + caught.toString());
+				saveButton.setEnabled(true);
+				Window.setStatus(null);
+			}
+		});
 	}
 }
