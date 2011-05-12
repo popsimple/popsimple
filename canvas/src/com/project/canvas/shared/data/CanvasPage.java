@@ -8,10 +8,13 @@ import javax.persistence.Id;
 import javax.persistence.Transient;
 
 import com.googlecode.objectify.annotation.Entity;
+import com.googlecode.objectify.annotation.Serialized;
 
 
 @Entity
 public class CanvasPage  implements Serializable  {
+	private static final long serialVersionUID = 1L;
+
 	public @Id Long id;
 	public String title;
 	

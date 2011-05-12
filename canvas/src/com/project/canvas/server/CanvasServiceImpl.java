@@ -15,7 +15,7 @@ import com.googlecode.objectify.Query;
 import com.project.canvas.shared.contracts.CanvasService;
 import com.project.canvas.shared.data.CanvasPage;
 import com.project.canvas.shared.data.ElementData;
-import com.project.canvas.shared.data.PageElement;
+import com.project.canvas.shared.data.PageElementAssociation;
 import com.project.canvas.shared.data.Task;
 import com.project.canvas.shared.data.TaskListData;
 import com.project.canvas.shared.data.TextData;
@@ -31,7 +31,7 @@ public class CanvasServiceImpl extends RemoteServiceServlet implements CanvasSer
 		ObjectifyService.register(TextData.class);
 		ObjectifyService.register(TaskListData.class);
 		ObjectifyService.register(Task.class);
-		ObjectifyService.register(PageElement.class);
+		ObjectifyService.register(PageElementAssociation.class);
 		return ObjectifyService.factory();
 	}
 
@@ -57,10 +57,10 @@ public class CanvasServiceImpl extends RemoteServiceServlet implements CanvasSer
 		
 		if (null != page.id) {
 			// Not a new page.
-			QueryResultIterable<PageElement> pageElements = ofy.query(PageElement.class)
+			QueryResultIterable<PageElementAssociation> pageElements = ofy.query(PageElementAssociation.class)
 															   .filter("page", page)
 															   .fetch();
-			for (PageElement pageElement : pageElements)
+			for (PageElementAssociation pageElement : pageElements)
 			{
 				if (elemIds.contains(pageElement.data.getId())) {
 					elemsNotInPage.remove(pageElement.data.getId());
@@ -73,9 +73,9 @@ public class CanvasServiceImpl extends RemoteServiceServlet implements CanvasSer
 		for (ElementData elem : newElemsMap.values()) {
 			elemsNotInPage.put(elem.id, elem);
 		}
-		ArrayList<PageElement> newPageElements = new ArrayList<PageElement>();
+		ArrayList<PageElementAssociation> newPageElements = new ArrayList<PageElementAssociation>();
 		for (ElementData elem : elemsNotInPage.values()) {
-			newPageElements.add(new PageElement(pageKey, 
+			newPageElements.add(new PageElementAssociation(pageKey, 
 												new Key<ElementData>(ElementData.class, elem.id)));
 		}
 		ofy.put(page.elements);
@@ -88,9 +88,9 @@ public class CanvasServiceImpl extends RemoteServiceServlet implements CanvasSer
 	public CanvasPage GetPage(long id) {
 		Objectify ofy = oFactory.begin();
 		CanvasPage page = ofy.get(CanvasPage.class, id);
-		Query<PageElement> elems = ofy.query(PageElement.class).filter("page", page);
+		Query<PageElementAssociation> elems = ofy.query(PageElementAssociation.class).filter("page", page);
 		HashSet<Key<ElementData>> elemsToFetch = new HashSet<Key<ElementData>>();
-		for (PageElement elem : elems.fetch()) {
+		for (PageElementAssociation elem : elems.fetch()) {
 			elemsToFetch.add(elem.data);
 		}
 		page.elements = new ArrayList<ElementData>(ofy.get(elemsToFetch).values());

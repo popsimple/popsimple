@@ -15,6 +15,7 @@ import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.canvastools.base.CanvasToolCommon;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.shared.events.SimpleEvent.Handler;
+import com.project.canvas.shared.data.ElementData;
 import com.project.canvas.shared.data.TaskListData;
 
 public class TaskListWidget extends Composite implements CanvasTool<TaskListData> {
@@ -124,6 +125,13 @@ public class TaskListWidget extends Composite implements CanvasTool<TaskListData
 	public void setData(TaskListData data) {
 		this.title.setText(data.title);
 		this.data = data;
+	}
+
+
+
+	@Override
+	public void setElementData(ElementData data) {
+		this.setData((TaskListData) data);
 	}
 
 

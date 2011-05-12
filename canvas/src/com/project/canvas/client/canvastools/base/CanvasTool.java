@@ -11,6 +11,7 @@ public interface CanvasTool<T extends ElementData> extends IsWidget, Focusable {
 
 	T getData();
 	void setData(T data);
+	void setElementData(ElementData data); // non-generic version
 
 	void setFocus(boolean isFocused);
 }

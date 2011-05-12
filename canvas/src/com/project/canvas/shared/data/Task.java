@@ -9,6 +9,8 @@ import com.googlecode.objectify.annotation.Entity;
 
 @Entity
 public class Task implements Serializable {
+	private static final long serialVersionUID = 1L;
+
 	public @Id Long id;
 	public String description;
 	public Key<TaskListData> taskList;

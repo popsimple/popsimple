@@ -8,7 +8,7 @@ import com.googlecode.objectify.annotation.Entity;
 
 @Entity
 public class ElementData implements Serializable  {
+	private static final long serialVersionUID = 1L;
 	public @Id Long id;
-	public Integer posX;
-	public Integer posY;
+	public Point2D position;
 }

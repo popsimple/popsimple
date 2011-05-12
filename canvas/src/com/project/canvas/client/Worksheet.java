@@ -9,19 +9,19 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.logical.shared.ResizeEvent;
-import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.project.canvas.client.canvastools.TaskList.TaskListToolFactory;
+import com.project.canvas.client.canvastools.TextEdit.TextEditToolFactory;
 import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.canvastools.base.CanvasToolFactory;
 import com.project.canvas.client.canvastools.base.CanvasToolFrame;
@@ -31,6 +31,9 @@ import com.project.canvas.shared.contracts.CanvasService;
 import com.project.canvas.shared.contracts.CanvasServiceAsync;
 import com.project.canvas.shared.data.CanvasPage;
 import com.project.canvas.shared.data.ElementData;
+import com.project.canvas.shared.data.Point2D;
+import com.project.canvas.shared.data.TaskListData;
+import com.project.canvas.shared.data.TextData;
 
 public class Worksheet extends Composite {
 
@@ -45,6 +48,12 @@ public class Worksheet extends Composite {
 	@UiField
 	Button saveButton;
 
+	@UiField
+	TextBox loadIdBox;
+	
+	@UiField
+	Button loadButton;
+	
 	@UiField
 	HTMLPanel worksheetContainer;
 	
@@ -79,6 +88,15 @@ public class Worksheet extends Composite {
 				save();
 			}
 		});
+		this.loadButton.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				Long id = Long.valueOf(loadIdBox.getText());
+				if (null != id) {
+					load(id);
+				}
+			}
+		});
 	}
 
 	protected void workSheetClicked(ClickEvent event) {
@@ -90,15 +108,17 @@ public class Worksheet extends Composite {
 		{
 			return;
 		}
-		createToolInstance(event, toolFactory);
+		int x = event.getRelativeX(this.worksheetPanel.getElement());
+		int y = event.getRelativeX(this.worksheetPanel.getElement());
+		createToolInstance(new Point2D(x,y), toolFactory);
 	}
 
-	private void createToolInstance(ClickEvent event, CanvasToolFactory<? extends CanvasTool<? extends ElementData>> toolFactory) {
+	private void createToolInstance(Point2D relativePos, CanvasToolFactory<? extends CanvasTool<? extends ElementData>> toolFactory) {
 		CanvasTool<? extends ElementData> tool = toolFactory.create();
 		final CanvasToolFrame toolFrame = new CanvasToolFrame(tool);
 		
-		toolFrame.asWidget().getElement().getStyle().setLeft(event.getRelativeX(this.worksheetPanel.getElement()), Unit.PX);
-		toolFrame.asWidget().getElement().getStyle().setTop(event.getRelativeY(this.worksheetPanel.getElement()), Unit.PX);
+		toolFrame.asWidget().getElement().getStyle().setLeft(relativePos.getX(), Unit.PX);
+		toolFrame.asWidget().getElement().getStyle().setTop(relativePos.getY(), Unit.PX);
 		
 		this.worksheetPanel.add(toolFrame);
 		HandlerRegistration reg = tool.getKillRequestedEvent().addHandler(new SimpleEvent.Handler<String>() {
@@ -132,8 +152,9 @@ public class Worksheet extends Composite {
 			CanvasTool<? extends ElementData> tool = entry.getKey();
 			ToolInstanceInfo toolInfo = entry.getValue();
 			ElementData toolData = tool.getData();
-			toolData.posX = Integer.valueOf(toolInfo.toolFrame.getElement().getOffsetLeft());
-			toolData.posX = Integer.valueOf(toolInfo.toolFrame.getElement().getOffsetTop());
+			int x = Integer.valueOf(toolInfo.toolFrame.getElement().getOffsetLeft());
+			int y = Integer.valueOf(toolInfo.toolFrame.getElement().getOffsetTop());
+			toolData.position = new Point2D(x, y);
 			activeElems.add(toolData);
 		}
 		this.page.elements.clear();
@@ -161,5 +182,63 @@ public class Worksheet extends Composite {
 				saveButton.setText("Save");
 			}
 		});
+	}
+	
+	protected void load(Long id) {
+		CanvasServiceAsync service = (CanvasServiceAsync)GWT.create(CanvasService.class);
+		
+		this.loadButton.setText("Loading...");
+		this.loadButton.setEnabled(false);
+		
+	
+		service.GetPage(id, new AsyncCallback<CanvasPage>() {
+			@Override
+			public void onSuccess(CanvasPage result) {
+				loadButton.setEnabled(true);
+				loadButton.setText("Load");
+				String newURL = Window.Location.createUrlBuilder().setHash(result.id.toString()).buildString();
+				Window.Location.replace(newURL);
+				// TODO: actually load the page into the workspace....
+				load(result);
+			}
+			
+			@Override
+			public void onFailure(Throwable caught) {
+				Window.alert("Load failed. Reason: " + caught.toString());
+				loadButton.setEnabled(true);
+				loadButton.setText("Load");
+			}
+		});
+	}
+
+	protected void load(CanvasPage result) {
+		this.page = result;
+		HashMap<Long, ElementData> updatedElements = new HashMap<Long, ElementData>();
+		for (ElementData elem : this.page.elements) {
+			updatedElements.put(elem.id, elem);
+		}
+		
+		HashMap<Long, CanvasTool<? extends ElementData>> existingElements = new HashMap<Long, CanvasTool<? extends ElementData>>();
+		for (Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo>  entry : toolRegsMap.entrySet())
+		{
+			CanvasTool<? extends ElementData> tool = entry.getKey();
+			ToolInstanceInfo toolInfo = entry.getValue();
+			ElementData toolData = tool.getData();
+			if (updatedElements.containsKey(toolData.id)) {
+				tool.setElementData(updatedElements.get(toolData.id));
+				updatedElements.remove(toolData.id);
+			}
+			else {
+				this.removeToolInstance(toolInfo.toolFrame);
+			}
+		}
+		for (ElementData newElement : updatedElements.values()) {
+			if (newElement.getClass().equals(TextData.class)) {
+				this.createToolInstance(newElement.position, new TextEditToolFactory());
+			}
+			else if (newElement.getClass().equals(TaskListData.class)) {
+				this.createToolInstance(newElement.position, new TaskListToolFactory());
+			}
+		}
 	}
 }
