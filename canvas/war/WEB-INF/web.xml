@@ -8,7 +8,7 @@
   <!-- Servlets -->
   <servlet>
     <servlet-name>canvasServlet</servlet-name>
-    <servlet-class>com.project.canvas.server.CanvasService</servlet-class>
+    <servlet-class>com.project.canvas.server.CanvasServiceImpl</servlet-class>
   </servlet>
   
   <servlet-mapping>
