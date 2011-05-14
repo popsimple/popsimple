@@ -10,6 +10,12 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.MouseDownEvent;
+import com.google.gwt.event.dom.client.MouseEvent;
+import com.google.gwt.event.dom.client.MouseMoveEvent;
+import com.google.gwt.event.dom.client.MouseMoveHandler;
+import com.google.gwt.event.dom.client.MouseUpEvent;
+import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -106,17 +112,34 @@ public class Worksheet extends Composite {
 		{
 			return;
 		}
+		Point2D pos = worksheetRelativePosition(event);
+		createToolInstance(pos, toolFactory);
+	}
+
+	public Point2D worksheetRelativePosition(MouseEvent<?> event) {
 		int x = event.getRelativeX(this.worksheetPanel.getElement());
 		int y = event.getRelativeY(this.worksheetPanel.getElement());
-		createToolInstance(new Point2D(x,y), toolFactory);
+		Point2D pos = new Point2D(x,y);
+		return pos;
 	}
 
 	private CanvasTool<? extends ElementData> createToolInstance(Point2D relativePos, CanvasToolFactory<? extends CanvasTool<? extends ElementData>> toolFactory) {
 		CanvasTool<? extends ElementData> tool = toolFactory.create();
 		final CanvasToolFrame toolFrame = new CanvasToolFrame(tool);
-		
-		toolFrame.asWidget().getElement().getStyle().setLeft(relativePos.getX(), Unit.PX);
-		toolFrame.asWidget().getElement().getStyle().setTop(relativePos.getY(), Unit.PX);
+
+		toolFrame.getCloseRequest().addHandler(new SimpleEvent.Handler<Void>() {
+			@Override
+			public void onFire(Void arg) {
+				removeToolInstance(toolFrame);
+			}
+		});
+		toolFrame.getMoveStartRequest().addHandler(new SimpleEvent.Handler<MouseDownEvent>() {
+			@Override
+			public void onFire(MouseDownEvent arg) {
+				startDragCanvasToolFrame(toolFrame);
+			}
+		});
+		setToolFramePosition(relativePos, toolFrame);
 		
 		this.worksheetPanel.add(toolFrame);
 		HandlerRegistration reg = tool.getKillRequestedEvent().addHandler(new SimpleEvent.Handler<String>() {
@@ -127,6 +150,28 @@ public class Worksheet extends Composite {
 		this.toolRegsMap.put(tool, new ToolInstanceInfo(toolFactory, toolFrame, reg));
 		tool.setFocus(true);
 		return tool;
+	}
+
+	public void setToolFramePosition(Point2D relativePos, final CanvasToolFrame toolFrame) {
+		toolFrame.asWidget().getElement().getStyle().setLeft(relativePos.getX(), Unit.PX);
+		toolFrame.asWidget().getElement().getStyle().setTop(relativePos.getY(), Unit.PX);
+	}
+
+	protected void startDragCanvasToolFrame(final CanvasToolFrame toolFrame) {
+		final ArrayList<HandlerRegistration> regs = new ArrayList<HandlerRegistration>();
+		regs.add(this.worksheetPanel.addDomHandler(new MouseMoveHandler() {
+			@Override
+			public void onMouseMove(MouseMoveEvent event) {
+				setToolFramePosition(worksheetRelativePosition(event), toolFrame);
+			}
+		}, MouseMoveEvent.getType()));
+		regs.add(this.worksheetPanel.addDomHandler(new MouseUpHandler() {
+			@Override
+			public void onMouseUp(MouseUpEvent event) {
+				for (HandlerRegistration reg : regs) {
+					reg.removeHandler();
+				}
+			}}, MouseUpEvent.getType()));
 	}
 
 	protected void removeToolInstance(CanvasToolFrame toolFrame) {

@@ -24,6 +24,7 @@
 	bottom:0px;
 	width:100%;
     position: absolute;
+    overflow:hidden;
 }
 .worksheetSaveButton {
 	float:right;
@@ -192,6 +193,7 @@
 
 .imageBox
 {
+	display:block;
 	width:200px;
 	height:200px;
 	background-color:#aaa;

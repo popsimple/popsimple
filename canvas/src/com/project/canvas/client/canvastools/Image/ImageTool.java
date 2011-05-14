@@ -5,6 +5,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.TextBox;
 import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.canvastools.base.CanvasToolCommon;
@@ -13,7 +14,7 @@ import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.shared.data.ElementData;
 import com.project.canvas.shared.data.ImageData;
 
-public class ImageTool extends FlowPanel implements CanvasTool<ImageData> {
+public class ImageTool extends Image implements CanvasTool<ImageData> {
 	
 	private final SimpleEvent<String> killRequestEvent = new SimpleEvent<String>();
 	private ImageData data = new ImageData();
@@ -67,13 +68,18 @@ public class ImageTool extends FlowPanel implements CanvasTool<ImageData> {
 
 
 	protected void setImageUrl(String url) {
-		this.getElement().getStyle().setBackgroundImage("url:(\"" + url + "\")");
+		super.setUrl(url);
+		//this.getElement().setTitle(url);
+		//this.getElement().getStyle().setBackgroundImage("url(\"" + url + "\")");
+		super.setWidth("auto");
+		super.setHeight("auto");
 	}
 
 	@Override
 	public ImageData getValue() {
-		String imageCss = this.getElement().getStyle().getBackgroundImage();
-		this.data.url = imageCss.substring("url:(".length(), imageCss.length()-1);
+		//String imageCss = this.getElement().getStyle().getBackgroundImage();
+		//this.data.url = imageCss.substring("url(".length(), imageCss.length()-1);
+		this.data.url = super.getUrl();
 		// TODO: update size & rotation
 		return this.data;
 	}
