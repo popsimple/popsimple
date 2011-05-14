@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Map.Entry;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -33,6 +34,7 @@ import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.canvastools.base.CanvasToolFactory;
 import com.project.canvas.client.canvastools.base.CanvasToolFrame;
 import com.project.canvas.client.canvastools.base.ToolboxItem;
+import com.project.canvas.client.shared.NativeUtils;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.shared.contracts.CanvasService;
 import com.project.canvas.shared.contracts.CanvasServiceAsync;
@@ -112,13 +114,13 @@ public class Worksheet extends Composite {
 		{
 			return;
 		}
-		Point2D pos = worksheetRelativePosition(event);
+		Point2D pos = relativePosition(event, this.worksheetPanel.getElement());
 		createToolInstance(pos, toolFactory);
 	}
 
-	public Point2D worksheetRelativePosition(MouseEvent<?> event) {
-		int x = event.getRelativeX(this.worksheetPanel.getElement());
-		int y = event.getRelativeY(this.worksheetPanel.getElement());
+	protected Point2D relativePosition(MouseEvent<?> event, Element elem) {
+		int x = event.getRelativeX(elem);
+		int y = event.getRelativeY(elem);
 		Point2D pos = new Point2D(x,y);
 		return pos;
 	}
@@ -136,7 +138,7 @@ public class Worksheet extends Composite {
 		toolFrame.getMoveStartRequest().addHandler(new SimpleEvent.Handler<MouseDownEvent>() {
 			@Override
 			public void onFire(MouseDownEvent arg) {
-				startDragCanvasToolFrame(toolFrame);
+				startDragCanvasToolFrame(toolFrame, arg);
 			}
 		});
 		setToolFramePosition(relativePos, toolFrame);
@@ -152,23 +154,30 @@ public class Worksheet extends Composite {
 		return tool;
 	}
 
-	public void setToolFramePosition(Point2D relativePos, final CanvasToolFrame toolFrame) {
+	protected void setToolFramePosition(Point2D relativePos, final CanvasToolFrame toolFrame) {
 		toolFrame.asWidget().getElement().getStyle().setLeft(relativePos.getX(), Unit.PX);
 		toolFrame.asWidget().getElement().getStyle().setTop(relativePos.getY(), Unit.PX);
 	}
 
-	protected void startDragCanvasToolFrame(final CanvasToolFrame toolFrame) {
+	protected void startDragCanvasToolFrame(final CanvasToolFrame toolFrame, final MouseEvent<?> startEvent) 
+	{
+		final Point2D toolFrameOffset = relativePosition(startEvent, toolFrame.getElement());
 		final ArrayList<HandlerRegistration> regs = new ArrayList<HandlerRegistration>();
+		NativeUtils.disableTextSelectInternal(this.worksheetPanel.getElement(), true);
 		regs.add(this.worksheetPanel.addDomHandler(new MouseMoveHandler() {
 			@Override
 			public void onMouseMove(MouseMoveEvent event) {
-				setToolFramePosition(worksheetRelativePosition(event), toolFrame);
+				Point2D pos = relativePosition(event, worksheetPanel.getElement());
+				pos.setX(pos.getX() - toolFrameOffset.getX());
+				pos.setY(pos.getY() - toolFrameOffset.getY());
+				setToolFramePosition(pos, toolFrame);
 			}
 		}, MouseMoveEvent.getType()));
 		regs.add(this.worksheetPanel.addDomHandler(new MouseUpHandler() {
 			@Override
 			public void onMouseUp(MouseUpEvent event) {
 				for (HandlerRegistration reg : regs) {
+					NativeUtils.disableTextSelectInternal(worksheetPanel.getElement(), false);
 					reg.removeHandler();
 				}
 			}}, MouseUpEvent.getType()));
@@ -209,7 +218,7 @@ public class Worksheet extends Composite {
 		this.saveButton.setText("Saving...");
 		this.saveButton.setEnabled(false);
 		
-	
+		Window.setStatus("Saving...");
 		service.SavePage(page, new AsyncCallback<CanvasPage>() {
 			@Override
 			public void onSuccess(CanvasPage result) {
@@ -217,6 +226,7 @@ public class Worksheet extends Composite {
 				saveButton.setText("Save");
 				String newURL = Window.Location.createUrlBuilder().setHash(result.id.toString()).buildString();
 				Window.Location.replace(newURL);
+				Window.setStatus("");
 			}
 			
 			@Override
@@ -224,6 +234,7 @@ public class Worksheet extends Composite {
 				Window.alert("Save failed. Reason: " + caught.toString());
 				saveButton.setEnabled(true);
 				saveButton.setText("Save");
+				Window.setStatus("");
 			}
 		});
 	}
@@ -240,10 +251,14 @@ public class Worksheet extends Composite {
 			public void onSuccess(CanvasPage result) {
 				loadButton.setEnabled(true);
 				loadButton.setText("Load");
-				String newURL = Window.Location.createUrlBuilder().setHash(result.id.toString()).buildString();
-				Window.Location.replace(newURL);
-				// TODO: actually load the page into the workspace....
-				load(result);
+				if (null != result) {
+					String newURL = Window.Location.createUrlBuilder().setHash(result.id.toString()).buildString();
+					Window.Location.replace(newURL);
+					load(result);
+				}
+				else {
+					Window.alert("No such page on server.");
+				}
 			}
 			
 			@Override

@@ -7,10 +7,12 @@
 			}
 		.framePanel
 			{
+                cursor:move;
 				position: absolute;
 				display:inline-block;
 			}
 		.tool {
+                cursor:default;
 				padding:3px;
 				display:inline-block;
 			}				
