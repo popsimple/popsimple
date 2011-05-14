@@ -65,5 +65,7 @@ public interface MainStyles extends CssResource {
   String taskImageChecked();
   
   String taskImage();
+
+  String imageBox();
   
 }
