@@ -67,7 +67,7 @@ public class ImageTool extends FlowPanel implements CanvasTool<ImageData> {
 
 
 	protected void setImageUrl(String url) {
-		this.getElement().getStyle().setBackgroundImage("url:(" + url + ")");
+		this.getElement().getStyle().setBackgroundImage("url:(\"" + url + "\")");
 	}
 
 	@Override

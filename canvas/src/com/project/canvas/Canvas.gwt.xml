@@ -16,11 +16,6 @@
 	<!-- Specify the app entry point class. -->
 	<entry-point class='com.project.canvas.client.Canvas' />
 
- <!-- Include GWTUpload library -->
-  <inherits name="gwtupload.GWTUpload"/>
-  <!-- Load dinamically predefined styles in the library when the application starts -->
-  <stylesheet src="Upload.css"/>
-
 
     <set-configuration-property name="UiBinder.useSafeHtmlTemplates" value="true"/>
 	<!-- for debugging only -->
