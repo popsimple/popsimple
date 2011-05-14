@@ -150,7 +150,7 @@ public class Worksheet extends Composite {
 		{
 			CanvasTool<? extends ElementData> tool = entry.getKey();
 			ToolInstanceInfo toolInfo = entry.getValue();
-			ElementData toolData = tool.getData();
+			ElementData toolData = tool.getValue();
 			int x = Integer.valueOf(toolInfo.toolFrame.getElement().getOffsetLeft());
 			int y = Integer.valueOf(toolInfo.toolFrame.getElement().getOffsetTop());
 			toolData.position = new Point2D(x, y);
@@ -222,7 +222,7 @@ public class Worksheet extends Composite {
 		{
 			CanvasTool<? extends ElementData> tool = entry.getKey();
 			ToolInstanceInfo toolInfo = entry.getValue();
-			ElementData toolData = tool.getData();
+			ElementData toolData = tool.getValue();
 			if (updatedElements.containsKey(toolData.id)) {
 				tool.setElementData(updatedElements.get(toolData.id));
 				updatedElements.remove(toolData.id);

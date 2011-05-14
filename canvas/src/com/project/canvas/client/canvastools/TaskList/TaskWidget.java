@@ -9,6 +9,7 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
@@ -17,9 +18,10 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.events.SimpleEvent;
+import com.project.canvas.shared.data.Task;
 
 
-public class TaskWidget extends Composite implements Focusable {
+public class TaskWidget extends Composite implements Focusable, TakesValue<Task> {
 
 	private static TaskWidgetUiBinder uiBinder = GWT
 			.create(TaskWidgetUiBinder.class);
@@ -42,6 +44,8 @@ public class TaskWidget extends Composite implements Focusable {
 	private ImageProvider imageProvider = new ImageProvider();
 	
 	private final SimpleEvent<TaskWidget> killRequestEvent = new SimpleEvent<TaskWidget>();
+
+	private Task data = new Task();
 	
 	public TaskWidget() {
 		initWidget(uiBinder.createAndBindUi(this));
@@ -122,4 +126,20 @@ public class TaskWidget extends Composite implements Focusable {
 		// TODO Auto-generated method stub
 		this.textTask.setTabIndex(index);
 	}
+
+
+	@Override
+	public void setValue(Task value) {
+		this.data = value;
+		this.textTask.setText(value.description);
+		this.checkTask.setValue(value.completed);
+	}
+
+	@Override
+	public Task getValue() {
+		this.data.description = this.textTask.getText();
+		this.data.completed = this.checkTask.getValue();
+		return this.data;
+	}
+
 }

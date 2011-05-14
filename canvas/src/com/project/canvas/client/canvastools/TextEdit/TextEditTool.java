@@ -238,13 +238,13 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 
 
 	@Override
-	public TextData getData() {
+	public TextData getValue() {
 		this.data.text = this.editBox.getText();
 		return this.data;
 	}
 
 	@Override
-	public void setData(TextData data) {
+	public void setValue(TextData data) {
 		this.data = data;
 		this.editBox.setText(this.data.text);
 		this.labelBox.setText(this.data.text);
@@ -253,6 +253,6 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 
 	@Override
 	public void setElementData(ElementData data) {
-		this.setData((TextData) data);
+		this.setValue((TextData) data);
 	}
 }

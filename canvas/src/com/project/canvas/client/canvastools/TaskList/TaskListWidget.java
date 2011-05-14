@@ -16,6 +16,7 @@ import com.project.canvas.client.canvastools.base.CanvasToolCommon;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.shared.events.SimpleEvent.Handler;
 import com.project.canvas.shared.data.ElementData;
+import com.project.canvas.shared.data.Task;
 import com.project.canvas.shared.data.TaskListData;
 
 public class TaskListWidget extends Composite implements CanvasTool<TaskListData> {
@@ -45,33 +46,38 @@ public class TaskListWidget extends Composite implements CanvasTool<TaskListData
 		initWidget(uiBinder.createAndBindUi(this));
 		CanvasToolCommon.initCanvasToolWidget(this);
 		
-		this.AddTaskWidget();
+		this.createNewTaskWidget();
 		
 		buttonAdd.addClickHandler(new ClickHandler() {
 			
 			public void onClick(ClickEvent event) {
 				// TODO Auto-generated method stub
-				AddTaskWidget();
+				createNewTaskWidget();
 			}
 		});
 	}
 
 
-	private void AddTaskWidget()
+	private void createNewTaskWidget()
 	{
 		TaskWidget taskWidget = new TaskWidget();
+		addTaskWidget(taskWidget);
+	}
+
+
+	public void addTaskWidget(TaskWidget taskWidget) {
 		taskWidget.AddKillRequestEventHandler(new Handler<TaskWidget>() {
 
 			public void onFire(TaskWidget arg) {
 				// TODO Auto-generated method stub
-				RemoveTaskWidget(arg);
+				removeTaskWidget(arg);
 			}
 		});
 		taskWidgets.add(taskWidget);
 		panelTaskList.add(taskWidget);
 	}
 	
-	private void RemoveTaskWidget(TaskWidget taskWidget)
+	private void removeTaskWidget(TaskWidget taskWidget)
 	{
 		panelTaskList.remove(taskWidget);
 		taskWidgets.remove(taskWidget);
@@ -112,28 +118,31 @@ public class TaskListWidget extends Composite implements CanvasTool<TaskListData
 		this.getFirstTaskWidget().setFocus(isFocused);
 	}
 
-
-
 	@Override
-	public TaskListData getData() {
+	public TaskListData getValue() {
 		this.data.title = this.title.getText();
+		this.data.tasks.clear();
+		for (TaskWidget taskWidget : this.taskWidgets) {
+			this.data.tasks.add(taskWidget.getValue());
+		}
 		return this.data;
 	}
 
-
 	@Override
-	public void setData(TaskListData data) {
+	public void setValue(TaskListData data) {
 		this.title.setText(data.title);
 		this.data = data;
+		this.taskWidgets.clear();
+		this.panelTaskList.clear();
+		for (Task task : this.data.tasks) {
+			TaskWidget taskWidget = new TaskWidget();
+			taskWidget.setValue(task);
+			this.addTaskWidget(taskWidget);
+		}
 	}
-
-
 
 	@Override
 	public void setElementData(ElementData data) {
-		this.setData((TaskListData) data);
+		this.setValue((TaskListData) data);
 	}
-
-
-
 }
