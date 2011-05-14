@@ -39,7 +39,7 @@ public class TaskListWidget extends Composite implements CanvasTool<TaskListData
 	private SimpleEvent<String> killRequestedEvent = new SimpleEvent<String>();
 	private ArrayList<TaskWidget> taskWidgets = new ArrayList<TaskWidget>();
 
-	private TaskListData data;
+	private TaskListData data = new TaskListData();
 	
 	public TaskListWidget() 
 	{
