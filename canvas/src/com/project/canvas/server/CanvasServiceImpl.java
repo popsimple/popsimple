@@ -30,9 +30,8 @@ public class CanvasServiceImpl extends RemoteServiceServlet implements CanvasSer
 		}
 		
 		datastore.setActivationDepth(2);
-		CanvasPage existingPage = datastore.load(CanvasPage.class, page.id);
-
-		if (null != existingPage) {
+		if (null != page.id) {
+			CanvasPage existingPage = datastore.load(CanvasPage.class, page.id);
 			for (ElementData elem : existingPage.elements) {
 				if (elemIds.contains(elem.id)) {
 					continue;
