@@ -142,14 +142,17 @@ public class TaskWidget extends Composite implements Focusable, TakesValue<Task>
 		this.data = value;
 		this.textTask.setText(value.description);
 		this.checkTask.setValue(value.completed);
+		this.imageTask.setUrl(value.imageUrl);
+		//TODO: Support image alternate text
 		this.setCompleted(value.completed);
-		this.textValueChanges(textTask.getText());
 	}
 
 	@Override
 	public Task getValue() {
 		this.data.description = this.textTask.getText();
 		this.data.completed = this.checkTask.getValue();
+		this.data.imageUrl = this.imageTask.getUrl();
+		//TODO: Support image alternate text
 		return this.data;
 	}
 

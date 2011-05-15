@@ -179,6 +179,10 @@ public class Worksheet extends Composite {
 	}
 
 	protected void updateOptions(CanvasPageOptions value) {
+		if (null == value)
+		{
+			return;
+		}
 		this.page.options = value;
 		Style style = this.worksheetBackground.getElement().getStyle(); 
 		if (value.backgroundImageURL == null || value.backgroundImageURL.trim().isEmpty()) {
