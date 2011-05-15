@@ -108,24 +108,21 @@
 }
 
 .textEdit {
-    border-width:1px;
+	border-style:none;
+	background:transparent;
 }
-.textEditEditBox {
+.textEditFocused {
 	margin-top:-1px;
 	margin-left:-2px;
-    background-color:#eee;
-    border-width:1px;
-    border-color:#ddd;
-    border-style:solid;
 	padding:2px;
     font-size:1em;
     line-height:1.3em;
 }
-.textEditLabelBox {
-    white-space: pre;
-	padding:2px;
-    font-size:1em;
-    line-height:1.3em;
+.textEditNotFocused {
+	
+}
+.textEditToolbar {
+	margin-top:-80px;
 }
 
 .textBoxCreateModeCanvasStyle {

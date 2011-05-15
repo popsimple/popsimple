@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Map.Entry;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style;
@@ -31,6 +32,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -62,6 +64,9 @@ public class Worksheet extends Composite {
 	interface WorksheetUiBinder extends UiBinder<Widget, Worksheet> {
 	}
 
+	@UiField
+	FocusPanel focusPanelDummy;
+	
 	@UiField
 	FlowPanel worksheetPanel;
 
@@ -200,6 +205,7 @@ public class Worksheet extends Composite {
 	protected void workSheetClicked(ClickEvent event) {
 		//This event is registered only if the tool has a valid ToolFactory so there's no need to check 
 		//for null.
+		focusPanelDummy.setFocus(true);
 		CanvasToolFactory<? extends CanvasTool<? extends ElementData>> toolFactory = 
 			this.activeToolboxItem.getToolFactory();
 		Point2D pos = relativePosition(event, this.worksheetPanel.getElement());

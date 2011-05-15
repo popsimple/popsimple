@@ -3,6 +3,7 @@
 	xmlns:g="urn:import:com.google.gwt.user.client.ui">
     <ui:with field='res' type='com.project.canvas.client.resources.CanvasResources'/>
    	<g:HTMLPanel ui:field="worksheetContainer" addStyleNames="{res.main.worksheet}">
+   		<g:FocusPanel ui:field="focusPanelDummy"/>
        	<g:HTMLPanel addStyleNames="{res.main.worksheetHeader}" ui:field="worksheetHeader">
        		<g:HTMLPanel addStyleNames="{res.main.worksheetButtons}">
 	            <g:TextBox ui:field="loadIdBox" addStyleNames="{res.main.worksheetRightButton}"></g:TextBox>
