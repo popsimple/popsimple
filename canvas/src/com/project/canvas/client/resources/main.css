@@ -40,7 +40,7 @@
     position: absolute;
     overflow:hidden;
 }
-.worksheetSaveButton {
+.worksheetRightButton {
 	float:right;
 	margin:0 3px;
 }
@@ -209,9 +209,16 @@
 .imageBox
 {
 	display:block;
+	border-radius:2px;
+}
+.imageToolEmpty {
 	width:200px;
 	height:200px;
 	background-color:#aaa;
+}
+.imageToolSet {
+	width:auto;
+	height:auto;
 }
 
 .displayNone

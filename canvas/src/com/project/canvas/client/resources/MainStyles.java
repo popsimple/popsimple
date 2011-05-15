@@ -40,7 +40,7 @@ public interface MainStyles extends CssResource {
   
   String worksheetHeader();
   
-  String worksheetSaveButton();
+  String worksheetRightButton();
   
   String worksheetPanel();
   
@@ -75,4 +75,8 @@ public interface MainStyles extends CssResource {
   String toolboxImageIconStyle();
   
   String imageCreateModeCanvasStyle();
+
+  String imageToolEmpty();
+
+  String imageToolSet();
 }

@@ -1,0 +1,23 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+		.urlTextBox {
+			display:block;
+			width:30em;
+		}
+		.padded {
+			padding:5px;
+		}
+	</ui:style>
+	<g:FormPanel >
+		<g:HTMLPanel addStyleNames="{style.padded}">
+			<g:HTMLPanel addStyleNames="{style.padded}">
+				Enter a URL for the image:
+				<g:TextBox ui:field="urlTextBox" addStyleNames="{style.urlTextBox}"/>
+			</g:HTMLPanel>
+			<g:Button ui:field="doneButton" addStyleNames="{style.padded}">Done</g:Button>
+			<g:Button ui:field="cancelButton" addStyleNames="{style.padded}">Cancel</g:Button>
+		</g:HTMLPanel>
+	</g:FormPanel>
+</ui:UiBinder> 
