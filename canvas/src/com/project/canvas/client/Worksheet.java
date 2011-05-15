@@ -244,7 +244,6 @@ public class Worksheet extends Composite {
 		
 		this.loadButton.setText("Loading...");
 		this.loadButton.setEnabled(false);
-		
 	
 		service.GetPage(id, new AsyncCallback<CanvasPage>() {
 			@Override

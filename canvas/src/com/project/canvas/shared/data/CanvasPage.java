@@ -10,8 +10,9 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class CanvasPage  implements Serializable, IsSerializable  {
 	private static final long serialVersionUID = 1L;
-
-	public @Id Long id;
+	
+	@Id 
+	public Long id;
 	public String title;
 	
 	public List<ElementData> elements = new ArrayList<ElementData>();
