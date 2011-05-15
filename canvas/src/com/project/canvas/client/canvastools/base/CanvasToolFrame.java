@@ -9,8 +9,10 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.project.canvas.client.shared.NativeUtils;
 import com.project.canvas.client.shared.events.SimpleEvent;
 
 public class CanvasToolFrame extends Composite {
@@ -30,6 +32,9 @@ public class CanvasToolFrame extends Composite {
 	@UiField
 	HTMLPanel framePanel;
 
+	@UiField
+	FlowPanel buttonsPanel;
+	
 	protected final CanvasTool<?> tool;
 	
 	protected final SimpleEvent<Void> closeRequest = new SimpleEvent<Void>();
@@ -55,6 +60,8 @@ public class CanvasToolFrame extends Composite {
 			}
 		},
 		MouseDownEvent.getType());
+		CanvasToolCommon.stopClickPropagation(buttonsPanel);
+		NativeUtils.disableTextSelectInternal(this.buttonsPanel.getElement(), true);
 	}
 	
 	public CanvasTool<?> getTool() {

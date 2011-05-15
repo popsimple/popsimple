@@ -1,4 +1,4 @@
-package com.project.canvas.client;
+package com.project.canvas.client.worksheet;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Position;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -25,8 +26,10 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.TextBox;
@@ -45,6 +48,7 @@ import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.shared.contracts.CanvasService;
 import com.project.canvas.shared.contracts.CanvasServiceAsync;
 import com.project.canvas.shared.data.CanvasPage;
+import com.project.canvas.shared.data.CanvasPageOptions;
 import com.project.canvas.shared.data.ElementData;
 import com.project.canvas.shared.data.ImageData;
 import com.project.canvas.shared.data.Point2D;
@@ -79,8 +83,17 @@ public class Worksheet extends Composite {
 	@UiField
 	HTMLPanel worksheetHeader;
 	
+	@UiField
+	Anchor optionsBackground;
+	
+	@UiField
+	FlowPanel worksheetBackground;
+	
 	ToolboxItem activeToolboxItem;
 	Widget activeToolFloatingWidget;
+	
+	protected final WorksheetOptionsWidget optionsWidget = new WorksheetOptionsWidget();
+	protected final DialogBox optionsDialog = new DialogBox(false, true);
 
 	public final SimpleEvent<Void> defaultToolRequestEvent = new SimpleEvent<Void>();
 	public final SimpleEvent<Boolean> viewModeEvent = new SimpleEvent<Boolean>();
@@ -118,7 +131,12 @@ public class Worksheet extends Composite {
 	
 	public Worksheet() {
 		initWidget(uiBinder.createAndBindUi(this));
-		
+		optionsDialog.setText("Worksheet options");
+		optionsDialog.add(this.optionsWidget);
+		setRegistrations();
+	}
+
+	private void setRegistrations() {
 		this.saveButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
@@ -140,6 +158,43 @@ public class Worksheet extends Composite {
 				that.addStyleName(CanvasResources.INSTANCE.main().worksheetFullView());
 			}
 		});
+		this.optionsBackground.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				that.showOptionsDialog();
+			}
+		});
+		this.optionsWidget.cancelEvent.addHandler(new  SimpleEvent.Handler<Void>(){
+			@Override
+			public void onFire(Void arg) {
+				optionsDialog.hide();
+			}});
+		this.optionsWidget.doneEvent.addHandler(new  SimpleEvent.Handler<Void>(){
+
+			@Override
+			public void onFire(Void arg) {
+				optionsDialog.hide();
+				that.updateOptions(optionsWidget.getValue());
+			}});
+	}
+
+	protected void updateOptions(CanvasPageOptions value) {
+		this.page.options = value;
+		Style style = this.worksheetBackground.getElement().getStyle(); 
+		if (value.backgroundImageURL == null || value.backgroundImageURL.trim().isEmpty()) {
+			style.setBackgroundImage("");
+		}
+		else {
+			style.setBackgroundImage("url(" + value.backgroundImageURL + ")");
+		}
+		style.setProperty("backgroundRepeat", value.backgroundRepeat);
+		style.setProperty("backgroundSize", value.backgroundSize);
+		style.setProperty("backgroundPosition", value.backgroundPosition);
+	}
+
+	protected void showOptionsDialog() {
+		optionsWidget.setValue(this.page.options);
+		optionsDialog.center();
 	}
 
 	protected void workSheetClicked(ClickEvent event) {
@@ -398,6 +453,7 @@ public class Worksheet extends Composite {
 
 	protected void load(CanvasPage result) {
 		this.page = result;
+		this.updateOptions(result.options);
 		HashMap<Long, ElementData> updatedElements = new HashMap<Long, ElementData>();
 		for (ElementData elem : this.page.elements) {
 			updatedElements.put(elem.id, elem);

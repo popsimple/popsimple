@@ -25,7 +25,6 @@
 				border-color: #ccc;
 			}
 		.closeLink {
-				cursor:default;
 				color:#f66;
 			    text-shadow: 0 0 0.2px black;
 			}
@@ -47,6 +46,7 @@
 			    border-style: solid;
 			    border-width: 1px 1px 0;*/
 			    /*color: #FFFFFF;*/
+			    cursor:default;
 			    float: right;
 			    font-family: verdana,sans-serif;
 			    font-size: 1em;
@@ -56,9 +56,9 @@
 	</ui:style>
 	<g:HTMLPanel ui:field="framePanel" addStyleNames="{style.framePanel}">
 		<div class="{style.frameHeader}">
-			<div class="{style.buttonsPanel}">
+			<g:FlowPanel ui:field="buttonsPanel" addStyleNames="{style.buttonsPanel}">
 				<g:Anchor ui:field="closeLink" addStyleNames="{style.closeLink}">X</g:Anchor>
-			</div>
+			</g:FlowPanel>
 		</div>
 		<g:HTMLPanel ui:field="toolPanel" addStyleNames="{style.tool}">
 		</g:HTMLPanel>

@@ -1,0 +1,24 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+    <ui:with field='res' type='com.project.canvas.client.resources.CanvasResources'/>
+   	<g:HTMLPanel ui:field="worksheetContainer" addStyleNames="{res.main.worksheet}">
+       	<g:HTMLPanel addStyleNames="{res.main.worksheetHeader}" ui:field="worksheetHeader">
+       		<g:HTMLPanel addStyleNames="{res.main.worksheetButtons}">
+	            <g:TextBox ui:field="loadIdBox" addStyleNames="{res.main.worksheetRightButton}"></g:TextBox>
+	            <g:Button  ui:field="loadButton" addStyleNames="{res.main.worksheetRightButton}">Load</g:Button>
+		        <g:Button  ui:field="saveButton" addStyleNames="{res.main.worksheetRightButton}">Save</g:Button>
+	            <g:Button  ui:field="viewButton" addStyleNames="{res.main.worksheetRightButton}">View</g:Button>
+	            <g:Button  ui:field="previewButton" addStyleNames="{res.main.worksheetRightButton}">Preview</g:Button>
+            </g:HTMLPanel>
+			Worksheet
+            <g:HTMLPanel addStyleNames="{res.main.worksheetOptions}">
+            	<g:Anchor ui:field="optionsBackground">Change background</g:Anchor>
+            </g:HTMLPanel>
+			
+		</g:HTMLPanel>
+		<g:FlowPanel ui:field="worksheetPanel" addStyleNames="{res.main.worksheetPanel}">
+			<g:FlowPanel ui:field="worksheetBackground"  addStyleNames="{res.main.worksheetBackground}"/>
+		</g:FlowPanel>
+	</g:HTMLPanel>
+</ui:UiBinder> 

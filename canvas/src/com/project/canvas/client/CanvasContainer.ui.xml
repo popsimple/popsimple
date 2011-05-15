@@ -2,6 +2,7 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui"
 	xmlns:my="urn:import:com.project.canvas.client"
+	xmlns:myWorksheet="urn:import:com.project.canvas.client.worksheet"
 	>
 	
 	<ui:with field='res' type='com.project.canvas.client.resources.CanvasResources'/>
@@ -9,6 +10,6 @@
 	
 	<g:HTMLPanel addStyleNames="{res.main.canvasContainer}" >
 	   <my:Toolbox ui:field="toolbox"/>
-	   <my:Worksheet ui:field="worksheet"/>
+	   <myWorksheet:Worksheet ui:field="worksheet"/>
 	</g:HTMLPanel>
 </ui:UiBinder> 

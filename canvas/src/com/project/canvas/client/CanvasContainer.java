@@ -9,6 +9,7 @@ import com.project.canvas.client.canvastools.base.BuiltinTools;
 import com.project.canvas.client.canvastools.base.ToolboxItem;
 import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.events.SimpleEvent;
+import com.project.canvas.client.worksheet.Worksheet;
 
 public class CanvasContainer extends Composite {
 

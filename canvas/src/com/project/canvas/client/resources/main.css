@@ -22,7 +22,10 @@
 .worksheetFullView .worksheetHeader {
 	display:none;
 }
-.worksheetFullView .worksheetPanel{
+.worksheetFullView .worksheetPanel {
+	top:0;
+}
+.worksheetFullView .worksheetBackground {
 	top:0;
 }
 /*************************************/
@@ -33,6 +36,15 @@
     padding:5px;
     height:25px;
 }
+.worksheetOptions {
+	margin-left:4px;
+	font-size:14px;
+	display:inline-block;
+}
+.worksheetOptions a {
+	cursor:pointer;
+	text-decoration:underline;
+}
 .worksheetPanel {
 	top:35px;
 	bottom:0px;
@@ -40,9 +52,18 @@
     position: absolute;
     overflow:hidden;
 }
-.worksheetRightButton {
+.worksheetBackground {
+	opacity:0.3;
+	position:absolute;
+	top:35px;
+	bottom:0px;
+	width:100%;
+}
+.worksheetButtons {
 	float:right;
-	margin:0 3px;
+}
+.worksheetRightButton {
+
 }
 
 .toolbox {

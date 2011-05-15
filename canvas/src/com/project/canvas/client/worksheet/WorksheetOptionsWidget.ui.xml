@@ -1,0 +1,49 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+		.urlTextBox {
+			display:block;
+			width:30em;
+		}
+		.padded {
+			padding:5px;
+		}
+		.imagePreview {
+			border-radius:2px;
+			border-color:#eee;
+			border-width:1px;
+			border-style:solid;
+			padding:5px;
+			width:200px;
+			min-height:200px;
+			margin:10px auto;
+			
+		    background-position: center center;
+		    background-repeat: no-repeat;
+		    background-size: 100% auto;
+		}
+		.error {
+			color:red;
+		}
+	</ui:style>
+	<g:FormPanel >
+		<g:HTMLPanel addStyleNames="{style.padded}">
+			<g:HTMLPanel addStyleNames="{style.padded}">
+				Background image URL:
+				<g:TextBox ui:field="urlTextBox" addStyleNames="{style.urlTextBox}"/>
+				<g:Label ui:field="urlErrorLabel" addStyleNames="{style.error}"/>
+				<g:Label ui:field="imagePreview" addStyleNames="{style.imagePreview}"/>
+			</g:HTMLPanel>
+			<div class="{style.padded}">
+				<g:CheckBox ui:field="stretchOption" name="imageStyle">Stretch</g:CheckBox>
+				<g:CheckBox ui:field="repeatOption" name="imageStyle">Repeat</g:CheckBox>
+				<g:CheckBox ui:field="centerOption" value="true" name="imageStyle">Center</g:CheckBox>
+			</div>
+			<div class="{style.padded}">
+				<g:Button ui:field="doneButton" addStyleNames="{style.padded}">Done</g:Button>
+				<g:Button ui:field="cancelButton" addStyleNames="{style.padded}">Cancel</g:Button>
+			</div>
+		</g:HTMLPanel>
+	</g:FormPanel>
+</ui:UiBinder> 
