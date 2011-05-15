@@ -7,4 +7,8 @@ public class TextEditToolFactory implements CanvasToolFactory<TextEditTool>
 	public TextEditTool create() {
 		return new TextEditTool();
 	}
+	@Override
+	public boolean isOneShot() {
+		return false;
+	}
 }

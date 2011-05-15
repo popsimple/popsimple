@@ -13,6 +13,20 @@
 	border-left: 2px solid black;
     position: relative;
 }
+
+/* Worksheet when in full-view mode */
+.worksheetFullView {
+	border-style:none;
+	margin:0;
+}
+.worksheetFullView .worksheetHeader {
+	display:none;
+}
+.worksheetFullView .worksheetPanel{
+	top:0;
+}
+/*************************************/
+
 .worksheetHeader {
 	margin-left:10px;
 	font-size:1.5em;
@@ -197,4 +211,9 @@
 	width:200px;
 	height:200px;
 	background-color:#aaa;
+}
+
+.displayNone
+{
+	display:none;
 }

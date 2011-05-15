@@ -42,15 +42,25 @@ public class ImageTool extends Image implements CanvasTool<ImageData> {
 		final TextBox urlBox = new TextBox();
 		urlBox.setWidth("25em");
 		dialogContents.add(urlBox);
+		Button cancelButton = new Button("Cancel");
+		cancelButton.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				imageSelectionDialog.hide();
+			}
+		});
 		Button setUrlButton = new Button("Done");
 		setUrlButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				setImageUrl(urlBox.getText());
+				if (urlBox.getText().trim().length() > 0) {
+					setImageUrl(urlBox.getText());
+				}
 				imageSelectionDialog.hide();
 			}
 		});
 		dialogContents.add(setUrlButton);
+		dialogContents.add(cancelButton);
 		imageSelectionDialog.add(dialogContents);
 		imageSelectionDialog.setGlassEnabled(true);
 		imageSelectionDialog.setText("Select image to upload");
@@ -68,6 +78,9 @@ public class ImageTool extends Image implements CanvasTool<ImageData> {
 
 
 	protected void setImageUrl(String url) {
+		if (url.trim().equals(super.getUrl().trim())) {
+			return;
+		}
 		super.setUrl(url);
 		//this.getElement().setTitle(url);
 		//this.getElement().getStyle().setBackgroundImage("url(\"" + url + "\")");

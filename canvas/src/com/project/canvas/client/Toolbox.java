@@ -1,6 +1,7 @@
 package com.project.canvas.client;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -26,7 +27,7 @@ public class Toolbox extends Composite {
 	@UiField
 	FlowPanel toolsPanel;
 	
-	final ArrayList<ToolboxItem> toolboxItems = new ArrayList<ToolboxItem>();
+	final HashMap<ToolboxItem, Widget> toolboxItems = new HashMap<ToolboxItem, Widget>();
 	final SimpleEvent<ToolboxItem> toolChosenEvent = new SimpleEvent<ToolboxItem>();
 
 	final ArrayList<Widget> toolIconHolders = new ArrayList<Widget>();
@@ -44,8 +45,8 @@ public class Toolbox extends Composite {
 	}
 	
 	private void addTool(final ToolboxItem toolboxItem) {
-		this.toolboxItems.add(toolboxItem);
 		final FlowPanel outerElem = new FlowPanel();
+		this.toolboxItems.put(toolboxItem, outerElem);
 		Label elem = new Label();
 		outerElem.add(elem);
 		this.toolsPanel.add(outerElem);
@@ -56,13 +57,16 @@ public class Toolbox extends Composite {
 		elem.addStyleName(toolboxItem.getToolboxIconStyle());
 		elem.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
-				for (Widget w : toolIconHolders) {
-					w.removeStyleName(CanvasResources.INSTANCE.main().toolboxCommonSelectedIconStyle());
-				}
-				outerElem.addStyleName(CanvasResources.INSTANCE.main().toolboxCommonSelectedIconStyle());
-				toolChosenEvent.dispatch(toolboxItem);
+				setActiveTool(toolboxItem);
 			}
 		});
 	}
 
+	public void setActiveTool(ToolboxItem toolboxItem) {
+		for (Widget w : toolIconHolders) {
+			w.removeStyleName(CanvasResources.INSTANCE.main().toolboxCommonSelectedIconStyle());
+		}
+		this.toolboxItems.get(toolboxItem).addStyleName(CanvasResources.INSTANCE.main().toolboxCommonSelectedIconStyle());
+		toolChosenEvent.dispatch(toolboxItem);
+	}
 }

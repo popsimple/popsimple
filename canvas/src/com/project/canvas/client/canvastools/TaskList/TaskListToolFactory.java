@@ -7,4 +7,9 @@ public class TaskListToolFactory implements CanvasToolFactory<TaskListWidget>
 	public TaskListWidget create() {
 		return new TaskListWidget();
 	}
+
+	@Override
+	public boolean isOneShot() {
+		return true;
+	}
 }

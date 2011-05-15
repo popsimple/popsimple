@@ -93,7 +93,12 @@ public class TaskWidget extends Composite implements Focusable, TakesValue<Task>
 	
 	private void OnCheckChanged(ValueChangeEvent<Boolean> event) 
 	{
-		if (event.getValue())
+		boolean checked = event.getValue();
+		setCompleted(checked);
+	}
+
+	protected void setCompleted(boolean checked) {
+		if (checked)
 		{
 			this.textTask.addStyleName(CanvasResources.INSTANCE.main().taskListTextChecked());
 			this.imageTask.addStyleName(CanvasResources.INSTANCE.main().taskImageChecked());
@@ -133,6 +138,7 @@ public class TaskWidget extends Composite implements Focusable, TakesValue<Task>
 		this.data = value;
 		this.textTask.setText(value.description);
 		this.checkTask.setValue(value.completed);
+		this.setCompleted(value.completed);
 	}
 
 	@Override
