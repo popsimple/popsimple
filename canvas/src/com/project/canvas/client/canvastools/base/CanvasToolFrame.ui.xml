@@ -56,9 +56,9 @@
 	</ui:style>
 	<g:HTMLPanel ui:field="framePanel" addStyleNames="{style.framePanel}">
 		<div class="{style.frameHeader}">
-			<div class="{style.buttonsPanel}">
+			<g:FlowPanel ui:field="buttonsPanel" addStyleNames="{style.buttonsPanel}">
 				<g:Anchor ui:field="closeLink" addStyleNames="{style.closeLink}">X</g:Anchor>
-			</div>
+			</g:FlowPanel>
 		</div>
 		<g:HTMLPanel ui:field="toolPanel" addStyleNames="{style.tool}">
 		</g:HTMLPanel>
