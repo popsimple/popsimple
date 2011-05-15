@@ -7,9 +7,7 @@ import java.util.HashSet;
 import java.util.Map.Entry;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -204,7 +202,7 @@ public class Worksheet extends Composite {
 				Point2D pos = relativePosition(event, worksheetPanel.getElement());
 				pos.setX(pos.getX() - toolFrameOffset.getX());
 				pos.setY(pos.getY() - toolFrameOffset.getY());
-				setToolFramePosition(pos, toolFrame);
+				setToolFramePosition(limitPosToWorksheet(pos, toolFrame), toolFrame);
 			}
 		}, MouseMoveEvent.getType()));
 		regs.add(this.worksheetPanel.addDomHandler(new MouseUpHandler() {
@@ -215,6 +213,15 @@ public class Worksheet extends Composite {
 					reg.removeHandler();
 				}
 			}}, MouseUpEvent.getType()));
+	}
+
+	protected Point2D limitPosToWorksheet(Point2D pos, Widget elem) {
+		Point2D result = new Point2D();
+		int maxX = this.worksheetPanel.getOffsetWidth() - elem.getOffsetWidth();
+		int maxY = this.worksheetPanel.getOffsetHeight() - elem.getOffsetHeight();
+		result.setX(Math.min(maxX, Math.max(0, pos.getX())));
+		result.setY(Math.min(maxY, Math.max(0, pos.getY())));
+		return result;
 	}
 
 	protected void removeToolInstance(CanvasToolFrame toolFrame) {
