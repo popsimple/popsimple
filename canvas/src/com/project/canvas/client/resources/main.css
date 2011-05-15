@@ -110,19 +110,18 @@
 .textEdit {
 	border-style:none;
 	background:transparent;
+	min-height:40px;
 }
 .textEditFocused {
 	margin-top:-1px;
 	margin-left:-2px;
 	padding:2px;
-    font-size:1em;
-    line-height:1.3em;
 }
 .textEditNotFocused {
 	
 }
 .textEditToolbar {
-	margin-top:-80px;
+	/*margin-top:-80px;*/
 }
 
 .textBoxCreateModeCanvasStyle {

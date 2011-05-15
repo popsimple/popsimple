@@ -7,9 +7,7 @@ import java.util.HashSet;
 import java.util.Map.Entry;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -44,7 +42,6 @@ import com.project.canvas.client.canvastools.base.CanvasToolFactory;
 import com.project.canvas.client.canvastools.base.CanvasToolFrame;
 import com.project.canvas.client.canvastools.base.ToolboxItem;
 import com.project.canvas.client.resources.CanvasResources;
-import com.project.canvas.client.resources.MainStyles;
 import com.project.canvas.client.shared.NativeUtils;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.shared.contracts.CanvasService;
@@ -238,7 +235,6 @@ public class Worksheet extends Composite {
 				startDragCanvasToolFrame(toolFrame, arg);
 			}
 		});
-		setToolFramePosition(relativePos, toolFrame);
 		
 		this.worksheetPanel.add(toolFrame);
 		HandlerRegistration reg = tool.getKillRequestedEvent().addHandler(new SimpleEvent.Handler<String>() {
@@ -248,6 +244,7 @@ public class Worksheet extends Composite {
 		});
 		this.toolRegsMap.put(tool, new ToolInstanceInfo(toolFactory, toolFrame, reg));
 		tool.setFocus(true);
+		setToolFramePosition(limitPosToWorksheet(relativePos, toolFrame), toolFrame);
 		return tool;
 	}
 
@@ -284,8 +281,8 @@ public class Worksheet extends Composite {
 		Point2D result = new Point2D();
 		int maxX = this.worksheetPanel.getOffsetWidth() - elem.getOffsetWidth();
 		int maxY = this.worksheetPanel.getOffsetHeight() - elem.getOffsetHeight();
-		result.setX(Math.min(maxX, Math.max(0, pos.getX())));
-		result.setY(Math.min(maxY, Math.max(0, pos.getY())));
+		result.setX(Math.max(0, Math.min(maxX, pos.getX())));
+		result.setY(Math.max(0, Math.min(maxY, pos.getY())));
 		return result;
 	}
 

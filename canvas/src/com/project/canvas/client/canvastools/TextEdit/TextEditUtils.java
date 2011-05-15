@@ -32,7 +32,7 @@ public class TextEditUtils {
 		int minWidth = 0;
 		Style widgetStyle = widget.getElement().getStyle();
 		copyTextSizingProps(targetStyle, widgetStyle);
-		targetStyle.setFontSize(16.0, Unit.PX);
+		targetStyle.setFontSize(18.0, Unit.PX);
 		if (usePreWhiteSpace) {
 			targetStyle.setProperty("whiteSpace", "pre");
 		}
@@ -49,7 +49,7 @@ public class TextEditUtils {
 		boolean isValidWidthChange = (newWidth < currentWidth && newWidth >= minWidth)
 									|| (newWidth > minWidth);
 		
-		int newHeight = testWidget.getOffsetHeight();
+		int newHeight = testWidget.getOffsetHeight(); // always add a spare
 		
 		widget.setHeight(Integer.toString(newHeight) + "px");
 		if (isValidWidthChange) {

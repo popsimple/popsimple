@@ -31,11 +31,10 @@ public class TextEditTool extends FormPanel implements CanvasTool<TextData> {
 	public TextEditTool() {
 		CanvasToolCommon.initCanvasToolWidget(this);
 		this.data = new TextData();
-		this.addStyleName(CanvasResources.INSTANCE.main().textEdit());
+		this.editBox.addStyleName(CanvasResources.INSTANCE.main().textEdit());
 		this.innerPanel.add(toolbar);
 		this.innerPanel.add(editBox);
 		this.add(innerPanel);
-		this.editBox.setFocus(true);
 		this.toolbar.addStyleName(CanvasResources.INSTANCE.main().textEditToolbar());
 		this.editBox.addStyleName(CanvasResources.INSTANCE.main().textEditFocused());
 		this.registerHandlers();
@@ -88,6 +87,7 @@ public class TextEditTool extends FormPanel implements CanvasTool<TextData> {
 			this.editBox.removeStyleName(CanvasResources.INSTANCE.main().textEditNotFocused());
 		}
 		else {
+			this.editBox.setFocus(false);
 			this.editBox.removeStyleName(CanvasResources.INSTANCE.main().textEditFocused());
 			this.editBox.addStyleName(CanvasResources.INSTANCE.main().textEditNotFocused());
 			String text = this.editBox.getText();
