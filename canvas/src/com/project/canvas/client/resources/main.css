@@ -234,3 +234,10 @@
 {
 	cursor: default;
 }
+
+.floatingToolStyle
+{
+	position: absolute;
+	opacity: 0.4;
+}
+	
