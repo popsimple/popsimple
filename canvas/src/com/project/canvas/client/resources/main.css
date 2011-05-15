@@ -217,3 +217,12 @@
 {
 	display:none;
 }
+
+@sprite .toolboxImageIconStyle {
+	gwt-image: "toolboxImageIcon";
+}
+
+.imageCreateModeCanvasStyle
+{
+	cursor: default;
+}

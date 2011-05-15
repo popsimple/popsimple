@@ -71,4 +71,8 @@ public interface MainStyles extends CssResource {
   String displayNone();
 
   String worksheetFullView();
+  
+  String toolboxImageIconStyle();
+  
+  String imageCreateModeCanvasStyle();
 }

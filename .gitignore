@@ -1,3 +1,4 @@
 HelloSomeone/war/hellosomeone
 HelloSomeone/war/WEB-INF
 .gwt-log
+canvas/war/WEB-INF/appengine-generated

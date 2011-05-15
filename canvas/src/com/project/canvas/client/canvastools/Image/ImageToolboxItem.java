@@ -11,11 +11,11 @@ public class ImageToolboxItem implements ToolboxItem
 	private static ImageToolFactory factory = new ImageToolFactory();
 	
 	public String getToolboxIconStyle() {
-		return CanvasResources.INSTANCE.main().toolboxTextIconStyle();
+		return CanvasResources.INSTANCE.main().toolboxImageIconStyle();
 	}
 
 	public String getCanvasStyleInCreateMode() {
-		return CanvasResources.INSTANCE.main().textBoxCreateModeCanvasStyle();
+		return CanvasResources.INSTANCE.main().imageCreateModeCanvasStyle();
 	}
 
 	public String getDragIconStyle() {
