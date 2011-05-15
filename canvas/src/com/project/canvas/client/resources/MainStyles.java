@@ -81,4 +81,6 @@ public interface MainStyles extends CssResource {
   String imageToolEmpty();
 
   String imageToolSet();
+  
+  String floatingToolStyle();
 }

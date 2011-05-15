@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -16,6 +17,8 @@ import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseMoveHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -39,6 +42,7 @@ import com.project.canvas.client.canvastools.base.CanvasToolFactory;
 import com.project.canvas.client.canvastools.base.CanvasToolFrame;
 import com.project.canvas.client.canvastools.base.ToolboxItem;
 import com.project.canvas.client.resources.CanvasResources;
+import com.project.canvas.client.resources.MainStyles;
 import com.project.canvas.client.shared.NativeUtils;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.shared.contracts.CanvasService;
@@ -86,6 +90,7 @@ public class Worksheet extends Composite {
 	FlowPanel worksheetBackground;
 	
 	ToolboxItem activeToolboxItem;
+	Widget activeToolFloatingWidget;
 	
 	protected final WorksheetOptionsWidget optionsWidget = new WorksheetOptionsWidget();
 	protected final DialogBox optionsDialog = new DialogBox(false, true);
@@ -117,6 +122,12 @@ public class Worksheet extends Composite {
 	final HashMap<CanvasTool<? extends ElementData>, ToolInstanceInfo> toolRegsMap = new HashMap<CanvasTool<? extends ElementData>, ToolInstanceInfo>();
 
 	protected CanvasPage page = new CanvasPage();
+
+	private HandlerRegistration workSheetClickHandler;
+
+	private HandlerRegistration workSheetMouseOverHandler;
+
+	private HandlerRegistration workSheetMouseMoveHandler;
 	
 	public Worksheet() {
 		initWidget(uiBinder.createAndBindUi(this));
@@ -126,10 +137,6 @@ public class Worksheet extends Composite {
 	}
 
 	private void setRegistrations() {
-		this.worksheetPanel.addDomHandler(new ClickHandler(){
-			public void onClick(ClickEvent event) {
-				workSheetClicked(event);
-			}}, ClickEvent.getType());
 		this.saveButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
@@ -191,14 +198,10 @@ public class Worksheet extends Composite {
 	}
 
 	protected void workSheetClicked(ClickEvent event) {
-		if (null == this.activeToolboxItem) {
-			return;
-		}
-		CanvasToolFactory<? extends CanvasTool<? extends ElementData>> toolFactory = this.activeToolboxItem.getToolFactory();
-		if (null == toolFactory)
-		{
-			return;
-		}
+		//This event is registered only if the tool has a valid ToolFactory so there's no need to check 
+		//for null.
+		CanvasToolFactory<? extends CanvasTool<? extends ElementData>> toolFactory = 
+			this.activeToolboxItem.getToolFactory();
 		Point2D pos = relativePosition(event, this.worksheetPanel.getElement());
 		createToolInstance(pos, toolFactory);
 		if (toolFactory.isOneShot()) {
@@ -287,14 +290,96 @@ public class Worksheet extends Composite {
 	}
 
 	public void setActiveTool(ToolboxItem toolboxItem) {
+		this.clearActiveTool();
+		
+		this.activeToolboxItem = toolboxItem;
+		this.worksheetPanel.addStyleName(toolboxItem.getCanvasStyleInCreateMode());
+		
+		this.registerToolHandlers(this.activeToolboxItem);
+	}
+	
+	protected void clearActiveTool()
+	{
 		if (null != this.activeToolboxItem)
 		{
 			this.worksheetPanel.removeStyleName(this.activeToolboxItem.getCanvasStyleInCreateMode());
+			this.activeToolboxItem = null;
 		}
-		this.activeToolboxItem = toolboxItem;
-		this.worksheetPanel.addStyleName(toolboxItem.getCanvasStyleInCreateMode());
+		if (null != this.activeToolFloatingWidget)
+		{
+			this.worksheetPanel.remove(this.activeToolFloatingWidget);
+			this.activeToolFloatingWidget = null;
+		}
+		if (null != this.workSheetClickHandler)
+		{
+			this.workSheetClickHandler.removeHandler();
+			this.workSheetClickHandler = null;
+		}
+		if (null != this.workSheetMouseOverHandler)
+		{
+			this.workSheetMouseOverHandler.removeHandler();
+			this.workSheetMouseOverHandler = null;
+		}
+		if (null != this.workSheetMouseMoveHandler)
+		{
+			this.workSheetMouseMoveHandler.removeHandler();
+			this.workSheetMouseMoveHandler = null;
+		}
 	}
-
+	
+	protected void registerToolHandlers(ToolboxItem toolboxItem)
+	{
+		CanvasToolFactory<? extends CanvasTool<? extends ElementData>> toolFactory = 
+			this.activeToolboxItem.getToolFactory();
+		if (null == toolFactory)
+		{
+			return;
+		}
+		this.workSheetClickHandler = this.worksheetPanel.addDomHandler(new ClickHandler(){
+			public void onClick(ClickEvent event) {
+				workSheetClicked(event);
+			}}, ClickEvent.getType());
+		
+		Widget floatingWidget = toolFactory.getFloatingWidget();
+		if (null == floatingWidget)
+		{
+			return;
+		}
+		this.workSheetMouseOverHandler = this.worksheetPanel.addDomHandler(new MouseOverHandler() {
+			@Override
+			public void onMouseOver(MouseOverEvent event) {
+				workSheetMouseOver(event);
+			}}, MouseOverEvent.getType());
+	}
+	
+	protected void workSheetMouseOver(MouseOverEvent event)
+	{
+		if (null != this.activeToolFloatingWidget)
+		{
+			return;
+		}
+		this.activeToolFloatingWidget = this.activeToolboxItem.getToolFactory().getFloatingWidget();
+		if (null == this.activeToolFloatingWidget)
+		{
+			return;
+		}
+		this.activeToolFloatingWidget.addStyleName(CanvasResources.INSTANCE.main().floatingToolStyle());
+		this.worksheetPanel.add(this.activeToolFloatingWidget);
+		this.workSheetMouseMoveHandler = this.worksheetPanel.addDomHandler(new MouseMoveHandler() {
+			@Override
+			public void onMouseMove(MouseMoveEvent event) {
+				workSheetMouseMove(event);
+			}}, MouseMoveEvent.getType());
+	}
+	
+	protected void workSheetMouseMove(MouseMoveEvent event)
+	{
+		this.activeToolFloatingWidget.getElement().getStyle().setTop(
+				event.getRelativeY(worksheetPanel.getElement()), Unit.PX);
+		this.activeToolFloatingWidget.getElement().getStyle().setLeft(
+				event.getRelativeX(worksheetPanel.getElement()), Unit.PX);
+	}
+	
 	protected void save() {
 		ArrayList<ElementData> activeElems = new ArrayList<ElementData>();
 		for (Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo>  entry : toolRegsMap.entrySet())
