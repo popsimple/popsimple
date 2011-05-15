@@ -61,8 +61,7 @@ public class TaskWidget extends Composite implements Focusable, TakesValue<Task>
 		this.textTask.addValueChangeHandler(new ValueChangeHandler<String>() {
 			
 			public void onValueChange(ValueChangeEvent<String> event) {
-				// TODO Auto-generated method stub
-				imageTask.setUrl(imageProvider.GetImageUrl(event.getValue()));
+				textValueChanges(event.getValue());
 			}
 		});
 
@@ -97,6 +96,11 @@ public class TaskWidget extends Composite implements Focusable, TakesValue<Task>
 		setCompleted(checked);
 	}
 
+	protected void textValueChanges(String text)
+	{
+		imageTask.setUrl(imageProvider.GetImageUrl(text));
+	}
+	
 	protected void setCompleted(boolean checked) {
 		if (checked)
 		{
@@ -139,6 +143,7 @@ public class TaskWidget extends Composite implements Focusable, TakesValue<Task>
 		this.textTask.setText(value.description);
 		this.checkTask.setValue(value.completed);
 		this.setCompleted(value.completed);
+		this.textValueChanges(textTask.getText());
 	}
 
 	@Override
