@@ -10,16 +10,16 @@ public interface CanvasResources extends ClientBundle {
 	@Source("main.css")
 	MainStyles main();
 
-	@Source("com/project/canvas/client/resources/images/bitmaps/a.png")
+	@Source("com/project/canvas/client/resources/images/bitmaps/text_48.png")
 	ImageResource toolboxTextIcon();
 	
-	@Source("com/project/canvas/client/resources/images/bitmaps/cursor.png")
+	@Source("com/project/canvas/client/resources/images/bitmaps/cursor_48.png")
 	ImageResource toolboxCursorIcon();
 	
-	@Source("com/project/canvas/client/resources/images/bitmaps/tasklist.png")
+	@Source("com/project/canvas/client/resources/images/bitmaps/tasklist_2_48.png")
 	ImageResource toolboxTaskListIcon();
 	
-	@Source("com/project/canvas/client/resources/images/bitmaps/image.png")
+	@Source("com/project/canvas/client/resources/images/bitmaps/image_48.png")
 	ImageResource toolboxImageIcon();
 	
 	@Source("com/project/canvas/client/resources/images/bitmaps/delete.png")
