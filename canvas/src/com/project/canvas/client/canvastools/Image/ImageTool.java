@@ -56,6 +56,7 @@ public class ImageTool extends Image implements CanvasTool<ImageData> {
 		imageSelectionDialog.setText("Image options");
 		imageSelectionDialog.show();
 		imageSelectionDialog.center();
+		dialogContents.setFocus(true);
 	}
 
 	public void setFocus(boolean isFocused) {

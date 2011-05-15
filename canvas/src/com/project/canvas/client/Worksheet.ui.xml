@@ -4,10 +4,10 @@
     <ui:with field='res' type='com.project.canvas.client.resources.CanvasResources'/>
    	<g:HTMLPanel ui:field="worksheetContainer" addStyleNames="{res.main.worksheet}">
        	<g:HTMLPanel addStyleNames="{res.main.worksheetHeader}" ui:field="worksheetHeader">
-            <g:Button  ui:field="viewButton" addStyleNames="{res.main.worksheetSaveButton}">View</g:Button>
-	        <g:Button  ui:field="saveButton" addStyleNames="{res.main.worksheetSaveButton}">Save</g:Button>
-            <g:Button  ui:field="loadButton" addStyleNames="{res.main.worksheetSaveButton}">Load</g:Button>
-            <g:TextBox ui:field="loadIdBox" addStyleNames="{res.main.worksheetSaveButton}"></g:TextBox>
+            <g:Button  ui:field="viewButton" addStyleNames="{res.main.worksheetRightButton}">View</g:Button>
+	        <g:Button  ui:field="saveButton" addStyleNames="{res.main.worksheetRightButton}">Save</g:Button>
+            <g:Button  ui:field="loadButton" addStyleNames="{res.main.worksheetRightButton}">Load</g:Button>
+            <g:TextBox ui:field="loadIdBox" addStyleNames="{res.main.worksheetRightButton}"></g:TextBox>
 			Worksheet
 		</g:HTMLPanel>
 		<g:FlowPanel ui:field="worksheetPanel" addStyleNames="{res.main.worksheetPanel}"></g:FlowPanel>

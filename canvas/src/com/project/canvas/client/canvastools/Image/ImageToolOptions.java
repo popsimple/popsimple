@@ -9,13 +9,14 @@ import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.shared.UrlUtils;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.shared.data.ImageData;
 
-public class ImageToolOptions extends Composite implements TakesValue<ImageData> {
+public class ImageToolOptions extends Composite implements TakesValue<ImageData>, Focusable {
 
 	private static ImageToolOptionsUiBinder uiBinder = GWT
 			.create(ImageToolOptionsUiBinder.class);
@@ -45,7 +46,9 @@ public class ImageToolOptions extends Composite implements TakesValue<ImageData>
 		this.doneButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				if (UrlUtils.isValidUrl(urlTextBox.getText(), false)) {
+				boolean empty = urlTextBox.getText().trim().isEmpty();
+				boolean valid = UrlUtils.isValidUrl(urlTextBox.getText(), false);
+				if (empty || valid) {
 					doneEvent.dispatch(null);
 				}
 				else {
@@ -78,5 +81,25 @@ public class ImageToolOptions extends Composite implements TakesValue<ImageData>
 	public ImageData getValue() {
 		this.data.url = this.urlTextBox.getText();
 		return this.data;
+	}
+
+	@Override
+	public int getTabIndex() {
+		return this.urlTextBox.getTabIndex();
+	}
+
+	@Override
+	public void setAccessKey(char key) {
+		this.urlTextBox.setAccessKey(key);
+	}
+
+	@Override
+	public void setFocus(boolean focused) {
+		this.urlTextBox.setFocus(focused);
+	}
+
+	@Override
+	public void setTabIndex(int index) {
+		this.urlTextBox.setTabIndex(index);
 	}
 }
