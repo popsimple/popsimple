@@ -67,5 +67,8 @@ public interface MainStyles extends CssResource {
   String taskImage();
 
   String imageBox();
-  
+ 
+  String displayNone();
+
+  String worksheetFullView();
 }

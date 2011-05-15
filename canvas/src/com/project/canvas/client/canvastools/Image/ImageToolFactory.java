@@ -7,4 +7,9 @@ public class ImageToolFactory implements CanvasToolFactory<ImageTool>
 	public ImageTool create() {
 		return new ImageTool();
 	}
+
+	@Override
+	public boolean isOneShot() {
+		return true;
+	}
 }

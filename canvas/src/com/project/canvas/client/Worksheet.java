@@ -7,7 +7,9 @@ import java.util.HashSet;
 import java.util.Map.Entry;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -28,18 +30,21 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.project.canvas.client.canvastools.Image.ImageToolFactory;
 import com.project.canvas.client.canvastools.TaskList.TaskListToolFactory;
 import com.project.canvas.client.canvastools.TextEdit.TextEditToolFactory;
 import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.canvastools.base.CanvasToolFactory;
 import com.project.canvas.client.canvastools.base.CanvasToolFrame;
 import com.project.canvas.client.canvastools.base.ToolboxItem;
+import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.NativeUtils;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.shared.contracts.CanvasService;
 import com.project.canvas.shared.contracts.CanvasServiceAsync;
 import com.project.canvas.shared.data.CanvasPage;
 import com.project.canvas.shared.data.ElementData;
+import com.project.canvas.shared.data.ImageData;
 import com.project.canvas.shared.data.Point2D;
 import com.project.canvas.shared.data.TaskListData;
 import com.project.canvas.shared.data.TextData;
@@ -64,9 +69,26 @@ public class Worksheet extends Composite {
 	Button loadButton;
 	
 	@UiField
+	Button viewButton;
+	
+	@UiField
 	HTMLPanel worksheetContainer;
 	
+	@UiField
+	HTMLPanel worksheetHeader;
+	
 	ToolboxItem activeToolboxItem;
+
+	public final SimpleEvent<Void> defaultToolRequestEvent = new SimpleEvent<Void>();
+	public final SimpleEvent<Boolean> viewModeEvent = new SimpleEvent<Boolean>();
+	
+	public SimpleEvent<Boolean> getViewModeEvent() {
+		return viewModeEvent;
+	}
+
+	public SimpleEvent<Void> getDefaultToolRequestEvent() {
+		return defaultToolRequestEvent;
+	}
 
 	private class ToolInstanceInfo {
 		public ToolInstanceInfo(CanvasToolFactory<?> factory, CanvasToolFrame toolFrame, HandlerRegistration killRegistration) {
@@ -103,6 +125,15 @@ public class Worksheet extends Composite {
 				loadClicked();
 			}
 		});
+		final Worksheet that = this;
+		this.viewButton.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				viewModeEvent.dispatch(true);
+				worksheetHeader.addStyleName(CanvasResources.INSTANCE.main().displayNone());
+				that.addStyleName(CanvasResources.INSTANCE.main().worksheetFullView());
+			}
+		});
 	}
 
 	protected void workSheetClicked(ClickEvent event) {
@@ -116,6 +147,9 @@ public class Worksheet extends Composite {
 		}
 		Point2D pos = relativePosition(event, this.worksheetPanel.getElement());
 		createToolInstance(pos, toolFactory);
+		if (toolFactory.isOneShot()) {
+			defaultToolRequestEvent.dispatch(null);
+		}
 	}
 
 	protected Point2D relativePosition(MouseEvent<?> event, Element elem) {
@@ -298,11 +332,15 @@ public class Worksheet extends Composite {
 		for (ElementData newElement : updatedElements.values()) {
 			CanvasTool<? extends ElementData> tool = null;
 			CanvasToolFactory<? extends CanvasTool<? extends ElementData>> factory = null;
-			if (newElement.getClass().equals(TextData.class)) {
+			Class<?> cls = newElement.getClass();
+			if (cls.equals(TextData.class)) {
 				factory = new TextEditToolFactory();
 			}
-			else if (newElement.getClass().equals(TaskListData.class)) {
+			else if (cls.equals(TaskListData.class)) {
 				factory = new TaskListToolFactory();
+			}
+			else if (cls.equals(ImageData.class)) {
+				factory = new ImageToolFactory();
 			}
 			
 			if (null == factory) {
