@@ -75,4 +75,8 @@ public interface MainStyles extends CssResource {
   String toolboxImageIconStyle();
   
   String imageCreateModeCanvasStyle();
+
+  String imageToolEmpty();
+
+  String imageToolSet();
 }
