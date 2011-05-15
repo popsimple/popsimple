@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.code.twig.annotation.Embedded;
 import com.google.code.twig.annotation.Id;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -13,7 +14,8 @@ public class CanvasPage  implements Serializable, IsSerializable  {
 	
 	@Id 
 	public Long id;
-	public String title;
+	@Embedded
+	public CanvasPageOptions options = new CanvasPageOptions();
 	
 	public List<ElementData> elements = new ArrayList<ElementData>();
 }

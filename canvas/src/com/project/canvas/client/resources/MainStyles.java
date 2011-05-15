@@ -39,7 +39,9 @@ public interface MainStyles extends CssResource {
   String worksheet();
   
   String worksheetHeader();
-  
+  String worksheetButtons();
+  String worksheetOptions();
+  String worksheetBackground();
   String worksheetRightButton();
   
   String worksheetPanel();
