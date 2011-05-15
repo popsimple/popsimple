@@ -1,5 +1,9 @@
 package com.project.canvas.client.canvastools.TextEdit;
 
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.FocusEvent;
@@ -25,6 +29,7 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData> {
 	private final RichTextToolbar toolbar = new  RichTextToolbar(editBox); 
 	private final SimpleEvent<String> killRequestEvent = new SimpleEvent<String>();
 	private TextData data;
+	protected boolean toolBarFocused;
 	
 	public TextEditTool() {
 		CanvasToolCommon.initCanvasToolWidget(this);
@@ -32,8 +37,8 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData> {
 		CanvasToolCommon.addEscapeUnfocusesHandler(this.editBox);
 		this.data = new TextData();
 		this.editBox.addStyleName(CanvasResources.INSTANCE.main().textEdit());
-		this.innerPanel.add(toolbar);
 		this.innerPanel.add(editBox);
+		this.innerPanel.add(toolbar);
 		this.add(innerPanel);
 		this.toolbar.addStyleName(CanvasResources.INSTANCE.main().textEditToolbar());
 		this.editBox.addStyleName(CanvasResources.INSTANCE.main().textEditFocused());
@@ -45,12 +50,19 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData> {
 			@Override
 			public void onClick(ClickEvent event) {
 				updateEditBoxVisibleLength();
+				setSelfFocus(true);
 				editBox.setFocus(true);
 			}}, ClickEvent.getType());
 		this.editBox.addFocusHandler(new FocusHandler() {
 			@Override
 			public void onFocus(FocusEvent event) {
 				setSelfFocus(true);
+			}
+		});
+		this.editBox.addBlurHandler(new BlurHandler() {
+			@Override
+			public void onBlur(BlurEvent event) {
+				setSelfFocus(false);
 			}
 		});
 		this.editBox.addKeyUpHandler(new KeyUpHandler() {
