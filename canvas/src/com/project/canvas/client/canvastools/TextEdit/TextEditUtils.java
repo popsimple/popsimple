@@ -49,7 +49,7 @@ public class TextEditUtils {
 		boolean isValidWidthChange = (newWidth < currentWidth && newWidth >= minWidth)
 									|| (newWidth > minWidth);
 		
-		int newHeight = testWidget.getOffsetHeight(); // always add a spare
+		int newHeight = testWidget.getOffsetHeight() + 20; // always add a spare
 		
 		widget.setHeight(Integer.toString(newHeight) + "px");
 		if (isValidWidthChange) {

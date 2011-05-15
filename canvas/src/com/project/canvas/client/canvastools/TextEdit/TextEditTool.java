@@ -1,7 +1,5 @@
 package com.project.canvas.client.canvastools.TextEdit;
 
-import com.google.gwt.event.dom.client.BlurEvent;
-import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.FocusEvent;
@@ -11,7 +9,7 @@ import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.RichTextArea;
 import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.canvastools.base.CanvasToolCommon;
@@ -21,7 +19,7 @@ import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.shared.data.ElementData;
 import com.project.canvas.shared.data.TextData;
 
-public class TextEditTool extends FormPanel implements CanvasTool<TextData> {
+public class TextEditTool extends FocusPanel implements CanvasTool<TextData> {
 	private final FlowPanel innerPanel = new FlowPanel();
 	private final RichTextArea editBox = new RichTextArea();
 	private final RichTextToolbar toolbar = new  RichTextToolbar(editBox); 
@@ -30,6 +28,8 @@ public class TextEditTool extends FormPanel implements CanvasTool<TextData> {
 	
 	public TextEditTool() {
 		CanvasToolCommon.initCanvasToolWidget(this);
+		CanvasToolCommon.addEscapeUnfocusesHandler(this);
+		CanvasToolCommon.addEscapeUnfocusesHandler(this.editBox);
 		this.data = new TextData();
 		this.editBox.addStyleName(CanvasResources.INSTANCE.main().textEdit());
 		this.innerPanel.add(toolbar);
@@ -41,21 +41,16 @@ public class TextEditTool extends FormPanel implements CanvasTool<TextData> {
 	}
 
 	private void registerHandlers() {
-		this.addDomHandler(new BlurHandler(){
+		this.toolbar.addDomHandler(new ClickHandler(){
 			@Override
-			public void onBlur(BlurEvent event) {
-				setFocus(false);
-			}}, BlurEvent.getType());
-		this.editBox.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
-				setFocus(true);
-				event.stopPropagation();
-			}
-		});
-
+				updateEditBoxVisibleLength();
+				editBox.setFocus(true);
+			}}, ClickEvent.getType());
 		this.editBox.addFocusHandler(new FocusHandler() {
+			@Override
 			public void onFocus(FocusEvent event) {
-				setFocus(true);
+				setSelfFocus(true);
 			}
 		});
 		this.editBox.addKeyUpHandler(new KeyUpHandler() {
@@ -76,18 +71,19 @@ public class TextEditTool extends FormPanel implements CanvasTool<TextData> {
 		TextEditUtils.autoSizeWidget(this.editBox, this.editBox.getHTML(), true);
 	}
 
-	
+	@Override
 	public void setFocus(boolean isFocused) {
-		this.toolbar.setVisible(isFocused);
+		setSelfFocus(isFocused);
+		super.setFocus(isFocused);
+	}
 
+	private void setSelfFocus(boolean isFocused) {
 		if (isFocused) {
 			updateEditBoxVisibleLength();
-			this.editBox.setFocus(true);
 			this.editBox.addStyleName(CanvasResources.INSTANCE.main().textEditFocused());
 			this.editBox.removeStyleName(CanvasResources.INSTANCE.main().textEditNotFocused());
 		}
 		else {
-			this.editBox.setFocus(false);
 			this.editBox.removeStyleName(CanvasResources.INSTANCE.main().textEditFocused());
 			this.editBox.addStyleName(CanvasResources.INSTANCE.main().textEditNotFocused());
 			String text = this.editBox.getText();
@@ -95,6 +91,8 @@ public class TextEditTool extends FormPanel implements CanvasTool<TextData> {
 				this.killRequestEvent.dispatch("Empty");
 			}
 		}
+		
+		this.toolbar.setVisible(isFocused);
 	}
 
 	public SimpleEvent<String> getKillRequestedEvent() {

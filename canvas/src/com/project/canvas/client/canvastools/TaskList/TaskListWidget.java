@@ -9,6 +9,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.canvastools.base.CanvasTool;
@@ -19,7 +20,7 @@ import com.project.canvas.shared.data.ElementData;
 import com.project.canvas.shared.data.Task;
 import com.project.canvas.shared.data.TaskListData;
 
-public class TaskListWidget extends Composite implements CanvasTool<TaskListData> {
+public class TaskListWidget extends Composite implements CanvasTool<TaskListData>, Focusable {
 
 	private static TaskListWidgetUiBinder uiBinder = GWT
 			.create(TaskListWidgetUiBinder.class);
@@ -105,17 +106,14 @@ public class TaskListWidget extends Composite implements CanvasTool<TaskListData
 	}
 
 	public void setTabIndex(int index) {
-		// TODO Auto-generated method stub
 		this.getFirstTaskWidget().setTabIndex(index);
 	}
 
 	public SimpleEvent<String> getKillRequestedEvent() {
-		// TODO Auto-generated method stub
 		return this.killRequestedEvent;
 	}
 
 	public void setFocus(boolean isFocused) {
-		// TODO Auto-generated method stub
 		this.getFirstTaskWidget().setFocus(isFocused);
 	}
 

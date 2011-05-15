@@ -7,6 +7,8 @@ import java.util.HashSet;
 import java.util.Map.Entry;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
@@ -223,8 +225,8 @@ public class Worksheet extends Composite {
 		return pos;
 	}
 
-	private CanvasTool<? extends ElementData> createToolInstance(Point2D relativePos, CanvasToolFactory<? extends CanvasTool<? extends ElementData>> toolFactory) {
-		CanvasTool<? extends ElementData> tool = toolFactory.create();
+	private CanvasTool<? extends ElementData> createToolInstance(final Point2D relativePos, CanvasToolFactory<? extends CanvasTool<? extends ElementData>> toolFactory) {
+		final CanvasTool<? extends ElementData> tool = toolFactory.create();
 		final CanvasToolFrame toolFrame = new CanvasToolFrame(tool);
 
 		toolFrame.getCloseRequest().addHandler(new SimpleEvent.Handler<Void>() {
@@ -246,9 +248,16 @@ public class Worksheet extends Composite {
 				removeToolInstance(toolFrame);
 			}
 		});
+		tool.asWidget().setVisible(false);
 		this.toolRegsMap.put(tool, new ToolInstanceInfo(toolFactory, toolFrame, reg));
-		tool.setFocus(true);
-		setToolFramePosition(limitPosToWorksheet(relativePos, toolFrame), toolFrame);
+		Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				tool.asWidget().setVisible(true);
+				tool.setFocus(true);
+				setToolFramePosition(limitPosToWorksheet(relativePos, toolFrame), toolFrame);
+			}
+		});
 		return tool;
 	}
 
