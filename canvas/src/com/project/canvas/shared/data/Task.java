@@ -11,4 +11,5 @@ public class Task implements Serializable , IsSerializable {
 	public @Id Long id;
 	public String description;
 	public boolean completed;
+	public String imageUrl;
 }
