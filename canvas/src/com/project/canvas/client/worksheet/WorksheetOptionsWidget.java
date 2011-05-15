@@ -39,7 +39,9 @@ public class WorksheetOptionsWidget extends Composite implements TakesValue<Canv
 	@UiField
 	Label imagePreview;
 	@UiField
-	CheckBox stretchOption;
+	CheckBox stretchXOption;
+	@UiField
+	CheckBox stretchYOption;
 	@UiField
 	CheckBox repeatOption;
 	@UiField
@@ -106,6 +108,17 @@ public class WorksheetOptionsWidget extends Composite implements TakesValue<Canv
 	public void setValue(CanvasPageOptions value) {
 		this.value = value;
 		this.urlTextBox.setText(value.backgroundImageURL);
+		this.repeatOption.setValue(this.value.backgroundRepeat.toLowerCase().trim().equals("repeat"));
+		this.stretchXOption.setValue(false);
+		this.stretchYOption.setValue(false);
+		String[] sizeParts = this.value.backgroundSize.toLowerCase().trim().split(" ");
+		if (sizeParts.length > 0) {
+			this.stretchXOption.setValue(sizeParts[0].equals("100%"));
+		}
+		if (sizeParts.length > 1) {
+			this.stretchYOption.setValue(sizeParts[1].equals("100%"));
+		}
+		this.centerOption.setValue(this.value.backgroundPosition.toLowerCase().trim().equals("center center"));
 	}
 
 	@Override
@@ -117,12 +130,17 @@ public class WorksheetOptionsWidget extends Composite implements TakesValue<Canv
 		else {
 			this.value.backgroundRepeat = "no-repeat";
 		}
-		if (this.stretchOption.getValue()) {
-			this.value.backgroundSize = "100%";
+		
+		if (this.stretchXOption.getValue()) {
+			this.value.backgroundSize = "100% ";
 		}
 		else {
-			this.value.backgroundSize = "";
+			this.value.backgroundSize = "auto ";
 		}
+		if (this.stretchYOption.getValue()) {
+			this.value.backgroundSize += "100%";
+		}
+		
 		if (this.centerOption.getValue()) {
 			this.value.backgroundPosition = "center center";
 		}
