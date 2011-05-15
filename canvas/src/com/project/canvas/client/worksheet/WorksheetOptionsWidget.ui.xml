@@ -36,7 +36,8 @@
 				<g:Label ui:field="imagePreview" addStyleNames="{style.imagePreview}"/>
 			</g:HTMLPanel>
 			<div class="{style.padded}">
-				<g:CheckBox ui:field="stretchOption" name="imageStyle">Stretch</g:CheckBox>
+				<g:CheckBox ui:field="stretchXOption" name="imageStyle">Stretch width</g:CheckBox>
+				<g:CheckBox ui:field="stretchYOption" name="imageStyle">Stretch height</g:CheckBox>
 				<g:CheckBox ui:field="repeatOption" name="imageStyle">Repeat</g:CheckBox>
 				<g:CheckBox ui:field="centerOption" value="true" name="imageStyle">Center</g:CheckBox>
 			</div>
