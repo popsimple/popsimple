@@ -62,6 +62,7 @@ public class TaskListWidget extends Composite implements CanvasTool<TaskListData
 	{
 		TaskWidget taskWidget = new TaskWidget();
 		addTaskWidget(taskWidget);
+		taskWidget.setFocus(true);
 	}
 
 
