@@ -99,4 +99,8 @@ public interface MainStyles extends CssResource {
   String toolFrameButton();
 
   String outOfBounds();
+  
+  String toolFrameFrontLink();
+  
+  String toolFrameBackLink();
 }

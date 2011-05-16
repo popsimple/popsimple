@@ -6,6 +6,6 @@ import java.util.List;
 public class TaskListData extends ElementData {
 	private static final long serialVersionUID = 1L;
 
-	public String title;
-	public List<Task> tasks  = new ArrayList<Task>();
+	public String _title;
+	public List<TaskData> _tasks  = new ArrayList<TaskData>();
 }

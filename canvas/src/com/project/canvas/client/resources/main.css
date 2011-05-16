@@ -310,6 +310,22 @@
 	height:16px;
 	display: inline-block;
 }
+@sprite .toolFrameBackLink
+{
+	gwt-image: "moveBackIcon";
+	width:16px;
+	height:16px;
+	display: inline-block;
+	float:left;
+}
+@sprite .toolFrameFrontLink 
+{
+	gwt-image: "moveFrontIcon";
+	width:16px;
+	height:16px;
+	display: inline-block;
+	float:left;
+}
 .toolFrameButton
 {
 	cursor: pointer;

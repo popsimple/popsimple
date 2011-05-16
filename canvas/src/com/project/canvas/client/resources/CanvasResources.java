@@ -30,4 +30,10 @@ public interface CanvasResources extends ClientBundle {
 	
 	@Source("com/project/canvas/client/resources/images/bitmaps/closeIcon.png")
 	ImageResource closeIcon();
+	
+	@Source("com/project/canvas/client/resources/images/bitmaps/moveBackIcon.png")
+	ImageResource moveBackIcon();
+	
+	@Source("com/project/canvas/client/resources/images/bitmaps/moveFrontIcon.png")
+	ImageResource moveFrontIcon();
 }

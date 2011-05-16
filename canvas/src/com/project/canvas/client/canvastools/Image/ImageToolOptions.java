@@ -74,12 +74,12 @@ public class ImageToolOptions extends Composite implements TakesValue<ImageData>
 	@Override
 	public void setValue(ImageData value) {
 		this.data = value;
-		this.urlTextBox.setText(value.url);
+		this.urlTextBox.setText(value._url);
 	}
 
 	@Override
 	public ImageData getValue() {
-		this.data.url = this.urlTextBox.getText();
+		this.data._url = this.urlTextBox.getText();
 		return this.data;
 	}
 
