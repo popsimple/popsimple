@@ -258,3 +258,75 @@
 	opacity: 0.4;
 }
 	
+/* ToolFrame Styles */	
+	
+.toolFramePanel
+{
+    cursor:move;
+	position: absolute;
+	display:inline-block;
+}
+
+.toolFramePanel:hover
+{
+	border-style: solid;
+	border-width: 1px;
+	border-radius: 5px;
+	border-color: #ccc;
+	background-color: #EEE;
+}
+
+.toolFrameBodyPanel 
+{
+    cursor:default;
+	padding:0px 5px 8px 5px;
+	display:inline-block;
+	position: relative;
+}				
+.toolFrameCloseLink 
+{
+	color:#f66;
+	text-shadow: 0 0 0.2px black;
+}
+.toolFrameCloseLink:hover 
+{
+	color:#f66;
+	text-shadow: 0 0 1px #888;
+}
+.toolFrameHeader 
+{
+	padding:0 5px;
+	visibility: hidden; 
+}
+.toolFramePanel:hover .toolFrameHeader 
+{
+	visibility: visible;
+}
+.toolFrameButtonsPanel 
+{
+    cursor:default;
+    float: right;
+    font-family: verdana,sans-serif;
+    font-size: 1em;
+    line-height: 1.1em;
+    padding: 0 5px 2px;
+}
+
+@sprite .toolFrameBottomRightResize
+{
+	visibility: hidden;
+	cursor: nw-resize;
+	width: 16px;
+	height: 16px;
+	display: inline-block;
+	position:absolute;
+	bottom: 0;
+	right:0;
+	overflow: hidden;
+	gwt-image: "resizeIcon"
+}
+
+.toolFramePanel:hover .toolFrameBottomRightResize
+{
+	visibility: visible;
+}
