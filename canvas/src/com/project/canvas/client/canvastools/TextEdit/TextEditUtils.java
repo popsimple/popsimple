@@ -7,6 +7,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.project.canvas.shared.data.Point2D;
 
 public class TextEditUtils {
 
@@ -25,7 +26,7 @@ public class TextEditUtils {
 		init();
 	}
 
-	protected static void autoSizeWidget(Widget widget, String html, boolean usePreWhiteSpace) {
+	protected static Point2D autoSizeWidget(Widget widget, String html, boolean usePreWhiteSpace) {
 		if (false == testWidgetInit) {
 			init();
 		}
@@ -58,11 +59,16 @@ public class TextEditUtils {
 		int newHeight = testWidget.getOffsetHeight() + 20; // always add a spare
 		
 		widget.setHeight(Integer.toString(newHeight) + "px");
+		int width;
 		if (isValidWidthChange) {
-			widget.setWidth(Integer.toString(newWidth) + "px");
+			width = newWidth;
+		}
+		else {
+			width = currentWidth;
 		}
 		testWidget.getElement().setInnerHTML(""); // for security reasons don't leave hiding data...
 		testWidget.getElement().getStyle().setDisplay(Display.NONE);
+		return new Point2D(width, newHeight);
 	}
 
 	private static void copyTextSizingProps(Style targetStyle, Style widgetStyle) {

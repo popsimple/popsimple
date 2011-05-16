@@ -111,6 +111,7 @@
 	border-style:none;
 	background:transparent;
 	min-height:40px;
+	height:80px;
 }
 .textEditFocused {
 	margin-top:-1px;
@@ -118,11 +119,14 @@
 	padding:2px;
 }
 
-@external .cke_top, .cke_wrapper;
+@external .cke_top, .cke_wrapper .cke_skin_kama;
 .textEditNotFocused .cke_top {
-	display:none;
+	visibility: hidden;
 }
-
+.textEdit span.cke_skin_kama {
+	border-style:none;
+	padding:none;
+}
 .textEditNotFocused .cke_wrapper {
 	background: transparent !important;
 }

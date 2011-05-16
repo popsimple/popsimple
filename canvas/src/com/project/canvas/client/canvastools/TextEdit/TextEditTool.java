@@ -9,6 +9,8 @@ import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.FocusHandler;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.project.canvas.client.canvastools.base.CanvasTool;
@@ -19,7 +21,6 @@ import com.project.canvas.shared.data.ElementData;
 import com.project.canvas.shared.data.TextData;
 
 public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
-	private final FlowPanel innerPanel = new FlowPanel();
 	private final CKEditor editBox;
 	private final SimpleEvent<String> killRequestEvent = new SimpleEvent<String>();
 	private TextData data;
@@ -29,64 +30,33 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 	public TextEditTool() {
 		CanvasToolCommon.initCanvasToolWidget(this);
 		this.data = new TextData();
-		this.add(innerPanel);
 		
 		CKConfig editBoxConfig = new CKConfig(PRESET_TOOLBAR.BASIC);
-		editBoxConfig.setRemovePlugins("elementspath");
-		editBoxConfig.setWidth("400px");
-		editBoxConfig.setHeight("100px");
+		editBoxConfig.setRemovePlugins("elementspath,scayt,menubutton,contextmenu");
+		editBoxConfig.setResizeEnabled(false);
+		editBoxConfig.setAutoGrowMinHeight(40);
 		this.editBox = new CKEditor(editBoxConfig);
 		this.editBox.setHTML("");
-		//editBox.addStyleName(CanvasResources.INSTANCE.main().textEdit());
-		//editBox.addStyleName(CanvasResources.INSTANCE.main().textEditFocused());
-		this.innerPanel.add(editBox);
+		this.addStyleName(CanvasResources.INSTANCE.main().textEdit());
+		this.add(editBox);
 		registerHandlers();
-//		Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-//			@Override
-//			public void execute() {
-//				registerHandlers();
-//			}
-//		});
 	}
 
 	private void registerHandlers() {
-		//ElementWrapper editorWrapper = new ElementWrapper(this.editBox.getEditorElement());
-		//editorWrapper.addDomHandler(new BlurHandler() {
-//			@Override
-//			public void onBlur(BlurEvent event) {
-//				GWT.log("editbox blur");
-//				setSelfFocus(false);
-//			}
-//		}, BlurEvent.getType());
 		this.editBox.addFocusHandler(new FocusHandler() {
 			@Override
 			public void onFocus(FocusEvent event) {
 				setSelfFocus(true);
+				editBox.resize(getOffsetWidth(), getOffsetHeight(), false, true);
 			}
 		});
 		this.editBox.addBlurHandler(new BlurHandler() {
 			@Override
 			public void onBlur(BlurEvent event) {
-				GWT.log("editbox blur");
+				editBox.resize(getOffsetWidth(), getOffsetHeight(), false, true);
 				setSelfFocus(false);
 			}
 		});
-//		this.editBox.addKeyUpHandler(new KeyUpHandler() {
-//			public void onKeyUp(KeyUpEvent event) {
-//				updateEditBoxVisibleLength();
-//			}
-//		});
-//		this.editBox.addKeyDownHandler(new KeyDownHandler() {
-//			public void onKeyDown(KeyDownEvent event) {
-//				updateEditBoxVisibleLength();
-//			}
-//		});
-	}
-
-	protected void updateEditBoxVisibleLength() {
-//		this.editBox.setVisibleLength(Math.max(MINIMUM_EDITBOX_VISIBLE_LENGTH, spareLength));
-		
-		TextEditUtils.autoSizeWidget(this.editBox, this.editBox.getHTML(), true);
 	}
 
 	@Override
@@ -98,13 +68,12 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 
 	private void setSelfFocus(boolean isFocused) {
 		if (isFocused) {
-			updateEditBoxVisibleLength();
-			this.editBox.addStyleName(CanvasResources.INSTANCE.main().textEditFocused());
-			this.editBox.removeStyleName(CanvasResources.INSTANCE.main().textEditNotFocused());
+			this.addStyleName(CanvasResources.INSTANCE.main().textEditFocused());
+			this.removeStyleName(CanvasResources.INSTANCE.main().textEditNotFocused());
 		}
 		else {
-			this.editBox.removeStyleName(CanvasResources.INSTANCE.main().textEditFocused());
-			this.editBox.addStyleName(CanvasResources.INSTANCE.main().textEditNotFocused());
+			this.removeStyleName(CanvasResources.INSTANCE.main().textEditFocused());
+			this.addStyleName(CanvasResources.INSTANCE.main().textEditNotFocused());
 			// use getText rather than getHTML, so that if
 			// there is no text in the box - it will be destroyed
 			HTML editorHTML = new HTML(this.editBox.getData());
