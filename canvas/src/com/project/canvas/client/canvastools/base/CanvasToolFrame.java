@@ -1,17 +1,11 @@
 package com.project.canvas.client.canvastools.base;
 
-import java.io.Console;
-
-import mx4j.log.Log;
-
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.impl.AsyncFragmentLoader.Logger;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
-import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -22,7 +16,6 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.shared.NativeUtils;
 import com.project.canvas.client.shared.events.SimpleEvent;
-import com.project.canvas.shared.data.Point2D;
 
 public class CanvasToolFrame extends Composite {
 
@@ -37,6 +30,12 @@ public class CanvasToolFrame extends Composite {
 	
 	@UiField
 	Anchor closeLink;
+	
+	@UiField
+	Anchor moveBackLink;
+	
+	@UiField
+	Anchor moveFrontLink;
 
 	@UiField
 	HTMLPanel framePanel;
@@ -50,6 +49,8 @@ public class CanvasToolFrame extends Composite {
 	protected final CanvasTool<?> tool;
 	
 	protected final SimpleEvent<Void> closeRequest = new SimpleEvent<Void>();
+	protected final SimpleEvent<Void> moveBackRequest = new SimpleEvent<Void>();
+	protected final SimpleEvent<Void> moveFrontRequest = new SimpleEvent<Void>();
 	protected final SimpleEvent<MouseDownEvent> moveStartRequest = new SimpleEvent<MouseDownEvent>();
 	protected final SimpleEvent<MouseDownEvent> resizeStartRequest = new SimpleEvent<MouseDownEvent>();
 
@@ -62,6 +63,20 @@ public class CanvasToolFrame extends Composite {
 			@Override
 			public void onClick(ClickEvent event) {
 				closeRequest.dispatch(null);
+				event.stopPropagation();
+			}
+		});
+		this.moveBackLink.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				moveBackRequest.dispatch(null);
+				event.stopPropagation();
+			}
+		});
+		this.moveFrontLink.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				moveFrontRequest.dispatch(null);
 				event.stopPropagation();
 			}
 		});
@@ -103,6 +118,18 @@ public class CanvasToolFrame extends Composite {
 		return moveStartRequest;
 	}
 
+	public HandlerRegistration addMoveBackRequestHandler(
+			SimpleEvent.Handler<Void> handler)
+	{
+		return this.moveBackRequest.addHandler(handler);
+	}
+	
+	public HandlerRegistration addMoveFrontRequestHandler(
+			SimpleEvent.Handler<Void> handler)
+	{
+		return this.moveFrontRequest.addHandler(handler);
+	}
+	
 	public HandlerRegistration addResizeStartRequestHandler(
 			SimpleEvent.Handler<MouseDownEvent> handler)
 	{

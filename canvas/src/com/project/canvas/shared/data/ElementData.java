@@ -16,5 +16,5 @@ public class ElementData implements Serializable, IsSerializable  {
 	@Embedded
 	public Point2D _size;
 
-	public String _ZIndex;
+	public int _ZIndex;
 }

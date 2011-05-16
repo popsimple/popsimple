@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
+import javax.validation.constraints.Max;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
@@ -259,6 +261,17 @@ public class Worksheet extends Composite {
 				startResizeCanvasToolFrame(toolFrame, arg);
 			}
 		});
+		toolFrame.addMoveBackRequestHandler(new SimpleEvent.Handler<Void>() {
+			@Override
+			public void onFire(Void arg) {
+				moveToolFrameBack(toolFrame);
+			}});
+		
+		toolFrame.addMoveFrontRequestHandler(new SimpleEvent.Handler<Void>() {
+			@Override
+			public void onFire(Void arg) {
+				moveToolFrameFront(toolFrame);
+			}});
 		
 		this.worksheetPanel.add(toolFrame);
 		HandlerRegistration reg = tool.getKillRequestedEvent().addHandler(new SimpleEvent.Handler<String>() {
@@ -280,6 +293,28 @@ public class Worksheet extends Composite {
 		return toolFrame;
 	}
 
+	protected void moveToolFrameBack(CanvasToolFrame toolFrame)
+	{
+		int zIndex = this.getElementZIndex(toolFrame.getElement());
+		int newZIndex = Math.max(zIndex - 1, 1);
+		if (zIndex == newZIndex)
+		{
+			return;
+		}
+		toolFrame.getElement().getStyle().setZIndex(newZIndex);
+	}
+	
+	protected void moveToolFrameFront(CanvasToolFrame toolFrame)
+	{
+		int zIndex = this.getElementZIndex(toolFrame.getElement());
+		int newZIndex = Math.min(zIndex + 1, ZIndexProvider.getLastAllocatedZIndex());
+		if (zIndex == newZIndex)
+		{
+			return;
+		}
+		toolFrame.getElement().getStyle().setZIndex(newZIndex);
+	}
+	
 	protected void setToolFramePosition(Point2D relativePos, final CanvasToolFrame toolFrame) {
 		toolFrame.asWidget().getElement().getStyle().setLeft(relativePos.getX(), Unit.PX);
 		toolFrame.asWidget().getElement().getStyle().setTop(relativePos.getY(), Unit.PX);
@@ -421,7 +456,7 @@ public class Worksheet extends Composite {
 			int x = Integer.valueOf(toolInfo.toolFrame.getElement().getOffsetLeft());
 			int y = Integer.valueOf(toolInfo.toolFrame.getElement().getOffsetTop());
 			toolData._position = new Point2D(x, y);
-			toolData._ZIndex = toolInfo.toolFrame.getElement().getStyle().getZIndex();
+			toolData._ZIndex = this.getElementZIndex(toolInfo.toolFrame.getElement());
 			toolData._size = new Point2D(
 					toolInfo.toolFrame.getElement().getOffsetWidth(),
 					toolInfo.toolFrame.getElement().getOffsetHeight());
@@ -531,7 +566,8 @@ public class Worksheet extends Composite {
 				continue;
 			}
 			//TODO: Refactor
-			CanvasToolFrame toolFrame = this.createToolInstance(newElement._position, factory);
+			CanvasToolFrame toolFrame = this.createToolInstance(
+					newElement._position, newElement._ZIndex, factory);
 			if (null != newElement._size)
 			{
 				toolFrame.setWidth(newElement._size.getX());
@@ -539,6 +575,18 @@ public class Worksheet extends Composite {
 			}
 			toolFrame.getTool().setElementData(newElement);
 			toolFrame.getTool().setFocus(false);
+		}
+	}
+	
+	protected int getElementZIndex(Element element)
+	{
+		try
+		{
+			return Integer.parseInt(element.getStyle().getZIndex());
+		}
+		catch(NumberFormatException ex)
+		{
+			return 0;
 		}
 	}
 

@@ -97,4 +97,8 @@ public interface MainStyles extends CssResource {
   String toolFrameBottomRightResize();
   
   String toolFrameButton();
+  
+  String toolFrameFrontLink();
+  
+  String toolFrameBackLink();
 }

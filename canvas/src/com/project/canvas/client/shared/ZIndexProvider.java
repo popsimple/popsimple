@@ -11,6 +11,11 @@ public abstract class ZIndexProvider
 		return allocatedZIndex;
 	}
 	
+	public static int getLastAllocatedZIndex()
+	{
+		return nextZIndex - 1;
+	}
+	
 	public static int getTopMostZIndex()
 	{
 		return nextZIndex;
