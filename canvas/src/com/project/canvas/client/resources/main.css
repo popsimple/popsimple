@@ -117,8 +117,14 @@
 	margin-left:-2px;
 	padding:2px;
 }
-.textEditNotFocused {
-	
+
+@external .cke_top, .cke_wrapper;
+.textEditNotFocused .cke_top {
+	display:none;
+}
+
+.textEditNotFocused .cke_wrapper {
+	background: transparent !important;
 }
 .textEditToolbar {
 	/*margin-top:-80px;*/
