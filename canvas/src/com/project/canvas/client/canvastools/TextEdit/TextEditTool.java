@@ -2,8 +2,10 @@ package com.project.canvas.client.canvastools.TextEdit;
 
 
 import com.axeiya.gwtckeditor.client.CKConfig;
-import com.axeiya.gwtckeditor.client.CKConfig.PRESET_TOOLBAR;
+import com.axeiya.gwtckeditor.client.CKConfig.TOOLBAR_OPTIONS;
 import com.axeiya.gwtckeditor.client.CKEditor;
+import com.axeiya.gwtckeditor.client.Toolbar;
+import com.axeiya.gwtckeditor.client.ToolbarLine;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
@@ -29,34 +31,77 @@ import com.project.canvas.shared.data.TextData;
 public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 	private final CKEditor editBox;
 	private final SimpleEvent<String> killRequestEvent = new SimpleEvent<String>();
-	private TextData data;
-	protected boolean toolBarFocused;
+	private TextData data = new TextData();
 	private int index;
 	
+	private static final CKConfig editBoxConfig = new CKConfig();
+	private static final Toolbar toolbar = new Toolbar();
+	private static final ToolbarLine toolBarLine = new ToolbarLine(CKConfig.LINE_TYPE.NORMAL);
+	
 	public static void ensureResourcesLoaded() {
-		TextEditTool tool = new TextEditTool();
+		final TextEditTool tool = new TextEditTool();
 		tool.addStyleName(CanvasResources.INSTANCE.main().outOfBounds());
+		tool.editBox.addInitializeHandler(new InitializeHandler() {
+			@Override
+			public void onInitialize(InitializeEvent event) {
+				RootPanel.get().remove(tool);
+			}
+		});
 		RootPanel.get().add(tool);
 	}
+	
+	private static boolean configInited = false;
+	private static void initConfig() {
+		if (configInited) {
+			return;
+		}
+		configInited = true;
+		toolBarLine.addAll(new TOOLBAR_OPTIONS[] {
+				TOOLBAR_OPTIONS.Bold,
+				TOOLBAR_OPTIONS.Italic,
+				TOOLBAR_OPTIONS.Underline,
+				TOOLBAR_OPTIONS.Font,
+				TOOLBAR_OPTIONS.FontSize,
+				TOOLBAR_OPTIONS.TextColor,
+				TOOLBAR_OPTIONS.BGColor,
+				TOOLBAR_OPTIONS.Smiley,
+				TOOLBAR_OPTIONS._,
+				TOOLBAR_OPTIONS.Link,
+				TOOLBAR_OPTIONS.Unlink,
+				TOOLBAR_OPTIONS._,
+				TOOLBAR_OPTIONS.NumberedList,
+				TOOLBAR_OPTIONS.BulletedList,
+				TOOLBAR_OPTIONS.Indent,
+				TOOLBAR_OPTIONS._,
+				TOOLBAR_OPTIONS.JustifyLeft,
+				TOOLBAR_OPTIONS.JustifyCenter,
+				TOOLBAR_OPTIONS.JustifyRight,
+				TOOLBAR_OPTIONS.JustifyBlock,
+				TOOLBAR_OPTIONS._,
+				TOOLBAR_OPTIONS.RemoveFormat,
+		});
+
+		toolbar.add(toolBarLine);
+		editBoxConfig.setToolbar(toolbar);
+		editBoxConfig.setRemovePlugins("elementspath,scayt,menubutton,contextmenu,showborders");
+		editBoxConfig.setExtraPlugins("autogrow");
+		editBoxConfig.setResizeEnabled(false);
+		editBoxConfig.setAutoGrowMinHeight(10);
+		editBoxConfig.setAutoGrowMaxWidth(0);
+		editBoxConfig.setToolbarLocation("bottom");
+	}
+	
 	static {
 		ensureResourcesLoaded();
 	}
 	
 	public TextEditTool() {
 		CanvasToolCommon.initCanvasToolWidget(this);
-		this.data = new TextData();
 		this.addStyleName(CanvasResources.INSTANCE.main().textEdit());
 		
-		CKConfig editBoxConfig = new CKConfig(PRESET_TOOLBAR.BASIC);
-		editBoxConfig.setRemovePlugins("elementspath,scayt,menubutton,contextmenu,showborders");
-		editBoxConfig.setExtraPlugins("autogrow");
-		editBoxConfig.setResizeEnabled(false);
-		editBoxConfig.setAutoGrowMinHeight(10);
-		editBoxConfig.setAutoGrowMaxWidth(0);
-		editBoxConfig.setHeight(this.getOffsetHeight() + "px");
-		editBoxConfig.setToolbarLocation("bottom");
-		
+		initConfig();
 		this.editBox = new CKEditor(editBoxConfig);
+		this.editBox.setHeight(this.getOffsetHeight() + "px");
 		this.editBox.getElement().getStyle().setVisibility(Visibility.HIDDEN);
 		this.add(editBox);
 		registerHandlers();

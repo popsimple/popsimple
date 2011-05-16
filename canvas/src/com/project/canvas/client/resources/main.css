@@ -127,10 +127,10 @@
 
 @external .cke_top, .cke_bottom, .cke_wrapper .cke_skin_kama .cke_contents;
 .textEditNotFocused .cke_top {
-	visibility: hidden;
+	visibility: hidden !important;
 }
 .textEditNotFocused .cke_bottom {
-	visibility: hidden;
+	display: none  !important;
 }
 .textEdit span.cke_skin_kama {
 	border-style:none;
