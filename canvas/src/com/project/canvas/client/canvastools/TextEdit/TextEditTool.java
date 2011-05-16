@@ -41,20 +41,23 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 		this.add(editBox);
 		registerHandlers();
 	}
+	public void updateEditBoxSize() {
+		editBox.resize(getOffsetWidth(), getOffsetHeight(), false, true);
+	}
 
 	private void registerHandlers() {
 		this.editBox.addFocusHandler(new FocusHandler() {
 			@Override
 			public void onFocus(FocusEvent event) {
 				setSelfFocus(true);
-				editBox.resize(getOffsetWidth(), getOffsetHeight(), false, true);
+				updateEditBoxSize();
 			}
 		});
 		this.editBox.addBlurHandler(new BlurHandler() {
 			@Override
 			public void onBlur(BlurEvent event) {
-				editBox.resize(getOffsetWidth(), getOffsetHeight(), false, true);
 				setSelfFocus(false);
+				updateEditBoxSize();
 			}
 		});
 	}
@@ -100,7 +103,6 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 		this.index = index;
 	}
 
-
 	@Override
 	public TextData getValue() {
 		this.data.text = this.editBox.getHTML();
@@ -111,7 +113,7 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 	public void setValue(TextData data) {
 		this.data = data;
 		this.editBox.setHTML(this.data.text);
-		this.updateEditBoxVisibleLength();
+		updateEditBoxSize();
 	}
 
 	@Override
