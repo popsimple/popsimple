@@ -13,9 +13,8 @@
 	<!-- Other module inherits -->
 	<inherits name='com.google.gwt.resources.Resources' />
  	<!-- <inherits name='com.google.gwt.maps.GoogleMaps' />-->
-	<!-- Specify the app entry point class. -->
-	<entry-point class='com.project.canvas.client.Canvas' />
 
+	<inherits name='com.axeiya.gwtckeditor.Gwtckeditor'/>
 
     <set-configuration-property name="UiBinder.useSafeHtmlTemplates" value="true"/>
 	<!-- for debugging only -->
@@ -26,5 +25,8 @@
 	<source path='client' />
     <source path='shared' />
 
+	<script src="ckeditor/ckeditor.js"></script>
 
+	<!-- Specify the app entry point class. -->
+	<entry-point class='com.project.canvas.client.Canvas' />
 </module>

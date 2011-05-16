@@ -1,73 +1,66 @@
 package com.project.canvas.client.canvastools.TextEdit;
 
+
+import com.axeiya.gwtckeditor.client.CKConfig;
+import com.axeiya.gwtckeditor.client.CKConfig.PRESET_TOOLBAR;
+import com.axeiya.gwtckeditor.client.CKEditor;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.FocusHandler;
-import com.google.gwt.event.dom.client.KeyDownEvent;
-import com.google.gwt.event.dom.client.KeyDownHandler;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
-import com.google.gwt.event.logical.shared.InitializeEvent;
-import com.google.gwt.event.logical.shared.InitializeHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.RichTextArea;
+import com.google.gwt.user.client.ui.HTML;
 import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.canvastools.base.CanvasToolCommon;
-import com.project.canvas.client.gwtsamples.text.RichTextToolbar;
 import com.project.canvas.client.resources.CanvasResources;
+import com.project.canvas.client.shared.StringUtils;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.shared.data.ElementData;
 import com.project.canvas.shared.data.TextData;
 
 public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 	private final FlowPanel innerPanel = new FlowPanel();
-	private final RichTextArea editBox;
-	private final RichTextToolbar toolbar; 
+	private final CKEditor editBox;
 	private final SimpleEvent<String> killRequestEvent = new SimpleEvent<String>();
 	private TextData data;
 	protected boolean toolBarFocused;
+	private int index;
 	
 	public TextEditTool() {
 		CanvasToolCommon.initCanvasToolWidget(this);
 		this.data = new TextData();
 		this.add(innerPanel);
-		this.editBox = GWT.create(RichTextArea.class);
-		this.toolbar = new  RichTextToolbar(editBox);		
-		this.toolbar.addStyleName(CanvasResources.INSTANCE.main().textEditToolbar());
-		GWT.log("creating TextEditTool");
-		this.editBox.addInitializeHandler(new InitializeHandler() {
-			@Override
-			public void onInitialize(InitializeEvent event) {
-				GWT.log("initialized editbox");
-				CanvasToolCommon.addEscapeUnfocusesHandler(editBox);
-				innerPanel.add(toolbar);
-				editBox.addStyleName(CanvasResources.INSTANCE.main().textEdit());
-				editBox.addStyleName(CanvasResources.INSTANCE.main().textEditFocused());
-				registerHandlers();
-			}
-		});
+		
+		CKConfig editBoxConfig = new CKConfig(PRESET_TOOLBAR.BASIC);
+		editBoxConfig.setRemovePlugins("elementspath");
+		editBoxConfig.setWidth("400px");
+		editBoxConfig.setHeight("100px");
+		this.editBox = new CKEditor(editBoxConfig);
+		//editBox.addStyleName(CanvasResources.INSTANCE.main().textEdit());
+		//editBox.addStyleName(CanvasResources.INSTANCE.main().textEditFocused());
 		this.innerPanel.add(editBox);
+		registerHandlers();
+//		Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+//			@Override
+//			public void execute() {
+//				registerHandlers();
+//			}
+//		});
 	}
 
 	private void registerHandlers() {
-		this.toolbar.addDomHandler(new ClickHandler(){
-			@Override
-			public void onClick(ClickEvent event) {
-				updateEditBoxVisibleLength();
-				setSelfFocus(true);
-				editBox.setFocus(true);
-				event.preventDefault();
-			}}, ClickEvent.getType());
+		//ElementWrapper editorWrapper = new ElementWrapper(this.editBox.getEditorElement());
+		//editorWrapper.addDomHandler(new BlurHandler() {
+//			@Override
+//			public void onBlur(BlurEvent event) {
+//				GWT.log("editbox blur");
+//				setSelfFocus(false);
+//			}
+//		}, BlurEvent.getType());
 		this.editBox.addFocusHandler(new FocusHandler() {
 			@Override
 			public void onFocus(FocusEvent event) {
-				GWT.log("editbox focus");
 				setSelfFocus(true);
 			}
 		});
@@ -78,16 +71,16 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 				setSelfFocus(false);
 			}
 		});
-		this.editBox.addKeyUpHandler(new KeyUpHandler() {
-			public void onKeyUp(KeyUpEvent event) {
-				updateEditBoxVisibleLength();
-			}
-		});
-		this.editBox.addKeyDownHandler(new KeyDownHandler() {
-			public void onKeyDown(KeyDownEvent event) {
-				updateEditBoxVisibleLength();
-			}
-		});
+//		this.editBox.addKeyUpHandler(new KeyUpHandler() {
+//			public void onKeyUp(KeyUpEvent event) {
+//				updateEditBoxVisibleLength();
+//			}
+//		});
+//		this.editBox.addKeyDownHandler(new KeyDownHandler() {
+//			public void onKeyDown(KeyDownEvent event) {
+//				updateEditBoxVisibleLength();
+//			}
+//		});
 	}
 
 	protected void updateEditBoxVisibleLength() {
@@ -101,19 +94,6 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 		GWT.log("setting focus " + isFocused + " on TextEditTool");
 		setSelfFocus(isFocused);
 		this.editBox.setFocus(isFocused);
-		// In case this was run before the editbox was initialized:
-		this.editBox.addInitializeHandler(new InitializeHandler() {
-			@Override
-			public void onInitialize(InitializeEvent event) {
-				GWT.log("setting focus " + isFocused + " on editbox in initializer");
-				Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-					@Override
-					public void execute() {
-						editBox.setFocus(isFocused);
-					}
-				});
-			}
-		});
 	}
 
 	private void setSelfFocus(boolean isFocused) {
@@ -127,13 +107,13 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 			this.editBox.addStyleName(CanvasResources.INSTANCE.main().textEditNotFocused());
 			// use getText rather than getHTML, so that if
 			// there is no text in the box - it will be destroyed
-			String text = this.editBox.getText();
-			if (text.trim().isEmpty()) {
+			HTML editorHTML = new HTML(this.editBox.getData());
+			String text = StringUtils.trim(editorHTML.getText());
+			text = StringUtils.remove(text, (char)160);
+			if (text.isEmpty()) {
 				this.killRequestEvent.dispatch("Empty");
 			}
 		}
-		
-		this.toolbar.setVisible(isFocused);
 	}
 
 	public SimpleEvent<String> getKillRequestedEvent() {
@@ -141,15 +121,14 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 	}
 
 	public int getTabIndex() {
-		return this.editBox.getTabIndex();
+		return this.index;
 	}
 
 	public void setAccessKey(char key) {
-		this.editBox.setAccessKey(key);
 	}
 
 	public void setTabIndex(int index) {
-		this.editBox.setTabIndex(index);
+		this.index = index;
 	}
 
 
