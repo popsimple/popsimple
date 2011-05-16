@@ -202,6 +202,7 @@ public class Worksheet extends Composite {
 		optionsWidget.setValue(this.page.options);
 		//Make sure that the dialog is set to the highest ZIndex.
 		optionsDialog.getElement().getStyle().setZIndex(ZIndexProvider.getTopMostZIndex());
+		optionsDialog.setGlassEnabled(true);
 		optionsDialog.center();
 	}
 
