@@ -238,6 +238,12 @@ public class Worksheet extends Composite {
 				startDragCanvasToolFrame(toolFrame, arg);
 			}
 		});
+		toolFrame.addResizeStartRequestHandler(new SimpleEvent.Handler<MouseDownEvent>() {
+			@Override
+			public void onFire(MouseDownEvent arg) {
+				startResizeCanvasToolFrame(toolFrame, arg);
+			}
+		});
 		
 		this.worksheetPanel.add(toolFrame);
 		HandlerRegistration reg = tool.getKillRequestedEvent().addHandler(new SimpleEvent.Handler<String>() {
@@ -263,6 +269,23 @@ public class Worksheet extends Composite {
 		toolFrame.asWidget().getElement().getStyle().setTop(relativePos.getY(), Unit.PX);
 	}
 
+	protected void startResizeCanvasToolFrame(final CanvasToolFrame toolFrame, final MouseDownEvent event)
+	{
+		final Point2D resizeStartPoint = new Point2D(event.getClientX(), event.getClientY());
+		final Point2D resizeStartSize = new Point2D(toolFrame.getOffsetWidth(), toolFrame.getOffsetHeight());
+		final RegistrationsManager resizeRegistrations = new RegistrationsManager();
+		resizeRegistrations.add(this.worksheetPanel.addDomHandler(new MouseMoveHandler() {
+			@Override
+			public void onMouseMove(MouseMoveEvent event) {
+				onResizeMouseMove(toolFrame, resizeStartPoint, resizeStartSize, event);
+			}}, MouseMoveEvent.getType()));
+		resizeRegistrations.add(this.worksheetPanel.addDomHandler(new MouseUpHandler() {
+			@Override
+			public void onMouseUp(MouseUpEvent event) {
+				resizeRegistrations.clear();
+			}}, MouseUpEvent.getType()));
+	}
+	
 	protected void startDragCanvasToolFrame(final CanvasToolFrame toolFrame, final MouseEvent<?> startEvent) 
 	{
 		final Point2D toolFrameOffset = relativePosition(startEvent, toolFrame.getElement());
@@ -517,5 +540,15 @@ public class Worksheet extends Composite {
 		pos.setX(pos.getX() - toolFrameOffset.getX());
 		pos.setY(pos.getY() - toolFrameOffset.getY());
 		setToolFramePosition(limitPosToWorksheet(pos, toolFrame), toolFrame);
+	}
+	
+	private void onResizeMouseMove(final CanvasToolFrame toolFrame,
+			final Point2D resizeStartPoint, final Point2D resizeStartSize, 
+			MouseMoveEvent event) 
+	{
+		Point2D offsetPoint = new Point2D(event.getClientX(), event.getClientY());
+		offsetPoint = offsetPoint.minus(resizeStartPoint);
+		toolFrame.setWidth(resizeStartSize.getX() + offsetPoint.getX());
+		toolFrame.setHeight(resizeStartSize.getY() + offsetPoint.getY());
 	}
 }

@@ -1,13 +1,18 @@
 package com.project.canvas.client.canvastools.base;
 
+import java.io.Console;
+
+import mx4j.log.Log;
+
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.impl.AsyncFragmentLoader.Logger;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
-import com.google.gwt.event.dom.client.MouseMoveHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Anchor;
@@ -17,6 +22,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.shared.NativeUtils;
 import com.project.canvas.client.shared.events.SimpleEvent;
+import com.project.canvas.shared.data.Point2D;
 
 public class CanvasToolFrame extends Composite {
 
@@ -45,10 +51,7 @@ public class CanvasToolFrame extends Composite {
 	
 	protected final SimpleEvent<Void> closeRequest = new SimpleEvent<Void>();
 	protected final SimpleEvent<MouseDownEvent> moveStartRequest = new SimpleEvent<MouseDownEvent>();
-
-	private int resizeTopStart;
-
-	private int resizeLeftStart;
+	protected final SimpleEvent<MouseDownEvent> resizeStartRequest = new SimpleEvent<MouseDownEvent>();
 
 	public CanvasToolFrame(CanvasTool<?> canvasTool) {
 		initWidget(uiBinder.createAndBindUi(this));
@@ -70,10 +73,11 @@ public class CanvasToolFrame extends Composite {
 			}
 		},
 		MouseDownEvent.getType());
-		CanvasToolCommon.stopClickPropagation(buttonsPanel);
-		NativeUtils.disableTextSelectInternal(this.buttonsPanel.getElement(), true);
 		
 		this.registerResizeHandlers();
+		
+		CanvasToolCommon.stopClickPropagation(buttonsPanel);
+		NativeUtils.disableTextSelectInternal(this.buttonsPanel.getElement(), true);
 	}
 	
 	protected void registerResizeHandlers()
@@ -81,25 +85,9 @@ public class CanvasToolFrame extends Composite {
 		this.bottomRightResizePanel.addDomHandler(new MouseDownHandler() {
 			@Override
 			public void onMouseDown(MouseDownEvent event) {
-				mouseDownBottomRightResize(event);
+				resizeStartRequest.dispatch(event);
+				event.stopPropagation();
 			}}, MouseDownEvent.getType());
-	}
-	
-	protected void mouseDownBottomRightResize(MouseDownEvent event)
-	{
-		this.addDomHandler(new MouseMoveHandler() {
-			@Override
-			public void onMouseMove(MouseMoveEvent event) {
-				mouseMoveBottomRightResize(event);
-			}}, MouseMoveEvent.getType());
-	}
-	
-	protected void mouseMoveBottomRightResize(MouseMoveEvent event)
-	{
-		this.tool.asWidget().getElement().getStyle().setWidth(
-				event.getRelativeX(this.tool.asWidget().getElement()), Unit.PX);
-		this.tool.asWidget().getElement().getStyle().setHeight(
-				event.getRelativeY(this.tool.asWidget().getElement()), Unit.PX);
 	}
 	
 	public CanvasTool<?> getTool() {
@@ -114,4 +102,23 @@ public class CanvasToolFrame extends Composite {
 		return moveStartRequest;
 	}
 
+	public HandlerRegistration addResizeStartRequestHandler(
+			SimpleEvent.Handler<MouseDownEvent> handler)
+	{
+		return this.resizeStartRequest.addHandler(handler);
+	}
+	
+	public void setHeight(double value)
+	{
+		this.tool.asWidget().getElement().getStyle().setHeight(value -
+				(this.getOffsetHeight() -
+				this.tool.asWidget().getOffsetHeight()), Unit.PX);
+	}
+	
+	public void setWidth(double value)
+	{
+		this.tool.asWidget().getElement().getStyle().setWidth(value -
+				(this.getOffsetWidth() -
+				this.tool.asWidget().getOffsetWidth()), Unit.PX);
+	}
 }
