@@ -110,8 +110,7 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 		this.editBox.addResizeHandler(new ResizeHandler() {
 			@Override
 			public void onResize(ResizeEvent event) {
-				that.setWidth(editBox.getOffsetWidth() + "px");
-				that.setHeight(editBox.getOffsetHeight() + "px");
+				updateSizeFromEditor();
 			}
 		});
 		this.editBox.addFocusHandler(new FocusHandler() {
@@ -148,27 +147,28 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 	}
 
 	private void setSelfFocus(boolean isFocused) {
+		
 		if (isFocused) {
 			this.addStyleName(CanvasResources.INSTANCE.main().textEditFocused());
 			this.removeStyleName(CanvasResources.INSTANCE.main().textEditNotFocused());
-			return;
 		}
-		
-		this.removeStyleName(CanvasResources.INSTANCE.main().textEditFocused());
-		this.addStyleName(CanvasResources.INSTANCE.main().textEditNotFocused());
-		// use getText rather than getHTML, so that if
-		// there is no text in the box - it will be destroyed
-		HTML editorHTML = new HTML(this.editBox.getHTML());
-		String text = editorHTML.getText().trim();
-		text = text.replace(new String(new char[]{(char)160}), "");
-		
-		// Call resetSelection LAST because it makes the getHTML return wrong results.
-		//this.editBox.resetSelection();
-		//Window.
-		
-		if (text.isEmpty()) {
-			this.killRequestEvent.dispatch("Empty");
+		else {
+			this.removeStyleName(CanvasResources.INSTANCE.main().textEditFocused());
+			this.addStyleName(CanvasResources.INSTANCE.main().textEditNotFocused());
+			
+			// use getText rather than getHTML, so that if
+			// there is no text in the box - it will be destroyed
+			HTML editorHTML = new HTML(this.editBox.getHTML());
+			String text = editorHTML.getText().trim();
+			text = text.replace(new String(new char[]{(char)160}), "");
+			
+			// Call resetSelection LAST because it makes the getHTML return wrong results.
+			//this.editBox.resetSelection();
+			if (text.isEmpty()) {
+				this.killRequestEvent.dispatch("Empty");
+			}
 		}
+		this.updateSizeFromEditor();
 	}
 
 	public SimpleEvent<String> getKillRequestedEvent() {
@@ -201,5 +201,10 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 	@Override
 	public void setElementData(ElementData data) {
 		this.setValue((TextData) data);
+	}
+
+	public void updateSizeFromEditor() {
+		this.setWidth(editBox.getOffsetWidth() + "px");
+		this.setHeight(editBox.getOffsetHeight() + "px");
 	}
 }
