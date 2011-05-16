@@ -24,4 +24,7 @@ public interface CanvasResources extends ClientBundle {
 	
 	@Source("com/project/canvas/client/resources/images/bitmaps/delete.png")
 	ImageResource taskListRemoveIcon();
+	
+	@Source("com/project/canvas/client/resources/images/bitmaps/resizeIcon.png")
+	ImageResource resizeIcon();
 }

@@ -1,94 +1,17 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:with field='res' type='com.project.canvas.client.resources.CanvasResources'/>
 	<ui:style>
-		.header
-			{
-			}
-		.framePanel
-			{
-                cursor:move;
-				position: absolute;
-				display:inline-block;
-			}
-		.tool {
-                cursor:default;
-				padding:3px;
-				display:inline-block;
-				position: relative;
-			}				
-		/*.framePanel:hover .frameBody*/
-		.framePanel .frameBody
-			{
-				padding:2px;
-				border-style: solid;
-				border-width: 1px;
-				border-radius: 5px;
-				border-color: #ccc;
-			}
-		.closeLink {
-				color:#f66;
-			    text-shadow: 0 0 0.2px black;
-			}
-		.closeLink:hover {
-				color:#f66;
-			    text-shadow: 0 0 1px #888;
-			}
-		.frameHeader {
-				padding:0 5px;
-				visibility: hidden; 
-			}
-		.framePanel:hover .frameHeader {
-				visibility: visible;
-			}
-		.buttonsPanel {
-			    /*background-color: #5577AA;*/
-			    /*border-color: #335599;*/
-			    /*border-radius: 5px 5px 0 0;
-			    border-style: solid;
-			    border-width: 1px 1px 0;*/
-			    /*color: #FFFFFF;*/
-			    cursor:default;
-			    float: right;
-			    font-family: verdana,sans-serif;
-			    font-size: 1em;
-			    line-height: 1.1em;
-			    padding: 0 5px 2px;
-			}
-		.frameBody{
-			display:inline-block;
-			padding:3px;
-		}
-		.frameResize{
-			visibility: hidden;
-			text-align: right;
-		}
-		/*.framePanel:hover .frameResize{*/
-		.framePanel .frameResize{
-			visibility: visible;
-		}
-		.bottomRightResize{
-			cursor: nw-resize;
-			width: 10px;
-			height: 10px;
-			display: inline-block;
-			position:absolute;
-			bottom: 0;
-			right:0;
-			overflow: hidden;
-			background-color: red;
-		}
 	</ui:style>
-	<g:HTMLPanel ui:field="framePanel" addStyleNames="{style.framePanel}">
-		<div class="{style.frameHeader}">
-			<g:FlowPanel ui:field="buttonsPanel" addStyleNames="{style.buttonsPanel}">
-				<g:Anchor ui:field="closeLink" addStyleNames="{style.closeLink}">X</g:Anchor>
+	<g:HTMLPanel ui:field="framePanel" addStyleNames="{res.main.toolFramePanel}">
+		<div class="{res.main.toolFrameHeader}">
+			<g:FlowPanel ui:field="buttonsPanel" addStyleNames="{res.main.toolFrameButtonsPanel}">
+				<g:Anchor ui:field="closeLink" addStyleNames="{res.main.toolFrameCloseLink}">X</g:Anchor>
 			</g:FlowPanel>
 		</div>
-		<g:HTMLPanel ui:field="bodyPanel" addStyleNames="{style.frameBody}">
-			<g:HTMLPanel ui:field="toolPanel" addStyleNames="{style.tool}">
-				<g:HTMLPanel ui:field="bottomRightResizePanel" addStyleNames="{style.bottomRightResize}"></g:HTMLPanel>
-			</g:HTMLPanel>
+		<g:HTMLPanel ui:field="toolPanel" addStyleNames="{res.main.toolFrameBodyPanel}">
+			<g:HTMLPanel ui:field="bottomRightResizePanel" addStyleNames="{res.main.toolFrameBottomRightResize}"></g:HTMLPanel>
 		</g:HTMLPanel>
 	</g:HTMLPanel>
 </ui:UiBinder> 
