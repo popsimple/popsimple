@@ -6,7 +6,6 @@ import com.axeiya.gwtckeditor.client.CKConfig.TOOLBAR_OPTIONS;
 import com.axeiya.gwtckeditor.client.CKEditor;
 import com.axeiya.gwtckeditor.client.Toolbar;
 import com.axeiya.gwtckeditor.client.ToolbarLine;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style.Visibility;
@@ -101,13 +100,9 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 		
 		initConfig();
 		this.editBox = new CKEditor(editBoxConfig);
-		this.editBox.setHeight(this.getOffsetHeight() + "px");
 		this.editBox.getElement().getStyle().setVisibility(Visibility.HIDDEN);
-		this.add(editBox);
 		registerHandlers();
-	}
-	public void updateEditBoxSize() {
-	//	editBox.resize(getOffsetWidth(), getOffsetHeight(), false, true);
+		this.add(editBox);
 	}
 
 	private void registerHandlers() {
@@ -123,14 +118,13 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 			@Override
 			public void onFocus(FocusEvent event) {
 				setSelfFocus(true);
-				updateEditBoxSize();
 			}
 		});
 		this.editBox.addInitializeHandler(new InitializeHandler() {
 			@Override
 			public void onInitialize(InitializeEvent event) {
-				updateEditBoxSize();
 				editBox.setHTML("");
+				editBox.resize(getOffsetWidth(), getOffsetHeight(), false, true);
 				Scheduler.get().scheduleDeferred(new ScheduledCommand() {
 					@Override
 					public void execute() {
@@ -143,14 +137,12 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 			@Override
 			public void onBlur(BlurEvent event) {
 				setSelfFocus(false);
-				updateEditBoxSize();
 			}
 		});
 	}
 
 	@Override
 	public void setFocus(final boolean isFocused) {
-		GWT.log("setting focus " + isFocused + " on TextEditTool");
 		setSelfFocus(isFocused);
 		this.editBox.setFocus(isFocused);
 	}
@@ -159,18 +151,23 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 		if (isFocused) {
 			this.addStyleName(CanvasResources.INSTANCE.main().textEditFocused());
 			this.removeStyleName(CanvasResources.INSTANCE.main().textEditNotFocused());
+			return;
 		}
-		else {
-			this.removeStyleName(CanvasResources.INSTANCE.main().textEditFocused());
-			this.addStyleName(CanvasResources.INSTANCE.main().textEditNotFocused());
-			// use getText rather than getHTML, so that if
-			// there is no text in the box - it will be destroyed
-			HTML editorHTML = new HTML(this.editBox.getData());
-			String text = editorHTML.getText().trim();
-			text = text.replace(new String(new char[]{(char)160}), "");
-			if (text.isEmpty()) {
-				this.killRequestEvent.dispatch("Empty");
-			}
+		
+		this.removeStyleName(CanvasResources.INSTANCE.main().textEditFocused());
+		this.addStyleName(CanvasResources.INSTANCE.main().textEditNotFocused());
+		// use getText rather than getHTML, so that if
+		// there is no text in the box - it will be destroyed
+		HTML editorHTML = new HTML(this.editBox.getHTML());
+		String text = editorHTML.getText().trim();
+		text = text.replace(new String(new char[]{(char)160}), "");
+		
+		// Call resetSelection LAST because it makes the getHTML return wrong results.
+		//this.editBox.resetSelection();
+		//Window.
+		
+		if (text.isEmpty()) {
+			this.killRequestEvent.dispatch("Empty");
 		}
 	}
 
@@ -199,7 +196,6 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 	public void setValue(TextData data) {
 		this.data = data;
 		this.editBox.setHTML(this.data.text);
-		updateEditBoxSize();
 	}
 
 	@Override

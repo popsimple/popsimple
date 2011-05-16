@@ -21,8 +21,6 @@ public class BuiltinTools {
 		tools.add(new TextEditToolboxItem());
 		tools.add(new TaskListToolboxItem());
 		tools.add(new ImageToolboxItem());
-		
-		TextEditTool.ensureResourcesLoaded();
 	}
 	
 	public static Iterable<ToolboxItem> getTools() {
