@@ -17,7 +17,6 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.shared.NativeUtils;
 import com.project.canvas.client.shared.events.SimpleEvent;
-import com.project.canvas.shared.data.Point2D;
 
 public class CanvasToolFrame extends Composite {
 

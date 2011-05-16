@@ -24,7 +24,6 @@ public abstract class CanvasToolFactoryBase<T extends CanvasTool<?>>
 	
 	@Override
 	public Point2D getCreationOffset() {
-		return null;
+		return new Point2D(0,0);
 	}
-
 }

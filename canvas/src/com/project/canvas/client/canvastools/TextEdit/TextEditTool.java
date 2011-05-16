@@ -1,8 +1,8 @@
 package com.project.canvas.client.canvastools.TextEdit;
 
-import java.util.logging.Logger;
-
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -106,7 +106,12 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 			@Override
 			public void onInitialize(InitializeEvent event) {
 				GWT.log("setting focus " + isFocused + " on editbox in initializer");
-				editBox.setFocus(isFocused);
+				Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+					@Override
+					public void execute() {
+						editBox.setFocus(isFocused);
+					}
+				});
 			}
 		});
 	}

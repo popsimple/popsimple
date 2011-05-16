@@ -45,6 +45,7 @@ import com.project.canvas.client.canvastools.base.CanvasToolFrame;
 import com.project.canvas.client.canvastools.base.ToolboxItem;
 import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.NativeUtils;
+import com.project.canvas.client.shared.RegistrationsManager;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.shared.contracts.CanvasService;
 import com.project.canvas.shared.contracts.CanvasServiceAsync;
@@ -62,6 +63,7 @@ public class Worksheet extends Composite {
 
 	interface WorksheetUiBinder extends UiBinder<Widget, Worksheet> {
 	}
+	RegistrationsManager activeToolRegistrations = new RegistrationsManager(); 
 
 	@UiField
 	FocusPanel focusPanelDummy;
@@ -127,12 +129,6 @@ public class Worksheet extends Composite {
 
 	protected CanvasPage page = new CanvasPage();
 
-	private HandlerRegistration workSheetClickHandler;
-
-	private HandlerRegistration workSheetMouseOverHandler;
-
-	private HandlerRegistration workSheetMouseMoveHandler;
-	
 	public Worksheet() {
 		initWidget(uiBinder.createAndBindUi(this));
 		optionsDialog.setText("Worksheet options");
@@ -270,24 +266,17 @@ public class Worksheet extends Composite {
 	protected void startDragCanvasToolFrame(final CanvasToolFrame toolFrame, final MouseEvent<?> startEvent) 
 	{
 		final Point2D toolFrameOffset = relativePosition(startEvent, toolFrame.getElement());
-		final ArrayList<HandlerRegistration> regs = new ArrayList<HandlerRegistration>();
+		final RegistrationsManager regs = new RegistrationsManager();
 		NativeUtils.disableTextSelectInternal(this.worksheetPanel.getElement(), true);
 		regs.add(this.worksheetPanel.addDomHandler(new MouseMoveHandler() {
 			@Override
 			public void onMouseMove(MouseMoveEvent event) {
-				Point2D pos = relativePosition(event, worksheetPanel.getElement());
-				pos.setX(pos.getX() - toolFrameOffset.getX());
-				pos.setY(pos.getY() - toolFrameOffset.getY());
-				setToolFramePosition(limitPosToWorksheet(pos, toolFrame), toolFrame);
-			}
-		}, MouseMoveEvent.getType()));
+				onDragMouseMove(toolFrame, toolFrameOffset, event);
+			}}, MouseMoveEvent.getType()));
 		regs.add(this.worksheetPanel.addDomHandler(new MouseUpHandler() {
 			@Override
 			public void onMouseUp(MouseUpEvent event) {
-				for (HandlerRegistration reg : regs) {
-					NativeUtils.disableTextSelectInternal(worksheetPanel.getElement(), false);
-					reg.removeHandler();
-				}
+				regs.clear();
 			}}, MouseUpEvent.getType()));
 	}
 
@@ -327,21 +316,7 @@ public class Worksheet extends Composite {
 			this.worksheetPanel.remove(this.activeToolFloatingWidget);
 			this.activeToolFloatingWidget = null;
 		}
-		if (null != this.workSheetClickHandler)
-		{
-			this.workSheetClickHandler.removeHandler();
-			this.workSheetClickHandler = null;
-		}
-		if (null != this.workSheetMouseOverHandler)
-		{
-			this.workSheetMouseOverHandler.removeHandler();
-			this.workSheetMouseOverHandler = null;
-		}
-		if (null != this.workSheetMouseMoveHandler)
-		{
-			this.workSheetMouseMoveHandler.removeHandler();
-			this.workSheetMouseMoveHandler = null;
-		}
+		activeToolRegistrations.clear();
 	}
 	
 	protected void registerToolHandlers(ToolboxItem toolboxItem)
@@ -352,21 +327,21 @@ public class Worksheet extends Composite {
 		{
 			return;
 		}
-		this.workSheetClickHandler = this.worksheetPanel.addDomHandler(new ClickHandler(){
+		this.activeToolRegistrations.add(this.worksheetPanel.addDomHandler(new ClickHandler(){
 			public void onClick(ClickEvent event) {
 				workSheetClicked(event);
-			}}, ClickEvent.getType());
+			}}, ClickEvent.getType()));
 		
 		Widget floatingWidget = toolFactory.getFloatingWidget();
 		if (null == floatingWidget)
 		{
 			return;
 		}
-		this.workSheetMouseOverHandler = this.worksheetPanel.addDomHandler(new MouseOverHandler() {
+		this.activeToolRegistrations.add(this.worksheetPanel.addDomHandler(new MouseOverHandler() {
 			@Override
 			public void onMouseOver(MouseOverEvent event) {
 				workSheetMouseOver(event);
-			}}, MouseOverEvent.getType());
+			}}, MouseOverEvent.getType()));
 	}
 	
 	protected void workSheetMouseOver(MouseOverEvent event)
@@ -382,11 +357,11 @@ public class Worksheet extends Composite {
 		}
 		this.activeToolFloatingWidget.addStyleName(CanvasResources.INSTANCE.main().floatingToolStyle());
 		this.worksheetPanel.add(this.activeToolFloatingWidget);
-		this.workSheetMouseMoveHandler = this.worksheetPanel.addDomHandler(new MouseMoveHandler() {
+		this.activeToolRegistrations.add(this.worksheetPanel.addDomHandler(new MouseMoveHandler() {
 			@Override
 			public void onMouseMove(MouseMoveEvent event) {
 				workSheetMouseMove(event);
-			}}, MouseMoveEvent.getType());
+			}}, MouseMoveEvent.getType()));
 	}
 	
 	protected void workSheetMouseMove(MouseMoveEvent event)
@@ -534,5 +509,13 @@ public class Worksheet extends Composite {
 		if (null != id) {
 			load(id);
 		}
+	}
+
+	private void onDragMouseMove(final CanvasToolFrame toolFrame,
+			final Point2D toolFrameOffset, MouseMoveEvent event) {
+		Point2D pos = relativePosition(event, worksheetPanel.getElement());
+		pos.setX(pos.getX() - toolFrameOffset.getX());
+		pos.setY(pos.getY() - toolFrameOffset.getY());
+		setToolFramePosition(limitPosToWorksheet(pos, toolFrame), toolFrame);
 	}
 }
