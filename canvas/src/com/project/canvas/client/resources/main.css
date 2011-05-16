@@ -288,10 +288,12 @@
 	display:inline-block;
 	position: relative;
 }				
-.toolFrameCloseLink 
+@sprite .toolFrameCloseLink 
 {
-	color:#f66;
-	text-shadow: 0 0 0.2px black;
+	gwt-image: "closeIcon";
+	width:16px;
+	height:16px;
+	display: inline-block;
 }
 .toolFrameButton
 {
@@ -299,15 +301,13 @@
 }
 .toolFrameCloseLink:hover 
 {
-	color:#f66;
-	text-shadow: 0 0 1px #888;
 }
 .toolFrameHeader 
 {
-    background-color: rgba(190, 190, 190, 0.8);
+    background-color: rgba(200, 200, 200, 0.7);
     cursor: move;
     display: block;
-    padding: 0 5px;
+    padding: 2px 0 0 0;
     visibility: hidden;
     text-align:right;
 }
