@@ -76,7 +76,8 @@ public class CanvasToolFrame extends Composite {
 		
 		this.registerResizeHandlers();
 		
-		CanvasToolCommon.stopClickPropagation(buttonsPanel);
+//		CanvasToolCommon.stopClickPropagation(buttonsPanel);
+		CanvasToolCommon.stopClickPropagation(closeLink);
 		NativeUtils.disableTextSelectInternal(this.buttonsPanel.getElement(), true);
 	}
 	

@@ -268,7 +268,6 @@
 	
 .toolFramePanel
 {
-    cursor:move;
 	position: absolute;
 	display:inline-block;
 }
@@ -279,9 +278,9 @@
 	border-width: 1px;
 	border-radius: 5px;
 	border-color: #ccc;
-	background-color: #EEE;
+	background-color:#ccc;
+	background-color: rgba(232,232,232,0.5);
 }
-
 .toolFrameBodyPanel 
 {
     cursor:default;
@@ -294,6 +293,10 @@
 	color:#f66;
 	text-shadow: 0 0 0.2px black;
 }
+.toolFrameButton
+{
+	cursor: pointer;
+}
 .toolFrameCloseLink:hover 
 {
 	color:#f66;
@@ -301,8 +304,12 @@
 }
 .toolFrameHeader 
 {
-	padding:0 5px;
-	visibility: hidden; 
+    background-color: rgba(190, 190, 190, 0.8);
+    cursor: move;
+    display: block;
+    padding: 0 5px;
+    visibility: hidden;
+    text-align:right;
 }
 .toolFramePanel:hover .toolFrameHeader 
 {
@@ -310,8 +317,6 @@
 }
 .toolFrameButtonsPanel 
 {
-    cursor:default;
-    float: right;
     font-family: verdana,sans-serif;
     font-size: 1em;
     line-height: 1.1em;
