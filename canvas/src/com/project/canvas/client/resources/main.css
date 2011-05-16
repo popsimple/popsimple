@@ -30,6 +30,12 @@
 }
 /*************************************/
 
+.outOfBounds {
+	position:absolute;
+	left:9999px;
+	top:9999px;
+}
+
 .worksheetHeader {
 	margin-left:10px;
 	font-size:1.5em;
@@ -111,7 +117,7 @@
 	border-style:none;
 	background:transparent;
 	min-height:40px;
-	height:80px;
+	height:100px;
 }
 .textEditFocused {
 	margin-top:-1px;
@@ -119,13 +125,16 @@
 	padding:2px;
 }
 
-@external .cke_top, .cke_wrapper .cke_skin_kama;
+@external .cke_top, .cke_wrapper .cke_skin_kama .cke_contents;
 .textEditNotFocused .cke_top {
 	visibility: hidden;
 }
 .textEdit span.cke_skin_kama {
 	border-style:none;
 	padding:none;
+}
+.textEdit .cke_contents  iframe {
+	background-color: transparent !important;
 }
 .textEditNotFocused .cke_wrapper {
 	background: transparent !important;

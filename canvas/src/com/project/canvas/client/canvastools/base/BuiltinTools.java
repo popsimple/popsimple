@@ -5,19 +5,28 @@ import java.util.ArrayList;
 import com.project.canvas.client.canvastools.CursorToolboxItem;
 import com.project.canvas.client.canvastools.Image.ImageToolboxItem;
 import com.project.canvas.client.canvastools.TaskList.TaskListToolboxItem;
+import com.project.canvas.client.canvastools.TextEdit.TextEditTool;
 import com.project.canvas.client.canvastools.TextEdit.TextEditToolboxItem;
 
 public class BuiltinTools {
 	public static final CursorToolboxItem cursorTool = new CursorToolboxItem();
 	
-	public static Iterable<ToolboxItem> getTools() {
-		ArrayList<ToolboxItem> tools = new ArrayList<ToolboxItem>();
-		
+	protected static final ArrayList<ToolboxItem> tools = new ArrayList<ToolboxItem>();
+	static boolean inited = false;
+	static void init() {
+		if (inited) {
+			return;
+		}
 		tools.add(cursorTool);
 		tools.add(new TextEditToolboxItem());
 		tools.add(new TaskListToolboxItem());
 		tools.add(new ImageToolboxItem());
 		
+		TextEditTool.ensureResourcesLoaded();
+	}
+	
+	public static Iterable<ToolboxItem> getTools() {
+		init();
 		return tools;
 	}
 	
