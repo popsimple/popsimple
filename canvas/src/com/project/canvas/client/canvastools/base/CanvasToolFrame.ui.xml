@@ -15,8 +15,10 @@
                 cursor:default;
 				padding:3px;
 				display:inline-block;
+				position: relative;
 			}				
-		.framePanel:hover .tool
+		/*.framePanel:hover .frameBody*/
+		.framePanel .frameBody
 			{
 				padding:2px;
 				border-style: solid;
@@ -53,6 +55,29 @@
 			    line-height: 1.1em;
 			    padding: 0 5px 2px;
 			}
+		.frameBody{
+			display:inline-block;
+			padding:3px;
+		}
+		.frameResize{
+			visibility: hidden;
+			text-align: right;
+		}
+		/*.framePanel:hover .frameResize{*/
+		.framePanel .frameResize{
+			visibility: visible;
+		}
+		.bottomRightResize{
+			cursor: nw-resize;
+			width: 10px;
+			height: 10px;
+			display: inline-block;
+			position:absolute;
+			bottom: 0;
+			right:0;
+			overflow: hidden;
+			background-color: red;
+		}
 	</ui:style>
 	<g:HTMLPanel ui:field="framePanel" addStyleNames="{style.framePanel}">
 		<div class="{style.frameHeader}">
@@ -60,7 +85,10 @@
 				<g:Anchor ui:field="closeLink" addStyleNames="{style.closeLink}">X</g:Anchor>
 			</g:FlowPanel>
 		</div>
-		<g:HTMLPanel ui:field="toolPanel" addStyleNames="{style.tool}">
+		<g:HTMLPanel ui:field="bodyPanel" addStyleNames="{style.frameBody}">
+			<g:HTMLPanel ui:field="toolPanel" addStyleNames="{style.tool}">
+				<g:HTMLPanel ui:field="bottomRightResizePanel" addStyleNames="{style.bottomRightResize}"></g:HTMLPanel>
+			</g:HTMLPanel>
 		</g:HTMLPanel>
 	</g:HTMLPanel>
 </ui:UiBinder> 
