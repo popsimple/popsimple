@@ -36,6 +36,7 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 		editBoxConfig.setWidth("400px");
 		editBoxConfig.setHeight("100px");
 		this.editBox = new CKEditor(editBoxConfig);
+		this.editBox.setHTML("");
 		//editBox.addStyleName(CanvasResources.INSTANCE.main().textEdit());
 		//editBox.addStyleName(CanvasResources.INSTANCE.main().textEditFocused());
 		this.innerPanel.add(editBox);

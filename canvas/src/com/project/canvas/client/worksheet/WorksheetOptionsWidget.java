@@ -17,6 +17,7 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.shared.UrlUtils;
 import com.project.canvas.client.shared.events.SimpleEvent;
+import com.project.canvas.shared.Utils;
 import com.project.canvas.shared.data.CanvasPageOptions;
 
 public class WorksheetOptionsWidget extends Composite implements TakesValue<CanvasPageOptions> {
@@ -105,9 +106,9 @@ public class WorksheetOptionsWidget extends Composite implements TakesValue<Canv
 	}
 
 	@Override
-	public void setValue(CanvasPageOptions value) {
-		this.value = value != null ? value : new CanvasPageOptions();
-		this.urlTextBox.setText(value.backgroundImageURL);
+	public void setValue(CanvasPageOptions newValue) {
+		this.value = newValue != null ? newValue : new CanvasPageOptions();
+		this.urlTextBox.setText(Utils.DefaultIfNull(this.value.backgroundImageURL, ""));
 		this.repeatOption.setValue(this.value.backgroundRepeat.toLowerCase().trim().equals("repeat"));
 		this.stretchXOption.setValue(false);
 		this.stretchYOption.setValue(false);
