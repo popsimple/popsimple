@@ -2,8 +2,8 @@ package com.project.canvas.client.worksheet;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
 import com.google.gwt.core.client.GWT;
@@ -46,6 +46,7 @@ import com.project.canvas.client.canvastools.base.ToolboxItem;
 import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.NativeUtils;
 import com.project.canvas.client.shared.RegistrationsManager;
+import com.project.canvas.client.shared.ZIndexProvider;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.shared.contracts.CanvasService;
 import com.project.canvas.shared.contracts.CanvasServiceAsync;
@@ -70,7 +71,7 @@ public class Worksheet extends Composite {
 	
 	@UiField
 	FlowPanel worksheetPanel;
-
+	
 	@UiField
 	Button saveButton;
 
@@ -125,7 +126,8 @@ public class Worksheet extends Composite {
 		HandlerRegistration killRegistration;
 		Date createdOn;
 	}
-	final HashMap<CanvasTool<? extends ElementData>, ToolInstanceInfo> toolRegsMap = new HashMap<CanvasTool<? extends ElementData>, ToolInstanceInfo>();
+	// Use LinkedHashMap in order to preserver the order of the tools.
+	final LinkedHashMap<CanvasTool<? extends ElementData>, ToolInstanceInfo> toolRegsMap = new LinkedHashMap<CanvasTool<? extends ElementData>, ToolInstanceInfo>();
 
 	protected CanvasPage page = new CanvasPage();
 
@@ -198,6 +200,8 @@ public class Worksheet extends Composite {
 
 	protected void showOptionsDialog() {
 		optionsWidget.setValue(this.page.options);
+		//Make sure that the dialog is set to the highest ZIndex.
+		optionsDialog.getElement().getStyle().setZIndex(ZIndexProvider.getTopMostZIndex());
 		optionsDialog.center();
 	}
 
@@ -221,11 +225,21 @@ public class Worksheet extends Composite {
 		return pos;
 	}
 
-	private CanvasTool<? extends ElementData> createToolInstance(final Point2D relativePos, CanvasToolFactory<? extends CanvasTool<? extends ElementData>> toolFactory) {
+	private CanvasToolFrame createToolInstance(final Point2D relativePos, 
+			CanvasToolFactory<? extends CanvasTool<? extends ElementData>> toolFactory) 
+	{
+		return this.createToolInstance(relativePos, 
+				ZIndexProvider.allocateZIndex(), toolFactory);
+	}
+	
+	private CanvasToolFrame createToolInstance(final Point2D relativePos, final int zIndex, 
+			CanvasToolFactory<? extends CanvasTool<? extends ElementData>> toolFactory) {
 		final CanvasTool<? extends ElementData> tool = toolFactory.create();
 		final CanvasToolFrame toolFrame = new CanvasToolFrame(tool);
+		
 		final Point2D creationOffset = toolFactory.getCreationOffset();
 		
+		//TODO: Remove registrations when tool is killed?
 		toolFrame.getCloseRequest().addHandler(new SimpleEvent.Handler<Void>() {
 			@Override
 			public void onFire(Void arg) {
@@ -259,9 +273,10 @@ public class Worksheet extends Composite {
 				tool.asWidget().setVisible(true);
 				tool.setFocus(true);
 				setToolFramePosition(limitPosToWorksheet(relativePos.plus(creationOffset), toolFrame), toolFrame);
+				toolFrame.getElement().getStyle().setZIndex(zIndex);
 			}
 		});
-		return tool;
+		return toolFrame;
 	}
 
 	protected void setToolFramePosition(Point2D relativePos, final CanvasToolFrame toolFrame) {
@@ -404,7 +419,12 @@ public class Worksheet extends Composite {
 			ElementData toolData = tool.getValue();
 			int x = Integer.valueOf(toolInfo.toolFrame.getElement().getOffsetLeft());
 			int y = Integer.valueOf(toolInfo.toolFrame.getElement().getOffsetTop());
-			toolData.position = new Point2D(x, y);
+			toolData._position = new Point2D(x, y);
+			toolData._ZIndex = toolInfo.toolFrame.getElement().getStyle().getZIndex();
+			toolData._size = new Point2D(
+					toolInfo.toolFrame.getElement().getOffsetWidth(),
+					toolInfo.toolFrame.getElement().getOffsetHeight());
+			
 			activeElems.add(toolData);
 		}
 		this.page.elements.clear();
@@ -469,7 +489,7 @@ public class Worksheet extends Composite {
 	protected void load(CanvasPage result) {
 		this.page = result;
 		this.updateOptions(result.options);
-		HashMap<Long, ElementData> updatedElements = new HashMap<Long, ElementData>();
+		LinkedHashMap<Long, ElementData> updatedElements = new LinkedHashMap<Long, ElementData>();
 		for (ElementData elem : this.page.elements) {
 			updatedElements.put(elem.id, elem);
 		}
@@ -492,9 +512,8 @@ public class Worksheet extends Composite {
 		createToolInstancesFromData(updatedElements);
 	}
 
-	private void createToolInstancesFromData(HashMap<Long, ElementData> updatedElements) {
+	private void createToolInstancesFromData(LinkedHashMap<Long, ElementData> updatedElements) {
 		for (ElementData newElement : updatedElements.values()) {
-			CanvasTool<? extends ElementData> tool = null;
 			CanvasToolFactory<? extends CanvasTool<? extends ElementData>> factory = null;
 			Class<?> cls = newElement.getClass();
 			if (cls.equals(TextData.class)) {
@@ -510,9 +529,15 @@ public class Worksheet extends Composite {
 			if (null == factory) {
 				continue;
 			}
-			tool = this.createToolInstance(newElement.position, factory);
-			tool.setElementData(newElement);
-			tool.setFocus(false);
+			//TODO: Refactor
+			CanvasToolFrame toolFrame = this.createToolInstance(newElement._position, factory);
+			if (null != newElement._size)
+			{
+				toolFrame.setWidth(newElement._size.getX());
+				toolFrame.setHeight(newElement._size.getY());
+			}
+			toolFrame.getTool().setElementData(newElement);
+			toolFrame.getTool().setFocus(false);
 		}
 	}
 

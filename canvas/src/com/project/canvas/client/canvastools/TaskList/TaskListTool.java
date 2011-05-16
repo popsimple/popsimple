@@ -17,15 +17,15 @@ import com.project.canvas.client.canvastools.base.CanvasToolCommon;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.shared.events.SimpleEvent.Handler;
 import com.project.canvas.shared.data.ElementData;
-import com.project.canvas.shared.data.Task;
+import com.project.canvas.shared.data.TaskData;
 import com.project.canvas.shared.data.TaskListData;
 
-public class TaskListWidget extends Composite implements CanvasTool<TaskListData>, Focusable {
+public class TaskListTool extends Composite implements CanvasTool<TaskListData>, Focusable {
 
 	private static TaskListWidgetUiBinder uiBinder = GWT
 			.create(TaskListWidgetUiBinder.class);
 
-	interface TaskListWidgetUiBinder extends UiBinder<Widget, TaskListWidget>	{
+	interface TaskListWidgetUiBinder extends UiBinder<Widget, TaskListTool>	{
 	}
 	
 	@UiField
@@ -38,11 +38,11 @@ public class TaskListWidget extends Composite implements CanvasTool<TaskListData
 	Button buttonAdd;
 	
 	private SimpleEvent<String> killRequestedEvent = new SimpleEvent<String>();
-	private ArrayList<TaskWidget> taskWidgets = new ArrayList<TaskWidget>();
+	private ArrayList<TaskTool> taskWidgets = new ArrayList<TaskTool>();
 
 	private TaskListData data = new TaskListData();
 	
-	public TaskListWidget() 
+	public TaskListTool() 
 	{
 		initWidget(uiBinder.createAndBindUi(this));
 		CanvasToolCommon.initCanvasToolWidget(this);
@@ -61,16 +61,16 @@ public class TaskListWidget extends Composite implements CanvasTool<TaskListData
 
 	private void createNewTaskWidget()
 	{
-		TaskWidget taskWidget = new TaskWidget();
+		TaskTool taskWidget = new TaskTool();
 		addTaskWidget(taskWidget);
 		taskWidget.setFocus(true);
 	}
 
 
-	public void addTaskWidget(TaskWidget taskWidget) {
-		taskWidget.AddKillRequestEventHandler(new Handler<TaskWidget>() {
+	public void addTaskWidget(TaskTool taskWidget) {
+		taskWidget.AddKillRequestEventHandler(new Handler<TaskTool>() {
 
-			public void onFire(TaskWidget arg) {
+			public void onFire(TaskTool arg) {
 				// TODO Auto-generated method stub
 				removeTaskWidget(arg);
 			}
@@ -79,7 +79,7 @@ public class TaskListWidget extends Composite implements CanvasTool<TaskListData
 		panelTaskList.add(taskWidget);
 	}
 	
-	private void removeTaskWidget(TaskWidget taskWidget)
+	private void removeTaskWidget(TaskTool taskWidget)
 	{
 		panelTaskList.remove(taskWidget);
 		taskWidgets.remove(taskWidget);
@@ -90,7 +90,7 @@ public class TaskListWidget extends Composite implements CanvasTool<TaskListData
 		}
 	}
 
-	private TaskWidget getFirstTaskWidget()
+	private TaskTool getFirstTaskWidget()
 	{
 		return this.taskWidgets.get(0);
 	}
@@ -119,22 +119,22 @@ public class TaskListWidget extends Composite implements CanvasTool<TaskListData
 
 	@Override
 	public TaskListData getValue() {
-		this.data.title = this.title.getText();
-		this.data.tasks.clear();
-		for (TaskWidget taskWidget : this.taskWidgets) {
-			this.data.tasks.add(taskWidget.getValue());
+		this.data._title = this.title.getText();
+		this.data._tasks.clear();
+		for (TaskTool taskWidget : this.taskWidgets) {
+			this.data._tasks.add(taskWidget.getValue());
 		}
 		return this.data;
 	}
 
 	@Override
 	public void setValue(TaskListData data) {
-		this.title.setText(data.title);
+		this.title.setText(data._title);
 		this.data = data;
 		this.taskWidgets.clear();
 		this.panelTaskList.clear();
-		for (Task task : this.data.tasks) {
-			TaskWidget taskWidget = new TaskWidget();
+		for (TaskData task : this.data._tasks) {
+			TaskTool taskWidget = new TaskTool();
 			taskWidget.setValue(task);
 			this.addTaskWidget(taskWidget);
 		}

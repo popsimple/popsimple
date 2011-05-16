@@ -7,6 +7,7 @@ import com.google.gwt.user.client.ui.Image;
 import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.canvastools.base.CanvasToolCommon;
 import com.project.canvas.client.resources.CanvasResources;
+import com.project.canvas.client.shared.ZIndexProvider;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.shared.data.ElementData;
 import com.project.canvas.shared.data.ImageData;
@@ -55,6 +56,7 @@ public class ImageTool extends Image implements CanvasTool<ImageData> {
 		imageSelectionDialog.setGlassEnabled(true);
 		imageSelectionDialog.setText("Image options");
 		imageSelectionDialog.show();
+		imageSelectionDialog.getElement().getStyle().setZIndex(ZIndexProvider.getTopMostZIndex());
 		imageSelectionDialog.center();
 		dialogContents.setFocus(true);
 	}
@@ -91,7 +93,7 @@ public class ImageTool extends Image implements CanvasTool<ImageData> {
 	public ImageData getValue() {
 		//String imageCss = this.getElement().getStyle().getBackgroundImage();
 		//this.data.url = imageCss.substring("url(".length(), imageCss.length()-1);
-		this.data.url = super.getUrl();
+		this.data._url = super.getUrl();
 		// TODO: update size & rotation
 		return this.data;
 	}
@@ -100,7 +102,7 @@ public class ImageTool extends Image implements CanvasTool<ImageData> {
 	public void setValue(ImageData data) {
 		this.data = data;
 		// TODO: update size & rotation
-		this.setImageUrl(this.data.url);
+		this.setImageUrl(this.data._url);
 	}
 
 	@Override

@@ -18,15 +18,15 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.events.SimpleEvent;
-import com.project.canvas.shared.data.Task;
+import com.project.canvas.shared.data.TaskData;
 
 
-public class TaskWidget extends Composite implements Focusable, TakesValue<Task> {
+public class TaskTool extends Composite implements Focusable, TakesValue<TaskData> {
 
-	private static TaskWidgetUiBinder uiBinder = GWT
-			.create(TaskWidgetUiBinder.class);
+	private static TaskToolUiBinder uiBinder = GWT
+			.create(TaskToolUiBinder.class);
 
-	interface TaskWidgetUiBinder extends UiBinder<Widget, TaskWidget> {
+	interface TaskToolUiBinder extends UiBinder<Widget, TaskTool> {
 	}
 	
 	@UiField
@@ -43,11 +43,11 @@ public class TaskWidget extends Composite implements Focusable, TakesValue<Task>
 	
 	private ImageProvider imageProvider = new ImageProvider();
 	
-	private final SimpleEvent<TaskWidget> killRequestEvent = new SimpleEvent<TaskWidget>();
+	private final SimpleEvent<TaskTool> killRequestEvent = new SimpleEvent<TaskTool>();
 
-	private Task data = new Task();
+	private TaskData data = new TaskData();
 	
-	public TaskWidget() {
+	public TaskTool() {
 		initWidget(uiBinder.createAndBindUi(this));
 		
 		this.checkTask.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
@@ -65,7 +65,7 @@ public class TaskWidget extends Composite implements Focusable, TakesValue<Task>
 			}
 		});
 
-		final TaskWidget that = this;
+		final TaskTool that = this;
 		this.imageRemove.addClickHandler(new ClickHandler() {
 
 			public void onClick(ClickEvent event) {
@@ -85,7 +85,7 @@ public class TaskWidget extends Composite implements Focusable, TakesValue<Task>
 		this.imageTask.setUrl(imageProvider.GetDefaultImageUrl());
 	}
 	
-	public void AddKillRequestEventHandler(SimpleEvent.Handler<TaskWidget> handler)
+	public void AddKillRequestEventHandler(SimpleEvent.Handler<TaskTool> handler)
 	{
 		this.killRequestEvent.addHandler(handler);
 	}
@@ -138,20 +138,20 @@ public class TaskWidget extends Composite implements Focusable, TakesValue<Task>
 
 
 	@Override
-	public void setValue(Task value) {
+	public void setValue(TaskData value) {
 		this.data = value;
-		this.textTask.setText(value.description);
-		this.checkTask.setValue(value.completed);
-		this.imageTask.setUrl(value.imageUrl);
+		this.textTask.setText(value._description);
+		this.checkTask.setValue(value._completed);
+		this.imageTask.setUrl(value._imageUrl);
 		//TODO: Support image alternate text
-		this.setCompleted(value.completed);
+		this.setCompleted(value._completed);
 	}
 
 	@Override
-	public Task getValue() {
-		this.data.description = this.textTask.getText();
-		this.data.completed = this.checkTask.getValue();
-		this.data.imageUrl = this.imageTask.getUrl();
+	public TaskData getValue() {
+		this.data._description = this.textTask.getText();
+		this.data._completed = this.checkTask.getValue();
+		this.data._imageUrl = this.imageTask.getUrl();
 		//TODO: Support image alternate text
 		return this.data;
 	}
