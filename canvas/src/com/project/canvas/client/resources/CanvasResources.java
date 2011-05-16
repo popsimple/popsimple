@@ -27,4 +27,7 @@ public interface CanvasResources extends ClientBundle {
 	
 	@Source("com/project/canvas/client/resources/images/bitmaps/resizeIcon.png")
 	ImageResource resizeIcon();
+	
+	@Source("com/project/canvas/client/resources/images/bitmaps/closeIcon.png")
+	ImageResource closeIcon();
 }

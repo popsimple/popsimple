@@ -7,7 +7,7 @@
 	<g:HTMLPanel ui:field="framePanel" addStyleNames="{res.main.toolFramePanel}">
 		<div class="{res.main.toolFrameHeader}">
 			<g:FlowPanel ui:field="buttonsPanel" addStyleNames="{res.main.toolFrameButtonsPanel}">
-				<g:Anchor ui:field="closeLink" addStyleNames="{res.main.toolFrameCloseLink}">X</g:Anchor>
+				<g:Anchor ui:field="closeLink" addStyleNames="{res.main.toolFrameCloseLink} {res.main.toolFrameButton}"></g:Anchor>
 			</g:FlowPanel>
 		</div>
 		<g:HTMLPanel ui:field="toolPanel" addStyleNames="{res.main.toolFrameBodyPanel}">
