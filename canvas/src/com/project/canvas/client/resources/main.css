@@ -146,10 +146,13 @@
 	border-style:none;
 	padding:none;
 }
+.textEditEditorElementBody {
+	background-color: transparent;
+}
 .textEdit .cke_contents  iframe {
 	background-color: transparent !important;
 }
-.textEditNotFocused .cke_wrapper {
+.textEdit .cke_wrapper {
 	background: transparent !important;
 }
 .textEditToolbar {

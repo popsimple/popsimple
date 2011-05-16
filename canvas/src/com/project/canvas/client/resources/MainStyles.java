@@ -19,6 +19,7 @@ public interface MainStyles extends CssResource {
   String textEditFocused();
   String textEditNotFocused();
   String textEditToolbar();
+  String textEditEditorElementBody();
   
   String toolbox();
   
