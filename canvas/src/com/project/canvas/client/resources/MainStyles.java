@@ -105,4 +105,6 @@ public interface MainStyles extends CssResource {
   String toolFrameBackLink();
   
   String worksheetDragPanel();
+
+  String hover();
 }

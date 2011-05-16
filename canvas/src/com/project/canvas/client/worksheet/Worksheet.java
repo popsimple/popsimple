@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
@@ -27,9 +26,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
@@ -52,6 +49,7 @@ import com.project.canvas.client.shared.NativeUtils;
 import com.project.canvas.client.shared.RegistrationsManager;
 import com.project.canvas.client.shared.ZIndexProvider;
 import com.project.canvas.client.shared.events.SimpleEvent;
+import com.project.canvas.client.shared.events.SimpleEvent.Handler;
 import com.project.canvas.shared.contracts.CanvasService;
 import com.project.canvas.shared.contracts.CanvasServiceAsync;
 import com.project.canvas.shared.data.CanvasPage;
@@ -128,11 +126,13 @@ public class Worksheet extends Composite {
 			this.createdOn = new Date();
 			this.toolFrame = toolFrame;
 		}
-		CanvasToolFactory<?> factory;
 		CanvasToolFrame toolFrame;
 		HandlerRegistration killRegistration;
-		RegistrationsManager registrations = new RegistrationsManager();
+		@SuppressWarnings("unused")
 		Date createdOn;
+		@SuppressWarnings("unused")
+		CanvasToolFactory<?> factory;
+		RegistrationsManager registrations = new RegistrationsManager();
 	}
 	// Use LinkedHashMap in order to preserver the order of the tools.
 	final LinkedHashMap<CanvasTool<? extends ElementData>, ToolInstanceInfo> toolRegsMap = new LinkedHashMap<CanvasTool<? extends ElementData>, ToolInstanceInfo>();
@@ -336,7 +336,14 @@ public class Worksheet extends Composite {
 				setToolFramePosition(limitPosToWorksheet(pos, toolFrame), toolFrame);
 			}
 		};
-		this.startMouseMoveOperation(this.dragPanel.getElement(), relativePosition(startEvent, toolFrame.getElement()), dragHandler);
+		SimpleEvent.Handler<Void> stopMoveHandler = new SimpleEvent.Handler<Void>(){
+			@Override
+			public void onFire(Void arg) {
+				toolFrame.removeStyleName(CanvasResources.INSTANCE.main().hover());
+			}};
+		toolFrame.addStyleName(CanvasResources.INSTANCE.main().hover());
+		this.startMouseMoveOperation(this.dragPanel.getElement(), relativePosition(startEvent, toolFrame.getElement()), 
+				dragHandler, stopMoveHandler);
 	}
 
 	protected void startResizeCanvasToolFrame(final CanvasToolFrame toolFrame, final MouseEvent<?>  startEvent)
@@ -348,10 +355,13 @@ public class Worksheet extends Composite {
 				toolFrame.setHeight(pos.getY());
 			}
 		};
-		this.startMouseMoveOperation(toolFrame.getElement(), Point2D.zero, resizeHandler);
+		this.startMouseMoveOperation(toolFrame.getElement(), Point2D.zero, resizeHandler, null);
 	}
 
-	protected void startMouseMoveOperation(final Element referenceElem, final Point2D referenceOffset, final SimpleEvent.Handler<Point2D> moveHandler) 
+	
+	protected void startMouseMoveOperation(final Element referenceElem, final Point2D referenceOffset, 
+			final SimpleEvent.Handler<Point2D> moveHandler,
+			final SimpleEvent.Handler<Void> stopMoveHandler) 
 	{
 		final RegistrationsManager regs = new RegistrationsManager();
 		
@@ -370,6 +380,9 @@ public class Worksheet extends Composite {
 				Event.releaseCapture(dragPanel.getElement());
 				regs.clear();
 				dragPanel.setVisible(false);
+				if (null != stopMoveHandler) {
+					stopMoveHandler.onFire(null);
+				}
 			}}, MouseUpEvent.getType()));
 
 		
