@@ -228,7 +228,8 @@ public class Worksheet extends Composite {
 	private CanvasTool<? extends ElementData> createToolInstance(final Point2D relativePos, CanvasToolFactory<? extends CanvasTool<? extends ElementData>> toolFactory) {
 		final CanvasTool<? extends ElementData> tool = toolFactory.create();
 		final CanvasToolFrame toolFrame = new CanvasToolFrame(tool);
-
+		final Point2D creationOffset = toolFactory.getCreationOffset();
+		
 		toolFrame.getCloseRequest().addHandler(new SimpleEvent.Handler<Void>() {
 			@Override
 			public void onFire(Void arg) {
@@ -255,7 +256,7 @@ public class Worksheet extends Composite {
 			public void execute() {
 				tool.asWidget().setVisible(true);
 				tool.setFocus(true);
-				setToolFramePosition(limitPosToWorksheet(relativePos, toolFrame), toolFrame);
+				setToolFramePosition(limitPosToWorksheet(relativePos.plus(creationOffset), toolFrame), toolFrame);
 			}
 		});
 		return tool;

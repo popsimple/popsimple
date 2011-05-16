@@ -12,19 +12,25 @@ public class TextEditUtils {
 
 	static final HTMLPanel testWidget = new HTMLPanel("");
 	static boolean testWidgetInit = false;
+	static void init() {
+		Style targetStyle = testWidget.getElement().getStyle();
+		targetStyle.setProperty("width", "auto");
+		targetStyle.setProperty("height", "auto");
+		targetStyle.setTop(-9999, Unit.PX);
+		targetStyle.setLeft(-9999, Unit.PX);
+		RootPanel.getBodyElement().appendChild(testWidget.getElement());
+		testWidgetInit = true;
+	}
+	static {
+		init();
+	}
 
 	protected static void autoSizeWidget(Widget widget, String html, boolean usePreWhiteSpace) {
-		Style targetStyle = testWidget.getElement().getStyle();
-		if (false == testWidgetInit)
-		{
-			targetStyle.setProperty("width", "auto");
-			targetStyle.setProperty("height", "auto");
-			targetStyle.setTop(-9999, Unit.PX);
-			targetStyle.setLeft(-9999, Unit.PX);
-			targetStyle.setDisplay(Display.INLINE_BLOCK);
-			RootPanel.getBodyElement().appendChild(testWidget.getElement());
-			testWidgetInit = true;
+		if (false == testWidgetInit) {
+			init();
 		}
+		Style targetStyle = testWidget.getElement().getStyle();
+		targetStyle.setDisplay(Display.INLINE_BLOCK);
 		
 		// This code based on:
 		// http://stackoverflow.com/questions/1288297/jquery-auto-size-text-input-not-textarea/1288475#1288475
@@ -56,6 +62,7 @@ public class TextEditUtils {
 			widget.setWidth(Integer.toString(newWidth) + "px");
 		}
 		testWidget.getElement().setInnerHTML(""); // for security reasons don't leave hiding data...
+		testWidget.getElement().getStyle().setDisplay(Display.NONE);
 	}
 
 	private static void copyTextSizingProps(Style targetStyle, Style widgetStyle) {
