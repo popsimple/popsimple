@@ -14,7 +14,6 @@ import com.google.gwt.user.client.ui.HTML;
 import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.canvastools.base.CanvasToolCommon;
 import com.project.canvas.client.resources.CanvasResources;
-import com.project.canvas.client.shared.StringUtils;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.shared.data.ElementData;
 import com.project.canvas.shared.data.TextData;
@@ -108,8 +107,8 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 			// use getText rather than getHTML, so that if
 			// there is no text in the box - it will be destroyed
 			HTML editorHTML = new HTML(this.editBox.getData());
-			String text = StringUtils.trim(editorHTML.getText());
-			text = StringUtils.remove(text, (char)160);
+			String text = editorHTML.getText().trim();
+			text = text.replace(new String(new char[]{(char)160}), "");
 			if (text.isEmpty()) {
 				this.killRequestEvent.dispatch("Empty");
 			}
