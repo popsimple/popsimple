@@ -125,8 +125,11 @@
 	padding:2px;
 }
 
-@external .cke_top, .cke_wrapper .cke_skin_kama .cke_contents;
+@external .cke_top, .cke_bottom, .cke_wrapper .cke_skin_kama .cke_contents;
 .textEditNotFocused .cke_top {
+	visibility: hidden;
+}
+.textEditNotFocused .cke_bottom {
 	visibility: hidden;
 }
 .textEdit span.cke_skin_kama {
