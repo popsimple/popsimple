@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import com.project.canvas.client.canvastools.CursorToolboxItem;
 import com.project.canvas.client.canvastools.Image.ImageToolboxItem;
 import com.project.canvas.client.canvastools.TaskList.TaskListToolboxItem;
-import com.project.canvas.client.canvastools.TextEdit.TextEditTool;
 import com.project.canvas.client.canvastools.TextEdit.TextEditToolboxItem;
 
 public class BuiltinTools {

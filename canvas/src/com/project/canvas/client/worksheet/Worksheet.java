@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
-import javax.validation.constraints.Max;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
@@ -27,7 +26,10 @@ import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
@@ -98,6 +100,9 @@ public class Worksheet extends Composite {
 	@UiField
 	FlowPanel worksheetBackground;
 	
+	@UiField
+	HTMLPanel dragPanel;
+	
 	ToolboxItem activeToolboxItem;
 	Widget activeToolFloatingWidget;
 	
@@ -126,6 +131,7 @@ public class Worksheet extends Composite {
 		CanvasToolFactory<?> factory;
 		CanvasToolFrame toolFrame;
 		HandlerRegistration killRegistration;
+		RegistrationsManager registrations = new RegistrationsManager();
 		Date createdOn;
 	}
 	// Use LinkedHashMap in order to preserver the order of the tools.
@@ -133,11 +139,13 @@ public class Worksheet extends Composite {
 
 	protected CanvasPage page = new CanvasPage();
 
+
 	public Worksheet() {
 		initWidget(uiBinder.createAndBindUi(this));
 		optionsDialog.setText("Worksheet options");
 		optionsDialog.add(this.optionsWidget);
 		setRegistrations();
+		this.dragPanel.setVisible(false);
 	}
 
 	private void setRegistrations() {
@@ -222,10 +230,7 @@ public class Worksheet extends Composite {
 	}
 
 	protected Point2D relativePosition(MouseEvent<?> event, Element elem) {
-		int x = event.getRelativeX(elem);
-		int y = event.getRelativeY(elem);
-		Point2D pos = new Point2D(x,y);
-		return pos;
+		return new Point2D(event.getRelativeX(elem), event.getRelativeY(elem));
 	}
 
 	private CanvasToolFrame createToolInstance(final Point2D relativePos, 
@@ -241,46 +246,50 @@ public class Worksheet extends Composite {
 		final CanvasToolFrame toolFrame = new CanvasToolFrame(tool);
 		
 		final Point2D creationOffset = toolFactory.getCreationOffset();
+		ToolInstanceInfo toolInfo = new ToolInstanceInfo(toolFactory, toolFrame, null);
+		this.toolRegsMap.put(tool, toolInfo);
 		
 		//TODO: Remove registrations when tool is killed?
-		toolFrame.getCloseRequest().addHandler(new SimpleEvent.Handler<Void>() {
+		RegistrationsManager regs = toolInfo.registrations;
+		regs.add(toolFrame.getCloseRequest().addHandler(new SimpleEvent.Handler<Void>() {
 			@Override
 			public void onFire(Void arg) {
 				removeToolInstance(toolFrame);
 			}
-		});
-		toolFrame.getMoveStartRequest().addHandler(new SimpleEvent.Handler<MouseDownEvent>() {
+		}));
+		regs.add(toolFrame.getMoveStartRequest().addHandler(new SimpleEvent.Handler<MouseDownEvent>() {
 			@Override
 			public void onFire(MouseDownEvent arg) {
 				startDragCanvasToolFrame(toolFrame, arg);
 			}
-		});
-		toolFrame.addResizeStartRequestHandler(new SimpleEvent.Handler<MouseDownEvent>() {
+		}));
+		regs.add(toolFrame.addResizeStartRequestHandler(new SimpleEvent.Handler<MouseDownEvent>() {
 			@Override
 			public void onFire(MouseDownEvent arg) {
 				startResizeCanvasToolFrame(toolFrame, arg);
 			}
-		});
-		toolFrame.addMoveBackRequestHandler(new SimpleEvent.Handler<Void>() {
+		}));
+		regs.add(toolFrame.addMoveBackRequestHandler(new SimpleEvent.Handler<Void>() {
 			@Override
 			public void onFire(Void arg) {
 				moveToolFrameBack(toolFrame);
-			}});
+			}}));
 		
-		toolFrame.addMoveFrontRequestHandler(new SimpleEvent.Handler<Void>() {
+		regs.add(toolFrame.addMoveFrontRequestHandler(new SimpleEvent.Handler<Void>() {
 			@Override
 			public void onFire(Void arg) {
 				moveToolFrameFront(toolFrame);
-			}});
+			}}));
 		
 		this.worksheetPanel.add(toolFrame);
-		HandlerRegistration reg = tool.getKillRequestedEvent().addHandler(new SimpleEvent.Handler<String>() {
+		toolInfo.killRegistration = tool.getKillRequestedEvent().addHandler(new SimpleEvent.Handler<String>() {
 			public void onFire(String arg) {
 				removeToolInstance(toolFrame);
 			}
 		});
+		regs.add(toolInfo.killRegistration);
+
 		tool.asWidget().setVisible(false);
-		this.toolRegsMap.put(tool, new ToolInstanceInfo(toolFactory, toolFrame, reg));
 		Scheduler.get().scheduleDeferred(new ScheduledCommand() {
 			@Override
 			public void execute() {
@@ -319,54 +328,67 @@ public class Worksheet extends Composite {
 		toolFrame.asWidget().getElement().getStyle().setLeft(relativePos.getX(), Unit.PX);
 		toolFrame.asWidget().getElement().getStyle().setTop(relativePos.getY(), Unit.PX);
 	}
-
-	protected void startResizeCanvasToolFrame(final CanvasToolFrame toolFrame, final MouseDownEvent event)
+	protected void startDragCanvasToolFrame(final CanvasToolFrame toolFrame, final MouseEvent<?> startEvent)
 	{
-		final Point2D resizeStartPoint = new Point2D(event.getClientX(), event.getClientY());
-		final Point2D resizeStartSize = new Point2D(toolFrame.getOffsetWidth(), toolFrame.getOffsetHeight());
-		final RegistrationsManager resizeRegistrations = new RegistrationsManager();
-		resizeRegistrations.add(this.worksheetPanel.addDomHandler(new MouseMoveHandler() {
+		final SimpleEvent.Handler<Point2D> dragHandler = new SimpleEvent.Handler<Point2D>() {
 			@Override
-			public void onMouseMove(MouseMoveEvent event) {
-				onResizeMouseMove(toolFrame, resizeStartPoint, resizeStartSize, event);
-			}}, MouseMoveEvent.getType()));
-		resizeRegistrations.add(this.worksheetPanel.addDomHandler(new MouseUpHandler() {
-			@Override
-			public void onMouseUp(MouseUpEvent event) {
-				resizeRegistrations.clear();
-			}}, MouseUpEvent.getType()));
+			public void onFire(Point2D pos) {
+				setToolFramePosition(limitPosToWorksheet(pos, toolFrame), toolFrame);
+			}
+		};
+		this.startMouseMoveOperation(this.dragPanel.getElement(), relativePosition(startEvent, toolFrame.getElement()), dragHandler);
 	}
-	
-	protected void startDragCanvasToolFrame(final CanvasToolFrame toolFrame, final MouseEvent<?> startEvent) 
+
+	protected void startResizeCanvasToolFrame(final CanvasToolFrame toolFrame, final MouseEvent<?>  startEvent)
 	{
-		final Point2D toolFrameOffset = relativePosition(startEvent, toolFrame.getElement());
+		final SimpleEvent.Handler<Point2D> resizeHandler = new SimpleEvent.Handler<Point2D>() {
+			@Override
+			public void onFire(Point2D pos) {
+				toolFrame.setWidth(pos.getX());
+				toolFrame.setHeight(pos.getY());
+			}
+		};
+		this.startMouseMoveOperation(toolFrame.getElement(), Point2D.zero, resizeHandler);
+	}
+
+	protected void startMouseMoveOperation(final Element referenceElem, final Point2D referenceOffset, final SimpleEvent.Handler<Point2D> moveHandler) 
+	{
 		final RegistrationsManager regs = new RegistrationsManager();
+		
 		NativeUtils.disableTextSelectInternal(this.worksheetPanel.getElement(), true);
-		regs.add(this.worksheetPanel.addDomHandler(new MouseMoveHandler() {
+		regs.add(this.dragPanel.addDomHandler(new MouseMoveHandler() {
 			@Override
 			public void onMouseMove(MouseMoveEvent event) {
-				onDragMouseMove(toolFrame, toolFrameOffset, event);
+				Point2D pos = relativePosition(event, referenceElem);
+				moveHandler.onFire(pos.minus(referenceOffset));
+				event.stopPropagation();
 			}}, MouseMoveEvent.getType()));
-		regs.add(this.worksheetPanel.addDomHandler(new MouseUpHandler() {
+		regs.add(this.dragPanel.addDomHandler(new MouseUpHandler() {
 			@Override
 			public void onMouseUp(MouseUpEvent event) {
+				NativeUtils.disableTextSelectInternal(worksheetPanel.getElement(), false);
+				Event.releaseCapture(dragPanel.getElement());
 				regs.clear();
+				dragPanel.setVisible(false);
 			}}, MouseUpEvent.getType()));
+
+		
+		Event.setCapture(this.dragPanel.getElement());
+		this.dragPanel.setVisible(true);
 	}
 
 	protected Point2D limitPosToWorksheet(Point2D pos, Widget elem) {
-		Point2D result = new Point2D();
-		int maxX = this.worksheetPanel.getOffsetWidth() - elem.getOffsetWidth();
-		int maxY = this.worksheetPanel.getOffsetHeight() - elem.getOffsetHeight();
-		result.setX(Math.max(0, Math.min(maxX, pos.getX())));
-		result.setY(Math.max(0, Math.min(maxY, pos.getY())));
-		return result;
+		Point2D maxSize = new Point2D(
+				this.worksheetPanel.getOffsetWidth() - elem.getOffsetWidth(),
+				this.worksheetPanel.getOffsetHeight() - elem.getOffsetHeight());
+		
+		return Point2D.max(Point2D.zero, Point2D.min(maxSize, pos));
 	}
 
 	protected void removeToolInstance(CanvasToolFrame toolFrame) {
 		ToolInstanceInfo info = this.toolRegsMap.remove(toolFrame.getTool());
 		this.worksheetPanel.remove(toolFrame);
-		info.killRegistration.removeHandler();
+		info.registrations.clear();
 	}
 
 	public void setActiveTool(ToolboxItem toolboxItem) {
@@ -456,7 +478,7 @@ public class Worksheet extends Composite {
 			int x = Integer.valueOf(toolInfo.toolFrame.getElement().getOffsetLeft());
 			int y = Integer.valueOf(toolInfo.toolFrame.getElement().getOffsetTop());
 			toolData._position = new Point2D(x, y);
-			toolData._ZIndex = this.getElementZIndex(toolInfo.toolFrame.getElement());
+			toolData._zIndex = this.getElementZIndex(toolInfo.toolFrame.getElement());
 			toolData._size = new Point2D(
 					toolInfo.toolFrame.getElement().getOffsetWidth(),
 					toolInfo.toolFrame.getElement().getOffsetHeight());
@@ -567,7 +589,7 @@ public class Worksheet extends Composite {
 			}
 			//TODO: Refactor
 			CanvasToolFrame toolFrame = this.createToolInstance(
-					newElement._position, newElement._ZIndex, factory);
+					newElement._position, newElement._zIndex, factory);
 			if (null != newElement._size)
 			{
 				toolFrame.setWidth(newElement._size.getX());
@@ -606,23 +628,5 @@ public class Worksheet extends Composite {
 		if (null != id) {
 			load(id);
 		}
-	}
-
-	private void onDragMouseMove(final CanvasToolFrame toolFrame,
-			final Point2D toolFrameOffset, MouseMoveEvent event) {
-		Point2D pos = relativePosition(event, worksheetPanel.getElement());
-		pos.setX(pos.getX() - toolFrameOffset.getX());
-		pos.setY(pos.getY() - toolFrameOffset.getY());
-		setToolFramePosition(limitPosToWorksheet(pos, toolFrame), toolFrame);
-	}
-	
-	private void onResizeMouseMove(final CanvasToolFrame toolFrame,
-			final Point2D resizeStartPoint, final Point2D resizeStartSize, 
-			MouseMoveEvent event) 
-	{
-		Point2D offsetPoint = new Point2D(event.getClientX(), event.getClientY());
-		offsetPoint = offsetPoint.minus(resizeStartPoint);
-		toolFrame.setWidth(resizeStartSize.getX() + offsetPoint.getX());
-		toolFrame.setHeight(resizeStartSize.getY() + offsetPoint.getY());
 	}
 }

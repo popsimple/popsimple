@@ -103,4 +103,6 @@ public interface MainStyles extends CssResource {
   String toolFrameFrontLink();
   
   String toolFrameBackLink();
+  
+  String worksheetDragPanel();
 }

@@ -15,6 +15,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.shared.NativeUtils;
+import com.project.canvas.client.shared.WidgetUtils;
 import com.project.canvas.client.shared.events.SimpleEvent;
 
 public class CanvasToolFrame extends Composite {
@@ -56,7 +57,7 @@ public class CanvasToolFrame extends Composite {
 
 	public CanvasToolFrame(CanvasTool<?> canvasTool) {
 		initWidget(uiBinder.createAndBindUi(this));
-		CanvasToolCommon.stopClickPropagation(this);
+		WidgetUtils.stopClickPropagation(this);
 		this.tool = canvasTool;
 		this.toolPanel.add(canvasTool);
 		this.closeLink.addClickHandler(new ClickHandler() {
@@ -92,7 +93,7 @@ public class CanvasToolFrame extends Composite {
 		this.registerResizeHandlers();
 		
 //		CanvasToolCommon.stopClickPropagation(buttonsPanel);
-		CanvasToolCommon.stopClickPropagation(closeLink);
+		WidgetUtils.stopClickPropagation(closeLink);
 		NativeUtils.disableTextSelectInternal(this.buttonsPanel.getElement(), true);
 	}
 	
