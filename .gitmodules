@@ -1,0 +1,3 @@
+[submodule "gwt-ckeditor"]
+	path = gwt-ckeditor
+	url = gitolite@git:gwt-ckeditor

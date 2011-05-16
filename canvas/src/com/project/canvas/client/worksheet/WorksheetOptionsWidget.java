@@ -106,7 +106,7 @@ public class WorksheetOptionsWidget extends Composite implements TakesValue<Canv
 
 	@Override
 	public void setValue(CanvasPageOptions value) {
-		this.value = value;
+		this.value = value != null ? value : new CanvasPageOptions();
 		this.urlTextBox.setText(value.backgroundImageURL);
 		this.repeatOption.setValue(this.value.backgroundRepeat.toLowerCase().trim().equals("repeat"));
 		this.stretchXOption.setValue(false);
