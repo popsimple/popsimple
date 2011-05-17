@@ -6,6 +6,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
+import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -52,8 +53,8 @@ public class CanvasToolFrame extends Composite {
 	protected final SimpleEvent<Void> closeRequest = new SimpleEvent<Void>();
 	protected final SimpleEvent<Void> moveBackRequest = new SimpleEvent<Void>();
 	protected final SimpleEvent<Void> moveFrontRequest = new SimpleEvent<Void>();
-	protected final SimpleEvent<MouseDownEvent> moveStartRequest = new SimpleEvent<MouseDownEvent>();
-	protected final SimpleEvent<MouseDownEvent> resizeStartRequest = new SimpleEvent<MouseDownEvent>();
+	protected final SimpleEvent<MouseEvent<?>> moveStartRequest = new SimpleEvent<MouseEvent<?>>();
+	protected final SimpleEvent<MouseEvent<?>> resizeStartRequest = new SimpleEvent<MouseEvent<?>>();
 
 	public CanvasToolFrame(CanvasTool<?> canvasTool) {
 		initWidget(uiBinder.createAndBindUi(this));
@@ -81,14 +82,21 @@ public class CanvasToolFrame extends Composite {
 				event.stopPropagation();
 			}
 		});
+		
 		this.framePanel.addDomHandler(new MouseDownHandler() {
 			@Override
 			public void onMouseDown(MouseDownEvent event) {
 				moveStartRequest.dispatch(event);
 				event.stopPropagation();
 			}
-		},
-		MouseDownEvent.getType());
+		},MouseDownEvent.getType());
+
+		canvasTool.addMoveStartEventHandler(new SimpleEvent.Handler<MouseEvent<?>>() {
+			@Override
+			public void onFire(MouseEvent<?> arg) {
+				moveStartRequest.dispatch(arg);
+			}
+		});
 		
 		this.registerResizeHandlers();
 		
@@ -117,7 +125,7 @@ public class CanvasToolFrame extends Composite {
 		return closeRequest;
 	}
 
-	public SimpleEvent<MouseDownEvent> getMoveStartRequest() {
+	public SimpleEvent<MouseEvent<?>> getMoveStartRequest() {
 		return moveStartRequest;
 	}
 
@@ -134,7 +142,7 @@ public class CanvasToolFrame extends Composite {
 	}
 	
 	public HandlerRegistration addResizeStartRequestHandler(
-			SimpleEvent.Handler<MouseDownEvent> handler)
+			SimpleEvent.Handler<MouseEvent<?>> handler)
 	{
 		return this.resizeStartRequest.addHandler(handler);
 	}

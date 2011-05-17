@@ -13,10 +13,12 @@ import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.logical.shared.InitializeEvent;
 import com.google.gwt.event.logical.shared.InitializeHandler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -26,6 +28,7 @@ import com.project.canvas.client.canvastools.base.CanvasToolCommon;
 import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.ElementWrapper;
 import com.project.canvas.client.shared.events.SimpleEvent;
+import com.project.canvas.client.shared.events.SimpleEvent.Handler;
 import com.project.canvas.shared.data.ElementData;
 import com.project.canvas.shared.data.Point2D;
 import com.project.canvas.shared.data.TextData;
@@ -240,5 +243,9 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 
 	public void showToolbars() {
 		this.removeStyleName(CanvasResources.INSTANCE.main().textEditNoToolbars());
+	}
+	@Override
+	public HandlerRegistration addMoveStartEventHandler(Handler<MouseEvent<?>> handler) {
+		return null;
 	}
 }

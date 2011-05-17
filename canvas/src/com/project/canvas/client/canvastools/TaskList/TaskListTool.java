@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.MouseEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Button;
@@ -149,5 +151,11 @@ public class TaskListTool extends Composite implements CanvasTool<TaskListData>,
 	@Override
 	public void setElementData(ElementData data) {
 		this.setValue((TaskListData) data);
+	}
+
+
+	@Override
+	public HandlerRegistration addMoveStartEventHandler(Handler<MouseEvent<?>> handler) {
+		return null;
 	}
 }

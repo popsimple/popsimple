@@ -16,7 +16,8 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.MouseDownEvent;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseMoveHandler;
@@ -71,9 +72,6 @@ public class WorksheetImpl extends Composite implements Worksheet {
 	RegistrationsManager activeToolRegistrations = new RegistrationsManager(); 
 
 	@UiField
-	FocusPanel focusPanelDummy;
-	
-	@UiField
 	FlowPanel worksheetPanel;
 	
 	@UiField
@@ -108,7 +106,8 @@ public class WorksheetImpl extends Composite implements Worksheet {
 	
 	protected final WorksheetOptionsWidget optionsWidget = new WorksheetOptionsWidget();
 	protected final DialogBox optionsDialog = new DialogWithZIndex(false, true);
-
+	protected final SimpleEvent<Void> stopOperationEvent = new SimpleEvent<Void>();
+	
 	public final SimpleEvent<Void> defaultToolRequestEvent = new SimpleEvent<Void>();
 	public final SimpleEvent<Boolean> viewModeEvent = new SimpleEvent<Boolean>();
 	
@@ -145,11 +144,8 @@ public class WorksheetImpl extends Composite implements Worksheet {
 		RegistrationsManager registrations = new RegistrationsManager();
 	}
 	final HashMap<CanvasTool<?>, ToolInstanceInfo> toolInfoMap = new HashMap<CanvasTool<?>, ToolInstanceInfo>();
-
 	protected CanvasPage page = new CanvasPage();
-
 	private CanvasTool<? extends ElementData> activeToolInstance;
-
 
 	public WorksheetImpl() {
 		initWidget(uiBinder.createAndBindUi(this));
@@ -199,6 +195,20 @@ public class WorksheetImpl extends Composite implements Worksheet {
 				optionsDialog.hide();
 				that.updateOptions(optionsWidget.getValue());
 			}});
+		this.worksheetPanel.addDomHandler(new KeyDownHandler(){
+			@Override
+			public void onKeyDown(KeyDownEvent event) {
+				if (event.getNativeKeyCode() == 27) {
+					// Escape
+					escapeOperation();
+				}
+			}}, KeyDownEvent.getType());
+	}
+
+	protected void escapeOperation() {
+		this.clearActiveToolboxItem();
+		stopOperationEvent.dispatch(null);
+		defaultToolRequestEvent.dispatch(null);
 	}
 
 	protected void updateOptions(CanvasPageOptions value) {
@@ -230,7 +240,6 @@ public class WorksheetImpl extends Composite implements Worksheet {
 	protected void workSheetClicked(ClickEvent event) {
 		//This event is registered only if the tool has a valid ToolFactory so there's no need to check 
 		//for null.
-		focusPanelDummy.setFocus(true);
 		CanvasToolFactory<? extends CanvasTool<? extends ElementData>> toolFactory = 
 			this.activeToolboxItem.getToolFactory();
 		Point2D pos = relativePosition(event, this.worksheetPanel.getElement());
@@ -277,15 +286,15 @@ public class WorksheetImpl extends Composite implements Worksheet {
 				removeToolInstance(toolFrame);
 			}
 		}));
-		regs.add(toolFrame.getMoveStartRequest().addHandler(new SimpleEvent.Handler<MouseDownEvent>() {
+		regs.add(toolFrame.getMoveStartRequest().addHandler(new SimpleEvent.Handler<MouseEvent<?>>() {
 			@Override
-			public void onFire(MouseDownEvent arg) {
+			public void onFire(MouseEvent<?> arg) {
 				startDragCanvasToolFrame(toolFrame, arg);
 			}
 		}));
-		regs.add(toolFrame.addResizeStartRequestHandler(new SimpleEvent.Handler<MouseDownEvent>() {
+		regs.add(toolFrame.addResizeStartRequestHandler(new SimpleEvent.Handler<MouseEvent<?>>() {
 			@Override
-			public void onFire(MouseDownEvent arg) {
+			public void onFire(MouseEvent<?> arg) {
 				startResizeCanvasToolFrame(toolFrame, arg);
 			}
 		}));
@@ -376,15 +385,14 @@ public class WorksheetImpl extends Composite implements Worksheet {
 		regs.add(this.dragPanel.addDomHandler(new MouseUpHandler() {
 			@Override
 			public void onMouseUp(MouseUpEvent event) {
-				NativeUtils.disableTextSelectInternal(worksheetPanel.getElement(), false);
-				Event.releaseCapture(dragPanel.getElement());
-				regs.clear();
-				dragPanel.setVisible(false);
-				if (null != stopMoveHandler) {
-					stopMoveHandler.onFire(null);
-				}
+				stopMouseMoveOperation(stopMoveHandler, regs);
 			}}, MouseUpEvent.getType()));
-
+		regs.add(this.stopOperationEvent.addHandler(new SimpleEvent.Handler<Void>() {
+			@Override
+			public void onFire(Void arg) {
+				stopMouseMoveOperation(stopMoveHandler, regs);
+			}
+		}));
 		
 		Event.setCapture(this.dragPanel.getElement());
 		this.dragPanel.setVisible(true);
@@ -660,5 +668,17 @@ public class WorksheetImpl extends Composite implements Worksheet {
 		}
 		this.activeToolInstance = tool;
 		tool.setActive(true);
+	}
+
+	public void stopMouseMoveOperation(
+			final SimpleEvent.Handler<Void> stopMoveHandler,
+			final RegistrationsManager regs) {
+		NativeUtils.disableTextSelectInternal(worksheetPanel.getElement(), false);
+		Event.releaseCapture(dragPanel.getElement());
+		regs.clear();
+		dragPanel.setVisible(false);
+		if (null != stopMoveHandler) {
+			stopMoveHandler.onFire(null);
+		}
 	}
 }

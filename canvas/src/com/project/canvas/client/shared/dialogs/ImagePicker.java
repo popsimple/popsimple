@@ -21,11 +21,13 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.resources.CanvasResources;
+import com.project.canvas.client.shared.RegistrationsManager;
 import com.project.canvas.client.shared.events.SimpleEvent;
 
 public class ImagePicker extends Composite {
@@ -47,15 +49,19 @@ public class ImagePicker extends Composite {
 	@UiField
 	HTMLPanel resultsPanel;
 	
+	@UiField
+	FormPanel formPanel;
+	
 	protected final SimpleEvent<List<PhotoSizeResponse>> imagePicked = new SimpleEvent<List<PhotoSizeResponse>>();
 	
 	protected final Credentials credentials = new Credentials(API_KEY);
 	protected final Search searcher = new Search(credentials);
 	protected final GetSizes photoSizesGetter = new GetSizes(credentials);  
+	protected final RegistrationsManager registrationsManager = new RegistrationsManager();
 
 	protected PhotoSize searchResultPhotoSize = PhotoSize.THUMBNAIL;
 	protected PhotoSize pickedImagePhotoSize = PhotoSize.ORIGINAL;
-
+	
 	private InlineLabel selectedImage; 
 	
 	public ImagePicker() {
@@ -88,24 +94,32 @@ public class ImagePicker extends Composite {
 	}
 
 	protected void setSearchResult(PhotosResponse result) {
+		registrationsManager.clear();
 		resultsPanel.clear();
+		
 		PhotosPage photosPage = result.getPhotosPage();
-		for (int i = 0; i < photosPage.getPerPage(); i++) {
+		for (int i = 0; i < photosPage.getPhotos().length(); i++) {
 			Photo photo = photosPage.getPhotos().get(i);
-			resultsPanel.add(createPhoto(photo));
+			Widget imageWidget = createPhoto(photo);
+			if (null != imageWidget) {
+				resultsPanel.add(imageWidget);
+			}
 		}
 	}
 
 	public Widget createPhoto(final Photo photo) {
+		if (null == photo) {
+			return null;
+		}
 		final InlineLabel image = new InlineLabel();
 		image.addStyleName(CanvasResources.INSTANCE.main().imagePickerResultImage());
 		image.getElement().getStyle().setBackgroundImage("url(" + photo.getSourceUrl(searchResultPhotoSize) + ")");
-		image.addClickHandler(new ClickHandler() {
+		this.registrationsManager.add(image.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
 				imageSelected(photo, image);
 			}
-		});
+		}));
 		return image;
 	}
 
