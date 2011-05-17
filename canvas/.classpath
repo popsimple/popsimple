@@ -8,5 +8,6 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/google-collections-1.0.jar" sourcepath="C:/Users/hadasn.THEOFFICE/.m2/repository/com/google/collections/google-collections/1.0/google-collections-1.0-sources.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/twig-persist-2.0-beta4.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/gwtckeditor"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/dolomite"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

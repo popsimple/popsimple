@@ -340,8 +340,10 @@ public class Worksheet extends Composite {
 			@Override
 			public void onFire(Void arg) {
 				toolFrame.removeStyleName(CanvasResources.INSTANCE.main().hover());
+				toolFrame.removeStyleName(CanvasResources.INSTANCE.main().drag());
 			}};
 		toolFrame.addStyleName(CanvasResources.INSTANCE.main().hover());
+		toolFrame.addStyleName(CanvasResources.INSTANCE.main().drag());
 		this.startMouseMoveOperation(this.dragPanel.getElement(), relativePosition(startEvent, toolFrame.getElement()), 
 				dragHandler, stopMoveHandler);
 	}

@@ -1,1 +1,12 @@
 q8sHZcxL
+
+flickr
+------
+app: 	
+canvasapp
+
+Key:
+023322961d08d84124ba870f1adce55b
+
+Secret:
+ca01f8b684334832 

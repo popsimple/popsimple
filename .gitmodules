@@ -1,3 +1,6 @@
 [submodule "gwt-ckeditor"]
 	path = gwt-ckeditor
 	url = gitolite@git:gwt-ckeditor
+[submodule "Dolomite"]
+	path = Dolomite
+	url = git@github.com:sinelaw/Dolomite.git

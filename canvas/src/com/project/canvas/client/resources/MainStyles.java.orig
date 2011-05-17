@@ -19,7 +19,6 @@ public interface MainStyles extends CssResource {
   String textEditFocused();
   String textEditNotFocused();
   String textEditToolbar();
-  String textEditEditorElementBody();
   
   String toolbox();
   
@@ -98,15 +97,13 @@ public interface MainStyles extends CssResource {
   String toolFrameBottomRightResize();
   
   String toolFrameButton();
+<<<<<<< HEAD
 
   String outOfBounds();
+=======
   
   String toolFrameFrontLink();
   
   String toolFrameBackLink();
-  
-  String worksheetDragPanel();
-
-  String hover();
-  String drag();
+>>>>>>> cc239ab79b142f53314008a2fd5e435d1f929d94
 }

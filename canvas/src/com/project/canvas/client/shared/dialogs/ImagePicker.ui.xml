@@ -1,0 +1,25 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+		.resultsPanel {
+		    border-color: #DDDDDD;
+		    border-radius: 2px 2px 2px 2px;
+		    border-style: solid;
+		    border-width: 1px;
+		    height: 550px;
+		    margin: 5px 0;
+		    overflow: auto;
+		    width: 600px;
+		}
+	</ui:style>
+	<g:HTMLPanel>
+		<g:FormPanel ui:field="formPanel">
+			<g:HTMLPanel>
+				<g:TextBox ui:field="searchText">Search...</g:TextBox>
+				<g:Button ui:field="searchButton">Find Images</g:Button>
+			</g:HTMLPanel>
+		</g:FormPanel>
+		<g:HTMLPanel ui:field="resultsPanel" addStyleNames="{style.resultsPanel}"></g:HTMLPanel>
+	</g:HTMLPanel>
+</ui:UiBinder> 
