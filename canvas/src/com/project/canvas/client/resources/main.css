@@ -51,6 +51,9 @@
 	cursor:pointer;
 	text-decoration:underline;
 }
+
+@eval baseZIndex com.project.canvas.client.shared.ZIndexProvider.baseZIndex;
+
 .worksheetPanel {
 	top:35px;
 	bottom:0px;

@@ -45,11 +45,11 @@ import com.project.canvas.client.canvastools.base.CanvasToolFactory;
 import com.project.canvas.client.canvastools.base.CanvasToolFrame;
 import com.project.canvas.client.canvastools.base.ToolboxItem;
 import com.project.canvas.client.resources.CanvasResources;
+import com.project.canvas.client.shared.DialogWithZIndex;
 import com.project.canvas.client.shared.NativeUtils;
 import com.project.canvas.client.shared.RegistrationsManager;
 import com.project.canvas.client.shared.ZIndexProvider;
 import com.project.canvas.client.shared.events.SimpleEvent;
-import com.project.canvas.client.shared.events.SimpleEvent.Handler;
 import com.project.canvas.shared.contracts.CanvasService;
 import com.project.canvas.shared.contracts.CanvasServiceAsync;
 import com.project.canvas.shared.data.CanvasPage;
@@ -105,7 +105,7 @@ public class Worksheet extends Composite {
 	Widget activeToolFloatingWidget;
 	
 	protected final WorksheetOptionsWidget optionsWidget = new WorksheetOptionsWidget();
-	protected final DialogBox optionsDialog = new DialogBox(false, true);
+	protected final DialogBox optionsDialog = new DialogWithZIndex(false, true);
 
 	public final SimpleEvent<Void> defaultToolRequestEvent = new SimpleEvent<Void>();
 	public final SimpleEvent<Boolean> viewModeEvent = new SimpleEvent<Boolean>();

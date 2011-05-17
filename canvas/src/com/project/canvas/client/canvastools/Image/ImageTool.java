@@ -7,6 +7,8 @@ import com.google.gwt.user.client.ui.Image;
 import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.canvastools.base.CanvasToolCommon;
 import com.project.canvas.client.resources.CanvasResources;
+import com.project.canvas.client.shared.DialogWithZIndex;
+import com.project.canvas.client.shared.WidgetUtils;
 import com.project.canvas.client.shared.ZIndexProvider;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.shared.data.ElementData;
@@ -19,6 +21,8 @@ public class ImageTool extends Image implements CanvasTool<ImageData> {
 	
 	public ImageTool() {
 		CanvasToolCommon.initCanvasToolWidget(this);
+		WidgetUtils.disableDrag(this);
+
 		super.addStyleName(CanvasResources.INSTANCE.main().imageBox());
 		super.addStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
 		this.registerHandlers();
@@ -35,7 +39,7 @@ public class ImageTool extends Image implements CanvasTool<ImageData> {
 	}
 
 	protected void uploadImage() {
-		final DialogBox imageSelectionDialog = new DialogBox(false, true);
+		final DialogBox imageSelectionDialog = new DialogWithZIndex(false, true);
 		
 		final ImageToolOptions dialogContents = new ImageToolOptions(this.getValue());
 		dialogContents.getCancelEvent().addHandler(new SimpleEvent.Handler<Void>() {
