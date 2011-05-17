@@ -10,19 +10,19 @@ import com.google.gwt.dom.client.Element;
 //TODO: Think about a better design. 
 public abstract class ZIndexAllocator
 {
-	private static int nextZIndex = 1;
+	private static int _nextZIndex = 1;
 	private static TreeMap<Integer, Element> _zIndexMap = new TreeMap<Integer, Element>();
 	
 	public static void reset()
 	{
-		nextZIndex = 1;
+		_nextZIndex = 1;
 		_zIndexMap.clear();
 	}
 	
 	public static int allocateSetZIndex(Element element)
 	{
-		int allocatedZIndex = nextZIndex;
-		nextZIndex += 1;
+		int allocatedZIndex = _nextZIndex;
+		_nextZIndex += 1;
 		
 		element.getStyle().setZIndex(allocatedZIndex);
 		_zIndexMap.put(allocatedZIndex, element);
@@ -122,11 +122,11 @@ public abstract class ZIndexAllocator
 	
 	public static int getLastAllocatedZIndex()
 	{
-		return nextZIndex - 1;
+		return _nextZIndex - 1;
 	}
 	
 	public static int getTopMostZIndex()
 	{
-		return nextZIndex;
+		return _nextZIndex;
 	}
 }
