@@ -8,9 +8,8 @@ import com.axeiya.gwtckeditor.client.Toolbar;
 import com.axeiya.gwtckeditor.client.ToolbarLine;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.dom.client.Style.Visibility;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.KeyDownEvent;
@@ -19,6 +18,8 @@ import com.google.gwt.event.logical.shared.InitializeEvent;
 import com.google.gwt.event.logical.shared.InitializeHandler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -26,9 +27,9 @@ import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.canvastools.base.CanvasToolCommon;
 import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.ElementWrapper;
-import com.project.canvas.client.shared.RegistrationsManager;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.shared.data.ElementData;
+import com.project.canvas.shared.data.Point2D;
 import com.project.canvas.shared.data.TextData;
 
 public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
@@ -36,11 +37,13 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 	private final SimpleEvent<String> killRequestEvent = new SimpleEvent<String>();
 	private TextData data = new TextData();
 	private int index;
-	private boolean initialUnhideToolbars;
 	
 	private static final CKConfig editBoxConfig = new CKConfig();
 	private static final Toolbar toolbar = new Toolbar();
-	private static final ToolbarLine toolBarLine = new ToolbarLine(CKConfig.LINE_TYPE.NORMAL);
+	private static final ToolbarLine[] toolBarLines = new ToolbarLine[] {
+		new ToolbarLine(CKConfig.LINE_TYPE.NORMAL),
+		new ToolbarLine(CKConfig.LINE_TYPE.NORMAL)
+	};
 	
 	public static void ensureResourcesLoaded() {
 		final TextEditTool tool = new TextEditTool();
@@ -60,7 +63,7 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 			return;
 		}
 		configInited = true;
-		toolBarLine.addAll(new TOOLBAR_OPTIONS[] {
+		toolBarLines[0].addAll(new TOOLBAR_OPTIONS[] {
 				TOOLBAR_OPTIONS.Bold,
 				TOOLBAR_OPTIONS.Italic,
 				TOOLBAR_OPTIONS.Underline,
@@ -68,8 +71,8 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 				TOOLBAR_OPTIONS.FontSize,
 				TOOLBAR_OPTIONS.TextColor,
 				TOOLBAR_OPTIONS.BGColor,
-				TOOLBAR_OPTIONS.Smiley,
-				TOOLBAR_OPTIONS._,
+		});
+		toolBarLines[1].addAll(new TOOLBAR_OPTIONS[] {
 				TOOLBAR_OPTIONS.Link,
 				TOOLBAR_OPTIONS.Unlink,
 				TOOLBAR_OPTIONS._,
@@ -85,14 +88,16 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 				TOOLBAR_OPTIONS.RemoveFormat,
 		});
 
-		toolbar.add(toolBarLine);
+		toolbar.add(toolBarLines[0]);
+		toolbar.add(toolBarLines[1]);
 		editBoxConfig.setToolbar(toolbar);
 		editBoxConfig.setRemovePlugins("elementspath,scayt,menubutton,contextmenu,showborders");
-		editBoxConfig.setExtraPlugins("autogrow");
+		//editBoxConfig.setExtraPlugins("autogrow");
 		editBoxConfig.setResizeEnabled(false);
-		editBoxConfig.setAutoGrowMinHeight(10);
-		editBoxConfig.setAutoGrowMaxWidth(0);
+		editBoxConfig.setHeight("39px");
+		//editBoxConfig.setAutoGrowMinHeight(10);
 		editBoxConfig.setToolbarLocation("bottom");
+		editBoxConfig.setFocusOnStartup(true);
 	}
 	
 	static {
@@ -105,15 +110,27 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 		
 		initConfig();
 		this.editBox = new CKEditor(editBoxConfig);
-		this.editBox.getElement().getStyle().setVisibility(Visibility.HIDDEN);
-		// Hide toolbars until the user starts typing or clicks
-		this.addStyleName(CanvasResources.INSTANCE.main().textEditNoToolbars());
-		this.initialUnhideToolbars = false;
+		this.editBox.getElement().getStyle().setDisplay(Display.NONE);
 		registerHandlers();
 		this.add(editBox);
 	}
 
 	private void registerHandlers() {
+		this.editBox.addKeyDownHandler(new KeyDownHandler() {
+			@Override
+			public void onKeyDown(KeyDownEvent event) {
+				String data = editBox.getHTML();
+				Point2D newSize = TextEditUtils.autoSizeWidget(
+						new ElementWrapper(editBox.getEditorElement()), data, false);
+				editBox.resize(newSize.getX(), newSize.getY(), true, true);
+				Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+					@Override
+					public void execute() {
+						updateSizeFromEditor();
+					}
+				});
+			}
+		});
 		this.editBox.addResizeHandler(new ResizeHandler() {
 			@Override
 			public void onResize(ResizeEvent event) {
@@ -130,41 +147,17 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 			@Override
 			public void onInitialize(InitializeEvent event) {
 				editBox.setHTML("");
-				editBox.resize(getOffsetWidth(), getOffsetHeight(), false, true);
+				editBox.getElement().getStyle().setDisplay(Display.INLINE_BLOCK);
 				Scheduler.get().scheduleDeferred(new ScheduledCommand() {
 					@Override
 					public void execute() {
-						registerInitialUnhideToolbars();
-						editBox.getElement().getStyle().setVisibility(Visibility.VISIBLE);
+						updateSizeFromEditor();
 					}
 				});
 			}
 		});
 	}
-
-	public void registerInitialUnhideToolbars() {
-		final RegistrationsManager showToolbarsRegs = new RegistrationsManager();
-		ElementWrapper wrappedInnerEditor = new ElementWrapper(this.editBox.getEditorElement()); 
-		showToolbarsRegs.add(this.editBox.addKeyDownHandler(new KeyDownHandler(){
-			@Override
-			public void onKeyDown(KeyDownEvent event) {
-				showToolbars();
-				showToolbarsRegs.clear();
-			}}));
-		showToolbarsRegs.add(this.addDomHandler(new ClickHandler(){
-			@Override
-			public void onClick(ClickEvent event) {
-				showToolbars();
-				showToolbarsRegs.clear();
-			}}, ClickEvent.getType()));
-		showToolbarsRegs.add(wrappedInnerEditor.addDomHandler(new ClickHandler(){
-			@Override
-			public void onClick(ClickEvent event) {
-				showToolbars();
-				showToolbarsRegs.clear();
-			}}, ClickEvent.getType()));
-	}
-
+	
 	@Override
 	public void setActive(final boolean isActive) {
 		setSelfFocus(isActive);
@@ -176,9 +169,7 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 		if (isFocused) {
 			this.addStyleName(CanvasResources.INSTANCE.main().textEditFocused());
 			this.removeStyleName(CanvasResources.INSTANCE.main().textEditNotFocused());
-			if (initialUnhideToolbars) {
-				this.removeStyleName(CanvasResources.INSTANCE.main().textEditNoToolbars());
-			}
+			this.removeStyleName(CanvasResources.INSTANCE.main().textEditNoToolbars());
 		}
 		else {
 			this.removeStyleName(CanvasResources.INSTANCE.main().textEditFocused());
@@ -191,8 +182,6 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 
 	public void checkNeedsKilling() {
 		if (this.editBox.isEditorAttached()) {
-			// use getText rather than getHTML, so that if
-			// there is no text in the box - it will be destroyed
 			HTML editorHTML = new HTML(editBox.getHTML());
 			String text = editorHTML.getText().trim();
 			text = text.replace(new String(new char[]{(char)160}), "");
@@ -242,8 +231,13 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 	}
 
 	public void updateSizeFromEditor() {
-		this.setWidth(editBox.getOffsetWidth() + "px");
-		this.setHeight(editBox.getOffsetHeight() + "px");
+		Element elem = editBox.getEditorElement();
+		if (null == elem){
+			return;
+		}
+		ElementWrapper wrappedEditor = new ElementWrapper(elem);
+		this.setWidth(wrappedEditor.getOffsetWidth() + "px");
+		this.setHeight(wrappedEditor.getOffsetHeight() + "px");
 	}
 
 	public void showToolbars() {
