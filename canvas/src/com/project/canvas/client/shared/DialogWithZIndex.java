@@ -11,8 +11,8 @@ public class DialogWithZIndex extends DialogBox
 
 	@Override
 	public void show() {
-		super.getGlassElement().getStyle().setZIndex(ZIndexProvider.allocateZIndex());
-		super.getElement().getStyle().setZIndex(ZIndexProvider.allocateZIndex());
+		ZIndexAllocator.allocateSetZIndex(super.getGlassElement());
+		ZIndexAllocator.allocateSetZIndex(super.getElement());
 		super.show();
 	}
 }

@@ -1,11 +1,11 @@
 package com.project.canvas.client.worksheet;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.Map.Entry;
-import java.util.NavigableMap;
 import java.util.TreeMap;
 
 import com.google.gwt.core.client.GWT;
@@ -50,7 +50,7 @@ import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.DialogWithZIndex;
 import com.project.canvas.client.shared.NativeUtils;
 import com.project.canvas.client.shared.RegistrationsManager;
-import com.project.canvas.client.shared.ZIndexProvider;
+import com.project.canvas.client.shared.ZIndexAllocator;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.shared.contracts.CanvasService;
 import com.project.canvas.shared.contracts.CanvasServiceAsync;
@@ -136,8 +136,7 @@ public class Worksheet extends Composite {
 		CanvasToolFactory<?> factory;
 		RegistrationsManager registrations = new RegistrationsManager();
 	}
-	// Use LinkedHashMap in order to preserver the order of the tools.
-	final LinkedHashMap<CanvasTool<? extends ElementData>, ToolInstanceInfo> toolRegsMap = new LinkedHashMap<CanvasTool<? extends ElementData>, ToolInstanceInfo>();
+	final HashMap<CanvasTool<?>, ToolInstanceInfo> toolInfoMap = new HashMap<CanvasTool<?>, ToolInstanceInfo>();
 
 	protected CanvasPage page = new CanvasPage();
 
@@ -213,7 +212,7 @@ public class Worksheet extends Composite {
 	protected void showOptionsDialog() {
 		optionsWidget.setValue(this.page.options);
 		//Make sure that the dialog is set to the highest ZIndex.
-		optionsDialog.getElement().getStyle().setZIndex(ZIndexProvider.getTopMostZIndex());
+		optionsDialog.getElement().getStyle().setZIndex(ZIndexAllocator.getTopMostZIndex());
 		optionsDialog.setGlassEnabled(true);
 		optionsDialog.center();
 	}
@@ -236,20 +235,13 @@ public class Worksheet extends Composite {
 	}
 
 	private CanvasToolFrame createToolInstance(final Point2D relativePos, 
-			CanvasToolFactory<? extends CanvasTool<? extends ElementData>> toolFactory) 
-	{
-		return this.createToolInstance(relativePos, 
-				ZIndexProvider.allocateZIndex(), toolFactory);
-	}
-	
-	private CanvasToolFrame createToolInstance(final Point2D relativePos, final int zIndex, 
 			CanvasToolFactory<? extends CanvasTool<? extends ElementData>> toolFactory) {
 		final CanvasTool<? extends ElementData> tool = toolFactory.create();
 		final CanvasToolFrame toolFrame = new CanvasToolFrame(tool);
 		
 		final Point2D creationOffset = toolFactory.getCreationOffset();
 		ToolInstanceInfo toolInfo = new ToolInstanceInfo(toolFactory, toolFrame, null);
-		this.toolRegsMap.put(tool, toolInfo);
+		this.toolInfoMap.put(tool, toolInfo);
 		
 		//TODO: Remove registrations when tool is killed?
 		RegistrationsManager regs = toolInfo.registrations;
@@ -274,13 +266,13 @@ public class Worksheet extends Composite {
 		regs.add(toolFrame.addMoveBackRequestHandler(new SimpleEvent.Handler<Void>() {
 			@Override
 			public void onFire(Void arg) {
-				moveToolFrameBack(toolFrame);
+				ZIndexAllocator.moveElementBelow(toolFrame.getElement());
 			}}));
 		
 		regs.add(toolFrame.addMoveFrontRequestHandler(new SimpleEvent.Handler<Void>() {
 			@Override
 			public void onFire(Void arg) {
-				moveToolFrameFront(toolFrame);
+				ZIndexAllocator.moveElementAbove(toolFrame.getElement());
 			}}));
 		
 		this.worksheetPanel.add(toolFrame);
@@ -298,145 +290,10 @@ public class Worksheet extends Composite {
 				tool.asWidget().setVisible(true);
 				tool.setFocus(true);
 				setToolFramePosition(limitPosToWorksheet(relativePos.plus(creationOffset), toolFrame), toolFrame);
-				toolFrame.getElement().getStyle().setZIndex(zIndex);
+				ZIndexAllocator.allocateSetZIndex(toolFrame.getElement());
 			}
 		});
 		return toolFrame;
-	}
-	
-	//TODO: Move
-	public class Rectangle
-	{
-		protected int _left = 0;
-		protected int _top = 0;
-		protected int _right = 0;
-		protected int _bottom = 0;
-		
-		public Rectangle(int left, int top, int right, int bottom)
-		{
-			this._left = left;
-			this._top = top;
-			this._right = right;
-			this._bottom = bottom;
-		}
-		
-		public boolean isOverlapping(Rectangle rect)
-		{
-			if (this._right < rect._left)
-			{
-				return false;
-			}
-			if (this._left > rect._right)
-			{
-				return false;
-			}
-			if (this._bottom < rect._top)
-			{
-				return false;
-			}
-			if (this._top > rect._bottom)
-			{
-				return false;
-			}
-			return true;
-		}
-	}
-	
-	protected Rectangle getElementRectangle(Element element)
-	{
-		return new Rectangle(element.getAbsoluteLeft(), element.getAbsoluteTop(),
-				element.getAbsoluteRight(), element.getAbsoluteBottom());
-	}
-	
-	protected TreeMap<Integer, CanvasToolFrame> getTopOverlappingFrames(CanvasToolFrame toolFrame)
-	{
-		TreeMap<Integer, CanvasToolFrame> sortedMap = new TreeMap<Integer, CanvasToolFrame>();
-		int currentZIndex = this.getElementZIndex(toolFrame.getElement());
-		for (Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo>  entry : toolRegsMap.entrySet())
-		{
-			if (entry.getValue().toolFrame == toolFrame)
-			{
-				continue;
-			}
-			int zIndex = this.getElementZIndex(entry.getValue().toolFrame.getElement());
-			if (zIndex < currentZIndex)
-			{
-				continue;
-			}
-			if (false == this.isOverlappingElements(
-					toolFrame.getElement(), entry.getValue().toolFrame.getElement()))
-			{
-				continue;
-			}
-			sortedMap.put(zIndex, entry.getValue().toolFrame);
-		}
-		return sortedMap;
-	}
-	
-	protected TreeMap<Integer, CanvasToolFrame> getBottomOverlappingFrames(CanvasToolFrame toolFrame)
-	{
-		TreeMap<Integer, CanvasToolFrame> sortedMap = new TreeMap<Integer, CanvasToolFrame>();
-		int currentZIndex = this.getElementZIndex(toolFrame.getElement());
-		for (Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo>  entry : toolRegsMap.entrySet())
-		{
-			if (entry.getValue().toolFrame == toolFrame)
-			{
-				continue;
-			}
-			int zIndex = this.getElementZIndex(entry.getValue().toolFrame.getElement());
-			if (zIndex > currentZIndex)
-			{
-				continue;
-			}
-			if (false == this.isOverlappingElements(
-					toolFrame.getElement(), entry.getValue().toolFrame.getElement()))
-			{
-				continue;
-			}
-			sortedMap.put(zIndex, entry.getValue().toolFrame);
-		}
-		return sortedMap;
-	}
-	
-	protected boolean isOverlappingElements(Element element1, Element element2)
-	{
-		return this.getElementRectangle(element1).isOverlapping(
-				this.getElementRectangle(element2));
-		
-	}
-	
-	protected void moveToolFrameBack(CanvasToolFrame toolFrame)
-	{
-		TreeMap<Integer, CanvasToolFrame> overlappingFrames = this.getBottomOverlappingFrames(toolFrame);
-		if (overlappingFrames.isEmpty())
-		{
-			return;
-		}
-		if (overlappingFrames.lastKey() > 1)
-		{
-			toolFrame.getElement().getStyle().setZIndex(overlappingFrames.lastKey() + -1);
-		}
-		else
-		{
-			toolFrame.getElement().getStyle().setZIndex(1);
-		}
-	}
-	
-	protected void moveToolFrameFront(CanvasToolFrame toolFrame)
-	{
-		TreeMap<Integer, CanvasToolFrame> overlappingFrames = this.getTopOverlappingFrames(toolFrame);
-		if (overlappingFrames.isEmpty())
-		{
-			return;
-		}
-		if (overlappingFrames.firstKey() < ZIndexProvider.getLastAllocatedZIndex())
-		{
-			toolFrame.getElement().getStyle().setZIndex(overlappingFrames.firstKey() + 1);
-		}
-		else
-		{
-			toolFrame.getElement().getStyle().setZIndex(ZIndexProvider.allocateZIndex());
-		}
 	}
 	
 	protected void setToolFramePosition(Point2D relativePos, final CanvasToolFrame toolFrame) {
@@ -514,7 +371,8 @@ public class Worksheet extends Composite {
 	}
 
 	protected void removeToolInstance(CanvasToolFrame toolFrame) {
-		ToolInstanceInfo info = this.toolRegsMap.remove(toolFrame.getTool());
+		ZIndexAllocator.deallocateZIndex(toolFrame.getElement());
+		ToolInstanceInfo info = this.toolInfoMap.remove(toolFrame.getTool());
 		this.worksheetPanel.remove(toolFrame);
 		info.registrations.clear();
 	}
@@ -598,7 +456,7 @@ public class Worksheet extends Composite {
 	
 	protected void save() {
 		ArrayList<ElementData> activeElems = new ArrayList<ElementData>();
-		for (Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo>  entry : toolRegsMap.entrySet())
+		for (Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo>  entry : toolInfoMap.entrySet())
 		{
 			CanvasTool<? extends ElementData> tool = entry.getKey();
 			ToolInstanceInfo toolInfo = entry.getValue();
@@ -606,7 +464,7 @@ public class Worksheet extends Composite {
 			int x = Integer.valueOf(toolInfo.toolFrame.getElement().getOffsetLeft());
 			int y = Integer.valueOf(toolInfo.toolFrame.getElement().getOffsetTop());
 			toolData._position = new Point2D(x, y);
-			toolData._zIndex = this.getElementZIndex(toolInfo.toolFrame.getElement());
+			toolData._zIndex = ZIndexAllocator.getElementZIndex(toolInfo.toolFrame.getElement()); 
 			toolData._size = new Point2D(
 					toolInfo.toolFrame.getElement().getOffsetWidth(),
 					toolInfo.toolFrame.getElement().getOffsetHeight());
@@ -673,15 +531,18 @@ public class Worksheet extends Composite {
 	}
 
 	protected void load(CanvasPage result) {
+		//TODO: Currently because it's static.
+		ZIndexAllocator.reset();
+		
 		this.page = result;
 		this.updateOptions(result.options);
-		LinkedHashMap<Long, ElementData> updatedElements = new LinkedHashMap<Long, ElementData>();
+		HashMap<Long, ElementData> updatedElements = new HashMap<Long, ElementData>();
 		for (ElementData elem : this.page.elements) {
 			updatedElements.put(elem.id, elem);
 		}
 		
 		for (Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo>  entry 
-				: new HashSet<Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo>>(toolRegsMap.entrySet()))
+				: new HashSet<Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo>>(toolInfoMap.entrySet()))
 		{
 			CanvasTool<? extends ElementData> tool = entry.getKey();
 			ToolInstanceInfo toolInfo = entry.getValue();
@@ -698,8 +559,19 @@ public class Worksheet extends Composite {
 		createToolInstancesFromData(updatedElements);
 	}
 
-	private void createToolInstancesFromData(LinkedHashMap<Long, ElementData> updatedElements) {
-		for (ElementData newElement : updatedElements.values()) {
+	protected Collection<ElementData> sortByZIndex(Collection<ElementData> elements)
+	{
+		TreeMap<Integer, ElementData> elementsByZIndex = new TreeMap<Integer, ElementData>();
+		for (ElementData element : elements)
+		{
+			elementsByZIndex.put(element._zIndex, element);
+		}
+		return elementsByZIndex.values();
+	}
+	
+	private void createToolInstancesFromData(HashMap<Long, ElementData> updatedElements) {
+		for (ElementData newElement : this.sortByZIndex(updatedElements.values())) 
+		{
 			CanvasToolFactory<? extends CanvasTool<? extends ElementData>> factory = null;
 			Class<?> cls = newElement.getClass();
 			if (cls.equals(TextData.class)) {
@@ -717,7 +589,7 @@ public class Worksheet extends Composite {
 			}
 			//TODO: Refactor
 			CanvasToolFrame toolFrame = this.createToolInstance(
-					newElement._position, newElement._zIndex, factory);
+					newElement._position, factory);
 			if (null != newElement._size)
 			{
 				toolFrame.setWidth(newElement._size.getX());
@@ -728,18 +600,6 @@ public class Worksheet extends Composite {
 		}
 	}
 	
-	protected int getElementZIndex(Element element)
-	{
-		try
-		{
-			return Integer.parseInt(element.getStyle().getZIndex());
-		}
-		catch(NumberFormatException ex)
-		{
-			return 0;
-		}
-	}
-
 	private void loadClicked() {
 		String idStr = loadIdBox.getText();
 		load(idStr);

@@ -9,7 +9,7 @@ import com.project.canvas.client.canvastools.base.CanvasToolCommon;
 import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.DialogWithZIndex;
 import com.project.canvas.client.shared.WidgetUtils;
-import com.project.canvas.client.shared.ZIndexProvider;
+import com.project.canvas.client.shared.ZIndexAllocator;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.shared.data.ElementData;
 import com.project.canvas.shared.data.ImageData;
@@ -60,7 +60,7 @@ public class ImageTool extends Image implements CanvasTool<ImageData> {
 		imageSelectionDialog.setGlassEnabled(true);
 		imageSelectionDialog.setText("Image options");
 		imageSelectionDialog.show();
-		imageSelectionDialog.getElement().getStyle().setZIndex(ZIndexProvider.getTopMostZIndex());
+		imageSelectionDialog.getElement().getStyle().setZIndex(ZIndexAllocator.getTopMostZIndex());
 		imageSelectionDialog.center();
 		dialogContents.setFocus(true);
 	}
