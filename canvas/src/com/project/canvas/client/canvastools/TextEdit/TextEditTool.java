@@ -9,10 +9,12 @@ import com.axeiya.gwtckeditor.client.ToolbarLine;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style.Visibility;
-import com.google.gwt.event.dom.client.BlurEvent;
-import com.google.gwt.event.dom.client.BlurHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.FocusHandler;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.logical.shared.InitializeEvent;
 import com.google.gwt.event.logical.shared.InitializeHandler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
@@ -23,6 +25,8 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.canvastools.base.CanvasToolCommon;
 import com.project.canvas.client.resources.CanvasResources;
+import com.project.canvas.client.shared.ElementWrapper;
+import com.project.canvas.client.shared.RegistrationsManager;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.shared.data.ElementData;
 import com.project.canvas.shared.data.TextData;
@@ -32,6 +36,7 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 	private final SimpleEvent<String> killRequestEvent = new SimpleEvent<String>();
 	private TextData data = new TextData();
 	private int index;
+	private boolean initialUnhideToolbars;
 	
 	private static final CKConfig editBoxConfig = new CKConfig();
 	private static final Toolbar toolbar = new Toolbar();
@@ -101,12 +106,14 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 		initConfig();
 		this.editBox = new CKEditor(editBoxConfig);
 		this.editBox.getElement().getStyle().setVisibility(Visibility.HIDDEN);
+		// Hide toolbars until the user starts typing or clicks
+		this.addStyleName(CanvasResources.INSTANCE.main().textEditNoToolbars());
+		this.initialUnhideToolbars = false;
 		registerHandlers();
 		this.add(editBox);
 	}
 
 	private void registerHandlers() {
-		final TextEditTool that = this;
 		this.editBox.addResizeHandler(new ResizeHandler() {
 			@Override
 			public void onResize(ResizeEvent event) {
@@ -127,23 +134,41 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 				Scheduler.get().scheduleDeferred(new ScheduledCommand() {
 					@Override
 					public void execute() {
+						registerInitialUnhideToolbars();
 						editBox.getElement().getStyle().setVisibility(Visibility.VISIBLE);
 					}
 				});
 			}
 		});
-		this.editBox.addBlurHandler(new BlurHandler() {
+	}
+
+	public void registerInitialUnhideToolbars() {
+		final RegistrationsManager showToolbarsRegs = new RegistrationsManager();
+		ElementWrapper wrappedInnerEditor = new ElementWrapper(this.editBox.getEditorElement()); 
+		showToolbarsRegs.add(this.editBox.addKeyDownHandler(new KeyDownHandler(){
 			@Override
-			public void onBlur(BlurEvent event) {
-				setSelfFocus(false);
-			}
-		});
+			public void onKeyDown(KeyDownEvent event) {
+				showToolbars();
+				showToolbarsRegs.clear();
+			}}));
+		showToolbarsRegs.add(this.addDomHandler(new ClickHandler(){
+			@Override
+			public void onClick(ClickEvent event) {
+				showToolbars();
+				showToolbarsRegs.clear();
+			}}, ClickEvent.getType()));
+		showToolbarsRegs.add(wrappedInnerEditor.addDomHandler(new ClickHandler(){
+			@Override
+			public void onClick(ClickEvent event) {
+				showToolbars();
+				showToolbarsRegs.clear();
+			}}, ClickEvent.getType()));
 	}
 
 	@Override
-	public void setFocus(final boolean isFocused) {
-		setSelfFocus(isFocused);
-		this.editBox.setFocus(isFocused);
+	public void setActive(final boolean isActive) {
+		setSelfFocus(isActive);
+		this.editBox.setFocus(isActive);
 	}
 
 	private void setSelfFocus(boolean isFocused) {
@@ -151,24 +176,36 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 		if (isFocused) {
 			this.addStyleName(CanvasResources.INSTANCE.main().textEditFocused());
 			this.removeStyleName(CanvasResources.INSTANCE.main().textEditNotFocused());
+			if (initialUnhideToolbars) {
+				this.removeStyleName(CanvasResources.INSTANCE.main().textEditNoToolbars());
+			}
 		}
 		else {
 			this.removeStyleName(CanvasResources.INSTANCE.main().textEditFocused());
 			this.addStyleName(CanvasResources.INSTANCE.main().textEditNotFocused());
-			
+			this.addStyleName(CanvasResources.INSTANCE.main().textEditNoToolbars());
+			checkNeedsKilling();
+		}
+		this.updateSizeFromEditor();
+	}
+
+	public void checkNeedsKilling() {
+		if (this.editBox.isEditorAttached()) {
 			// use getText rather than getHTML, so that if
 			// there is no text in the box - it will be destroyed
-			HTML editorHTML = new HTML(this.editBox.getHTML());
+			HTML editorHTML = new HTML(editBox.getHTML());
 			String text = editorHTML.getText().trim();
 			text = text.replace(new String(new char[]{(char)160}), "");
 			
 			// Call resetSelection LAST because it makes the getHTML return wrong results.
 			//this.editBox.resetSelection();
 			if (text.isEmpty()) {
-				this.killRequestEvent.dispatch("Empty");
+				killRequestEvent.dispatch("Empty");
 			}
 		}
-		this.updateSizeFromEditor();
+		else {
+			killRequestEvent.dispatch("Empty");
+		}
 	}
 
 	public SimpleEvent<String> getKillRequestedEvent() {
@@ -196,6 +233,7 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 	public void setValue(TextData data) {
 		this.data = data;
 		this.editBox.setHTML(this.data._text);
+		this.updateSizeFromEditor();
 	}
 
 	@Override
@@ -206,5 +244,9 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 	public void updateSizeFromEditor() {
 		this.setWidth(editBox.getOffsetWidth() + "px");
 		this.setHeight(editBox.getOffsetHeight() + "px");
+	}
+
+	public void showToolbars() {
+		this.removeStyleName(CanvasResources.INSTANCE.main().textEditNoToolbars());
 	}
 }

@@ -148,6 +148,8 @@ public class WorksheetImpl extends Composite implements Worksheet {
 
 	protected CanvasPage page = new CanvasPage();
 
+	private CanvasTool<? extends ElementData> activeToolInstance;
+
 
 	public WorksheetImpl() {
 		initWidget(uiBinder.createAndBindUi(this));
@@ -297,13 +299,12 @@ public class WorksheetImpl extends Composite implements Worksheet {
 			}
 		});
 		regs.add(toolInfo.killRegistration);
-
 		tool.asWidget().setVisible(false);
 		Scheduler.get().scheduleDeferred(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				tool.asWidget().setVisible(true);
-				tool.setFocus(true);
+				setActiveTool(tool);
 				setToolFramePosition(limitPosToWorksheet(relativePos.plus(creationOffset), toolFrame), toolFrame);
 				toolFrame.getElement().getStyle().setZIndex(zIndex);
 			}
@@ -474,9 +475,8 @@ public class WorksheetImpl extends Composite implements Worksheet {
 	{
 		final SimpleEvent.Handler<Point2D> resizeHandler = new SimpleEvent.Handler<Point2D>() {
 			@Override
-			public void onFire(Point2D pos) {
-				toolFrame.setWidth(pos.getX());
-				toolFrame.setHeight(pos.getY());
+			public void onFire(Point2D size) {
+				resizeToolFrame(toolFrame, size);
 			}
 		};
 		this.startMouseMoveOperation(toolFrame.getElement(), Point2D.zero, resizeHandler, null);
@@ -533,7 +533,7 @@ public class WorksheetImpl extends Composite implements Worksheet {
 	 */
 	@Override
 	public void setActiveTool(ToolboxItem toolboxItem) {
-		this.clearActiveTool();
+		this.clearActiveToolboxItem();
 		
 		this.activeToolboxItem = toolboxItem;
 		this.worksheetPanel.addStyleName(toolboxItem.getCanvasStyleInCreateMode());
@@ -541,7 +541,7 @@ public class WorksheetImpl extends Composite implements Worksheet {
 		this.registerToolHandlers(this.activeToolboxItem);
 	}
 	
-	protected void clearActiveTool()
+	protected void clearActiveToolboxItem()
 	{
 		if (null != this.activeToolboxItem)
 		{
@@ -729,15 +729,13 @@ public class WorksheetImpl extends Composite implements Worksheet {
 				continue;
 			}
 			//TODO: Refactor
-			CanvasToolFrame toolFrame = this.createToolInstance(
-					newElement._position, newElement._zIndex, factory);
+			CanvasToolFrame toolFrame = this.createToolInstance(newElement._position, newElement._zIndex, factory);
 			if (null != newElement._size)
 			{
-				toolFrame.setWidth(newElement._size.getX());
-				toolFrame.setHeight(newElement._size.getY());
+				resizeToolFrame(toolFrame, newElement._size);
 			}
 			toolFrame.getTool().setElementData(newElement);
-			toolFrame.getTool().setFocus(false);
+			toolFrame.getTool().setActive(false);
 		}
 	}
 	
@@ -773,5 +771,18 @@ public class WorksheetImpl extends Composite implements Worksheet {
 		if (null != id) {
 			load(id);
 		}
+	}
+
+	public void resizeToolFrame(final CanvasToolFrame toolFrame, Point2D pos) {
+		toolFrame.setWidth(pos.getX());
+		toolFrame.setHeight(pos.getY());
+	}
+
+	public void setActiveTool(final CanvasTool<? extends ElementData> tool) {
+		if (null != this.activeToolInstance) {
+			this.activeToolInstance.setActive(false);
+		}
+		this.activeToolInstance = tool;
+		tool.setActive(true);
 	}
 }

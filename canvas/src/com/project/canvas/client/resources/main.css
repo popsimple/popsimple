@@ -146,11 +146,15 @@
 	padding:2px;
 }
 
+.textEditNotFocused {
+}
+
 @external .cke_top, .cke_bottom, .cke_wrapper .cke_skin_kama .cke_contents;
-.textEditNotFocused .cke_top {
+
+.textEditNoToolbars .cke_top {
 	visibility: hidden !important;
 }
-.textEditNotFocused .cke_bottom {
+.textEditNoToolbars .cke_bottom {
 	display: none  !important;
 }
 .textEdit span.cke_skin_kama {

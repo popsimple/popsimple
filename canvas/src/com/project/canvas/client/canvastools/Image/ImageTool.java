@@ -71,7 +71,8 @@ public class ImageTool extends Image implements CanvasTool<ImageData> {
 		});
 	}
 
-	public void setFocus(boolean isFocused) {
+	@Override
+	public void setActive(boolean isFocused) {
 		// do nothing.
 	}
 

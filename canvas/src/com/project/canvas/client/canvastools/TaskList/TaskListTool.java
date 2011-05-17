@@ -113,8 +113,14 @@ public class TaskListTool extends Composite implements CanvasTool<TaskListData>,
 		return this.killRequestedEvent;
 	}
 
-	public void setFocus(boolean isFocused) {
-		this.getFirstTaskWidget().setFocus(isFocused);
+	@Override
+	public void setFocus(boolean focused) {
+		this.getFirstTaskWidget().setFocus(focused);
+	}
+
+	@Override
+	public void setActive(boolean isActive) {
+		this.setFocus(isActive);
 	}
 
 	@Override

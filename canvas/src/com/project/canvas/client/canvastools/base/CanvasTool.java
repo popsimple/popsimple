@@ -10,7 +10,8 @@ import com.project.canvas.shared.data.ElementData;
 public interface CanvasTool<T extends ElementData> extends IsWidget, TakesValue<T> {
 	SimpleEvent<String> getKillRequestedEvent();
 
-	void setElementData(ElementData data); // non-generic version
+	void setElementData(ElementData data); // non-generic version of setValue
 
-	void setFocus(boolean isFocused);
+	// Notifies the tool that it became active/inactive in the worksheet.
+	void setActive(boolean isActive);
 }
