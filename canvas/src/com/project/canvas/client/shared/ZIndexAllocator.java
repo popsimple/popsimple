@@ -7,6 +7,7 @@ import java.util.TreeMap;
 
 import com.google.gwt.dom.client.Element;
 
+//TODO: Think about a better design. 
 public abstract class ZIndexAllocator
 {
 	private static int nextZIndex = 1;

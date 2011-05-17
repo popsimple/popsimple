@@ -233,8 +233,24 @@ public class Worksheet extends Composite {
 	protected Point2D relativePosition(MouseEvent<?> event, Element elem) {
 		return new Point2D(event.getRelativeX(elem), event.getRelativeY(elem));
 	}
+	
+	protected void setToolFrameSize(CanvasToolFrame toolFrame, Point2D size)
+	{
+		if (null == size)
+		{
+			return;
+		}
+		toolFrame.setWidth(size.getX());
+		toolFrame.setHeight(size.getY());
+	}
 
 	private CanvasToolFrame createToolInstance(final Point2D relativePos, 
+			CanvasToolFactory<? extends CanvasTool<? extends ElementData>> toolFactory)
+	{
+		return this.createToolInstance(relativePos, null, toolFactory);
+	}
+	
+	private CanvasToolFrame createToolInstance(final Point2D relativePos, final Point2D size,
 			CanvasToolFactory<? extends CanvasTool<? extends ElementData>> toolFactory) {
 		final CanvasTool<? extends ElementData> tool = toolFactory.create();
 		final CanvasToolFrame toolFrame = new CanvasToolFrame(tool);
@@ -289,7 +305,9 @@ public class Worksheet extends Composite {
 			public void execute() {
 				tool.asWidget().setVisible(true);
 				tool.setFocus(true);
-				setToolFramePosition(limitPosToWorksheet(relativePos.plus(creationOffset), toolFrame), toolFrame);
+				setToolFramePosition(limitPosToWorksheet(
+						relativePos.plus(creationOffset), toolFrame), toolFrame);
+				setToolFrameSize(toolFrame, size);
 				ZIndexAllocator.allocateSetZIndex(toolFrame.getElement());
 			}
 		});
@@ -589,12 +607,7 @@ public class Worksheet extends Composite {
 			}
 			//TODO: Refactor
 			CanvasToolFrame toolFrame = this.createToolInstance(
-					newElement._position, factory);
-			if (null != newElement._size)
-			{
-				toolFrame.setWidth(newElement._size.getX());
-				toolFrame.setHeight(newElement._size.getY());
-			}
+					newElement._position, newElement._size, factory);
 			toolFrame.getTool().setElementData(newElement);
 			toolFrame.getTool().setFocus(false);
 		}
