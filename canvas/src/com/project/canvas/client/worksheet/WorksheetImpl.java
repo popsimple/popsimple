@@ -391,11 +391,11 @@ public class WorksheetImpl extends Composite implements Worksheet {
 	}
 
 	protected Point2D limitPosToWorksheet(Point2D pos, Widget elem) {
-		Point2D maxSize = new Point2D(
-				this.worksheetPanel.getOffsetWidth() - elem.getOffsetWidth(),
-				this.worksheetPanel.getOffsetHeight() - elem.getOffsetHeight());
+		Point2D maxPos = new Point2D(
+				this.worksheetPanel.getOffsetWidth() - 20,
+				this.worksheetPanel.getOffsetHeight() - 20);
 		
-		return Point2D.max(Point2D.zero, Point2D.min(maxSize, pos));
+		return Point2D.max(Point2D.zero, Point2D.min(maxPos, pos));
 	}
 
 	protected void removeToolInstance(CanvasToolFrame toolFrame) {
