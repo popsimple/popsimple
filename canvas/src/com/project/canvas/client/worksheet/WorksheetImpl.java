@@ -11,13 +11,15 @@ import java.util.TreeMap;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyDownEvent;
-import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseMoveHandler;
@@ -29,7 +31,9 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
@@ -174,6 +178,15 @@ public class WorksheetImpl extends Composite implements Worksheet {
 				viewModeEvent.dispatch(true);
 				worksheetHeader.addStyleName(CanvasResources.INSTANCE.main().displayNone());
 				that.addStyleName(CanvasResources.INSTANCE.main().worksheetFullView());
+				final RegistrationsManager regs = new RegistrationsManager();
+				regs.add(stopOperationEvent.addHandler(new SimpleEvent.Handler<Void>(){
+					@Override
+					public void onFire(Void arg) {
+						viewModeEvent.dispatch(false);
+						worksheetHeader.removeStyleName(CanvasResources.INSTANCE.main().displayNone());
+						that.removeStyleName(CanvasResources.INSTANCE.main().worksheetFullView());
+						regs.clear();
+					}}));
 			}
 		});
 		this.optionsBackground.addClickHandler(new ClickHandler() {
@@ -194,14 +207,18 @@ public class WorksheetImpl extends Composite implements Worksheet {
 				optionsDialog.hide();
 				that.updateOptions(optionsWidget.getValue());
 			}});
-		this.worksheetPanel.addDomHandler(new KeyDownHandler(){
+		Event.addNativePreviewHandler(new NativePreviewHandler() {
 			@Override
-			public void onKeyDown(KeyDownEvent event) {
-				if (event.getNativeKeyCode() == 27) {
-					// Escape
-					escapeOperation();
+			public void onPreviewNativeEvent(NativePreviewEvent event) {
+				String type = event.getNativeEvent().getType();
+				if (type.equals("keypress")) {
+					if (event.getNativeEvent().getKeyCode() == 27) {
+						// Escape
+						escapeOperation();
+					}
 				}
-			}}, KeyDownEvent.getType());
+			}
+		});
 	}
 
 	protected void escapeOperation() {
@@ -351,24 +368,32 @@ public class WorksheetImpl extends Composite implements Worksheet {
 		toolFrame.addStyleName(CanvasResources.INSTANCE.main().hover());
 		toolFrame.addStyleName(CanvasResources.INSTANCE.main().drag());
 		this.startMouseMoveOperation(this.dragPanel.getElement(), relativePosition(startEvent, toolFrame.getElement()), 
-				dragHandler, stopMoveHandler);
+				dragHandler, stopMoveHandler, stopMoveHandler);
 	}
 
 	protected void startResizeCanvasToolFrame(final CanvasToolFrame toolFrame, final MouseEvent<?>  startEvent)
 	{
+		final Point2D initialSize = new Point2D(toolFrame.getOffsetWidth(), toolFrame.getOffsetHeight());
 		final SimpleEvent.Handler<Point2D> resizeHandler = new SimpleEvent.Handler<Point2D>() {
 			@Override
 			public void onFire(Point2D size) {
 				resizeToolFrame(toolFrame, size);
 			}
 		};
-		this.startMouseMoveOperation(toolFrame.getElement(), Point2D.zero, resizeHandler, null);
+		final SimpleEvent.Handler<Void> cancelHandler = new SimpleEvent.Handler<Void>() {
+			@Override
+			public void onFire(Void arg) {
+				resizeToolFrame(toolFrame, initialSize);
+			}
+		};
+		this.startMouseMoveOperation(toolFrame.getElement(), Point2D.zero, resizeHandler, null, cancelHandler);
 	}
 
 	
 	protected void startMouseMoveOperation(final Element referenceElem, final Point2D referenceOffset, 
 			final SimpleEvent.Handler<Point2D> moveHandler,
-			final SimpleEvent.Handler<Void> stopMoveHandler) 
+			final SimpleEvent.Handler<Void> stopMoveHandler,
+			final SimpleEvent.Handler<Void> cancelHandler) 
 	{
 		final RegistrationsManager regs = new RegistrationsManager();
 		
@@ -388,7 +413,7 @@ public class WorksheetImpl extends Composite implements Worksheet {
 		regs.add(this.stopOperationEvent.addHandler(new SimpleEvent.Handler<Void>() {
 			@Override
 			public void onFire(Void arg) {
-				stopMouseMoveOperation(stopMoveHandler, regs);
+				stopMouseMoveOperation(cancelHandler, regs);
 			}
 		}));
 		
