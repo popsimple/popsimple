@@ -22,9 +22,10 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.events.SimpleEvent;
 
 public class ImagePicker extends Composite {
@@ -53,7 +54,9 @@ public class ImagePicker extends Composite {
 	protected final GetSizes photoSizesGetter = new GetSizes(credentials);  
 
 	protected PhotoSize searchResultPhotoSize = PhotoSize.THUMBNAIL;
-	protected PhotoSize pickedImagePhotoSize = PhotoSize.ORIGINAL; 
+	protected PhotoSize pickedImagePhotoSize = PhotoSize.ORIGINAL;
+
+	private InlineLabel selectedImage; 
 	
 	public ImagePicker() {
 		initWidget(uiBinder.createAndBindUi(this));
@@ -93,23 +96,14 @@ public class ImagePicker extends Composite {
 		}
 	}
 
-	public Image createPhoto(final Photo photo) {
-		Image image = new Image(photo.getSourceUrl(searchResultPhotoSize));
+	public Widget createPhoto(final Photo photo) {
+		final InlineLabel image = new InlineLabel();
+		image.addStyleName(CanvasResources.INSTANCE.main().imagePickerResultImage());
+		image.getElement().getStyle().setBackgroundImage("url(" + photo.getSourceUrl(searchResultPhotoSize) + ")");
 		image.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				photoSizesGetter.setPhoto(photo);
-				photoSizesGetter.send(new AsyncCallback<PhotoSizesResponse>() {
-					@Override
-					public void onSuccess(PhotoSizesResponse result) {
-						imagePicked.dispatch(result.getSizes());
-					}
-					
-					@Override
-					public void onFailure(Throwable caught) {
-						// TODO Auto-generated method stub
-					}
-				});
+				imageSelected(photo, image);
 			}
 		});
 		return image;
@@ -133,5 +127,25 @@ public class ImagePicker extends Composite {
 
 	public SimpleEvent<List<PhotoSizeResponse>> getImagePicked() {
 		return imagePicked;
+	}
+
+	public void imageSelected(final Photo photo, final InlineLabel image) {
+		if (null != selectedImage) {
+			selectedImage.removeStyleName(CanvasResources.INSTANCE.main().selected());
+		}
+		this.selectedImage = image;
+		image.addStyleName(CanvasResources.INSTANCE.main().selected());
+		photoSizesGetter.setPhoto(photo);
+		photoSizesGetter.send(new AsyncCallback<PhotoSizesResponse>() {
+			@Override
+			public void onSuccess(PhotoSizesResponse result) {
+				imagePicked.dispatch(result.getSizes());
+			}
+			
+			@Override
+			public void onFailure(Throwable caught) {
+				// TODO Auto-generated method stub
+			}
+		});
 	}
 }

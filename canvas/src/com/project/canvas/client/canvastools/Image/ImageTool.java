@@ -1,5 +1,7 @@
 package com.project.canvas.client.canvastools.Image;
 
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -59,10 +61,14 @@ public class ImageTool extends Image implements CanvasTool<ImageData> {
 		imageSelectionDialog.add(dialogContents);
 		imageSelectionDialog.setGlassEnabled(true);
 		imageSelectionDialog.setText("Image options");
-		imageSelectionDialog.show();
-		imageSelectionDialog.getElement().getStyle().setZIndex(ZIndexProvider.getTopMostZIndex());
 		imageSelectionDialog.center();
-		dialogContents.setFocus(true);
+		Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				dialogContents.setFocus(true);
+				imageSelectionDialog.center();
+			}
+		});
 	}
 
 	public void setFocus(boolean isFocused) {

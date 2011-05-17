@@ -10,7 +10,8 @@
 		    height: 550px;
 		    margin: 5px 0;
 		    overflow: auto;
-		    width: 600px;
+		    padding: 10px;
+		    width: 550px;
 		}
 	</ui:style>
 	<g:HTMLPanel>

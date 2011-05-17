@@ -109,4 +109,8 @@ public interface MainStyles extends CssResource {
 
   String hover();
   String drag();
+
+  String imagePickerResultImage();
+
+  String selected();
 }
