@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
+import java.util.NavigableMap;
+import java.util.TreeMap;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
@@ -301,27 +303,140 @@ public class Worksheet extends Composite {
 		});
 		return toolFrame;
 	}
-
+	
+	//TODO: Move
+	public class Rectangle
+	{
+		protected int _left = 0;
+		protected int _top = 0;
+		protected int _right = 0;
+		protected int _bottom = 0;
+		
+		public Rectangle(int left, int top, int right, int bottom)
+		{
+			this._left = left;
+			this._top = top;
+			this._right = right;
+			this._bottom = bottom;
+		}
+		
+		public boolean isOverlapping(Rectangle rect)
+		{
+			if (this._right < rect._left)
+			{
+				return false;
+			}
+			if (this._left > rect._right)
+			{
+				return false;
+			}
+			if (this._bottom < rect._top)
+			{
+				return false;
+			}
+			if (this._top > rect._bottom)
+			{
+				return false;
+			}
+			return true;
+		}
+	}
+	
+	protected Rectangle getElementRectangle(Element element)
+	{
+		return new Rectangle(element.getAbsoluteLeft(), element.getAbsoluteTop(),
+				element.getAbsoluteRight(), element.getAbsoluteBottom());
+	}
+	
+	protected TreeMap<Integer, CanvasToolFrame> getTopOverlappingFrames(CanvasToolFrame toolFrame)
+	{
+		TreeMap<Integer, CanvasToolFrame> sortedMap = new TreeMap<Integer, CanvasToolFrame>();
+		int currentZIndex = this.getElementZIndex(toolFrame.getElement());
+		for (Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo>  entry : toolRegsMap.entrySet())
+		{
+			if (entry.getValue().toolFrame == toolFrame)
+			{
+				continue;
+			}
+			int zIndex = this.getElementZIndex(entry.getValue().toolFrame.getElement());
+			if (zIndex < currentZIndex)
+			{
+				continue;
+			}
+			if (false == this.isOverlappingElements(
+					toolFrame.getElement(), entry.getValue().toolFrame.getElement()))
+			{
+				continue;
+			}
+			sortedMap.put(zIndex, entry.getValue().toolFrame);
+		}
+		return sortedMap;
+	}
+	
+	protected TreeMap<Integer, CanvasToolFrame> getBottomOverlappingFrames(CanvasToolFrame toolFrame)
+	{
+		TreeMap<Integer, CanvasToolFrame> sortedMap = new TreeMap<Integer, CanvasToolFrame>();
+		int currentZIndex = this.getElementZIndex(toolFrame.getElement());
+		for (Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo>  entry : toolRegsMap.entrySet())
+		{
+			if (entry.getValue().toolFrame == toolFrame)
+			{
+				continue;
+			}
+			int zIndex = this.getElementZIndex(entry.getValue().toolFrame.getElement());
+			if (zIndex > currentZIndex)
+			{
+				continue;
+			}
+			if (false == this.isOverlappingElements(
+					toolFrame.getElement(), entry.getValue().toolFrame.getElement()))
+			{
+				continue;
+			}
+			sortedMap.put(zIndex, entry.getValue().toolFrame);
+		}
+		return sortedMap;
+	}
+	
+	protected boolean isOverlappingElements(Element element1, Element element2)
+	{
+		return this.getElementRectangle(element1).isOverlapping(
+				this.getElementRectangle(element2));
+		
+	}
+	
 	protected void moveToolFrameBack(CanvasToolFrame toolFrame)
 	{
-		int zIndex = this.getElementZIndex(toolFrame.getElement());
-		int newZIndex = Math.max(zIndex - 1, 1);
-		if (zIndex == newZIndex)
+		TreeMap<Integer, CanvasToolFrame> overlappingFrames = this.getBottomOverlappingFrames(toolFrame);
+		if (overlappingFrames.isEmpty())
 		{
 			return;
 		}
-		toolFrame.getElement().getStyle().setZIndex(newZIndex);
+		if (overlappingFrames.lastKey() > 1)
+		{
+			toolFrame.getElement().getStyle().setZIndex(overlappingFrames.lastKey() + -1);
+		}
+		else
+		{
+			toolFrame.getElement().getStyle().setZIndex(1);
+		}
 	}
 	
 	protected void moveToolFrameFront(CanvasToolFrame toolFrame)
 	{
-		int zIndex = this.getElementZIndex(toolFrame.getElement());
-		int newZIndex = Math.min(zIndex + 1, ZIndexProvider.getLastAllocatedZIndex());
-		if (zIndex == newZIndex)
+		TreeMap<Integer, CanvasToolFrame> overlappingFrames = this.getTopOverlappingFrames(toolFrame);
+		if (overlappingFrames.isEmpty())
 		{
 			return;
 		}
-		toolFrame.getElement().getStyle().setZIndex(newZIndex);
+		if (overlappingFrames.firstKey() < ZIndexProvider.getLastAllocatedZIndex())
+		{
+			toolFrame.getElement().getStyle().setZIndex(overlappingFrames.firstKey() + 1);
+		}
+		else
+		{
+			toolFrame.getElement().getStyle().setZIndex(ZIndexProvider.allocateZIndex());
+		}
 	}
 	
 	protected void setToolFramePosition(Point2D relativePos, final CanvasToolFrame toolFrame) {

@@ -94,6 +94,8 @@ public class CanvasToolFrame extends Composite {
 		
 //		CanvasToolCommon.stopClickPropagation(buttonsPanel);
 		WidgetUtils.stopClickPropagation(closeLink);
+		WidgetUtils.stopClickPropagation(moveBackLink);
+		WidgetUtils.stopClickPropagation(moveFrontLink);
 		NativeUtils.disableTextSelectInternal(this.buttonsPanel.getElement(), true);
 	}
 	
