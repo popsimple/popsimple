@@ -82,33 +82,35 @@ public class ImageTool extends Image implements CanvasTool<ImageData> {
 
 
 	protected void setImageUrl(String url) {
-		if (null == url || url.trim().isEmpty())
-		{ 
-			super.setUrl("");
-			super.addStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
-			super.removeStyleName(CanvasResources.INSTANCE.main().imageToolSet());
-			return;
-		}
-		if (url.trim().equals(super.getUrl().trim())) {
-			return;
-		}
-			
-		//super.setUrl(url);
-		this.getElement().setTitle(url);
-		this.getElement().getStyle().setBackgroundImage("url(\"" + url + "\")");
+		this.setUrl(url);
+		//		if (null == url || url.trim().isEmpty())
+//		{ 
+//			super.setUrl("");
+//			super.addStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
+//			super.removeStyleName(CanvasResources.INSTANCE.main().imageToolSet());
+//			return;
+//		}
+//		if (url.trim().equals(super.getUrl().trim())) {
+//			return;
+//		}
+//			
+//		//super.setUrl(url);
+//		this.getElement().setTitle(url);
+//		this.getElement().getStyle().setBackgroundImage("url(\"" + url + "\")");
 		super.removeStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
 		super.addStyleName(CanvasResources.INSTANCE.main().imageToolSet());
 	}
 
 	@Override
 	public ImageData getValue() {
-		String imageCss = this.getElement().getStyle().getBackgroundImage();
-		if (imageCss.contains("url(")) {
-			this.data._url = imageCss.substring("url(".length(), imageCss.length()-1);
-		}
-		else {
-			this.data._url = "";
-		}
+//		String imageCss = this.getElement().getStyle().getBackgroundImage();
+//		if (imageCss.contains("url(")) {
+//			this.data._url = imageCss.substring("url(".length(), imageCss.length()-1);
+//		}
+//		else {
+//			this.data._url = "";
+//		}
+		this.data._url = this.getUrl();
 		//this.data._url = super.getUrl();
 		// TODO: update size & rotation
 		return this.data;
