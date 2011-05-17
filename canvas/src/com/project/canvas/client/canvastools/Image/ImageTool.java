@@ -92,18 +92,23 @@ public class ImageTool extends Image implements CanvasTool<ImageData> {
 			return;
 		}
 			
-		super.setUrl(url);
-		//this.getElement().setTitle(url);
-		//this.getElement().getStyle().setBackgroundImage("url(\"" + url + "\")");
+		//super.setUrl(url);
+		this.getElement().setTitle(url);
+		this.getElement().getStyle().setBackgroundImage("url(\"" + url + "\")");
 		super.removeStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
 		super.addStyleName(CanvasResources.INSTANCE.main().imageToolSet());
 	}
 
 	@Override
 	public ImageData getValue() {
-		//String imageCss = this.getElement().getStyle().getBackgroundImage();
-		//this.data.url = imageCss.substring("url(".length(), imageCss.length()-1);
-		this.data._url = super.getUrl();
+		String imageCss = this.getElement().getStyle().getBackgroundImage();
+		if (imageCss.contains("url(")) {
+			this.data._url = imageCss.substring("url(".length(), imageCss.length()-1);
+		}
+		else {
+			this.data._url = "";
+		}
+		//this.data._url = super.getUrl();
 		// TODO: update size & rotation
 		return this.data;
 	}
