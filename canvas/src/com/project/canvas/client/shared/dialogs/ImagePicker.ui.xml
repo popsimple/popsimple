@@ -22,6 +22,7 @@
 				
 			</g:HTMLPanel>
 		</g:FormPanel>
+		<g:FlowPanel ui:field="photoSizesPanel"/>
 		<g:HTMLPanel ui:field="resultsPanel" addStyleNames="{style.resultsPanel}"></g:HTMLPanel>
 	</g:HTMLPanel>
 </ui:UiBinder> 

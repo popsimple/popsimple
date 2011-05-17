@@ -36,7 +36,6 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -278,7 +277,6 @@ public class WorksheetImpl extends Composite implements Worksheet {
 		ToolInstanceInfo toolInfo = new ToolInstanceInfo(toolFactory, toolFrame, null);
 		this.toolInfoMap.put(tool, toolInfo);
 		
-		//TODO: Remove registrations when tool is killed?
 		RegistrationsManager regs = toolInfo.registrations;
 		regs.add(toolFrame.getCloseRequest().addHandler(new SimpleEvent.Handler<Void>() {
 			@Override
