@@ -11,7 +11,6 @@ import com.project.canvas.client.canvastools.base.CanvasToolCommon;
 import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.DialogWithZIndex;
 import com.project.canvas.client.shared.WidgetUtils;
-import com.project.canvas.client.shared.ZIndexAllocator;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.shared.data.ElementData;
 import com.project.canvas.shared.data.ImageData;
