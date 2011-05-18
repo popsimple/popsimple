@@ -1,6 +1,6 @@
 package com.project.canvas.client.shared.dialogs;
 
-import java.util.List;
+import java.util.HashMap;
 
 import com.ghusse.dolomite.flickr.Credentials;
 import com.ghusse.dolomite.flickr.Photo;
@@ -14,6 +14,9 @@ import com.ghusse.dolomite.flickr.photos.Search;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -21,12 +24,17 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.resources.CanvasResources;
+import com.project.canvas.client.shared.RegistrationsManager;
 import com.project.canvas.client.shared.events.SimpleEvent;
+import com.project.canvas.shared.data.Point2D;
 
 public class ImagePicker extends Composite {
 
@@ -47,15 +55,31 @@ public class ImagePicker extends Composite {
 	@UiField
 	HTMLPanel resultsPanel;
 	
-	protected final SimpleEvent<List<PhotoSizeResponse>> imagePicked = new SimpleEvent<List<PhotoSizeResponse>>();
+	@UiField
+	FormPanel formPanel;
+
+	@UiField
+	FlowPanel photoSizesPanel;
+	
+	public class ImageInfo {
+		public ImageInfo(String url, Point2D size) {
+			this.url = url;
+			this.size = size;
+		}
+		public final String url;
+		public final Point2D size;
+	}
+	
+	protected final SimpleEvent<ImageInfo> imagePicked = new SimpleEvent<ImageInfo>();
 	
 	protected final Credentials credentials = new Credentials(API_KEY);
 	protected final Search searcher = new Search(credentials);
 	protected final GetSizes photoSizesGetter = new GetSizes(credentials);  
+	protected final RegistrationsManager registrationsManager = new RegistrationsManager();
 
 	protected PhotoSize searchResultPhotoSize = PhotoSize.THUMBNAIL;
 	protected PhotoSize pickedImagePhotoSize = PhotoSize.ORIGINAL;
-
+	
 	private InlineLabel selectedImage; 
 	
 	public ImagePicker() {
@@ -88,24 +112,32 @@ public class ImagePicker extends Composite {
 	}
 
 	protected void setSearchResult(PhotosResponse result) {
+		registrationsManager.clear();
 		resultsPanel.clear();
+		
 		PhotosPage photosPage = result.getPhotosPage();
-		for (int i = 0; i < photosPage.getPerPage(); i++) {
+		for (int i = 0; i < photosPage.getPhotos().length(); i++) {
 			Photo photo = photosPage.getPhotos().get(i);
-			resultsPanel.add(createPhoto(photo));
+			Widget imageWidget = createPhoto(photo);
+			if (null != imageWidget) {
+				resultsPanel.add(imageWidget);
+			}
 		}
 	}
 
 	public Widget createPhoto(final Photo photo) {
+		if (null == photo) {
+			return null;
+		}
 		final InlineLabel image = new InlineLabel();
 		image.addStyleName(CanvasResources.INSTANCE.main().imagePickerResultImage());
 		image.getElement().getStyle().setBackgroundImage("url(" + photo.getSourceUrl(searchResultPhotoSize) + ")");
-		image.addClickHandler(new ClickHandler() {
+		this.registrationsManager.add(image.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
 				imageSelected(photo, image);
 			}
-		});
+		}));
 		return image;
 	}
 
@@ -125,8 +157,8 @@ public class ImagePicker extends Composite {
 		this.pickedImagePhotoSize = pickedImagePhotoSize;
 	}
 
-	public SimpleEvent<List<PhotoSizeResponse>> getImagePicked() {
-		return imagePicked;
+	public HandlerRegistration addImagePickedHandler(SimpleEvent.Handler<ImageInfo> handler) {
+		return this.imagePicked.addHandler(handler);
 	}
 
 	public void imageSelected(final Photo photo, final InlineLabel image) {
@@ -135,11 +167,12 @@ public class ImagePicker extends Composite {
 		}
 		this.selectedImage = image;
 		image.addStyleName(CanvasResources.INSTANCE.main().selected());
+		photoSizesPanel.clear();		
 		photoSizesGetter.setPhoto(photo);
 		photoSizesGetter.send(new AsyncCallback<PhotoSizesResponse>() {
 			@Override
 			public void onSuccess(PhotoSizesResponse result) {
-				imagePicked.dispatch(result.getSizes());
+				setPhotoSizes(result);
 			}
 			
 			@Override
@@ -147,5 +180,32 @@ public class ImagePicker extends Composite {
 				// TODO Auto-generated method stub
 			}
 		});
+	}
+
+	protected void setPhotoSizes(PhotoSizesResponse result) {
+		final HashMap<RadioButton, PhotoSizeResponse> selectionMap = new HashMap<RadioButton, PhotoSizeResponse>();
+		photoSizesPanel.clear();		
+		for (final PhotoSizeResponse size : result.getSizes()) {
+			String sizeStr = size.getWidth() + " x " + size.getHeight();
+			RadioButton radioButton = new RadioButton("sizes", sizeStr);
+			selectionMap.put(radioButton, size);
+			photoSizesPanel.add(radioButton);
+			radioButton.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+				@Override
+				public void onValueChange(ValueChangeEvent<Boolean> event) {
+					if (event.getValue()) {
+						imageSizeSelected(size);
+					}
+				}
+			});
+		}
+		photoSizesPanel.setVisible(true);
+	}
+
+	public void imageSizeSelected(final PhotoSizeResponse selectedSize) 
+	{
+		imagePicked.dispatch(new ImageInfo(selectedSize.getSource(), 
+				new Point2D(Integer.valueOf(selectedSize.getWidth()), 
+							Integer.valueOf(selectedSize.getHeight()))));						
 	}
 }

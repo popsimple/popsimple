@@ -21,7 +21,7 @@
 			<g:HTMLPanel addStyleNames="{style.padded}">
 				<my:ImagePicker ui:field="imagePicker"/>
 			</g:HTMLPanel>
-			<g:Button ui:field="doneButton" addStyleNames="{style.padded}">Done</g:Button>
+			<g:SubmitButton ui:field="doneButton" addStyleNames="{style.padded}">Done</g:SubmitButton>
 			<g:Button ui:field="cancelButton" addStyleNames="{style.padded}">Cancel</g:Button>
 		</g:HTMLPanel>
 	</g:FormPanel>
