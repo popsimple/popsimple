@@ -143,7 +143,6 @@ public class WorksheetImpl extends Composite implements Worksheet {
 	}
 	final HashMap<CanvasTool<?>, ToolInstanceInfo> toolInfoMap = new HashMap<CanvasTool<?>, ToolInstanceInfo>();
 	protected CanvasPage page = new CanvasPage();
-	private CanvasTool<? extends ElementData> activeToolInstance;
 
 	public WorksheetImpl() {
 		initWidget(uiBinder.createAndBindUi(this));
@@ -320,7 +319,6 @@ public class WorksheetImpl extends Composite implements Worksheet {
 			@Override
 			public void execute() {
 				tool.asWidget().setVisible(true);
-				setActiveTool(tool);
 				setToolFramePosition(limitPosToWorksheet(
 						relativePos.plus(creationOffset), toolFrame), toolFrame);
 				if (null != size)
@@ -679,14 +677,6 @@ public class WorksheetImpl extends Composite implements Worksheet {
 		if (null != id) {
 			load(id);
 		}
-	}
-
-	public void setActiveTool(final CanvasTool<? extends ElementData> tool) {
-		if (null != this.activeToolInstance) {
-			this.activeToolInstance.setActive(false);
-		}
-		this.activeToolInstance = tool;
-		tool.setActive(true);
 	}
 
 	public void stopMouseMoveOperation(

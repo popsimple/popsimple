@@ -39,4 +39,22 @@ public interface CanvasResources extends ClientBundle {
 	
 	@Source("com/project/canvas/client/resources/images/bitmaps/helpIcon_blue_32.png")
 	ImageResource taskDefaultIcon();
+	
+	@Source("com/project/canvas/client/resources/images/bitmaps/bank_32.png")
+	ImageResource bankIcon32();
+	
+	@Source("com/project/canvas/client/resources/images/bitmaps/bicycle_32.png")
+	ImageResource bicycleIcon32();
+	
+	@Source("com/project/canvas/client/resources/images/bitmaps/fix_32.png")
+	ImageResource fixIcon32();
+	
+	@Source("com/project/canvas/client/resources/images/bitmaps/phone_32.png")
+	ImageResource rainbowIcon32();
+	
+	@Source("com/project/canvas/client/resources/images/bitmaps/rainbow_32.png")
+	ImageResource phoneIcon32();
+	
+	@Source("com/project/canvas/client/resources/images/bitmaps/robot_32.png")
+	ImageResource robotIcon32();
 }
