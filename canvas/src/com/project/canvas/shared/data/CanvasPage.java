@@ -9,12 +9,12 @@ import com.google.code.twig.annotation.Id;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class CanvasPage implements Serializable, IsSerializable {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Id
-	public Long id;
-	@Embedded
-	public CanvasPageOptions options = new CanvasPageOptions();
+    @Id
+    public Long id;
+    @Embedded
+    public CanvasPageOptions options = new CanvasPageOptions();
 
-	public List<ElementData> elements = new ArrayList<ElementData>();
+    public List<ElementData> elements = new ArrayList<ElementData>();
 }

@@ -7,15 +7,15 @@ import com.google.code.twig.annotation.Id;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class ElementData implements Serializable, IsSerializable {
-	private static final long serialVersionUID = 1L;
-	@Id
-	public Long id;
+    private static final long serialVersionUID = 1L;
+    @Id
+    public Long id;
 
-	@Embedded
-	public Point2D _position;
-	@Embedded
-	public Point2D _size;
+    @Embedded
+    public Point2D _position;
+    @Embedded
+    public Point2D _size;
 
-	public int _rotation;
-	public int _zIndex;
+    public int _rotation;
+    public int _zIndex;
 }

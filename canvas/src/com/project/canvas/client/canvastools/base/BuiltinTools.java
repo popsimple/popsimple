@@ -8,24 +8,24 @@ import com.project.canvas.client.canvastools.TaskList.TaskListToolboxItem;
 import com.project.canvas.client.canvastools.TextEdit.TextEditToolboxItem;
 
 public class BuiltinTools {
-	public static final CursorToolboxItem cursorTool = new CursorToolboxItem();
+    public static final CursorToolboxItem cursorTool = new CursorToolboxItem();
 
-	protected static final ArrayList<ToolboxItem> tools = new ArrayList<ToolboxItem>();
-	static boolean inited = false;
+    protected static final ArrayList<ToolboxItem> tools = new ArrayList<ToolboxItem>();
+    static boolean inited = false;
 
-	static void init() {
-		if (inited) {
-			return;
-		}
-		tools.add(cursorTool);
-		tools.add(new TextEditToolboxItem());
-		tools.add(new TaskListToolboxItem());
-		tools.add(new ImageToolboxItem());
-	}
+    static void init() {
+        if (inited) {
+            return;
+        }
+        tools.add(cursorTool);
+        tools.add(new TextEditToolboxItem());
+        tools.add(new TaskListToolboxItem());
+        tools.add(new ImageToolboxItem());
+    }
 
-	public static Iterable<ToolboxItem> getTools() {
-		init();
-		return tools;
-	}
+    public static Iterable<ToolboxItem> getTools() {
+        init();
+        return tools;
+    }
 
 }

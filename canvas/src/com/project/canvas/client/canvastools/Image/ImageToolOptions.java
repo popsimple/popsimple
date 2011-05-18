@@ -21,113 +21,106 @@ import com.project.canvas.client.shared.dialogs.ImagePicker.ImageInfo;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.shared.data.ImageData;
 
-public class ImageToolOptions extends Composite
-		implements
-			TakesValue<ImageData>,
-			Focusable {
+public class ImageToolOptions extends Composite implements TakesValue<ImageData>, Focusable {
 
-	private static ImageToolOptionsUiBinder uiBinder = GWT
-			.create(ImageToolOptionsUiBinder.class);
+    private static ImageToolOptionsUiBinder uiBinder = GWT.create(ImageToolOptionsUiBinder.class);
 
-	interface ImageToolOptionsUiBinder
-			extends
-				UiBinder<Widget, ImageToolOptions> {
-	}
+    interface ImageToolOptionsUiBinder extends UiBinder<Widget, ImageToolOptions> {
+    }
 
-	@UiField
-	FormPanel formPanel;
+    @UiField
+    FormPanel formPanel;
 
-	@UiField
-	TextBox urlTextBox;
+    @UiField
+    TextBox urlTextBox;
 
-	@UiField
-	Button doneButton;
+    @UiField
+    Button doneButton;
 
-	@UiField
-	Button cancelButton;
+    @UiField
+    Button cancelButton;
 
-	@UiField
-	ImagePicker imagePicker;
+    @UiField
+    ImagePicker imagePicker;
 
-	private ImageData data;
+    private ImageData data;
 
-	private SimpleEvent<Void> doneEvent = new SimpleEvent<Void>();
+    private SimpleEvent<Void> doneEvent = new SimpleEvent<Void>();
 
-	private SimpleEvent<Void> cancelEvent = new SimpleEvent<Void>();
+    private SimpleEvent<Void> cancelEvent = new SimpleEvent<Void>();
 
-	public ImageToolOptions(ImageData value) {
-		initWidget(uiBinder.createAndBindUi(this));
-		this.setValue(value);
-		this.doneButton.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				boolean empty = urlTextBox.getText().trim().isEmpty();
-				boolean valid = UrlUtils.isValidUrl(urlTextBox.getText(), false);
-				if (empty || valid) {
-					doneEvent.dispatch(null);
-				} else {
-					Window.alert("Invalid url.");
-				}
-			}
-		});
-		this.cancelButton.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				cancelEvent.dispatch(null);
-			}
-		});
-		this.imagePicker
-				.addImagePickedHandler(new SimpleEvent.Handler<ImageInfo>() {
-					@Override
-					public void onFire(ImageInfo imageInfo) {
-						urlTextBox.setText(imageInfo.url);
-					}
-				});
-		this.formPanel.addSubmitHandler(new SubmitHandler() {
-			@Override
-			public void onSubmit(SubmitEvent event) {
-				event.cancel();
-			}
-		});
-	}
+    public ImageToolOptions(ImageData value) {
+        initWidget(uiBinder.createAndBindUi(this));
+        this.setValue(value);
+        this.doneButton.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                boolean empty = urlTextBox.getText().trim().isEmpty();
+                boolean valid = UrlUtils.isValidUrl(urlTextBox.getText(), false);
+                if (empty || valid) {
+                    doneEvent.dispatch(null);
+                } else {
+                    Window.alert("Invalid url.");
+                }
+            }
+        });
+        this.cancelButton.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                cancelEvent.dispatch(null);
+            }
+        });
+        this.imagePicker.addImagePickedHandler(new SimpleEvent.Handler<ImageInfo>() {
+            @Override
+            public void onFire(ImageInfo imageInfo) {
+                urlTextBox.setText(imageInfo.url);
+            }
+        });
+        this.formPanel.addSubmitHandler(new SubmitHandler() {
+            @Override
+            public void onSubmit(SubmitEvent event) {
+                event.cancel();
+            }
+        });
+    }
 
-	SimpleEvent<Void> getDoneEvent() {
-		return this.doneEvent;
-	}
+    SimpleEvent<Void> getDoneEvent() {
+        return this.doneEvent;
+    }
 
-	SimpleEvent<Void> getCancelEvent() {
-		return this.cancelEvent;
-	}
+    SimpleEvent<Void> getCancelEvent() {
+        return this.cancelEvent;
+    }
 
-	@Override
-	public void setValue(ImageData value) {
-		this.data = value;
-		this.urlTextBox.setText(value._url);
-	}
+    @Override
+    public void setValue(ImageData value) {
+        this.data = value;
+        this.urlTextBox.setText(value._url);
+    }
 
-	@Override
-	public ImageData getValue() {
-		this.data._url = this.urlTextBox.getText();
-		return this.data;
-	}
+    @Override
+    public ImageData getValue() {
+        this.data._url = this.urlTextBox.getText();
+        return this.data;
+    }
 
-	@Override
-	public int getTabIndex() {
-		return this.urlTextBox.getTabIndex();
-	}
+    @Override
+    public int getTabIndex() {
+        return this.urlTextBox.getTabIndex();
+    }
 
-	@Override
-	public void setAccessKey(char key) {
-		this.urlTextBox.setAccessKey(key);
-	}
+    @Override
+    public void setAccessKey(char key) {
+        this.urlTextBox.setAccessKey(key);
+    }
 
-	@Override
-	public void setFocus(boolean focused) {
-		this.urlTextBox.setFocus(focused);
-	}
+    @Override
+    public void setFocus(boolean focused) {
+        this.urlTextBox.setFocus(focused);
+    }
 
-	@Override
-	public void setTabIndex(int index) {
-		this.urlTextBox.setTabIndex(index);
-	}
+    @Override
+    public void setTabIndex(int index) {
+        this.urlTextBox.setTabIndex(index);
+    }
 }
