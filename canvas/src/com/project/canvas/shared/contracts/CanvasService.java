@@ -10,6 +10,7 @@ import com.project.canvas.shared.data.CanvasPage;
 @RemoteServiceRelativePath("canvas")
 public interface CanvasService extends RemoteService {
 	CanvasPage SavePage(CanvasPage page);
+
 	CanvasPage GetPage(long id);
 
 }

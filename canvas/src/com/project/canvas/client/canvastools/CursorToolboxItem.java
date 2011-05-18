@@ -6,8 +6,7 @@ import com.project.canvas.client.canvastools.base.ToolboxItem;
 import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.shared.data.ElementData;
 
-public class CursorToolboxItem implements ToolboxItem 
-{
+public class CursorToolboxItem implements ToolboxItem {
 	public String getToolboxIconStyle() {
 		return CanvasResources.INSTANCE.main().toolboxCursorIconStyle();
 	}

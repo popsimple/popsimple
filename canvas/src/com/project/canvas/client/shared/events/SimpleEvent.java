@@ -11,7 +11,7 @@ public class SimpleEvent<T> {
 	}
 
 	ArrayList<Handler<T>> handlers = new ArrayList<Handler<T>>();
-	
+
 	public HandlerRegistration addHandler(final Handler<T> handler) {
 		this.handlers.add(handler);
 		return new HandlerRegistration() {
@@ -20,7 +20,7 @@ public class SimpleEvent<T> {
 			}
 		};
 	}
-	
+
 	public void dispatch(T arg) {
 		// Iterate a copy to prevent ConcurrentModificationException
 		for (Handler<T> handler : new ArrayList<Handler<T>>(this.handlers)) {

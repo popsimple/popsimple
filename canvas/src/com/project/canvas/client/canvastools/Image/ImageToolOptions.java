@@ -5,53 +5,56 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
 import com.project.canvas.client.shared.UrlUtils;
 import com.project.canvas.client.shared.dialogs.ImagePicker;
 import com.project.canvas.client.shared.dialogs.ImagePicker.ImageInfo;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.shared.data.ImageData;
 
-public class ImageToolOptions extends Composite implements TakesValue<ImageData>, Focusable {
+public class ImageToolOptions extends Composite
+		implements
+			TakesValue<ImageData>,
+			Focusable {
 
 	private static ImageToolOptionsUiBinder uiBinder = GWT
 			.create(ImageToolOptionsUiBinder.class);
 
-	interface ImageToolOptionsUiBinder extends
-			UiBinder<Widget, ImageToolOptions> {
+	interface ImageToolOptionsUiBinder
+			extends
+				UiBinder<Widget, ImageToolOptions> {
 	}
-	
-	@UiField 
+
+	@UiField
 	FormPanel formPanel;
-	
+
 	@UiField
 	TextBox urlTextBox;
-	
+
 	@UiField
 	Button doneButton;
-	
+
 	@UiField
 	Button cancelButton;
 
 	@UiField
 	ImagePicker imagePicker;
-	
+
 	private ImageData data;
 
 	private SimpleEvent<Void> doneEvent = new SimpleEvent<Void>();
 
-	private SimpleEvent<Void> cancelEvent  = new SimpleEvent<Void>();
-	
+	private SimpleEvent<Void> cancelEvent = new SimpleEvent<Void>();
+
 	public ImageToolOptions(ImageData value) {
 		initWidget(uiBinder.createAndBindUi(this));
 		this.setValue(value);
@@ -62,8 +65,7 @@ public class ImageToolOptions extends Composite implements TakesValue<ImageData>
 				boolean valid = UrlUtils.isValidUrl(urlTextBox.getText(), false);
 				if (empty || valid) {
 					doneEvent.dispatch(null);
-				}
-				else {
+				} else {
 					Window.alert("Invalid url.");
 				}
 			}
@@ -74,12 +76,13 @@ public class ImageToolOptions extends Composite implements TakesValue<ImageData>
 				cancelEvent.dispatch(null);
 			}
 		});
-		this.imagePicker.addImagePickedHandler(new SimpleEvent.Handler<ImageInfo>(){
-			@Override
-			public void onFire(ImageInfo imageInfo) {
-				urlTextBox.setText(imageInfo.url);
-			}
-		});
+		this.imagePicker
+				.addImagePickedHandler(new SimpleEvent.Handler<ImageInfo>() {
+					@Override
+					public void onFire(ImageInfo imageInfo) {
+						urlTextBox.setText(imageInfo.url);
+					}
+				});
 		this.formPanel.addSubmitHandler(new SubmitHandler() {
 			@Override
 			public void onSubmit(SubmitEvent event) {
@@ -91,11 +94,11 @@ public class ImageToolOptions extends Composite implements TakesValue<ImageData>
 	SimpleEvent<Void> getDoneEvent() {
 		return this.doneEvent;
 	}
+
 	SimpleEvent<Void> getCancelEvent() {
 		return this.cancelEvent;
 	}
 
-	
 	@Override
 	public void setValue(ImageData value) {
 		this.data = value;

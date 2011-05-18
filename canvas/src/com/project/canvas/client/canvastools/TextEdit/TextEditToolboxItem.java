@@ -6,10 +6,9 @@ import com.project.canvas.client.canvastools.base.ToolboxItem;
 import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.shared.data.ElementData;
 
-public class TextEditToolboxItem implements ToolboxItem 
-{
+public class TextEditToolboxItem implements ToolboxItem {
 	private static TextEditToolFactory factory = new TextEditToolFactory();
-	
+
 	public String getToolboxIconStyle() {
 		return CanvasResources.INSTANCE.main().toolboxTextIconStyle();
 	}

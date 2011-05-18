@@ -12,7 +12,7 @@ public interface Worksheet {
 	void setActiveToolboxItem(ToolboxItem toolboxItem);
 
 	void save();
-	
+
 	void load(String idStr);
 
 }

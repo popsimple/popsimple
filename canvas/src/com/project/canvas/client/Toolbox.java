@@ -26,24 +26,24 @@ public class Toolbox extends Composite {
 
 	@UiField
 	FlowPanel toolsPanel;
-	
+
 	final HashMap<ToolboxItem, Widget> toolboxItems = new HashMap<ToolboxItem, Widget>();
 	final SimpleEvent<ToolboxItem> toolChosenEvent = new SimpleEvent<ToolboxItem>();
 
 	final ArrayList<Widget> toolIconHolders = new ArrayList<Widget>();
-	
+
 	public Toolbox() {
 		initWidget(uiBinder.createAndBindUi(this));
-		
-		for (ToolboxItem toolboxItem : BuiltinTools.getTools()){
+
+		for (ToolboxItem toolboxItem : BuiltinTools.getTools()) {
 			this.addTool(toolboxItem);
 		}
 	}
-	
+
 	public SimpleEvent<ToolboxItem> getToolChosenEvent() {
 		return this.toolChosenEvent;
 	}
-	
+
 	private void addTool(final ToolboxItem toolboxItem) {
 		final FlowPanel outerElem = new FlowPanel();
 		this.toolboxItems.put(toolboxItem, outerElem);
@@ -51,9 +51,10 @@ public class Toolbox extends Composite {
 		outerElem.add(elem);
 		this.toolsPanel.add(outerElem);
 		this.toolIconHolders.add(outerElem);
-		outerElem.addStyleName(CanvasResources.INSTANCE.main().toolboxCommonIconStyle());
+		outerElem.addStyleName(CanvasResources.INSTANCE.main()
+				.toolboxCommonIconStyle());
 		outerElem.setTitle(toolboxItem.getToolboxIconToolTip());
-		
+
 		elem.addStyleName(toolboxItem.getToolboxIconStyle());
 		elem.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
@@ -64,9 +65,12 @@ public class Toolbox extends Composite {
 
 	public void setActiveTool(ToolboxItem toolboxItem) {
 		for (Widget w : toolIconHolders) {
-			w.removeStyleName(CanvasResources.INSTANCE.main().toolboxCommonSelectedIconStyle());
+			w.removeStyleName(CanvasResources.INSTANCE.main()
+					.toolboxCommonSelectedIconStyle());
 		}
-		this.toolboxItems.get(toolboxItem).addStyleName(CanvasResources.INSTANCE.main().toolboxCommonSelectedIconStyle());
+		this.toolboxItems.get(toolboxItem).addStyleName(
+				CanvasResources.INSTANCE.main()
+						.toolboxCommonSelectedIconStyle());
 		toolChosenEvent.dispatch(toolboxItem);
 	}
 }

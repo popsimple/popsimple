@@ -6,10 +6,9 @@ import com.project.canvas.client.canvastools.base.ToolboxItem;
 import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.shared.data.ElementData;
 
-public class TaskListToolboxItem implements ToolboxItem 
-{
+public class TaskListToolboxItem implements ToolboxItem {
 	private static final TaskListToolFactory factory = new TaskListToolFactory();
-	
+
 	public String getToolboxIconStyle() {
 		return CanvasResources.INSTANCE.main().toolboxTaskListIconStyle();
 	}

@@ -7,5 +7,5 @@ public class TaskListData extends ElementData {
 	private static final long serialVersionUID = 1L;
 
 	public String _title;
-	public List<TaskData> _tasks  = new ArrayList<TaskData>();
+	public List<TaskData> _tasks = new ArrayList<TaskData>();
 }

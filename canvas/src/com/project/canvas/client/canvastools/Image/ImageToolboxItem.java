@@ -6,10 +6,9 @@ import com.project.canvas.client.canvastools.base.ToolboxItem;
 import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.shared.data.ElementData;
 
-public class ImageToolboxItem implements ToolboxItem 
-{
+public class ImageToolboxItem implements ToolboxItem {
 	private static ImageToolFactory factory = new ImageToolFactory();
-	
+
 	public String getToolboxIconStyle() {
 		return CanvasResources.INSTANCE.main().toolboxImageIconStyle();
 	}

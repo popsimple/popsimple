@@ -47,6 +47,7 @@ import com.project.canvas.client.canvastools.base.CanvasToolFrame;
 import com.project.canvas.client.canvastools.base.ToolboxItem;
 import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.DialogWithZIndex;
+import com.project.canvas.client.shared.ElementUtils;
 import com.project.canvas.client.shared.NativeUtils;
 import com.project.canvas.client.shared.RegistrationsManager;
 import com.project.canvas.client.shared.ZIndexAllocator;
@@ -63,53 +64,63 @@ import com.project.canvas.shared.data.TextData;
 
 public class WorksheetImpl extends Composite implements Worksheet {
 
-	private static WorksheetImplUiBinder uiBinder = GWT.create(WorksheetImplUiBinder.class);
+	private static final int ROTATION_ROUND_RESOLUTION = 3; // 1 = best, the
+															// highest means
+															// bigger angle
+															// steps (lower
+															// resolution)
+
+	private static WorksheetImplUiBinder uiBinder = GWT
+			.create(WorksheetImplUiBinder.class);
 
 	interface WorksheetImplUiBinder extends UiBinder<Widget, WorksheetImpl> {
 	}
-	RegistrationsManager activeToolRegistrations = new RegistrationsManager(); 
+
+	RegistrationsManager activeToolRegistrations = new RegistrationsManager();
 
 	@UiField
 	FlowPanel worksheetPanel;
-	
+
 	@UiField
 	Button saveButton;
 
 	@UiField
 	TextBox loadIdBox;
-	
+
 	@UiField
 	Button loadButton;
-	
+
 	@UiField
 	Button viewButton;
-	
+
 	@UiField
 	HTMLPanel worksheetContainer;
-	
+
 	@UiField
 	HTMLPanel worksheetHeader;
-	
+
 	@UiField
 	Anchor optionsBackground;
-	
+
 	@UiField
 	FlowPanel worksheetBackground;
-	
+
 	@UiField
 	HTMLPanel dragPanel;
-	
+
 	ToolboxItem activeToolboxItem;
 	Widget activeToolFloatingWidget;
-	
+
 	protected final WorksheetOptionsWidget optionsWidget = new WorksheetOptionsWidget();
 	protected final DialogBox optionsDialog = new DialogWithZIndex(false, true);
 	protected final SimpleEvent<Void> stopOperationEvent = new SimpleEvent<Void>();
-	
+
 	public final SimpleEvent<Void> defaultToolRequestEvent = new SimpleEvent<Void>();
 	public final SimpleEvent<Boolean> viewModeEvent = new SimpleEvent<Boolean>();
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.project.canvas.client.worksheet.Worksheet#getViewModeEvent()
 	 */
 	@Override
@@ -117,8 +128,12 @@ public class WorksheetImpl extends Composite implements Worksheet {
 		return viewModeEvent;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.project.canvas.client.worksheet.Worksheet#getDefaultToolRequestEvent()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.project.canvas.client.worksheet.Worksheet#getDefaultToolRequestEvent
+	 * ()
 	 */
 	@Override
 	public SimpleEvent<Void> getDefaultToolRequestEvent() {
@@ -126,13 +141,15 @@ public class WorksheetImpl extends Composite implements Worksheet {
 	}
 
 	private class ToolInstanceInfo {
-		public ToolInstanceInfo(CanvasToolFactory<?> factory, CanvasToolFrame toolFrame, HandlerRegistration killRegistration) {
+		public ToolInstanceInfo(CanvasToolFactory<?> factory,
+				CanvasToolFrame toolFrame, HandlerRegistration killRegistration) {
 			super();
 			this.factory = factory;
 			this.killRegistration = killRegistration;
 			this.createdOn = new Date();
 			this.toolFrame = toolFrame;
 		}
+
 		CanvasToolFrame toolFrame;
 		HandlerRegistration killRegistration;
 		@SuppressWarnings("unused")
@@ -141,6 +158,7 @@ public class WorksheetImpl extends Composite implements Worksheet {
 		CanvasToolFactory<?> factory;
 		RegistrationsManager registrations = new RegistrationsManager();
 	}
+
 	final HashMap<CanvasTool<?>, ToolInstanceInfo> toolInfoMap = new HashMap<CanvasTool<?>, ToolInstanceInfo>();
 	protected CanvasPage page = new CanvasPage();
 
@@ -170,17 +188,24 @@ public class WorksheetImpl extends Composite implements Worksheet {
 			@Override
 			public void onClick(ClickEvent event) {
 				viewModeEvent.dispatch(true);
-				worksheetHeader.addStyleName(CanvasResources.INSTANCE.main().displayNone());
-				that.addStyleName(CanvasResources.INSTANCE.main().worksheetFullView());
+				worksheetHeader.addStyleName(CanvasResources.INSTANCE.main()
+						.displayNone());
+				that.addStyleName(CanvasResources.INSTANCE.main()
+						.worksheetFullView());
 				final RegistrationsManager regs = new RegistrationsManager();
-				regs.add(stopOperationEvent.addHandler(new SimpleEvent.Handler<Void>(){
-					@Override
-					public void onFire(Void arg) {
-						viewModeEvent.dispatch(false);
-						worksheetHeader.removeStyleName(CanvasResources.INSTANCE.main().displayNone());
-						that.removeStyleName(CanvasResources.INSTANCE.main().worksheetFullView());
-						regs.clear();
-					}}));
+				regs.add(stopOperationEvent
+						.addHandler(new SimpleEvent.Handler<Void>() {
+							@Override
+							public void onFire(Void arg) {
+								viewModeEvent.dispatch(false);
+								worksheetHeader
+										.removeStyleName(CanvasResources.INSTANCE
+												.main().displayNone());
+								that.removeStyleName(CanvasResources.INSTANCE
+										.main().worksheetFullView());
+								regs.clear();
+							}
+						}));
 			}
 		});
 		this.optionsBackground.addClickHandler(new ClickHandler() {
@@ -189,23 +214,28 @@ public class WorksheetImpl extends Composite implements Worksheet {
 				that.showOptionsDialog();
 			}
 		});
-		this.optionsWidget.cancelEvent.addHandler(new  SimpleEvent.Handler<Void>(){
-			@Override
-			public void onFire(Void arg) {
-				optionsDialog.hide();
-			}});
-		this.optionsWidget.doneEvent.addHandler(new  SimpleEvent.Handler<Void>(){
+		this.optionsWidget.cancelEvent
+				.addHandler(new SimpleEvent.Handler<Void>() {
+					@Override
+					public void onFire(Void arg) {
+						optionsDialog.hide();
+					}
+				});
+		this.optionsWidget.doneEvent
+				.addHandler(new SimpleEvent.Handler<Void>() {
 
-			@Override
-			public void onFire(Void arg) {
-				optionsDialog.hide();
-				that.updateOptions(optionsWidget.getValue());
-			}});
+					@Override
+					public void onFire(Void arg) {
+						optionsDialog.hide();
+						that.updateOptions(optionsWidget.getValue());
+					}
+				});
 		Event.addNativePreviewHandler(new NativePreviewHandler() {
 			@Override
 			public void onPreviewNativeEvent(NativePreviewEvent event) {
 				String type = event.getNativeEvent().getType();
-				if (type.equals("keypress") && (event.getNativeEvent().getKeyCode() == 27)) {
+				if (type.equals("keypress")
+						&& (event.getNativeEvent().getKeyCode() == 27)) {
 					// Escape
 					escapeOperation();
 				}
@@ -220,16 +250,15 @@ public class WorksheetImpl extends Composite implements Worksheet {
 	}
 
 	protected void updateOptions(CanvasPageOptions value) {
-		if (null == value)
-		{
+		if (null == value) {
 			return;
 		}
 		this.page.options = value;
-		Style style = this.worksheetBackground.getElement().getStyle(); 
-		if (value.backgroundImageURL == null || value.backgroundImageURL.trim().isEmpty()) {
+		Style style = this.worksheetBackground.getElement().getStyle();
+		if (value.backgroundImageURL == null
+				|| value.backgroundImageURL.trim().isEmpty()) {
 			style.setBackgroundImage("");
-		}
-		else {
+		} else {
 			style.setBackgroundImage("url(" + value.backgroundImageURL + ")");
 		}
 		style.setProperty("backgroundRepeat", value.backgroundRepeat);
@@ -239,17 +268,19 @@ public class WorksheetImpl extends Composite implements Worksheet {
 
 	protected void showOptionsDialog() {
 		optionsWidget.setValue(this.page.options);
-		//Make sure that the dialog is set to the highest ZIndex.
-		optionsDialog.getElement().getStyle().setZIndex(ZIndexAllocator.getTopMostZIndex());
+		// Make sure that the dialog is set to the highest ZIndex.
+		optionsDialog.getElement().getStyle()
+				.setZIndex(ZIndexAllocator.getTopMostZIndex());
 		optionsDialog.setGlassEnabled(true);
 		optionsDialog.center();
 	}
 
 	protected void workSheetClicked(ClickEvent event) {
-		//This event is registered only if the tool has a valid ToolFactory so there's no need to check 
-		//for null.
-		CanvasToolFactory<? extends CanvasTool<? extends ElementData>> toolFactory = 
-			this.activeToolboxItem.getToolFactory();
+		// This event is registered only if the tool has a valid ToolFactory so
+		// there's no need to check
+		// for null.
+		CanvasToolFactory<? extends CanvasTool<? extends ElementData>> toolFactory = this.activeToolboxItem
+				.getToolFactory();
 		Point2D pos = relativePosition(event, this.worksheetPanel.getElement());
 		createToolInstance(pos, toolFactory);
 		if (toolFactory.isOneShot()) {
@@ -260,107 +291,172 @@ public class WorksheetImpl extends Composite implements Worksheet {
 	protected Point2D relativePosition(MouseEvent<?> event, Element elem) {
 		return new Point2D(event.getRelativeX(elem), event.getRelativeY(elem));
 	}
-	
-	private CanvasToolFrame createToolInstance(final Point2D relativePos, 
-			CanvasToolFactory<? extends CanvasTool<? extends ElementData>> toolFactory)
-	{
-		return this.createToolInstance(relativePos, null, toolFactory);
+
+	private CanvasToolFrame createToolInstance(
+			final Point2D relativePos,
+			CanvasToolFactory<? extends CanvasTool<? extends ElementData>> toolFactory) {
+		return this.createToolInstance(relativePos, null, 0, toolFactory);
 	}
-	
-	private CanvasToolFrame createToolInstance(final Point2D relativePos, final Point2D size,
+
+	private CanvasToolFrame createToolInstance(
+			final Point2D relativePos,
+			final Point2D size,
+			final int rotation,
 			CanvasToolFactory<? extends CanvasTool<? extends ElementData>> toolFactory) {
 		final CanvasTool<? extends ElementData> tool = toolFactory.create();
 		final CanvasToolFrame toolFrame = new CanvasToolFrame(tool);
-		
+
 		final Point2D creationOffset = toolFactory.getCreationOffset();
-		ToolInstanceInfo toolInfo = new ToolInstanceInfo(toolFactory, toolFrame, null);
+		ToolInstanceInfo toolInfo = new ToolInstanceInfo(toolFactory,
+				toolFrame, null);
 		this.toolInfoMap.put(tool, toolInfo);
-		
+
 		RegistrationsManager regs = toolInfo.registrations;
-		regs.add(toolFrame.getCloseRequest().addHandler(new SimpleEvent.Handler<Void>() {
-			@Override
-			public void onFire(Void arg) {
-				removeToolInstance(toolFrame);
-			}
-		}));
-		regs.add(toolFrame.getMoveStartRequest().addHandler(new SimpleEvent.Handler<MouseEvent<?>>() {
-			@Override
-			public void onFire(MouseEvent<?> arg) {
-				startDragCanvasToolFrame(toolFrame, arg);
-			}
-		}));
-		regs.add(toolFrame.addResizeStartRequestHandler(new SimpleEvent.Handler<MouseEvent<?>>() {
-			@Override
-			public void onFire(MouseEvent<?> arg) {
-				startResizeCanvasToolFrame(toolFrame, arg);
-			}
-		}));
-		regs.add(toolFrame.addMoveBackRequestHandler(new SimpleEvent.Handler<Void>() {
-			@Override
-			public void onFire(Void arg) {
-				ZIndexAllocator.moveElementBelow(toolFrame.getElement());
-			}}));
-		
-		regs.add(toolFrame.addMoveFrontRequestHandler(new SimpleEvent.Handler<Void>() {
-			@Override
-			public void onFire(Void arg) {
-				ZIndexAllocator.moveElementAbove(toolFrame.getElement());
-			}}));
-		
+		regs.add(toolFrame.getCloseRequest().addHandler(
+				new SimpleEvent.Handler<Void>() {
+					@Override
+					public void onFire(Void arg) {
+						removeToolInstance(toolFrame);
+					}
+				}));
+		regs.add(toolFrame.getMoveStartRequest().addHandler(
+				new SimpleEvent.Handler<MouseEvent<?>>() {
+					@Override
+					public void onFire(MouseEvent<?> arg) {
+						startDragCanvasToolFrame(toolFrame, arg);
+					}
+				}));
+		regs.add(toolFrame
+				.addResizeStartRequestHandler(new SimpleEvent.Handler<MouseEvent<?>>() {
+					@Override
+					public void onFire(MouseEvent<?> arg) {
+						startResizeCanvasToolFrame(toolFrame, arg);
+					}
+				}));
+		regs.add(toolFrame
+				.addRotateStartRequestHandler(new SimpleEvent.Handler<MouseEvent<?>>() {
+					@Override
+					public void onFire(MouseEvent<?> arg) {
+						startRotateCanvasToolFrame(toolFrame, arg);
+					}
+				}));
+		regs.add(toolFrame
+				.addMoveBackRequestHandler(new SimpleEvent.Handler<Void>() {
+					@Override
+					public void onFire(Void arg) {
+						ZIndexAllocator.moveElementBelow(toolFrame.getElement());
+					}
+				}));
+
+		regs.add(toolFrame
+				.addMoveFrontRequestHandler(new SimpleEvent.Handler<Void>() {
+					@Override
+					public void onFire(Void arg) {
+						ZIndexAllocator.moveElementAbove(toolFrame.getElement());
+					}
+				}));
+
 		this.worksheetPanel.add(toolFrame);
-		toolInfo.killRegistration = tool.getKillRequestedEvent().addHandler(new SimpleEvent.Handler<String>() {
-			public void onFire(String arg) {
-				removeToolInstance(toolFrame);
-			}
-		});
+		toolInfo.killRegistration = tool.getKillRequestedEvent().addHandler(
+				new SimpleEvent.Handler<String>() {
+					public void onFire(String arg) {
+						removeToolInstance(toolFrame);
+					}
+				});
 		regs.add(toolInfo.killRegistration);
 		tool.asWidget().setVisible(false);
 		Scheduler.get().scheduleDeferred(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				tool.asWidget().setVisible(true);
-				setToolFramePosition(limitPosToWorksheet(
-						relativePos.plus(creationOffset), toolFrame), toolFrame);
-				if (null != size)
-				{
+				setToolFramePosition(
+						limitPosToWorksheet(relativePos.plus(creationOffset),
+								toolFrame), toolFrame);
+				ElementUtils.setRotation(toolFrame.getElement(), rotation);
+				if (null != size) {
 					toolFrame.setToolSize(size);
 				}
-				//TODO: Set zIndex according to the data instead.
+				// TODO: Set zIndex according to the data instead.
 				ZIndexAllocator.allocateSetZIndex(toolFrame.getElement());
 			}
 		});
 		tool.bind();
 		return toolFrame;
 	}
-	
-	protected void setToolFramePosition(Point2D relativePos, final CanvasToolFrame toolFrame) {
-		toolFrame.asWidget().getElement().getStyle().setLeft(relativePos.getX(), Unit.PX);
-		toolFrame.asWidget().getElement().getStyle().setTop(relativePos.getY(), Unit.PX);
+
+	protected void startRotateCanvasToolFrame(final CanvasToolFrame toolFrame,
+			MouseEvent<?> arg) {
+		Point2D frameSize = new Point2D(toolFrame.getOffsetWidth(),
+				toolFrame.getOffsetHeight());
+		Point2D toolCenterPos = frameSize.mul(0.5); // relative to tool top-left
+		Point2D startEventRelativeToTopLeft = relativePosition(arg,
+				toolFrame.getElement());
+		Point2D startEventRelativeToCenter = startEventRelativeToTopLeft
+				.minus(toolCenterPos);
+		Point2D bottomLeftRelativeToCenter = new Point2D(-toolCenterPos.getX(),
+				toolCenterPos.getY());
+		final int bottomLeftAngle = (int) Math
+				.toDegrees(bottomLeftRelativeToCenter.radians());
+		final int startAngle = roundedAngle((int) Math
+				.toDegrees(startEventRelativeToCenter.radians())
+				- bottomLeftAngle);
+
+		final SimpleEvent.Handler<Point2D> rotateHandler = new SimpleEvent.Handler<Point2D>() {
+			@Override
+			public void onFire(Point2D posRelativeToCenter) {
+				int rotation = (int) Math.toDegrees(posRelativeToCenter
+						.radians()) - bottomLeftAngle;
+				ElementUtils.setRotation(toolFrame.getElement(),
+						roundedAngle(rotation));
+			}
+		};
+		final SimpleEvent.Handler<Void> cancelHandler = new SimpleEvent.Handler<Void>() {
+			@Override
+			public void onFire(Void arg) {
+				ElementUtils.setRotation(toolFrame.getElement(), startAngle);
+			}
+		};
+		this.startMouseMoveOperation(toolFrame.getElement(), toolCenterPos,
+				rotateHandler, null, cancelHandler);
 	}
-	protected void startDragCanvasToolFrame(final CanvasToolFrame toolFrame, final MouseEvent<?> startEvent)
-	{
+
+	protected void setToolFramePosition(Point2D relativePos,
+			final CanvasToolFrame toolFrame) {
+		toolFrame.asWidget().getElement().getStyle()
+				.setLeft(relativePos.getX(), Unit.PX);
+		toolFrame.asWidget().getElement().getStyle()
+				.setTop(relativePos.getY(), Unit.PX);
+	}
+
+	protected void startDragCanvasToolFrame(final CanvasToolFrame toolFrame,
+			final MouseEvent<?> startEvent) {
 		final SimpleEvent.Handler<Point2D> dragHandler = new SimpleEvent.Handler<Point2D>() {
 			@Override
 			public void onFire(Point2D pos) {
-				setToolFramePosition(limitPosToWorksheet(pos, toolFrame), toolFrame);
+				setToolFramePosition(limitPosToWorksheet(pos, toolFrame),
+						toolFrame);
 			}
 		};
-		SimpleEvent.Handler<Void> stopMoveHandler = new SimpleEvent.Handler<Void>(){
+		SimpleEvent.Handler<Void> stopMoveHandler = new SimpleEvent.Handler<Void>() {
 			@Override
 			public void onFire(Void arg) {
-				toolFrame.removeStyleName(CanvasResources.INSTANCE.main().hover());
-				toolFrame.removeStyleName(CanvasResources.INSTANCE.main().drag());
-			}};
+				toolFrame.removeStyleName(CanvasResources.INSTANCE.main()
+						.hover());
+				toolFrame.removeStyleName(CanvasResources.INSTANCE.main()
+						.drag());
+			}
+		};
 		toolFrame.addStyleName(CanvasResources.INSTANCE.main().hover());
 		toolFrame.addStyleName(CanvasResources.INSTANCE.main().drag());
-		this.startMouseMoveOperation(this.dragPanel.getElement(), relativePosition(startEvent, toolFrame.getElement()), 
+		this.startMouseMoveOperation(this.dragPanel.getElement(),
+				relativePosition(startEvent, toolFrame.getElement()),
 				dragHandler, stopMoveHandler, stopMoveHandler);
 	}
 
-	protected void startResizeCanvasToolFrame(final CanvasToolFrame toolFrame, final MouseEvent<?>  startEvent)
-	{
+	protected void startResizeCanvasToolFrame(final CanvasToolFrame toolFrame,
+			final MouseEvent<?> startEvent) {
 		final Point2D initialSize = toolFrame.getToolSize();
-				
+
 		final SimpleEvent.Handler<Point2D> resizeHandler = new SimpleEvent.Handler<Point2D>() {
 			@Override
 			public void onFire(Point2D size) {
@@ -374,48 +470,50 @@ public class WorksheetImpl extends Composite implements Worksheet {
 			}
 		};
 		final Element toolElement = toolFrame.getTool().asWidget().getElement();
-		this.startMouseMoveOperation(toolElement, 
-				relativePosition(startEvent, toolElement).minus(initialSize), 
+		this.startMouseMoveOperation(toolElement,
+				relativePosition(startEvent, toolElement).minus(initialSize),
 				resizeHandler, null, cancelHandler);
 	}
 
-	
-	protected void startMouseMoveOperation(final Element referenceElem, final Point2D referenceOffset, 
+	protected void startMouseMoveOperation(final Element referenceElem,
+			final Point2D referenceOffset,
 			final SimpleEvent.Handler<Point2D> moveHandler,
 			final SimpleEvent.Handler<Void> stopMoveHandler,
-			final SimpleEvent.Handler<Void> cancelHandler) 
-	{
+			final SimpleEvent.Handler<Void> cancelHandler) {
 		final RegistrationsManager regs = new RegistrationsManager();
-		
-		NativeUtils.disableTextSelectInternal(this.worksheetPanel.getElement(), true);
+
+		NativeUtils.disableTextSelectInternal(this.worksheetPanel.getElement(),
+				true);
 		regs.add(this.dragPanel.addDomHandler(new MouseMoveHandler() {
 			@Override
 			public void onMouseMove(MouseMoveEvent event) {
 				Point2D pos = relativePosition(event, referenceElem);
 				moveHandler.onFire(pos.minus(referenceOffset));
 				event.stopPropagation();
-			}}, MouseMoveEvent.getType()));
+			}
+		}, MouseMoveEvent.getType()));
 		regs.add(this.dragPanel.addDomHandler(new MouseUpHandler() {
 			@Override
 			public void onMouseUp(MouseUpEvent event) {
 				stopMouseMoveOperation(stopMoveHandler, regs);
-			}}, MouseUpEvent.getType()));
-		regs.add(this.stopOperationEvent.addHandler(new SimpleEvent.Handler<Void>() {
-			@Override
-			public void onFire(Void arg) {
-				stopMouseMoveOperation(cancelHandler, regs);
 			}
-		}));
-		
+		}, MouseUpEvent.getType()));
+		regs.add(this.stopOperationEvent
+				.addHandler(new SimpleEvent.Handler<Void>() {
+					@Override
+					public void onFire(Void arg) {
+						stopMouseMoveOperation(cancelHandler, regs);
+					}
+				}));
+
 		Event.setCapture(this.dragPanel.getElement());
 		this.dragPanel.setVisible(true);
 	}
 
 	protected Point2D limitPosToWorksheet(Point2D pos, Widget elem) {
-		Point2D maxPos = new Point2D(
-				this.worksheetPanel.getOffsetWidth() - 20,
+		Point2D maxPos = new Point2D(this.worksheetPanel.getOffsetWidth() - 20,
 				this.worksheetPanel.getOffsetHeight() - 20);
-		
+
 		return Point2D.max(Point2D.zero, Point2D.min(maxPos, pos));
 	}
 
@@ -426,122 +524,138 @@ public class WorksheetImpl extends Composite implements Worksheet {
 		info.registrations.clear();
 	}
 
-	/* (non-Javadoc)
-	 * @see com.project.canvas.client.worksheet.Worksheet#setActiveTool(com.project.canvas.client.canvastools.base.ToolboxItem)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.project.canvas.client.worksheet.Worksheet#setActiveTool(com.project
+	 * .canvas.client.canvastools.base.ToolboxItem)
 	 */
 	@Override
 	public void setActiveToolboxItem(ToolboxItem toolboxItem) {
 		this.clearActiveToolboxItem();
-		
+
 		this.activeToolboxItem = toolboxItem;
-		this.worksheetPanel.addStyleName(toolboxItem.getCanvasStyleInCreateMode());
-		
+		this.worksheetPanel.addStyleName(toolboxItem
+				.getCanvasStyleInCreateMode());
+
 		this.registerToolHandlers(this.activeToolboxItem);
 	}
-	
-	protected void clearActiveToolboxItem()
-	{
-		if (null != this.activeToolboxItem)
-		{
-			this.worksheetPanel.removeStyleName(this.activeToolboxItem.getCanvasStyleInCreateMode());
+
+	protected void clearActiveToolboxItem() {
+		if (null != this.activeToolboxItem) {
+			this.worksheetPanel.removeStyleName(this.activeToolboxItem
+					.getCanvasStyleInCreateMode());
 			this.activeToolboxItem = null;
 		}
-		if (null != this.activeToolFloatingWidget)
-		{
+		if (null != this.activeToolFloatingWidget) {
 			this.worksheetPanel.remove(this.activeToolFloatingWidget);
 			this.activeToolFloatingWidget = null;
 		}
 		activeToolRegistrations.clear();
 	}
-	
-	protected void registerToolHandlers(ToolboxItem toolboxItem)
-	{
-		CanvasToolFactory<? extends CanvasTool<? extends ElementData>> toolFactory = 
-			this.activeToolboxItem.getToolFactory();
-		if (null == toolFactory)
-		{
+
+	protected void registerToolHandlers(ToolboxItem toolboxItem) {
+		CanvasToolFactory<? extends CanvasTool<? extends ElementData>> toolFactory = this.activeToolboxItem
+				.getToolFactory();
+		if (null == toolFactory) {
 			return;
 		}
-		this.activeToolRegistrations.add(this.worksheetPanel.addDomHandler(new ClickHandler(){
-			public void onClick(ClickEvent event) {
-				workSheetClicked(event);
-			}}, ClickEvent.getType()));
-		
+		this.activeToolRegistrations.add(this.worksheetPanel.addDomHandler(
+				new ClickHandler() {
+					public void onClick(ClickEvent event) {
+						workSheetClicked(event);
+					}
+				}, ClickEvent.getType()));
+
 		Widget floatingWidget = toolFactory.getFloatingWidget();
-		if (null == floatingWidget)
-		{
+		if (null == floatingWidget) {
 			return;
 		}
-		this.activeToolRegistrations.add(this.worksheetPanel.addDomHandler(new MouseOverHandler() {
-			@Override
-			public void onMouseOver(MouseOverEvent event) {
-				workSheetMouseOver(event);
-			}}, MouseOverEvent.getType()));
+		this.activeToolRegistrations.add(this.worksheetPanel.addDomHandler(
+				new MouseOverHandler() {
+					@Override
+					public void onMouseOver(MouseOverEvent event) {
+						workSheetMouseOver(event);
+					}
+				}, MouseOverEvent.getType()));
 	}
-	
-	protected void workSheetMouseOver(MouseOverEvent event)
-	{
-		if (null != this.activeToolFloatingWidget)
-		{
+
+	protected void workSheetMouseOver(MouseOverEvent event) {
+		if (null != this.activeToolFloatingWidget) {
 			return;
 		}
-		this.activeToolFloatingWidget = this.activeToolboxItem.getToolFactory().getFloatingWidget();
-		if (null == this.activeToolFloatingWidget)
-		{
+		this.activeToolFloatingWidget = this.activeToolboxItem.getToolFactory()
+				.getFloatingWidget();
+		if (null == this.activeToolFloatingWidget) {
 			return;
 		}
-		this.activeToolFloatingWidget.addStyleName(CanvasResources.INSTANCE.main().floatingToolStyle());
+		this.activeToolFloatingWidget.addStyleName(CanvasResources.INSTANCE
+				.main().floatingToolStyle());
 		this.worksheetPanel.add(this.activeToolFloatingWidget);
-		this.activeToolRegistrations.add(this.worksheetPanel.addDomHandler(new MouseMoveHandler() {
-			@Override
-			public void onMouseMove(MouseMoveEvent event) {
-				workSheetMouseMove(event);
-			}}, MouseMoveEvent.getType()));
+		this.activeToolRegistrations.add(this.worksheetPanel.addDomHandler(
+				new MouseMoveHandler() {
+					@Override
+					public void onMouseMove(MouseMoveEvent event) {
+						workSheetMouseMove(event);
+					}
+				}, MouseMoveEvent.getType()));
 	}
-	
-	protected void workSheetMouseMove(MouseMoveEvent event)
-	{
-		this.activeToolFloatingWidget.getElement().getStyle().setTop(
-				event.getRelativeY(worksheetPanel.getElement()), Unit.PX);
-		this.activeToolFloatingWidget.getElement().getStyle().setLeft(
-				event.getRelativeX(worksheetPanel.getElement()), Unit.PX);
+
+	protected void workSheetMouseMove(MouseMoveEvent event) {
+		this.activeToolFloatingWidget
+				.getElement()
+				.getStyle()
+				.setTop(event.getRelativeY(worksheetPanel.getElement()),
+						Unit.PX);
+		this.activeToolFloatingWidget
+				.getElement()
+				.getStyle()
+				.setLeft(event.getRelativeX(worksheetPanel.getElement()),
+						Unit.PX);
 	}
-	
+
 	public void save() {
-		//TODO: Defrag zIndex of all tools before saving.
+		// TODO: Defrag zIndex of all tools before saving.
 		ArrayList<ElementData> activeElems = new ArrayList<ElementData>();
-		for (Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo>  entry : toolInfoMap.entrySet())
-		{
+		for (Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo> entry : toolInfoMap
+				.entrySet()) {
 			CanvasTool<? extends ElementData> tool = entry.getKey();
 			ToolInstanceInfo toolInfo = entry.getValue();
 			ElementData toolData = tool.getValue();
-			int x = Integer.valueOf(toolInfo.toolFrame.getElement().getOffsetLeft());
-			int y = Integer.valueOf(toolInfo.toolFrame.getElement().getOffsetTop());
+			int x = Integer.valueOf(toolInfo.toolFrame.getElement()
+					.getOffsetLeft());
+			int y = Integer.valueOf(toolInfo.toolFrame.getElement()
+					.getOffsetTop());
 			toolData._position = new Point2D(x, y);
-			toolData._zIndex = ZIndexAllocator.getElementZIndex(toolInfo.toolFrame.getElement()); 
+			toolData._zIndex = ZIndexAllocator
+					.getElementZIndex(toolInfo.toolFrame.getElement());
 			toolData._size = toolInfo.toolFrame.getToolSize();
-			
+			toolData._rotation = ElementUtils.getRotation(toolInfo.toolFrame
+					.getElement());
 			activeElems.add(toolData);
 		}
 		this.page.elements.clear();
 		this.page.elements.addAll(activeElems);
-		
-		CanvasServiceAsync service = (CanvasServiceAsync)GWT.create(CanvasService.class);
-		
+
+		CanvasServiceAsync service = (CanvasServiceAsync) GWT
+				.create(CanvasService.class);
+
 		this.saveButton.setText("Saving...");
 		this.saveButton.setEnabled(false);
-		
+
 		Window.setStatus("Saving...");
 		service.SavePage(page, new AsyncCallback<CanvasPage>() {
 			@Override
 			public void onSuccess(CanvasPage result) {
 				saveButton.setEnabled(true);
 				saveButton.setText("Save");
-				String newURL = Window.Location.createUrlBuilder().setHash(result.id.toString()).buildString();
+				String newURL = Window.Location.createUrlBuilder()
+						.setHash(result.id.toString()).buildString();
 				Window.Location.replace(newURL);
 				Window.setStatus("");
 			}
-			
+
 			@Override
 			public void onFailure(Throwable caught) {
 				Window.alert("Save failed. Reason: " + caught.toString());
@@ -551,28 +665,29 @@ public class WorksheetImpl extends Composite implements Worksheet {
 			}
 		});
 	}
-	
+
 	protected void load(Long id) {
-		CanvasServiceAsync service = (CanvasServiceAsync)GWT.create(CanvasService.class);
-		
+		CanvasServiceAsync service = (CanvasServiceAsync) GWT
+				.create(CanvasService.class);
+
 		this.loadButton.setText("Loading...");
 		this.loadButton.setEnabled(false);
-	
+
 		service.GetPage(id, new AsyncCallback<CanvasPage>() {
 			@Override
 			public void onSuccess(CanvasPage result) {
 				loadButton.setEnabled(true);
 				loadButton.setText("Load");
 				if (null != result) {
-					String newURL = Window.Location.createUrlBuilder().setHash(result.id.toString()).buildString();
+					String newURL = Window.Location.createUrlBuilder()
+							.setHash(result.id.toString()).buildString();
 					Window.Location.replace(newURL);
 					load(result);
-				}
-				else {
+				} else {
 					Window.alert("No such page on server.");
 				}
 			}
-			
+
 			@Override
 			public void onFailure(Throwable caught) {
 				Window.alert("Load failed. Reason: " + caught.toString());
@@ -582,87 +697,87 @@ public class WorksheetImpl extends Composite implements Worksheet {
 		});
 	}
 
-	protected void removeAllTools()
-	{
-		for (ToolInstanceInfo toolInfo : 
-			new ArrayList<ToolInstanceInfo>(this.toolInfoMap.values()))
-		{
+	protected void removeAllTools() {
+		for (ToolInstanceInfo toolInfo : new ArrayList<ToolInstanceInfo>(
+				this.toolInfoMap.values())) {
 			this.removeToolInstance(toolInfo.toolFrame);
 		}
 	}
-	
+
 	protected void load(CanvasPage result) {
 		this.removeAllTools();
-		//TODO: Currently because it's static.
+		// TODO: Currently because it's static.
 		ZIndexAllocator.reset();
-		
+
 		this.page = result;
 		this.updateOptions(result.options);
 		HashMap<Long, ElementData> updatedElements = new HashMap<Long, ElementData>();
 		for (ElementData elem : this.page.elements) {
 			updatedElements.put(elem.id, elem);
 		}
-		
-		//TODO: Support updating already existing items.
-//		for (Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo>  entry 
-//				: new HashSet<Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo>>(toolInfoMap.entrySet()))
-//		{
-//			CanvasTool<? extends ElementData> tool = entry.getKey();
-//			ToolInstanceInfo toolInfo = entry.getValue();
-//			ElementData toolData = tool.getValue();
-//			if (updatedElements.containsKey(toolData.id)) {
-//				tool.setElementData(updatedElements.get(toolData.id));
-//				updatedElements.remove(toolData.id);
-//			}
-//			else {
-//				this.removeToolInstance(toolInfo.toolFrame);
-//			}
-//		}
+
+		// TODO: Support updating already existing items.
+		// for (Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo> entry
+		// : new HashSet<Entry<CanvasTool<? extends ElementData>,
+		// ToolInstanceInfo>>(toolInfoMap.entrySet()))
+		// {
+		// CanvasTool<? extends ElementData> tool = entry.getKey();
+		// ToolInstanceInfo toolInfo = entry.getValue();
+		// ElementData toolData = tool.getValue();
+		// if (updatedElements.containsKey(toolData.id)) {
+		// tool.setElementData(updatedElements.get(toolData.id));
+		// updatedElements.remove(toolData.id);
+		// }
+		// else {
+		// this.removeToolInstance(toolInfo.toolFrame);
+		// }
+		// }
 		createToolInstancesFromData(updatedElements);
 	}
 
-	protected Collection<ElementData> sortByZIndex(Collection<ElementData> elements)
-	{
+	protected Collection<ElementData> sortByZIndex(
+			Collection<ElementData> elements) {
 		TreeMap<Integer, ElementData> elementsByZIndex = new TreeMap<Integer, ElementData>();
-		for (ElementData element : elements)
-		{
+		for (ElementData element : elements) {
 			elementsByZIndex.put(element._zIndex, element);
 		}
 		return elementsByZIndex.values();
 	}
-	
-	private void createToolInstancesFromData(HashMap<Long, ElementData> updatedElements) {
-		for (ElementData newElement : this.sortByZIndex(updatedElements.values())) 
-		{
+
+	private void createToolInstancesFromData(
+			HashMap<Long, ElementData> updatedElements) {
+		for (ElementData newElement : this.sortByZIndex(updatedElements
+				.values())) {
 			CanvasToolFactory<? extends CanvasTool<? extends ElementData>> factory = null;
 			Class<?> cls = newElement.getClass();
 			if (cls.equals(TextData.class)) {
 				factory = new TextEditToolFactory();
-			}
-			else if (cls.equals(TaskListData.class)) {
+			} else if (cls.equals(TaskListData.class)) {
 				factory = new TaskListToolFactory();
-			}
-			else if (cls.equals(ImageData.class)) {
+			} else if (cls.equals(ImageData.class)) {
 				factory = new ImageToolFactory();
 			}
-			
+
 			if (null == factory) {
 				continue;
 			}
-			//TODO: Refactor
+			// TODO: Refactor
 			CanvasToolFrame toolFrame = this.createToolInstance(
-				newElement._position, newElement._size, factory);
+					newElement._position, newElement._size,
+					newElement._rotation, factory);
 			toolFrame.getTool().setElementData(newElement);
 			toolFrame.getTool().setActive(false);
 		}
 	}
-	
+
 	private void loadClicked() {
 		String idStr = loadIdBox.getText();
 		load(idStr);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.project.canvas.client.worksheet.Worksheet#load(java.lang.String)
 	 */
 	@Override
@@ -670,8 +785,7 @@ public class WorksheetImpl extends Composite implements Worksheet {
 		Long id = null;
 		try {
 			id = Long.valueOf(idStr);
-		}
-		catch (NumberFormatException e) {
+		} catch (NumberFormatException e) {
 			return;
 		}
 		if (null != id) {
@@ -682,12 +796,18 @@ public class WorksheetImpl extends Composite implements Worksheet {
 	public void stopMouseMoveOperation(
 			final SimpleEvent.Handler<Void> stopMoveHandler,
 			final RegistrationsManager regs) {
-		NativeUtils.disableTextSelectInternal(worksheetPanel.getElement(), false);
+		NativeUtils.disableTextSelectInternal(worksheetPanel.getElement(),
+				false);
 		Event.releaseCapture(dragPanel.getElement());
 		regs.clear();
 		dragPanel.setVisible(false);
 		if (null != stopMoveHandler) {
 			stopMoveHandler.onFire(null);
 		}
+	}
+
+	public int roundedAngle(int rotation) {
+		return ROTATION_ROUND_RESOLUTION
+				* (rotation / ROTATION_ROUND_RESOLUTION);
 	}
 }

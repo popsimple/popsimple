@@ -1,6 +1,5 @@
 package com.project.canvas.client.canvastools.TextEdit;
 
-
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyDownEvent;
@@ -23,17 +22,18 @@ import com.project.canvas.shared.data.Point2D;
 import com.project.canvas.shared.data.TextData;
 
 public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
-	
+
 	private final TextArea editBox = new TextArea();
 	private final SimpleEvent<String> killRequestEvent = new SimpleEvent<String>();
 	private TextData data;
-	
+
 	public TextEditTool() {
 		CanvasToolCommon.initCanvasToolWidget(this);
 		this.data = new TextData();
 		this.addStyleName(CanvasResources.INSTANCE.main().textEdit());
 		this.add(editBox);
-		this.editBox.addStyleName(CanvasResources.INSTANCE.main().textEditBox());
+		this.editBox
+				.addStyleName(CanvasResources.INSTANCE.main().textEditBox());
 	}
 
 	@Override
@@ -65,20 +65,20 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 	}
 
 	protected void updateEditBoxVisibleLength() {
-//		this.editBox.setVisibleLength(Math.max(MINIMUM_EDITBOX_VISIBLE_LENGTH, spareLength));
-		Point2D newSize = TextEditUtils.autoSizeWidget(this, this.editBox.getText(), true);
+		// this.editBox.setVisibleLength(Math.max(MINIMUM_EDITBOX_VISIBLE_LENGTH,
+		// spareLength));
+		Point2D newSize = TextEditUtils.autoSizeWidget(this,
+				this.editBox.getText(), true);
 		this.setWidth(newSize.getX() + "px");
 		this.setHeight(newSize.getY() + "px");
 	}
 
 	@Override
-	public void setActive(boolean isActive) 
-	{
+	public void setActive(boolean isActive) {
 		if (isActive) {
 			updateEditBoxVisibleLength();
 			this.editBox.setFocus(true);
-		}
-		else {
+		} else {
 			String text = this.editBox.getText();
 			if (text.trim().isEmpty()) {
 				this.killRequestEvent.dispatch("Empty");
@@ -101,7 +101,6 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 	public void setTabIndex(int index) {
 		this.editBox.setTabIndex(index);
 	}
-
 
 	@Override
 	public TextData getValue() {

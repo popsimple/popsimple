@@ -11,16 +11,15 @@ import com.project.canvas.client.resources.CanvasResources;
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class Canvas implements EntryPoint {
-	
+
 	CanvasContainer canvasContainer = new CanvasContainer();
-	
+
 	public void onModuleLoad() {
 		CanvasResources.INSTANCE.main().ensureInjected();
-//		TextEditTool.ensureResourcesLoaded();
-		
+		// TextEditTool.ensureResourcesLoaded();
+
 		RootPanel.get("root").add(this.canvasContainer);
 
-		
 		History.addValueChangeHandler(new ValueChangeHandler<String>() {
 			@Override
 			public void onValueChange(ValueChangeEvent<String> event) {
@@ -28,8 +27,6 @@ public class Canvas implements EntryPoint {
 			}
 		});
 		History.fireCurrentHistoryState();
-		
-		
 
 	}
 }

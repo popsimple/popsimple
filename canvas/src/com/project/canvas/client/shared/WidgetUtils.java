@@ -27,14 +27,16 @@ public class WidgetUtils {
 		}, MouseDownEvent.getType());
 	}
 
-	public static <T extends Widget & Focusable> void addEscapeUnfocusesHandler(final T widget) {
-		widget.addDomHandler(new KeyDownHandler(){
+	public static <T extends Widget & Focusable> void addEscapeUnfocusesHandler(
+			final T widget) {
+		widget.addDomHandler(new KeyDownHandler() {
 			@Override
 			public void onKeyDown(KeyDownEvent event) {
 				if (event.getNativeKeyCode() == 27) {
 					widget.setFocus(false);
 				}
-			}}, KeyDownEvent.getType());
+			}
+		}, KeyDownEvent.getType());
 	}
 
 	public static HandlerRegistration stopMouseMovePropagation(Widget widget) {
@@ -47,11 +49,12 @@ public class WidgetUtils {
 	}
 
 	public static void disableDrag(Widget widget) {
-		widget.addDomHandler(new MouseDownHandler(){
+		widget.addDomHandler(new MouseDownHandler() {
 			@Override
 			public void onMouseDown(MouseDownEvent event) {
 				event.preventDefault();
-			}}, MouseDownEvent.getType());
+			}
+		}, MouseDownEvent.getType());
 	}
 
 }

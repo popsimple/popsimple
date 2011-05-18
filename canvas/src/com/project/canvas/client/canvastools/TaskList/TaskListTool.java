@@ -22,42 +22,44 @@ import com.project.canvas.shared.data.ElementData;
 import com.project.canvas.shared.data.TaskData;
 import com.project.canvas.shared.data.TaskListData;
 
-public class TaskListTool extends Composite implements CanvasTool<TaskListData>, Focusable {
+public class TaskListTool extends Composite
+		implements
+			CanvasTool<TaskListData>,
+			Focusable {
 
 	private static TaskListWidgetUiBinder uiBinder = GWT
 			.create(TaskListWidgetUiBinder.class);
 
-	interface TaskListWidgetUiBinder extends UiBinder<Widget, TaskListTool>	{
+	interface TaskListWidgetUiBinder extends UiBinder<Widget, TaskListTool> {
 	}
-	
+
 	@UiField
 	HTMLPanel panelTaskList;
-	
+
 	@UiField
 	HoverTextBox title;
-	
+
 	@UiField
 	Button buttonAdd;
-	
+
 	protected int _tabIndex = 0;
 	protected char _accessKey = 0;
 	private SimpleEvent<String> killRequestedEvent = new SimpleEvent<String>();
 	private ArrayList<TaskTool> taskWidgets = new ArrayList<TaskTool>();
 
 	private TaskListData data = new TaskListData();
-	
-	public TaskListTool() 
-	{
+
+	public TaskListTool() {
 		initWidget(uiBinder.createAndBindUi(this));
 		CanvasToolCommon.initCanvasToolWidget(this);
-		
+
 		this.createNewTaskWidget();
 	}
 
 	@Override
 	public void bind() {
 		buttonAdd.addClickHandler(new ClickHandler() {
-			
+
 			public void onClick(ClickEvent event) {
 				// TODO Auto-generated method stub
 				createNewTaskWidget();
@@ -65,14 +67,11 @@ public class TaskListTool extends Composite implements CanvasTool<TaskListData>,
 		});
 	}
 
-
-	private void createNewTaskWidget()
-	{
+	private void createNewTaskWidget() {
 		TaskTool taskWidget = new TaskTool();
 		addTaskWidget(taskWidget);
 		taskWidget.setFocus(true);
 	}
-
 
 	public void addTaskWidget(TaskTool taskWidget) {
 		taskWidget.AddKillRequestEventHandler(new Handler<TaskTool>() {
@@ -85,20 +84,17 @@ public class TaskListTool extends Composite implements CanvasTool<TaskListData>,
 		taskWidgets.add(taskWidget);
 		panelTaskList.add(taskWidget);
 	}
-	
-	private void removeTaskWidget(TaskTool taskWidget)
-	{
+
+	private void removeTaskWidget(TaskTool taskWidget) {
 		panelTaskList.remove(taskWidget);
 		taskWidgets.remove(taskWidget);
-		
-		if (this.taskWidgets.isEmpty())
-		{
+
+		if (this.taskWidgets.isEmpty()) {
 			this.killRequestedEvent.dispatch("Empty");
 		}
 	}
 
-	private TaskTool getFirstTaskWidget()
-	{
+	private TaskTool getFirstTaskWidget() {
 		if (this.taskWidgets.isEmpty())
 		{
 			return null;
@@ -167,9 +163,9 @@ public class TaskListTool extends Composite implements CanvasTool<TaskListData>,
 		this.setValue((TaskListData) data);
 	}
 
-
 	@Override
-	public HandlerRegistration addMoveStartEventHandler(Handler<MouseEvent<?>> handler) {
+	public HandlerRegistration addMoveStartEventHandler(
+			Handler<MouseEvent<?>> handler) {
 		return null;
 	}
 }

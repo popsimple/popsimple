@@ -5,8 +5,6 @@ import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.FocusEvent;
-import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.TakesValue;
@@ -22,13 +20,16 @@ import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.shared.Utils;
 import com.project.canvas.shared.data.CanvasPageOptions;
 
-public class WorksheetOptionsWidget extends Composite implements TakesValue<CanvasPageOptions> {
+public class WorksheetOptionsWidget extends Composite
+		implements
+			TakesValue<CanvasPageOptions> {
 
 	private static WorksheetOptionsWidgetUiBinder uiBinder = GWT
 			.create(WorksheetOptionsWidgetUiBinder.class);
 
-	interface WorksheetOptionsWidgetUiBinder extends
-			UiBinder<Widget, WorksheetOptionsWidget> {
+	interface WorksheetOptionsWidgetUiBinder
+			extends
+				UiBinder<Widget, WorksheetOptionsWidget> {
 	}
 
 	@UiField
@@ -49,12 +50,12 @@ public class WorksheetOptionsWidget extends Composite implements TakesValue<Canv
 	CheckBox repeatOption;
 	@UiField
 	CheckBox centerOption;
-	
+
 	private CanvasPageOptions value;
-	
+
 	protected final SimpleEvent<Void> doneEvent = new SimpleEvent<Void>();
 	protected final SimpleEvent<Void> cancelEvent = new SimpleEvent<Void>();
-	
+
 	public SimpleEvent<Void> getDoneEvent() {
 		return doneEvent;
 	}
@@ -70,8 +71,7 @@ public class WorksheetOptionsWidget extends Composite implements TakesValue<Canv
 			public void onClick(ClickEvent event) {
 				if (validateBackgroundURL()) {
 					doneEvent.dispatch(null);
-				}
-				else {
+				} else {
 					Window.alert("Please enter a valid background image url (or leave blank)");
 					urlTextBox.setFocus(true);
 				}
@@ -94,7 +94,11 @@ public class WorksheetOptionsWidget extends Composite implements TakesValue<Canv
 	}
 
 	protected void previewImage() {
-		imagePreview.getElement().getStyle().setBackgroundImage("url("+this.urlTextBox.getText().trim()+")");
+		imagePreview
+				.getElement()
+				.getStyle()
+				.setBackgroundImage(
+						"url(" + this.urlTextBox.getText().trim() + ")");
 	}
 
 	protected boolean validateBackgroundURL() {
@@ -110,18 +114,22 @@ public class WorksheetOptionsWidget extends Composite implements TakesValue<Canv
 	@Override
 	public void setValue(CanvasPageOptions newValue) {
 		this.value = newValue != null ? newValue : new CanvasPageOptions();
-		this.urlTextBox.setText(Utils.DefaultIfNull(this.value.backgroundImageURL, ""));
-		this.repeatOption.setValue(this.value.backgroundRepeat.toLowerCase().trim().equals("repeat"));
+		this.urlTextBox.setText(Utils.DefaultIfNull(
+				this.value.backgroundImageURL, ""));
+		this.repeatOption.setValue(this.value.backgroundRepeat.toLowerCase()
+				.trim().equals("repeat"));
 		this.stretchXOption.setValue(false);
 		this.stretchYOption.setValue(false);
-		String[] sizeParts = this.value.backgroundSize.toLowerCase().trim().split(" ");
+		String[] sizeParts = this.value.backgroundSize.toLowerCase().trim()
+				.split(" ");
 		if (sizeParts.length > 0) {
 			this.stretchXOption.setValue(sizeParts[0].equals("100%"));
 		}
 		if (sizeParts.length > 1) {
 			this.stretchYOption.setValue(sizeParts[1].equals("100%"));
 		}
-		this.centerOption.setValue(this.value.backgroundPosition.toLowerCase().trim().equals("center center"));
+		this.centerOption.setValue(this.value.backgroundPosition.toLowerCase()
+				.trim().equals("center center"));
 		this.previewImage();
 	}
 
@@ -130,28 +138,25 @@ public class WorksheetOptionsWidget extends Composite implements TakesValue<Canv
 		this.value.backgroundImageURL = this.urlTextBox.getText().trim();
 		if (this.repeatOption.getValue()) {
 			this.value.backgroundRepeat = "repeat";
-		}
-		else {
+		} else {
 			this.value.backgroundRepeat = "no-repeat";
 		}
-		
+
 		if (this.stretchXOption.getValue()) {
 			this.value.backgroundSize = "100% ";
-		}
-		else {
+		} else {
 			this.value.backgroundSize = "auto ";
 		}
 		if (this.stretchYOption.getValue()) {
 			this.value.backgroundSize += "100%";
 		}
-		
+
 		if (this.centerOption.getValue()) {
 			this.value.backgroundPosition = "center center";
-		}
-		else {
+		} else {
 			this.value.backgroundPosition = "";
 		}
-		
+
 		return this.value;
 	}
 

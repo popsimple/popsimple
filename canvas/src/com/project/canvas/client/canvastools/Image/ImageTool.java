@@ -27,13 +27,13 @@ import com.project.canvas.shared.data.ElementData;
 import com.project.canvas.shared.data.ImageData;
 
 public class ImageTool extends FlowPanel implements CanvasTool<ImageData> {
-	
+
 	private final SimpleEvent<String> killRequestEvent = new SimpleEvent<String>();
 	private final SimpleEvent<MouseEvent<?>> moveStartEvent = new SimpleEvent<MouseEvent<?>>();
-	
+
 	private ImageData data = new ImageData();
 	private final Image image = new Image();
-	
+
 	public ImageTool() {
 		CanvasToolCommon.initCanvasToolWidget(this);
 		WidgetUtils.disableDrag(this);
@@ -48,13 +48,13 @@ public class ImageTool extends FlowPanel implements CanvasTool<ImageData> {
 		super.setTitle("Click for image options; Shift-click to drag");
 		this.registerHandlers();
 	}
-	
+
 	private void registerHandlers() {
 		this.addDomHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
 				uploadImage();
-				
+
 			}
 		}, ClickEvent.getType());
 		this.addDomHandler(new MouseDownHandler() {
@@ -69,22 +69,25 @@ public class ImageTool extends FlowPanel implements CanvasTool<ImageData> {
 
 	protected void uploadImage() {
 		final DialogBox imageSelectionDialog = new DialogWithZIndex(false, true);
-		
-		final ImageToolOptions dialogContents = new ImageToolOptions(this.getValue());
-		dialogContents.getCancelEvent().addHandler(new SimpleEvent.Handler<Void>() {
-			@Override
-			public void onFire(Void arg) {
-				imageSelectionDialog.hide();
-			}
-		});
-		dialogContents.getDoneEvent().addHandler(new SimpleEvent.Handler<Void>() {
-			@Override
-			public void onFire(Void arg) {
-				setValue(dialogContents.getValue(), true);
-				imageSelectionDialog.hide();
-			}
-		});
-	
+
+		final ImageToolOptions dialogContents = new ImageToolOptions(
+				this.getValue());
+		dialogContents.getCancelEvent().addHandler(
+				new SimpleEvent.Handler<Void>() {
+					@Override
+					public void onFire(Void arg) {
+						imageSelectionDialog.hide();
+					}
+				});
+		dialogContents.getDoneEvent().addHandler(
+				new SimpleEvent.Handler<Void>() {
+					@Override
+					public void onFire(Void arg) {
+						setValue(dialogContents.getValue(), true);
+						imageSelectionDialog.hide();
+					}
+				});
+
 		imageSelectionDialog.add(dialogContents);
 		imageSelectionDialog.setGlassEnabled(true);
 		imageSelectionDialog.setText("Image options");
@@ -107,24 +110,24 @@ public class ImageTool extends FlowPanel implements CanvasTool<ImageData> {
 		return this.killRequestEvent;
 	}
 
-
 	protected void setImageUrl(String url, boolean autoSize) {
-		if (null == url || url.trim().isEmpty())
-		{ 
+		if (null == url || url.trim().isEmpty()) {
 			this.getElement().getStyle().setBackgroundImage("");
 			super.addStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
-			super.removeStyleName(CanvasResources.INSTANCE.main().imageToolSet());
+			super.removeStyleName(CanvasResources.INSTANCE.main()
+					.imageToolSet());
 			return;
 		}
-		if (autoSize)
-		{
+		if (autoSize) {
 			final RegistrationsManager regs = new RegistrationsManager();
 			regs.add(this.image.addLoadHandler(new LoadHandler() {
 				@Override
 				public void onLoad(LoadEvent event) {
 					getElement().getStyle().setWidth(image.getWidth(), Unit.PX);
-					getElement().getStyle().setHeight(image.getHeight(), Unit.PX);
-					image.setUrl(""); // don't display the image in the <img>, only as background
+					getElement().getStyle().setHeight(image.getHeight(),
+							Unit.PX);
+					image.setUrl(""); // don't display the image in the <img>,
+										// only as background
 					image.setVisible(false);
 					regs.clear();
 				}
@@ -142,9 +145,9 @@ public class ImageTool extends FlowPanel implements CanvasTool<ImageData> {
 	public ImageData getValue() {
 		String imageCss = this.getElement().getStyle().getBackgroundImage();
 		if (imageCss.contains("url(")) {
-			this.data._url = imageCss.substring("url(\"".length(), imageCss.length() - "\")".length());
-		}
-		else {
+			this.data._url = imageCss.substring("url(\"".length(),
+					imageCss.length() - "\")".length());
+		} else {
 			this.data._url = "";
 		}
 		return this.data;
@@ -154,7 +157,7 @@ public class ImageTool extends FlowPanel implements CanvasTool<ImageData> {
 		this.data = data;
 		this.setImageUrl(this.data._url, autoSize);
 	}
-	
+
 	@Override
 	public void setValue(ImageData data) {
 		this.setValue(data, false);
@@ -166,7 +169,8 @@ public class ImageTool extends FlowPanel implements CanvasTool<ImageData> {
 	}
 
 	@Override
-	public HandlerRegistration addMoveStartEventHandler(Handler<MouseEvent<?>> handler) {
+	public HandlerRegistration addMoveStartEventHandler(
+			Handler<MouseEvent<?>> handler) {
 		return this.moveStartEvent.addHandler(handler);
 	}
 }
