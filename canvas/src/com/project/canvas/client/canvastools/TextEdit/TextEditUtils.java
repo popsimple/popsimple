@@ -39,16 +39,16 @@ public class TextEditUtils {
 		int minWidth = 0;
 		Style widgetStyle = widget.getElement().getStyle();
 		copyTextSizingProps(targetStyle, widgetStyle);
-		targetStyle.setFontSize(18.0, Unit.PX);
+		targetStyle.setFontSize(16.0, Unit.PX);
 		if (usePreWhiteSpace) {
 			targetStyle.setProperty("whiteSpace", "pre");
 		}
 		
 		// append a char after every newline. fixes some PRE formatting bugs (esp. last empty line)
-		//text.replace("\n", "\nM");
+		html.replace("\n", "\nM");
 		// Also prepend a character 
 		// (if the text begins with whitespace the browser may strip it in the test widget)
-		testWidget.getElement().setInnerHTML("M" + html + "M");
+		testWidget.getElement().setInnerHTML(html + "\n<BR>M");
 		
 		int testerWidth = testWidget.getOffsetWidth();
 		int newWidth = (testerWidth + comfortZone) >= minWidth ? testerWidth + comfortZone : minWidth;
@@ -56,7 +56,7 @@ public class TextEditUtils {
 		boolean isValidWidthChange = (newWidth < currentWidth && newWidth >= minWidth)
 									|| (newWidth > minWidth);
 		
-		int newHeight = testWidget.getOffsetHeight() + 20; // always add a spare
+		int newHeight = testWidget.getOffsetHeight(); // always add a spare
 		
 		widget.setHeight(Integer.toString(newHeight) + "px");
 		int width;
