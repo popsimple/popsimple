@@ -14,46 +14,43 @@ import com.project.canvas.client.worksheet.WorksheetImpl;
 
 public class CanvasContainer extends Composite {
 
-	private static CanvasContainerUiBinder uiBinder = GWT
-			.create(CanvasContainerUiBinder.class);
+    private static CanvasContainerUiBinder uiBinder = GWT.create(CanvasContainerUiBinder.class);
 
-	interface CanvasContainerUiBinder extends UiBinder<Widget, CanvasContainer> {
-	}
+    interface CanvasContainerUiBinder extends UiBinder<Widget, CanvasContainer> {
+    }
 
-	
-	@UiField
-	Toolbox toolbox;
-	@UiField
-	WorksheetImpl worksheet;
-	
-	public Worksheet getWorksheet() {
-		return worksheet;
-	}
+    @UiField
+    Toolbox toolbox;
+    @UiField
+    WorksheetImpl worksheet;
 
-	public CanvasContainer() {
-		initWidget(uiBinder.createAndBindUi(this));
-		this.toolbox.getToolChosenEvent().addHandler(new SimpleEvent.Handler<ToolboxItem>() {
-			public void onFire(ToolboxItem arg) {
-				worksheet.setActiveToolboxItem(arg);
-			}
-		});
-		this.worksheet.getDefaultToolRequestEvent().addHandler(new SimpleEvent.Handler<Void>() {
-			@Override
-			public void onFire(Void arg) {
-				toolbox.setActiveTool(BuiltinTools.cursorTool);
-			}
-		});
-		
-		this.worksheet.getViewModeEvent().addHandler(new SimpleEvent.Handler<Boolean>() {
-			@Override
-			public void onFire(Boolean fullScreen) {
-				if (fullScreen) {
-					toolbox.addStyleName(CanvasResources.INSTANCE.main().displayNone());
-				}
-				else {
-					toolbox.removeStyleName(CanvasResources.INSTANCE.main().displayNone());
-				}
-			}
-		});
-	}
+    public Worksheet getWorksheet() {
+        return worksheet;
+    }
+
+    public CanvasContainer() {
+        initWidget(uiBinder.createAndBindUi(this));
+        this.toolbox.getToolChosenEvent().addHandler(new SimpleEvent.Handler<ToolboxItem>() {
+            public void onFire(ToolboxItem arg) {
+                worksheet.setActiveToolboxItem(arg);
+            }
+        });
+        this.worksheet.getDefaultToolRequestEvent().addHandler(new SimpleEvent.Handler<Void>() {
+            @Override
+            public void onFire(Void arg) {
+                toolbox.setActiveTool(BuiltinTools.cursorTool);
+            }
+        });
+
+        this.worksheet.getViewModeEvent().addHandler(new SimpleEvent.Handler<Boolean>() {
+            @Override
+            public void onFire(Boolean fullScreen) {
+                if (fullScreen) {
+                    toolbox.addStyleName(CanvasResources.INSTANCE.main().displayNone());
+                } else {
+                    toolbox.removeStyleName(CanvasResources.INSTANCE.main().displayNone());
+                }
+            }
+        });
+    }
 }

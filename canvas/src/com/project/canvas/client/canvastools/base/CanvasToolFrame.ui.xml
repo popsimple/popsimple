@@ -13,7 +13,8 @@
 			</g:FlowPanel>
 		</div>
 		<g:HTMLPanel ui:field="toolPanel" addStyleNames="{res.main.toolFrameBodyPanel}">
-			<g:HTMLPanel ui:field="bottomRightResizePanel" addStyleNames="{res.main.toolFrameBottomRightResize}"></g:HTMLPanel>
+			<g:HTMLPanel ui:field="resizePanel" addStyleNames="{res.main.toolFrameBottomRightResize} {res.main.toolFrameHoverVisibleElement}"/>
+			<g:HTMLPanel ui:field="rotatePanel" addStyleNames="{res.main.toolFrameBottomLeftRotate}  {res.main.toolFrameHoverVisibleElement}"/>
 		</g:HTMLPanel>
 	</g:HTMLPanel>
 </ui:UiBinder> 

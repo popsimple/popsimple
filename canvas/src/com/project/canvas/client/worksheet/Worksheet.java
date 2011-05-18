@@ -5,14 +5,14 @@ import com.project.canvas.client.shared.events.SimpleEvent;
 
 public interface Worksheet {
 
-	SimpleEvent<Boolean> getViewModeEvent();
+    SimpleEvent<Boolean> getViewModeEvent();
 
-	SimpleEvent<Void> getDefaultToolRequestEvent();
+    SimpleEvent<Void> getDefaultToolRequestEvent();
 
-	void setActiveToolboxItem(ToolboxItem toolboxItem);
+    void setActiveToolboxItem(ToolboxItem toolboxItem);
 
-	void save();
-	
-	void load(String idStr);
+    void save();
+
+    void load(String idStr);
 
 }

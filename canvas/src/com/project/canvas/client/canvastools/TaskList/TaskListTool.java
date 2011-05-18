@@ -24,141 +24,132 @@ import com.project.canvas.shared.data.TaskListData;
 
 public class TaskListTool extends Composite implements CanvasTool<TaskListData>, Focusable {
 
-	private static TaskListWidgetUiBinder uiBinder = GWT
-			.create(TaskListWidgetUiBinder.class);
+    private static TaskListWidgetUiBinder uiBinder = GWT.create(TaskListWidgetUiBinder.class);
 
-	interface TaskListWidgetUiBinder extends UiBinder<Widget, TaskListTool>	{
-	}
-	
-	@UiField
-	HTMLPanel panelTaskList;
-	
-	@UiField
-	HoverTextBox title;
-	
-	@UiField
-	Button buttonAdd;
-	
-	private SimpleEvent<String> killRequestedEvent = new SimpleEvent<String>();
-	private ArrayList<TaskTool> taskWidgets = new ArrayList<TaskTool>();
+    interface TaskListWidgetUiBinder extends UiBinder<Widget, TaskListTool> {
+    }
 
-	private TaskListData data = new TaskListData();
-	
-	public TaskListTool() 
-	{
-		initWidget(uiBinder.createAndBindUi(this));
-		CanvasToolCommon.initCanvasToolWidget(this);
-		
-		this.createNewTaskWidget();
-	}
+    @UiField
+    HTMLPanel panelTaskList;
 
-	@Override
-	public void bind() {
-		buttonAdd.addClickHandler(new ClickHandler() {
-			
-			public void onClick(ClickEvent event) {
-				// TODO Auto-generated method stub
-				createNewTaskWidget();
-			}
-		});
-	}
+    @UiField
+    HoverTextBox title;
 
+    @UiField
+    Button buttonAdd;
 
-	private void createNewTaskWidget()
-	{
-		TaskTool taskWidget = new TaskTool();
-		addTaskWidget(taskWidget);
-		taskWidget.setFocus(true);
-	}
+    private SimpleEvent<String> killRequestedEvent = new SimpleEvent<String>();
+    private ArrayList<TaskTool> taskWidgets = new ArrayList<TaskTool>();
 
+    private TaskListData data = new TaskListData();
 
-	public void addTaskWidget(TaskTool taskWidget) {
-		taskWidget.AddKillRequestEventHandler(new Handler<TaskTool>() {
+    public TaskListTool() {
+        initWidget(uiBinder.createAndBindUi(this));
+        CanvasToolCommon.initCanvasToolWidget(this);
 
-			public void onFire(TaskTool arg) {
-				// TODO Auto-generated method stub
-				removeTaskWidget(arg);
-			}
-		});
-		taskWidgets.add(taskWidget);
-		panelTaskList.add(taskWidget);
-	}
-	
-	private void removeTaskWidget(TaskTool taskWidget)
-	{
-		panelTaskList.remove(taskWidget);
-		taskWidgets.remove(taskWidget);
-		
-		if (this.taskWidgets.isEmpty())
-		{
-			this.killRequestedEvent.dispatch("Empty");
-		}
-	}
+        this.createNewTaskWidget();
+    }
 
-	private TaskTool getFirstTaskWidget()
-	{
-		return this.taskWidgets.get(0);
-	}
+    @Override
+    public void bind() {
+        buttonAdd.addClickHandler(new ClickHandler() {
 
-	public int getTabIndex() {
-		// TODO Auto-generated method stub
-		return this.getFirstTaskWidget().getTabIndex();
-	}
+            public void onClick(ClickEvent event) {
+                // TODO Auto-generated method stub
+                createNewTaskWidget();
+            }
+        });
+    }
 
-	public void setAccessKey(char key) {
-		// TODO Auto-generated method stub
-		this.getFirstTaskWidget().setAccessKey(key);
-	}
+    private void createNewTaskWidget() {
+        TaskTool taskWidget = new TaskTool();
+        addTaskWidget(taskWidget);
+        taskWidget.setFocus(true);
+    }
 
-	public void setTabIndex(int index) {
-		this.getFirstTaskWidget().setTabIndex(index);
-	}
+    public void addTaskWidget(TaskTool taskWidget) {
+        taskWidget.AddKillRequestEventHandler(new Handler<TaskTool>() {
 
-	public SimpleEvent<String> getKillRequestedEvent() {
-		return this.killRequestedEvent;
-	}
+            public void onFire(TaskTool arg) {
+                // TODO Auto-generated method stub
+                removeTaskWidget(arg);
+            }
+        });
+        taskWidgets.add(taskWidget);
+        panelTaskList.add(taskWidget);
+    }
 
-	@Override
-	public void setFocus(boolean focused) {
-		this.getFirstTaskWidget().setFocus(focused);
-	}
+    private void removeTaskWidget(TaskTool taskWidget) {
+        panelTaskList.remove(taskWidget);
+        taskWidgets.remove(taskWidget);
 
-	@Override
-	public void setActive(boolean isActive) {
-		this.setFocus(isActive);
-	}
+        if (this.taskWidgets.isEmpty()) {
+            this.killRequestedEvent.dispatch("Empty");
+        }
+    }
 
-	@Override
-	public TaskListData getValue() {
-		this.data._title = this.title.getText();
-		this.data._tasks.clear();
-		for (TaskTool taskWidget : this.taskWidgets) {
-			this.data._tasks.add(taskWidget.getValue());
-		}
-		return this.data;
-	}
+    private TaskTool getFirstTaskWidget() {
+        return this.taskWidgets.get(0);
+    }
 
-	@Override
-	public void setValue(TaskListData data) {
-		this.title.setText(data._title);
-		this.data = data;
-		this.taskWidgets.clear();
-		this.panelTaskList.clear();
-		for (TaskData task : this.data._tasks) {
-			TaskTool taskWidget = new TaskTool();
-			taskWidget.setValue(task);
-			this.addTaskWidget(taskWidget);
-		}
-	}
+    public int getTabIndex() {
+        // TODO Auto-generated method stub
+        return this.getFirstTaskWidget().getTabIndex();
+    }
 
-	@Override
-	public void setElementData(ElementData data) {
-		this.setValue((TaskListData) data);
-	}
+    public void setAccessKey(char key) {
+        // TODO Auto-generated method stub
+        this.getFirstTaskWidget().setAccessKey(key);
+    }
 
+    public void setTabIndex(int index) {
+        this.getFirstTaskWidget().setTabIndex(index);
+    }
 
-	@Override
-	public HandlerRegistration addMoveStartEventHandler(Handler<MouseEvent<?>> handler) {
-		return null;
-	}
+    public SimpleEvent<String> getKillRequestedEvent() {
+        return this.killRequestedEvent;
+    }
+
+    @Override
+    public void setFocus(boolean focused) {
+        this.getFirstTaskWidget().setFocus(focused);
+    }
+
+    @Override
+    public void setActive(boolean isActive) {
+        this.setFocus(isActive);
+    }
+
+    @Override
+    public TaskListData getValue() {
+        this.data._title = this.title.getText();
+        this.data._tasks.clear();
+        for (TaskTool taskWidget : this.taskWidgets) {
+            this.data._tasks.add(taskWidget.getValue());
+        }
+        return this.data;
+    }
+
+    @Override
+    public void setValue(TaskListData data) {
+        this.title.setText(data._title);
+        this.data = data;
+        this.taskWidgets.clear();
+        this.panelTaskList.clear();
+        for (TaskData task : this.data._tasks) {
+            TaskTool taskWidget = new TaskTool();
+            taskWidget.setValue(task);
+            this.addTaskWidget(taskWidget);
+        }
+    }
+
+    @Override
+    public void setElementData(ElementData data) {
+        this.setValue((TaskListData) data);
+    }
+
+    @Override
+    public HandlerRegistration addMoveStartEventHandler(Handler<MouseEvent<?>> handler) {
+        return null;
+    }
 }

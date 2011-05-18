@@ -5,7 +5,9 @@ import com.project.canvas.client.shared.Factory;
 import com.project.canvas.shared.data.Point2D;
 
 public interface CanvasToolFactory<T extends CanvasTool<?>> extends Factory<T> {
-	boolean isOneShot();
-	Widget getFloatingWidget();
-	Point2D getCreationOffset();
+    boolean isOneShot();
+
+    Widget getFloatingWidget();
+
+    Point2D getCreationOffset();
 }

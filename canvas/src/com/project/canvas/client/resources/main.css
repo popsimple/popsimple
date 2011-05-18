@@ -313,6 +313,7 @@
 	border-color: #ccc;
 	background-color:#ccc;
 	background-color: rgba(232,232,232,0.5);
+/*	-sand-transform:rotate(0deg);*/
 }
 .toolFrameBodyPanel 
 {
@@ -372,9 +373,21 @@
     padding: 0 5px 2px;
 }
 
+@sprite .toolFrameBottomLeftRotate
+{
+	cursor: nw-resize;
+	width: 16px;
+	height: 16px;
+	display: inline-block;
+	position:absolute;
+	bottom: 0;
+	left:0;
+	overflow: hidden;
+	gwt-image: "resizeIcon"
+}
+
 @sprite .toolFrameBottomRightResize
 {
-	visibility: hidden;
 	cursor: nw-resize;
 	width: 16px;
 	height: 16px;
@@ -385,8 +398,10 @@
 	overflow: hidden;
 	gwt-image: "resizeIcon"
 }
-
-.toolFramePanel:hover .toolFrameBottomRightResize, .toolFramePanel.hover .toolFrameBottomRightResize
+.toolFrameHoverVisibleElement {
+	visibility: hidden;
+}
+.toolFramePanel:hover .toolFrameHoverVisibleElement, .toolFramePanel.hover .toolFrameHoverVisibleElement
 {
 	visibility: visible;
 }

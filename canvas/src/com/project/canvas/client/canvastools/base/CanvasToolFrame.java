@@ -22,141 +22,145 @@ import com.project.canvas.shared.data.Point2D;
 
 public class CanvasToolFrame extends Composite {
 
-	private static CanvasToolFrameUiBinder uiBinder = GWT
-			.create(CanvasToolFrameUiBinder.class);
+    private static CanvasToolFrameUiBinder uiBinder = GWT.create(CanvasToolFrameUiBinder.class);
 
-	interface CanvasToolFrameUiBinder extends UiBinder<Widget, CanvasToolFrame> {
-	}
+    interface CanvasToolFrameUiBinder extends UiBinder<Widget, CanvasToolFrame> {
+    }
 
-	@UiField
-	HTMLPanel toolPanel;
-	
-	@UiField
-	Anchor closeLink;
-	
-	@UiField
-	Anchor moveBackLink;
-	
-	@UiField
-	Anchor moveFrontLink;
+    @UiField
+    HTMLPanel toolPanel;
 
-	@UiField
-	HTMLPanel framePanel;
+    @UiField
+    Anchor closeLink;
 
-	@UiField
-	FlowPanel buttonsPanel;
-	
-	@UiField
-	HTMLPanel bottomRightResizePanel;
-	
-	protected final CanvasTool<?> tool;
-	
-	protected final SimpleEvent<Void> closeRequest = new SimpleEvent<Void>();
-	protected final SimpleEvent<Void> moveBackRequest = new SimpleEvent<Void>();
-	protected final SimpleEvent<Void> moveFrontRequest = new SimpleEvent<Void>();
-	protected final SimpleEvent<MouseEvent<?>> moveStartRequest = new SimpleEvent<MouseEvent<?>>();
-	protected final SimpleEvent<MouseEvent<?>> resizeStartRequest = new SimpleEvent<MouseEvent<?>>();
+    @UiField
+    Anchor moveBackLink;
 
-	public CanvasToolFrame(CanvasTool<?> canvasTool) {
-		initWidget(uiBinder.createAndBindUi(this));
-		WidgetUtils.stopClickPropagation(this);
-		this.tool = canvasTool;
-		this.toolPanel.add(canvasTool);
-		this.closeLink.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				closeRequest.dispatch(null);
-				event.stopPropagation();
-			}
-		});
-		this.moveBackLink.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				moveBackRequest.dispatch(null);
-				event.stopPropagation();
-			}
-		});
-		this.moveFrontLink.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				moveFrontRequest.dispatch(null);
-				event.stopPropagation();
-			}
-		});
-		
-		this.framePanel.addDomHandler(new MouseDownHandler() {
-			@Override
-			public void onMouseDown(MouseDownEvent event) {
-				moveStartRequest.dispatch(event);
-				event.stopPropagation();
-			}
-		},MouseDownEvent.getType());
+    @UiField
+    Anchor moveFrontLink;
 
-		canvasTool.addMoveStartEventHandler(new SimpleEvent.Handler<MouseEvent<?>>() {
-			@Override
-			public void onFire(MouseEvent<?> arg) {
-				moveStartRequest.dispatch(arg);
-			}
-		});
-		
-		this.registerResizeHandlers();
-		
-//		CanvasToolCommon.stopClickPropagation(buttonsPanel);
-		WidgetUtils.stopClickPropagation(closeLink);
-		WidgetUtils.stopClickPropagation(moveBackLink);
-		WidgetUtils.stopClickPropagation(moveFrontLink);
-		NativeUtils.disableTextSelectInternal(this.buttonsPanel.getElement(), true);
-	}
-	
-	protected void registerResizeHandlers()
-	{
-		this.bottomRightResizePanel.addDomHandler(new MouseDownHandler() {
-			@Override
-			public void onMouseDown(MouseDownEvent event) {
-				resizeStartRequest.dispatch(event);
-				event.stopPropagation();
-			}}, MouseDownEvent.getType());
-	}
-	
-	public CanvasTool<?> getTool() {
-		return this.tool;
-	}
+    @UiField
+    HTMLPanel framePanel;
 
-	public SimpleEvent<Void> getCloseRequest() {
-		return closeRequest;
-	}
+    @UiField
+    FlowPanel buttonsPanel;
 
-	public SimpleEvent<MouseEvent<?>> getMoveStartRequest() {
-		return moveStartRequest;
-	}
+    @UiField
+    HTMLPanel resizePanel;
 
-	public HandlerRegistration addMoveBackRequestHandler(
-			SimpleEvent.Handler<Void> handler)
-	{
-		return this.moveBackRequest.addHandler(handler);
-	}
-	
-	public HandlerRegistration addMoveFrontRequestHandler(
-			SimpleEvent.Handler<Void> handler)
-	{
-		return this.moveFrontRequest.addHandler(handler);
-	}
-	
-	public HandlerRegistration addResizeStartRequestHandler(
-			SimpleEvent.Handler<MouseEvent<?>> handler)
-	{
-		return this.resizeStartRequest.addHandler(handler);
-	}
-	
-	public Point2D getToolSize()
-	{
-		return new Point2D(this.tool.asWidget().getOffsetWidth(), 
-				this.tool.asWidget().getOffsetHeight()); 
-	}
-	
-	public void setToolSize(Point2D size)
-	{
-		this.tool.asWidget().getElement().getStyle().setWidth(size.getX(), Unit.PX);
-		this.tool.asWidget().getElement().getStyle().setHeight(size.getY(), Unit.PX);
-	}
+    @UiField
+    HTMLPanel rotatePanel;
+
+    protected final CanvasTool<?> tool;
+
+    protected final SimpleEvent<Void> closeRequest = new SimpleEvent<Void>();
+    protected final SimpleEvent<Void> moveBackRequest = new SimpleEvent<Void>();
+    protected final SimpleEvent<Void> moveFrontRequest = new SimpleEvent<Void>();
+    protected final SimpleEvent<MouseEvent<?>> moveStartRequest = new SimpleEvent<MouseEvent<?>>();
+    protected final SimpleEvent<MouseEvent<?>> resizeStartRequest = new SimpleEvent<MouseEvent<?>>();
+    protected final SimpleEvent<MouseEvent<?>> rotateStartRequest = new SimpleEvent<MouseEvent<?>>();
+
+    public CanvasToolFrame(CanvasTool<?> canvasTool) {
+        initWidget(uiBinder.createAndBindUi(this));
+        WidgetUtils.stopClickPropagation(this);
+        this.tool = canvasTool;
+        this.toolPanel.add(canvasTool);
+        this.closeLink.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                closeRequest.dispatch(null);
+                event.stopPropagation();
+            }
+        });
+        this.moveBackLink.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                moveBackRequest.dispatch(null);
+                event.stopPropagation();
+            }
+        });
+        this.moveFrontLink.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                moveFrontRequest.dispatch(null);
+                event.stopPropagation();
+            }
+        });
+
+        this.framePanel.addDomHandler(new MouseDownHandler() {
+            @Override
+            public void onMouseDown(MouseDownEvent event) {
+                moveStartRequest.dispatch(event);
+                event.stopPropagation();
+            }
+        }, MouseDownEvent.getType());
+
+        this.registerTransformHandlers();
+
+        // CanvasToolCommon.stopClickPropagation(buttonsPanel);
+        WidgetUtils.stopClickPropagation(closeLink);
+        WidgetUtils.stopClickPropagation(moveBackLink);
+        WidgetUtils.stopClickPropagation(moveFrontLink);
+        NativeUtils.disableTextSelectInternal(this.buttonsPanel.getElement(), true);
+    }
+
+    protected void registerTransformHandlers() {
+        this.tool.addMoveStartEventHandler(new SimpleEvent.Handler<MouseEvent<?>>() {
+            @Override
+            public void onFire(MouseEvent<?> arg) {
+                moveStartRequest.dispatch(arg);
+            }
+        });
+        this.resizePanel.addDomHandler(new MouseDownHandler() {
+            @Override
+            public void onMouseDown(MouseDownEvent event) {
+                resizeStartRequest.dispatch(event);
+                event.stopPropagation();
+            }
+        }, MouseDownEvent.getType());
+        this.rotatePanel.addDomHandler(new MouseDownHandler() {
+            @Override
+            public void onMouseDown(MouseDownEvent event) {
+                rotateStartRequest.dispatch(event);
+                event.stopPropagation();
+            }
+        }, MouseDownEvent.getType());
+    }
+
+    public CanvasTool<?> getTool() {
+        return this.tool;
+    }
+
+    public SimpleEvent<Void> getCloseRequest() {
+        return closeRequest;
+    }
+
+    public SimpleEvent<MouseEvent<?>> getMoveStartRequest() {
+        return moveStartRequest;
+    }
+
+    public HandlerRegistration addMoveBackRequestHandler(SimpleEvent.Handler<Void> handler) {
+        return this.moveBackRequest.addHandler(handler);
+    }
+
+    public HandlerRegistration addMoveFrontRequestHandler(SimpleEvent.Handler<Void> handler) {
+        return this.moveFrontRequest.addHandler(handler);
+    }
+
+    public HandlerRegistration addResizeStartRequestHandler(SimpleEvent.Handler<MouseEvent<?>> handler) {
+        return this.resizeStartRequest.addHandler(handler);
+    }
+
+    public HandlerRegistration addRotateStartRequestHandler(SimpleEvent.Handler<MouseEvent<?>> handler) {
+        return this.rotateStartRequest.addHandler(handler);
+    }
+
+    public Point2D getToolSize() {
+        return new Point2D(this.tool.asWidget().getOffsetWidth(), this.tool.asWidget().getOffsetHeight());
+    }
+
+    public void setToolSize(Point2D size) {
+        this.tool.asWidget().getElement().getStyle().setWidth(size.getX(), Unit.PX);
+        this.tool.asWidget().getElement().getStyle().setHeight(size.getY(), Unit.PX);
+    }
 }
