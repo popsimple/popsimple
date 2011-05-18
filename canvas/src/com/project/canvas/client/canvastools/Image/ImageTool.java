@@ -11,7 +11,6 @@ import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
@@ -45,19 +44,22 @@ public class ImageTool extends FlowPanel implements CanvasTool<ImageData> {
 
 	@Override
 	public void bind() {
-		super.setTitle("Right-click for image options");
+		super.setTitle("Click for image options; Shift-click to drag");
 		this.registerHandlers();
 	}
 	
 	private void registerHandlers() {
+		this.addDomHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				uploadImage();
+				
+			}
+		}, ClickEvent.getType());
 		this.addDomHandler(new MouseDownHandler() {
 			@Override
 			public void onMouseDown(MouseDownEvent event) {
-				if (0 != (event.getNativeButton() & Event.BUTTON_RIGHT)) {
-					uploadImage();
-					event.preventDefault();
-				}
-				else {
+				if (event.isShiftKeyDown()) {
 					moveStartEvent.dispatch(event);
 				}
 			}
