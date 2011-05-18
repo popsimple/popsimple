@@ -20,7 +20,7 @@ public abstract class ElementUtils {
     private static HashMap<Element, Integer> rotations = new HashMap<Element, Integer>();
 
     public static void setRotation(Element element, int degrees) {
-        sandpaperSetRotation(element, degrees);
+        cssSetRotation(element, degrees);
         if (0 == degrees) {
             rotations.remove(element);
         }
@@ -32,10 +32,16 @@ public abstract class ElementUtils {
         return rotation != null ? rotation.intValue() : 0;
     }
 
-    public static void sandpaperSetRotation(Element element, int degrees) {
+    private static void cssSetRotation(Element element, int degrees) {
        element.getStyle().setProperty("transform", "rotate(" + degrees + "deg)");
        element.getStyle().setProperty("MozTransform", "rotate(" + degrees + "deg)");
        element.getStyle().setProperty("WebkitTransform", "rotate(" + degrees + "deg)");
+       element.getStyle().setProperty("MsTransform", "rotate(" + degrees + "deg)");
+       cssIESetRotation(element, degrees);
    	}
+    
+    private static final native void cssIESetRotation(Element element, int degrees) /*-{
+        element.style['-ms-transform'] = "rotate(" + degrees + "deg)";
+    }-*/; 
 
 }
