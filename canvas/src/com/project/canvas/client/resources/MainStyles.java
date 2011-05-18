@@ -6,127 +6,127 @@ import com.google.gwt.resources.client.CssResource;
 
 public interface MainStyles extends CssResource {
 
-    String canvasContainer();
+	String canvasContainer();
 
-    String cursorCreateModeCanvasStyle();
+	String cursorCreateModeCanvasStyle();
 
-    String monospace();
+	String monospace();
 
-    String taskListCreateModeCanvasStyle();
+	String taskListCreateModeCanvasStyle();
 
-    String textBoxCreateModeCanvasStyle();
+	String textBoxCreateModeCanvasStyle();
 
-    String textEdit();
+	String textEdit();
 
-    String textEditFocused();
+	String textEditFocused();
 
-    String textEditNotFocused();
+	String textEditNotFocused();
 
-    String textEditNoToolbars();
+	String textEditNoToolbars();
 
-    String textEditToolbar();
+	String textEditToolbar();
 
-    String toolbox();
+	String toolbox();
 
-    String toolboxCommonIconStyle();
+	String toolboxCommonIconStyle();
 
-    String toolboxCommonSelectedIconStyle();
+	String toolboxCommonSelectedIconStyle();
 
-    String toolboxCursorIconStyle();
+	String toolboxCursorIconStyle();
 
-    String toolboxHeader();
+	String toolboxHeader();
 
-    String toolboxTaskListIconStyle();
+	String toolboxTaskListIconStyle();
 
-    String toolboxTextIconStyle();
+	String toolboxTextIconStyle();
 
-    String toolboxTools();
+	String toolboxTools();
 
-    String worksheet();
+	String worksheet();
 
-    String worksheetHeader();
+	String worksheetHeader();
 
-    String worksheetButtons();
+	String worksheetButtons();
 
-    String worksheetOptions();
+	String worksheetOptions();
 
-    String worksheetBackground();
+	String worksheetBackground();
 
-    String worksheetRightButton();
+	String worksheetRightButton();
 
-    String worksheetPanel();
+	String worksheetPanel();
 
-    String taskList();
+	String taskList();
 
-    String taskListRemoveImage();
+	String taskListRemoveImage();
 
-    String taskListTextChecked();
+	String taskListTextChecked();
 
-    String taskListBody();
+	String taskListBody();
 
-    String taskListHeader();
+	String taskListHeader();
 
-    String taskListFooter();
+	String taskListFooter();
 
-    String hoverTextBoxView();
+	String hoverTextBoxView();
 
-    String hoverTextBoxEdit();
+	String hoverTextBoxEdit();
 
-    String taskImageContainer();
+	String taskImageContainer();
 
-    String taskImageChecked();
+	String taskImageChecked();
 
-    String taskImage();
+	String taskImage();
 
-    String imageBox();
+	String imageBox();
 
-    String displayNone();
+	String displayNone();
 
-    String worksheetFullView();
+	String worksheetFullView();
 
-    String toolboxImageIconStyle();
+	String toolboxImageIconStyle();
 
-    String imageCreateModeCanvasStyle();
+	String imageCreateModeCanvasStyle();
 
-    String imageToolEmpty();
+	String imageToolEmpty();
 
-    String imageToolSet();
+	String imageToolSet();
 
-    String floatingToolStyle();
+	String floatingToolStyle();
 
-    String toolFramePanel();
+	String toolFramePanel();
 
-    String toolFrameBodyPanel();
+	String toolFrameBodyPanel();
 
-    String toolFrameCloseLink();
+	String toolFrameCloseLink();
 
-    String toolFrameHeader();
+	String toolFrameHeader();
 
-    String toolFrameButtonsPanel();
+	String toolFrameButtonsPanel();
 
-    String toolFrameBottomRightResize();
+	String toolFrameBottomRightResize();
 
-    String toolFrameBottomLeftRotate();
+	String toolFrameBottomLeftRotate();
 
-    String toolFrameHoverVisibleElement();
+	String toolFrameHoverVisibleElement();
 
-    String toolFrameButton();
+	String toolFrameButton();
 
-    String outOfBounds();
+	String outOfBounds();
 
-    String toolFrameFrontLink();
+	String toolFrameFrontLink();
 
-    String toolFrameBackLink();
+	String toolFrameBackLink();
 
-    String worksheetDragPanel();
+	String worksheetDragPanel();
 
-    String hover();
+	String hover();
 
-    String drag();
+	String drag();
 
-    String imagePickerResultImage();
+	String imagePickerResultImage();
 
-    String selected();
+	String selected();
 
-    String textEditBox();
+	String textEditBox();
 }

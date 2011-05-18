@@ -12,21 +12,21 @@ import com.project.canvas.client.resources.CanvasResources;
  */
 public class Canvas implements EntryPoint {
 
-    CanvasContainer canvasContainer = new CanvasContainer();
+	CanvasContainer canvasContainer = new CanvasContainer();
 
-    public void onModuleLoad() {
-        CanvasResources.INSTANCE.main().ensureInjected();
-        // TextEditTool.ensureResourcesLoaded();
+	public void onModuleLoad() {
+		CanvasResources.INSTANCE.main().ensureInjected();
+		// TextEditTool.ensureResourcesLoaded();
 
-        RootPanel.get("root").add(this.canvasContainer);
+		RootPanel.get("root").add(this.canvasContainer);
 
-        History.addValueChangeHandler(new ValueChangeHandler<String>() {
-            @Override
-            public void onValueChange(ValueChangeEvent<String> event) {
-                canvasContainer.getWorksheet().load(event.getValue());
-            }
-        });
-        History.fireCurrentHistoryState();
+		History.addValueChangeHandler(new ValueChangeHandler<String>() {
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				canvasContainer.getWorksheet().load(event.getValue());
+			}
+		});
+		History.fireCurrentHistoryState();
 
-    }
+	}
 }

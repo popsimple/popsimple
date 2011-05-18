@@ -7,26 +7,26 @@ import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.shared.data.ElementData;
 
 public class TextEditToolboxItem implements ToolboxItem {
-    private static TextEditToolFactory factory = new TextEditToolFactory();
+	private static TextEditToolFactory factory = new TextEditToolFactory();
 
-    public String getToolboxIconStyle() {
-        return CanvasResources.INSTANCE.main().toolboxTextIconStyle();
-    }
+	public String getToolboxIconStyle() {
+		return CanvasResources.INSTANCE.main().toolboxTextIconStyle();
+	}
 
-    public String getCanvasStyleInCreateMode() {
-        return CanvasResources.INSTANCE.main().textBoxCreateModeCanvasStyle();
-    }
+	public String getCanvasStyleInCreateMode() {
+		return CanvasResources.INSTANCE.main().textBoxCreateModeCanvasStyle();
+	}
 
-    public String getDragIconStyle() {
-        return "";
-    }
+	public String getDragIconStyle() {
+		return "";
+	}
 
-    public String getToolboxIconToolTip() {
-        return "Text tool";
-    }
+	public String getToolboxIconToolTip() {
+		return "Text tool";
+	}
 
-    public CanvasToolFactory<? extends CanvasTool<? extends ElementData>> getToolFactory() {
-        // TODO Auto-generated method stub
-        return TextEditToolboxItem.factory;
-    }
+	public CanvasToolFactory<? extends CanvasTool<? extends ElementData>> getToolFactory() {
+		// TODO Auto-generated method stub
+		return TextEditToolboxItem.factory;
+	}
 }
