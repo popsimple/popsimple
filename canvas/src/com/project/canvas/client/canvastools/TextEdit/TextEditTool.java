@@ -1,10 +1,25 @@
 package com.project.canvas.client.canvastools.TextEdit;
 
-
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.BlurHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HasText;
+import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.canvastools.base.CanvasToolCommon;
 import com.project.canvas.client.resources.CanvasResources;
@@ -14,209 +29,192 @@ import com.project.canvas.shared.data.ElementData;
 import com.project.canvas.shared.data.TextData;
 
 public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
-	//private final CKEditor editBox;
-	private final SimpleEvent<String> killRequestEvent = new SimpleEvent<String>();
-	private TextData data = new TextData();
-	private final TextArea textArea = new TextArea();
-	private int index;
 	
-//	private static final CKConfig editBoxConfig = new CKConfig();
-//	private static final Toolbar toolbar = new Toolbar();
-//	private static final ToolbarLine[] toolBarLines = new ToolbarLine[] {
-//		new ToolbarLine(CKConfig.LINE_TYPE.NORMAL),
-//		new ToolbarLine(CKConfig.LINE_TYPE.NORMAL)
-//	};
-//	
-//	public static void ensureResourcesLoaded() {
-//		final TextEditTool tool = new TextEditTool();
-//		tool.addStyleName(CanvasResources.INSTANCE.main().outOfBounds());
-//		tool.editBox.addInitializeHandler(new InitializeHandler() {
-//			@Override
-//			public void onInitialize(InitializeEvent event) {
-//				RootPanel.get().remove(tool);
-//			}
-//		});
-//		RootPanel.get().add(tool);
-//	}
-//	
-//	private static boolean configInited = false;
-//	private static void initConfig() {
-//		if (configInited) {
-//			return;
-//		}
-//		configInited = true;
-//		toolBarLines[0].addAll(new TOOLBAR_OPTIONS[] {
-//				TOOLBAR_OPTIONS.Bold,
-//				TOOLBAR_OPTIONS.Italic,
-//				TOOLBAR_OPTIONS.Underline,
-//				TOOLBAR_OPTIONS.Font,
-//				TOOLBAR_OPTIONS.FontSize,
-//				TOOLBAR_OPTIONS.TextColor,
-//				TOOLBAR_OPTIONS.BGColor,
-//		});
-//		toolBarLines[1].addAll(new TOOLBAR_OPTIONS[] {
-//				TOOLBAR_OPTIONS.Link,
-//				TOOLBAR_OPTIONS.Unlink,
-//				TOOLBAR_OPTIONS._,
-//				TOOLBAR_OPTIONS.NumberedList,
-//				TOOLBAR_OPTIONS.BulletedList,
-//				TOOLBAR_OPTIONS.Indent,
-//				TOOLBAR_OPTIONS._,
-//				TOOLBAR_OPTIONS.JustifyLeft,
-//				TOOLBAR_OPTIONS.JustifyCenter,
-//				TOOLBAR_OPTIONS.JustifyRight,
-//				TOOLBAR_OPTIONS.JustifyBlock,
-//				TOOLBAR_OPTIONS._,
-//				TOOLBAR_OPTIONS.RemoveFormat,
-//		});
-//
-//		toolbar.add(toolBarLines[0]);
-//		toolbar.add(toolBarLines[1]);
-//		editBoxConfig.setToolbar(toolbar);
-//		editBoxConfig.setRemovePlugins("elementspath,scayt,menubutton,contextmenu,showborders");
-//		//editBoxConfig.setExtraPlugins("autogrow");
-//		editBoxConfig.setResizeEnabled(false);
-//		editBoxConfig.setHeight("39px");
-//		//editBoxConfig.setAutoGrowMinHeight(10);
-//		editBoxConfig.setToolbarLocation("bottom");
-//		editBoxConfig.setFocusOnStartup(true);
-//	}
-//	
-//	static {
-//		ensureResourcesLoaded();
-//	}
+	private final TextArea editBox = new TextArea();
+	private final SimpleEvent<String> killRequestEvent = new SimpleEvent<String>();
+	private TextData data;
 	
 	public TextEditTool() {
 		CanvasToolCommon.initCanvasToolWidget(this);
-		this.add(textArea);
+		this.data = new TextData();
 		this.addStyleName(CanvasResources.INSTANCE.main().textEdit());
-		
-//		initConfig();
-//		this.editBox = new CKEditor(editBoxConfig);
-//		this.editBox.getElement().getStyle().setDisplay(Display.NONE);
-//		this.add(editBox);
-		this.replaceWithNicEdit();
-	}
-	
-	private final native void replaceWithNicEdit() /*-{
-//		window.nicEditors.allTextAreas();
-	}-*/;
-	
-	@Override
-	public void bind()
-	{
-//		registerHandlers();
+		this.add(editBox);
+		this.editBox.addStyleName(CanvasResources.INSTANCE.main().textEditBox());
 	}
 
-//	private void registerHandlers() {
-//		this.editBox.addKeyDownHandler(new KeyDownHandler() {
-//			@Override
-//			public void onKeyDown(KeyDownEvent event) {
-//				String data = editBox.getHTML();
-//				Point2D newSize = TextEditUtils.autoSizeWidget(
-//						new ElementWrapper(editBox.getEditorElement()), data, false);
-//				editBox.resize(newSize.getX(), newSize.getY(), true, true);
-//				Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-//					@Override
-//					public void execute() {
-//						updateSizeFromEditor();
-//					}
-//				});
-//			}
-//		});
-//		this.editBox.addResizeHandler(new ResizeHandler() {
-//			@Override
-//			public void onResize(ResizeEvent event) {
-//				updateSizeFromEditor();
-//			}
-//		});
-//		this.editBox.addFocusHandler(new FocusHandler() {
-//			@Override
-//			public void onFocus(FocusEvent event) {
-//				setSelfFocus(true);
-//			}
-//		});
-//		this.editBox.addInitializeHandler(new InitializeHandler() {
-//			@Override
-//			public void onInitialize(InitializeEvent event) {
-//				editBox.setHTML("");
-//				editBox.getElement().getStyle().setDisplay(Display.INLINE_BLOCK);
-//				Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-//					@Override
-//					public void execute() {
-//						updateSizeFromEditor();
-//					}
-//				});
-//			}
-//		});
-//	}
-//	
 	@Override
-	public void setActive(final boolean isActive) {
-//		setSelfFocus(isActive);
-//		this.editBox.setFocus(isActive);
+	public void bind() {
+		this.registerHandlers();
 	}
-//
-//	private void setSelfFocus(boolean isFocused) {
-//		
-//		if (isFocused) {
-//			this.addStyleName(CanvasResources.INSTANCE.main().textEditFocused());
-//			this.removeStyleName(CanvasResources.INSTANCE.main().textEditNotFocused());
-//			this.removeStyleName(CanvasResources.INSTANCE.main().textEditNoToolbars());
-//		}
-//		else {
-//			this.removeStyleName(CanvasResources.INSTANCE.main().textEditFocused());
-//			this.addStyleName(CanvasResources.INSTANCE.main().textEditNotFocused());
-//			this.addStyleName(CanvasResources.INSTANCE.main().textEditNoToolbars());
-//			checkNeedsKilling();
-//		}
-//		this.updateSizeFromEditor();
-//	}
-//
-//	public void checkNeedsKilling() {
-//		if (this.editBox.isEditorAttached()) {
-//			HTML editorHTML = new HTML(editBox.getHTML());
-//			String text = editorHTML.getText().trim();
-//			text = text.replace(new String(new char[]{(char)160}), "");
-//			
-//			// Call resetSelection LAST because it makes the getHTML return wrong results.
-//			//this.editBox.resetSelection();
-//			if (text.isEmpty()) {
-//				killRequestEvent.dispatch("Empty");
-//			}
-//		}
-//		else {
-//			killRequestEvent.dispatch("Empty");
-//		}
-//	}
+
+	private void registerHandlers() {
+		this.editBox.addBlurHandler(new BlurHandler() {
+			public void onBlur(BlurEvent event) {
+				editBlur();
+			}
+		});
+		this.editBox.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				event.stopPropagation();
+			}
+		});
+		this.editBox.addValueChangeHandler(new ValueChangeHandler<String>() {
+			public void onValueChange(ValueChangeEvent<String> event) {
+				updateEditBoxVisibleLength();
+			}
+		});
+		this.editBox.addKeyUpHandler(new KeyUpHandler() {
+			public void onKeyUp(KeyUpEvent event) {
+				updateEditBoxVisibleLength();
+			}
+		});
+		this.editBox.addKeyDownHandler(new KeyDownHandler() {
+			public void onKeyDown(KeyDownEvent event) {
+				updateEditBoxVisibleLength();
+			}
+		});
+	}
+
+	protected void updateEditBoxVisibleLength() {
+//		this.editBox.setVisibleLength(Math.max(MINIMUM_EDITBOX_VISIBLE_LENGTH, spareLength));
+		autoSizeWidget(this.editBox, this.editBox.getText(), true);
+	}
+
+	
+	/**
+	 * Heuristic method to estimate the character position in a text-based widget
+	 * assuming that the setText method also causes the widget to resize itself to fit the text.
+	 */
+	protected static <T extends Widget & HasText> int estimateCharPos(T widget, int relativeX) 
+	{
+		String text = widget.getText();
+		widget.setText("");
+		int i;
+		for (i = 0; i < text.length(); i++) {
+			widget.setText(widget.getText() + text.charAt(i));
+			if (relativeX <= widget.getOffsetWidth()) {
+				break;
+			}
+		}
+		return i;
+	}
+	
+	static final InlineLabel testWidget = new InlineLabel();
+	static boolean testWidgetInit = false;
+	protected static void autoSizeWidget(Widget widget, String text, boolean usePreWhiteSpace) {
+		Style targetStyle = testWidget.getElement().getStyle();
+		if (false == testWidgetInit)
+		{
+			targetStyle.setProperty("width", "auto");
+			targetStyle.setProperty("height", "auto");
+			targetStyle.setTop(-9999, Unit.PX);
+			targetStyle.setLeft(-9999, Unit.PX);
+			RootPanel.getBodyElement().appendChild(testWidget.getElement());
+			testWidgetInit = true;
+		}
+		
+		// This code based on:
+		// http://stackoverflow.com/questions/1288297/jquery-auto-size-text-input-not-textarea/1288475#1288475
+		int comfortZone = 40;
+		int minWidth = 0;
+		Style widgetStyle = widget.getElement().getStyle();
+		copyTextSizingProps(targetStyle, widgetStyle);
+		if (usePreWhiteSpace) {
+			targetStyle.setProperty("whiteSpace", "pre");
+		}
+		
+		// append a char after every newline. fixes some PRE formatting bugs (esp. last empty line)
+		text.replace("\n", "\nM");
+		// Also prepend a character 
+		// (if the text begins with whitespace the browser may strip it in the test widget)
+		testWidget.setText("M" + text + "M");
+		
+		int testerWidth = testWidget.getOffsetWidth();
+		int newWidth = (testerWidth + comfortZone) >= minWidth ? testerWidth + comfortZone : minWidth;
+		int currentWidth = widget.getOffsetWidth();
+		boolean isValidWidthChange = (newWidth < currentWidth && newWidth >= minWidth)
+									|| (newWidth > minWidth);
+		
+		int newHeight = testWidget.getOffsetHeight();
+		
+		widget.setHeight(Integer.toString(newHeight) + "px");
+		if (isValidWidthChange) {
+			widget.setWidth(Integer.toString(newWidth) + "px");
+		}
+		testWidget.setText(""); // for security reasons don't leave hiding data...
+	}
+
+	private static void copyTextSizingProps(Style targetStyle, Style widgetStyle) {
+		String[] copyProps = new String[] {
+				"fontFamily",	
+				"fontSize",	
+				"fontWeight",
+				"fontStyle",	
+				"textTransform",
+				"textDecoration",
+				"letterSpacing",
+				"wordSpacing",
+				"lineHeight",
+				"textAlign",	
+				"verticalAlign",	
+				"direction",
+				"padding",
+				"border",
+				"margin",
+				"whiteSpace"
+		};
+		for (String propName : copyProps) {
+			targetStyle.setProperty(propName, widgetStyle.getProperty(propName));
+		}
+	}
+
+	protected void editBlur() {
+		this.setActive(false);
+	}
+
+	@Override
+	public void setActive(boolean isActive) 
+	{
+		if (isActive) {
+			updateEditBoxVisibleLength();
+			this.editBox.setFocus(true);
+		}
+		else {
+			String text = this.editBox.getText();
+			if (text.trim().isEmpty()) {
+				this.killRequestEvent.dispatch("Empty");
+			}
+		}
+	}
 
 	public SimpleEvent<String> getKillRequestedEvent() {
 		return this.killRequestEvent;
 	}
 
 	public int getTabIndex() {
-		return this.index;
+		return this.editBox.getTabIndex();
 	}
 
 	public void setAccessKey(char key) {
+		this.editBox.setAccessKey(key);
 	}
 
 	public void setTabIndex(int index) {
-		this.index = index;
+		this.editBox.setTabIndex(index);
 	}
+
 
 	@Override
 	public TextData getValue() {
-//		this.data._text = this.editBox.getHTML();
+		this.data._text = this.editBox.getText();
 		return this.data;
 	}
 
 	@Override
 	public void setValue(TextData data) {
 		this.data = data;
-		//this.editBox.setHTML(this.data._text);
-		
-//		this.updateSizeFromEditor();
+		this.editBox.setText(this.data._text);
+		this.updateEditBoxVisibleLength();
 	}
 
 	@Override
@@ -224,22 +222,9 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 		this.setValue((TextData) data);
 	}
 
-//	public void updateSizeFromEditor() {
-//		Element elem = editBox.getEditorElement();
-//		if (null == elem){
-//			return;
-//		}
-//		ElementWrapper wrappedEditor = new ElementWrapper(elem);
-//		this.setWidth(wrappedEditor.getOffsetWidth() + "px");
-//		this.setHeight(wrappedEditor.getOffsetHeight() + "px");
-//	}
-//
-//	public void showToolbars() {
-//		this.removeStyleName(CanvasResources.INSTANCE.main().textEditNoToolbars());
-//	}
-	
 	@Override
-	public HandlerRegistration addMoveStartEventHandler(Handler<MouseEvent<?>> handler) {
+	public HandlerRegistration addMoveStartEventHandler(
+			Handler<MouseEvent<?>> handler) {
 		return null;
 	}
 }
