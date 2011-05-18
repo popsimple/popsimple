@@ -579,7 +579,17 @@ public class WorksheetImpl extends Composite implements Worksheet {
 		});
 	}
 
+	protected void removeAllTools()
+	{
+		for (ToolInstanceInfo toolInfo : 
+			new ArrayList<ToolInstanceInfo>(this.toolInfoMap.values()))
+		{
+			this.removeToolInstance(toolInfo.toolFrame);
+		}
+	}
+	
 	protected void load(CanvasPage result) {
+		this.removeAllTools();
 		//TODO: Currently because it's static.
 		ZIndexAllocator.reset();
 		
@@ -590,21 +600,21 @@ public class WorksheetImpl extends Composite implements Worksheet {
 			updatedElements.put(elem.id, elem);
 		}
 		
-		for (Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo>  entry 
-				: new HashSet<Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo>>(toolInfoMap.entrySet()))
-		{
-			CanvasTool<? extends ElementData> tool = entry.getKey();
-			ToolInstanceInfo toolInfo = entry.getValue();
-			ElementData toolData = tool.getValue();
-			if (updatedElements.containsKey(toolData.id)) {
-				tool.setElementData(updatedElements.get(toolData.id));
-				updatedElements.remove(toolData.id);
-			}
-			else {
-				this.removeToolInstance(toolInfo.toolFrame);
-			}
-		}
-		
+		//TODO: Support updating already existing items.
+//		for (Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo>  entry 
+//				: new HashSet<Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo>>(toolInfoMap.entrySet()))
+//		{
+//			CanvasTool<? extends ElementData> tool = entry.getKey();
+//			ToolInstanceInfo toolInfo = entry.getValue();
+//			ElementData toolData = tool.getValue();
+//			if (updatedElements.containsKey(toolData.id)) {
+//				tool.setElementData(updatedElements.get(toolData.id));
+//				updatedElements.remove(toolData.id);
+//			}
+//			else {
+//				this.removeToolInstance(toolInfo.toolFrame);
+//			}
+//		}
 		createToolInstancesFromData(updatedElements);
 	}
 
