@@ -324,7 +324,10 @@ public class WorksheetImpl extends Composite implements Worksheet {
 				setActiveTool(tool);
 				setToolFramePosition(limitPosToWorksheet(
 						relativePos.plus(creationOffset), toolFrame), toolFrame);
-				toolFrame.setToolSize(size);
+				if (null != size)
+				{
+					toolFrame.setToolSize(size);
+				}
 				ZIndexAllocator.allocateSetZIndex(toolFrame.getElement());
 			}
 		});
