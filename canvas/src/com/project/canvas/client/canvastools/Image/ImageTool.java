@@ -138,11 +138,8 @@ public class ImageTool extends FlowPanel implements CanvasTool<ImageData> {
     @Override
     public ImageData getValue() {
         String imageCss = this.getElement().getStyle().getBackgroundImage();
-        if (imageCss.contains("url(")) {
-            this.data._url = imageCss.substring("url(\"".length(), imageCss.length() - "\")".length());
-        } else {
-            this.data._url = "";
-        }
+        // TIP: use this page to check java regex: http://www.regexplanet.com/simple/index.html
+        this.data._url = imageCss.replaceAll("^(url\\(\\\"?)(.*?)(\\\"?\\))", "$2").trim();
         return this.data;
     }
 
