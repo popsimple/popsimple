@@ -373,7 +373,7 @@
 
 @sprite .toolFrameBottomLeftRotate
 {
-	cursor: nw-resize;
+	cursor: pointer;
 	width: 16px;
 	height: 16px;
 	display: inline-block;
@@ -381,7 +381,7 @@
 	bottom: 0;
 	left:0;
 	overflow: hidden;
-	gwt-image: "resizeIcon"
+	gwt-image: "rotateIcon";
 }
 
 @sprite .toolFrameBottomRightResize
@@ -394,7 +394,7 @@
 	bottom: 0;
 	right:0;
 	overflow: hidden;
-	gwt-image: "resizeIcon"
+	gwt-image: "resizeIcon";
 }
 .toolFrameHoverVisibleElement {
 	visibility: hidden;

@@ -15,15 +15,13 @@ public class ImageProvider {
     }
 
     private void InitializeImages() {
-        this.images.put("robot", "http://cdn3.iconfinder.com/data/icons/walle/32/media_player.png");
-        this.images.put("fix", "http://cdn3.iconfinder.com/data/icons/officeicons/PNG/32/Fix.png");
-        this.images.put("bike", "http://cdn4.iconfinder.com/data/icons/mapicons/icons/cycling.png");
-        this.images.put("bank", "http://cdn1.iconfinder.com/data/icons/stuttgart/32/bank.png");
-        this.images.put("phone",
-                "http://cdn1.iconfinder.com/data/icons/free-business-desktop-icons/32/Telephone.png");
-        this.images.put("call",
-                "http://cdn1.iconfinder.com/data/icons/free-business-desktop-icons/32/Telephone.png");
-        this.images.put("gay", "http://cdn5.iconfinder.com/data/icons/iconshock_avatars/32/gay_32.png");
+        this.images.put("robot", CanvasResources.INSTANCE.robotIcon32().getURL()); 
+        this.images.put("fix", CanvasResources.INSTANCE.fixIcon32().getURL());
+        this.images.put("bike", CanvasResources.INSTANCE.bicycleIcon32().getURL());
+        this.images.put("bank", CanvasResources.INSTANCE.bankIcon32().getURL());
+        this.images.put("phone", CanvasResources.INSTANCE.phoneIcon32().getURL());
+        this.images.put("call", CanvasResources.INSTANCE.phoneIcon32().getURL());
+        this.images.put("gay", CanvasResources.INSTANCE.rainbowIcon32().getURL());
     }
 
     public String GetDefaultImageUrl() {

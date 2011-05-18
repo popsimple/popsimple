@@ -25,8 +25,11 @@ public interface CanvasResources extends ClientBundle {
     @Source("com/project/canvas/client/resources/images/bitmaps/delete.png")
     ImageResource taskRemoveIcon();
 
-    @Source("com/project/canvas/client/resources/images/bitmaps/resizeIcon.png")
+    @Source("com/project/canvas/client/resources/images/bitmaps/resize.png")
     ImageResource resizeIcon();
+    
+    @Source("com/project/canvas/client/resources/images/bitmaps/rotate.png")
+    ImageResource rotateIcon();
 
     @Source("com/project/canvas/client/resources/images/bitmaps/closeIcon.png")
     ImageResource closeIcon();
@@ -49,10 +52,10 @@ public interface CanvasResources extends ClientBundle {
     @Source("com/project/canvas/client/resources/images/bitmaps/fix_32.png")
     ImageResource fixIcon32();
 
-    @Source("com/project/canvas/client/resources/images/bitmaps/phone_32.png")
+    @Source("com/project/canvas/client/resources/images/bitmaps/rainbow_32.png")
     ImageResource rainbowIcon32();
 
-    @Source("com/project/canvas/client/resources/images/bitmaps/rainbow_32.png")
+    @Source("com/project/canvas/client/resources/images/bitmaps/phone_32.png")
     ImageResource phoneIcon32();
 
     @Source("com/project/canvas/client/resources/images/bitmaps/robot_32.png")
