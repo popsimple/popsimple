@@ -26,11 +26,13 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
 import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.RegistrationsManager;
 import com.project.canvas.client.shared.events.SimpleEvent;
@@ -107,6 +109,12 @@ public class ImagePicker extends Composite {
 			public void onFailure(Throwable caught) {
 				Window.alert("Search failed: " + caught);
 				searchButton.setEnabled(true);
+			}
+		});
+		formPanel.addSubmitHandler(new SubmitHandler() {
+			@Override
+			public void onSubmit(SubmitEvent event) {
+				event.cancel();
 			}
 		});
 	}
