@@ -32,14 +32,10 @@ public abstract class ElementUtils {
         return rotation != null ? rotation.intValue() : 0;
     }
 
-    public static final native void sandpaperSetRotation(Element element, int degrees) /*-{
-                                                                                       //        element.getStyle().setProperty("transform", "rotate(" + degrees + "deg)");
-                                                                                       //        element.getStyle().setProperty("MozTransform", "rotate(" + degrees + "deg)");
-                                                                                       //        element.getStyle().setProperty("WebkitTransform", "rotate(" + degrees + "deg)");
-                                                                                       
-                                                                                       
-                                                                                       //element.getStyle().setProperty("-sand-transform", "rotate(" + degrees + "deg)");
-                                                                                       $wnd.cssSandpaper.setTransform(element, "rotate("+degrees+"deg)");
-                                                                                       }-*/;
+    public static void sandpaperSetRotation(Element element, int degrees) {
+       element.getStyle().setProperty("transform", "rotate(" + degrees + "deg)");
+       element.getStyle().setProperty("MozTransform", "rotate(" + degrees + "deg)");
+       element.getStyle().setProperty("WebkitTransform", "rotate(" + degrees + "deg)");
+   	}
 
 }
