@@ -1,6 +1,7 @@
 package com.project.canvas.client.shared.dialogs;
 
 import java.util.HashMap;
+import java.util.List;
 
 import com.ghusse.dolomite.flickr.Credentials;
 import com.ghusse.dolomite.flickr.Photo;
@@ -193,7 +194,10 @@ public class ImagePicker extends Composite {
     protected void setPhotoSizes(PhotoSizesResponse result) {
         final HashMap<RadioButton, PhotoSizeResponse> selectionMap = new HashMap<RadioButton, PhotoSizeResponse>();
         photoSizesPanel.clear();
-        for (final PhotoSizeResponse size : result.getSizes()) {
+        List<PhotoSizeResponse> sizes = result.getSizes();
+        int defaultSelectionIndex = sizes.size() / 2;
+        int i = 0;
+        for (final PhotoSizeResponse size : sizes) {
             String sizeStr = size.getWidth() + " x " + size.getHeight();
             RadioButton radioButton = new RadioButton("sizes", sizeStr);
             selectionMap.put(radioButton, size);
@@ -206,6 +210,11 @@ public class ImagePicker extends Composite {
                     }
                 }
             });
+        	if (i == defaultSelectionIndex) {
+        		radioButton.setValue(true);
+                imageSizeSelected(size);
+        	}
+        	i++;
         }
         photoSizesPanel.setVisible(true);
     }
