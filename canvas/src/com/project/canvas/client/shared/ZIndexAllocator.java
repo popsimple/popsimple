@@ -61,26 +61,36 @@ public abstract class ZIndexAllocator
 	
 	public static void moveElementBelow(Element element)
 	{
-		Element belowElement = getBelowOverlappingElement(element);
-		if (null == belowElement)
+		ArrayList<Element> belowElements = getElementsToBelowOverlapping(element);
+		if (null == belowElements)
 		{
+			//TODO: Decrease the ZIndex of that element by 1 according to the ZIndexAllocator.
 			return;
 		}
-		switchZIndex(element, belowElement);
+		for (Element nextElement : belowElements)
+		{
+			switchZIndex(element, nextElement);	
+		}
 	}
 	
 	public static void moveElementAbove(Element element)
 	{
-		Element aboveElement = getAboveOverlappingElement(element);
+		ArrayList<Element> aboveElement = getElementsToAboveOverlapping(element);
 		if (null == aboveElement)
 		{
+			//TODO: Increase the ZIndex of that element by 1 according to the ZIndexAllocator.
 			return;
 		}
-		switchZIndex(element, aboveElement);
+		for (Element nextElement : aboveElement)
+		{
+			switchZIndex(element, nextElement);	
+		}
 	}
 	
-	private static Element getAboveOverlappingElement(Element element)
+	private static ArrayList<Element> getElementsToAboveOverlapping(Element element)
 	{
+		ArrayList<Element> elements = new ArrayList<Element>();
+		
 		int currentZIndex = getElementZIndex(element);
 		for (Entry<Integer, Element> entry : _zIndexMap.tailMap(currentZIndex).entrySet())
 		{
@@ -91,15 +101,18 @@ public abstract class ZIndexAllocator
 			}
 			if (false == ElementExtensions.isOverlappingElements(element, nextElement))
 			{
+				elements.add(nextElement);
 				continue;
 			}
-			return nextElement;
+			elements.add(nextElement);
+			return elements;
 		}
 		return null;
 	}
 	
-	private static Element getBelowOverlappingElement(Element element)
+	private static ArrayList<Element> getElementsToBelowOverlapping(Element element)
 	{
+		ArrayList<Element> fooElements = new ArrayList<Element>();
 		int currentZIndex = getElementZIndex(element);
 		
 		ArrayList<Entry<Integer, Element>> array = new ArrayList<Map.Entry<Integer,Element>>(
@@ -113,9 +126,11 @@ public abstract class ZIndexAllocator
 			}
 			if (false == ElementExtensions.isOverlappingElements(element, nextElement))
 			{
+				fooElements.add(nextElement);
 				continue;
 			}
-			return nextElement;
+			fooElements.add(nextElement);
+			return fooElements;
 		}
 		return null;
 	}
