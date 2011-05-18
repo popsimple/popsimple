@@ -3,6 +3,7 @@ package com.project.canvas.client.canvastools.TaskList;
 import java.util.HashMap;
 
 import com.google.gwt.regexp.shared.RegExp;
+import com.project.canvas.client.resources.CanvasResources;
 
 public class ImageProvider 
 {
@@ -28,7 +29,7 @@ public class ImageProvider
 	
 	public String GetDefaultImageUrl()
 	{
-		return UNKNOWN_IMAGE_URL;
+		return CanvasResources.INSTANCE.taskDefaultIcon().getURL();
 	}
 	
 	public String GetImageUrl(String imageTag)
