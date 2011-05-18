@@ -18,6 +18,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.shared.NativeUtils;
 import com.project.canvas.client.shared.WidgetUtils;
 import com.project.canvas.client.shared.events.SimpleEvent;
+import com.project.canvas.shared.data.Point2D;
 
 public class CanvasToolFrame extends Composite {
 
@@ -147,17 +148,15 @@ public class CanvasToolFrame extends Composite {
 		return this.resizeStartRequest.addHandler(handler);
 	}
 	
-	public void setHeight(double value)
+	public Point2D getToolSize()
 	{
-		this.tool.asWidget().getElement().getStyle().setHeight(value -
-				(this.getOffsetHeight() -
-				this.tool.asWidget().getOffsetHeight()), Unit.PX);
+		return new Point2D(this.tool.asWidget().getOffsetWidth(), 
+				this.tool.asWidget().getOffsetHeight()); 
 	}
 	
-	public void setWidth(double value)
+	public void setToolSize(Point2D size)
 	{
-		this.tool.asWidget().getElement().getStyle().setWidth(value -
-				(this.getOffsetWidth() -
-				this.tool.asWidget().getOffsetWidth()), Unit.PX);
+		this.tool.asWidget().getElement().getStyle().setWidth(size.getX(), Unit.PX);
+		this.tool.asWidget().getElement().getStyle().setHeight(size.getY(), Unit.PX);
 	}
 }

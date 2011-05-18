@@ -79,7 +79,7 @@ public class ImageTool extends FlowPanel implements CanvasTool<ImageData> {
 		dialogContents.getDoneEvent().addHandler(new SimpleEvent.Handler<Void>() {
 			@Override
 			public void onFire(Void arg) {
-				setValue(dialogContents.getValue());
+				setValue(dialogContents.getValue(), true);
 				imageSelectionDialog.hide();
 			}
 		});
@@ -107,7 +107,7 @@ public class ImageTool extends FlowPanel implements CanvasTool<ImageData> {
 	}
 
 
-	protected void setImageUrl(String url) {
+	protected void setImageUrl(String url, boolean autoSize) {
 		if (null == url || url.trim().isEmpty())
 		{ 
 			this.getElement().getStyle().setBackgroundImage("");
@@ -115,24 +115,23 @@ public class ImageTool extends FlowPanel implements CanvasTool<ImageData> {
 			super.removeStyleName(CanvasResources.INSTANCE.main().imageToolSet());
 			return;
 		}
-		final RegistrationsManager regs = new RegistrationsManager();
-		regs.add(this.image.addLoadHandler(new LoadHandler() {
-			@Override
-			public void onLoad(LoadEvent event) {
-				getElement().getStyle().setWidth(image.getWidth(), Unit.PX);
-				getElement().getStyle().setHeight(image.getHeight(), Unit.PX);
-				image.setUrl(""); // don't display the image in the <img>, only as background
-				image.setVisible(false);
-				regs.clear();
-			}
-		}));
-		// Temporarily set auto width/height so that we will be able to find out
-		// the size of the image.
-		getElement().getStyle().setProperty("width", "auto");
-		getElement().getStyle().setProperty("height", "auto");
-		Image.prefetch(url);
-		image.setUrl(url);
-		image.setVisible(true);
+		if (autoSize)
+		{
+			final RegistrationsManager regs = new RegistrationsManager();
+			regs.add(this.image.addLoadHandler(new LoadHandler() {
+				@Override
+				public void onLoad(LoadEvent event) {
+					getElement().getStyle().setWidth(image.getWidth(), Unit.PX);
+					getElement().getStyle().setHeight(image.getHeight(), Unit.PX);
+					image.setUrl(""); // don't display the image in the <img>, only as background
+					image.setVisible(false);
+					regs.clear();
+				}
+			}));
+			Image.prefetch(url);
+			image.setUrl(url);
+			image.setVisible(true);
+		}
 		getElement().getStyle().setBackgroundImage("url(\"" + url + "\")");
 		super.removeStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
 		super.addStyleName(CanvasResources.INSTANCE.main().imageToolSet());
@@ -150,10 +149,14 @@ public class ImageTool extends FlowPanel implements CanvasTool<ImageData> {
 		return this.data;
 	}
 
+	public void setValue(ImageData data, boolean autoSize) {
+		this.data = data;
+		this.setImageUrl(this.data._url, autoSize);
+	}
+	
 	@Override
 	public void setValue(ImageData data) {
-		this.data = data;
-		this.setImageUrl(this.data._url);
+		this.setValue(data, false);
 	}
 
 	@Override
