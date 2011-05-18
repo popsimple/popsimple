@@ -289,6 +289,7 @@
 
 .floatingToolStyle
 {
+	z-index:999;
 	position: absolute;
 	opacity: 0.4;
 }
