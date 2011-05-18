@@ -349,6 +349,7 @@ public class WorksheetImpl extends Composite implements Worksheet {
                 if (null != size) {
                     toolFrame.setToolSize(size);
                 }
+				//TODO: Set zIndex according to the data instead.
                 ZIndexAllocator.allocateSetZIndex(toolFrame.getElement());
             }
         });
@@ -409,6 +410,7 @@ public class WorksheetImpl extends Composite implements Worksheet {
 
     protected void startResizeCanvasToolFrame(final CanvasToolFrame toolFrame, final MouseEvent<?> startEvent) {
         final Point2D initialSize = toolFrame.getToolSize();
+				
         final SimpleEvent.Handler<Point2D> resizeHandler = new SimpleEvent.Handler<Point2D>() {
             @Override
             public void onFire(Point2D size) {
@@ -421,7 +423,10 @@ public class WorksheetImpl extends Composite implements Worksheet {
                 toolFrame.setToolSize(initialSize);
             }
         };
-        this.startMouseMoveOperation(toolFrame.getElement(), Point2D.zero, resizeHandler, null, cancelHandler);
+		final Element toolElement = toolFrame.getTool().asWidget().getElement();
+		this.startMouseMoveOperation(toolElement, 
+				relativePosition(startEvent, toolElement).minus(initialSize), 
+				resizeHandler, null, cancelHandler);
     }
 
     protected void startMouseMoveOperation(final Element referenceElem, final Point2D referenceOffset,
@@ -548,6 +553,7 @@ public class WorksheetImpl extends Composite implements Worksheet {
     }
 
     public void save() {
+		//TODO: Defrag zIndex of all tools before saving.
         ArrayList<ElementData> activeElems = new ArrayList<ElementData>();
         for (Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo> entry : toolInfoMap.entrySet()) {
             CanvasTool<? extends ElementData> tool = entry.getKey();
@@ -621,7 +627,17 @@ public class WorksheetImpl extends Composite implements Worksheet {
         });
     }
 
+	protected void removeAllTools()
+	{
+		for (ToolInstanceInfo toolInfo : 
+			new ArrayList<ToolInstanceInfo>(this.toolInfoMap.values()))
+		{
+			this.removeToolInstance(toolInfo.toolFrame);
+		}
+	}
+	
     protected void load(CanvasPage result) {
+		this.removeAllTools();
         // TODO: Currently because it's static.
         ZIndexAllocator.reset();
 
@@ -632,19 +648,21 @@ public class WorksheetImpl extends Composite implements Worksheet {
             updatedElements.put(elem.id, elem);
         }
 
-        for (Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo> entry : new HashSet<Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo>>(
-                toolInfoMap.entrySet())) {
-            CanvasTool<? extends ElementData> tool = entry.getKey();
-            ToolInstanceInfo toolInfo = entry.getValue();
-            ElementData toolData = tool.getValue();
-            if (updatedElements.containsKey(toolData.id)) {
-                tool.setElementData(updatedElements.get(toolData.id));
-                updatedElements.remove(toolData.id);
-            } else {
-                this.removeToolInstance(toolInfo.toolFrame);
-            }
-        }
-
+		//TODO: Support updating already existing items.
+//		for (Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo>  entry 
+//				: new HashSet<Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo>>(toolInfoMap.entrySet()))
+//		{
+//			CanvasTool<? extends ElementData> tool = entry.getKey();
+//			ToolInstanceInfo toolInfo = entry.getValue();
+//			ElementData toolData = tool.getValue();
+//			if (updatedElements.containsKey(toolData.id)) {
+//				tool.setElementData(updatedElements.get(toolData.id));
+//				updatedElements.remove(toolData.id);
+//			}
+//			else {
+//				this.removeToolInstance(toolInfo.toolFrame);
+//			}
+//		}
         createToolInstancesFromData(updatedElements);
     }
 
