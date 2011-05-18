@@ -263,16 +263,6 @@ public class WorksheetImpl extends Composite implements Worksheet {
 		return new Point2D(event.getRelativeX(elem), event.getRelativeY(elem));
 	}
 	
-	protected void setToolFrameSize(CanvasToolFrame toolFrame, Point2D size)
-	{
-		if (null == size)
-		{
-			return;
-		}
-		toolFrame.setWidth(size.getX());
-		toolFrame.setHeight(size.getY());
-	}
-
 	private CanvasToolFrame createToolInstance(final Point2D relativePos, 
 			CanvasToolFactory<? extends CanvasTool<? extends ElementData>> toolFactory)
 	{
@@ -334,7 +324,7 @@ public class WorksheetImpl extends Composite implements Worksheet {
 				setActiveTool(tool);
 				setToolFramePosition(limitPosToWorksheet(
 						relativePos.plus(creationOffset), toolFrame), toolFrame);
-				setToolFrameSize(toolFrame, size);
+				toolFrame.setToolSize(size);
 				ZIndexAllocator.allocateSetZIndex(toolFrame.getElement());
 			}
 		});
@@ -372,13 +362,13 @@ public class WorksheetImpl extends Composite implements Worksheet {
 		final SimpleEvent.Handler<Point2D> resizeHandler = new SimpleEvent.Handler<Point2D>() {
 			@Override
 			public void onFire(Point2D size) {
-				resizeToolFrame(toolFrame, size);
+				toolFrame.setToolSize(size);
 			}
 		};
 		final SimpleEvent.Handler<Void> cancelHandler = new SimpleEvent.Handler<Void>() {
 			@Override
 			public void onFire(Void arg) {
-				resizeToolFrame(toolFrame, initialSize);
+				toolFrame.setToolSize(initialSize);
 			}
 		};
 		this.startMouseMoveOperation(toolFrame.getElement(), Point2D.zero, resizeHandler, null, cancelHandler);
@@ -523,9 +513,7 @@ public class WorksheetImpl extends Composite implements Worksheet {
 			int y = Integer.valueOf(toolInfo.toolFrame.getElement().getOffsetTop());
 			toolData._position = new Point2D(x, y);
 			toolData._zIndex = ZIndexAllocator.getElementZIndex(toolInfo.toolFrame.getElement()); 
-			toolData._size = new Point2D(
-					toolInfo.toolFrame.getElement().getOffsetWidth(),
-					toolInfo.toolFrame.getElement().getOffsetHeight());
+			toolData._size = toolInfo.toolFrame.getToolSize();
 			
 			activeElems.add(toolData);
 		}
@@ -673,11 +661,6 @@ public class WorksheetImpl extends Composite implements Worksheet {
 		if (null != id) {
 			load(id);
 		}
-	}
-
-	public void resizeToolFrame(final CanvasToolFrame toolFrame, Point2D pos) {
-		toolFrame.setWidth(pos.getX());
-		toolFrame.setHeight(pos.getY());
 	}
 
 	public void setActiveTool(final CanvasTool<? extends ElementData> tool) {
