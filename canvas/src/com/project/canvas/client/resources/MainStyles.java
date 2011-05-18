@@ -107,7 +107,7 @@ public interface MainStyles extends CssResource {
     String toolFrameBottomRightResize();
 
     String toolFrameBottomLeftRotate();
-    
+
     String toolFrameHoverVisibleElement();
 
     String toolFrameButton();

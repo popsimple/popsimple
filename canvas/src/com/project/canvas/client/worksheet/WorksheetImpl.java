@@ -65,7 +65,11 @@ import com.project.canvas.shared.data.TextData;
 
 public class WorksheetImpl extends Composite implements Worksheet {
 
-    private static final int ROTATION_ROUND_RESOLUTION = 3; // 1 = best, the highest means bigger angle steps (lower resolution)
+    private static final int ROTATION_ROUND_RESOLUTION = 3; // 1 = best, the
+                                                            // highest means
+                                                            // bigger angle
+                                                            // steps (lower
+                                                            // resolution)
 
     private static WorksheetImplUiBinder uiBinder = GWT.create(WorksheetImplUiBinder.class);
 
@@ -283,8 +287,8 @@ public class WorksheetImpl extends Composite implements Worksheet {
         return this.createToolInstance(relativePos, null, 0, toolFactory);
     }
 
-    private CanvasToolFrame createToolInstance(final Point2D relativePos, final Point2D size, final int rotation,
-            CanvasToolFactory<? extends CanvasTool<? extends ElementData>> toolFactory) {
+    private CanvasToolFrame createToolInstance(final Point2D relativePos, final Point2D size,
+            final int rotation, CanvasToolFactory<? extends CanvasTool<? extends ElementData>> toolFactory) {
         final CanvasTool<? extends ElementData> tool = toolFactory.create();
         final CanvasToolFrame toolFrame = new CanvasToolFrame(tool);
 
@@ -311,11 +315,12 @@ public class WorksheetImpl extends Composite implements Worksheet {
                 startResizeCanvasToolFrame(toolFrame, arg);
             }
         }));
-        regs.add(toolFrame.addRotateStartRequestHandler(new SimpleEvent.Handler<MouseEvent<?>>(){
+        regs.add(toolFrame.addRotateStartRequestHandler(new SimpleEvent.Handler<MouseEvent<?>>() {
             @Override
             public void onFire(MouseEvent<?> arg) {
                 startRotateCanvasToolFrame(toolFrame, arg);
-            }}));
+            }
+        }));
         regs.add(toolFrame.addMoveBackRequestHandler(new SimpleEvent.Handler<Void>() {
             @Override
             public void onFire(Void arg) {
@@ -344,12 +349,13 @@ public class WorksheetImpl extends Composite implements Worksheet {
             public void execute() {
                 tool.asWidget().setVisible(true);
                 setActiveTool(tool);
-                setToolFramePosition(limitPosToWorksheet(relativePos.plus(creationOffset), toolFrame), toolFrame);
+                setToolFramePosition(limitPosToWorksheet(relativePos.plus(creationOffset), toolFrame),
+                        toolFrame);
                 ElementUtils.setRotation(toolFrame.getElement(), rotation);
                 if (null != size) {
                     toolFrame.setToolSize(size);
                 }
-				//TODO: Set zIndex according to the data instead.
+                // TODO: Set zIndex according to the data instead.
                 ZIndexAllocator.allocateSetZIndex(toolFrame.getElement());
             }
         });
@@ -358,18 +364,19 @@ public class WorksheetImpl extends Composite implements Worksheet {
     }
 
     protected void startRotateCanvasToolFrame(final CanvasToolFrame toolFrame, MouseEvent<?> arg) {
-        Point2D frameSize = new Point2D(toolFrame.getOffsetWidth(),toolFrame.getOffsetHeight());  
+        Point2D frameSize = new Point2D(toolFrame.getOffsetWidth(), toolFrame.getOffsetHeight());
         Point2D toolCenterPos = frameSize.mul(0.5); // relative to tool top-left
         Point2D startEventRelativeToTopLeft = relativePosition(arg, toolFrame.getElement());
         Point2D startEventRelativeToCenter = startEventRelativeToTopLeft.minus(toolCenterPos);
         Point2D bottomLeftRelativeToCenter = new Point2D(-toolCenterPos.getX(), toolCenterPos.getY());
-        final int bottomLeftAngle = (int)Math.toDegrees(bottomLeftRelativeToCenter.radians());
-        final int startAngle = roundedAngle((int)Math.toDegrees(startEventRelativeToCenter.radians()) - bottomLeftAngle);
-        
+        final int bottomLeftAngle = (int) Math.toDegrees(bottomLeftRelativeToCenter.radians());
+        final int startAngle = roundedAngle((int) Math.toDegrees(startEventRelativeToCenter.radians())
+                - bottomLeftAngle);
+
         final SimpleEvent.Handler<Point2D> rotateHandler = new SimpleEvent.Handler<Point2D>() {
             @Override
             public void onFire(Point2D posRelativeToCenter) {
-                int rotation = (int)Math.toDegrees(posRelativeToCenter.radians()) -  bottomLeftAngle;
+                int rotation = (int) Math.toDegrees(posRelativeToCenter.radians()) - bottomLeftAngle;
                 ElementUtils.setRotation(toolFrame.getElement(), roundedAngle(rotation));
             }
         };
@@ -379,7 +386,8 @@ public class WorksheetImpl extends Composite implements Worksheet {
                 ElementUtils.setRotation(toolFrame.getElement(), startAngle);
             }
         };
-        this.startMouseMoveOperation(toolFrame.getElement(), toolCenterPos, rotateHandler, null, cancelHandler);
+        this.startMouseMoveOperation(toolFrame.getElement(), toolCenterPos, rotateHandler, null,
+                cancelHandler);
     }
 
     protected void setToolFramePosition(Point2D relativePos, final CanvasToolFrame toolFrame) {
@@ -410,7 +418,7 @@ public class WorksheetImpl extends Composite implements Worksheet {
 
     protected void startResizeCanvasToolFrame(final CanvasToolFrame toolFrame, final MouseEvent<?> startEvent) {
         final Point2D initialSize = toolFrame.getToolSize();
-				
+
         final SimpleEvent.Handler<Point2D> resizeHandler = new SimpleEvent.Handler<Point2D>() {
             @Override
             public void onFire(Point2D size) {
@@ -423,10 +431,9 @@ public class WorksheetImpl extends Composite implements Worksheet {
                 toolFrame.setToolSize(initialSize);
             }
         };
-		final Element toolElement = toolFrame.getTool().asWidget().getElement();
-		this.startMouseMoveOperation(toolElement, 
-				relativePosition(startEvent, toolElement).minus(initialSize), 
-				resizeHandler, null, cancelHandler);
+        final Element toolElement = toolFrame.getTool().asWidget().getElement();
+        this.startMouseMoveOperation(toolElement, relativePosition(startEvent, toolElement)
+                .minus(initialSize), resizeHandler, null, cancelHandler);
     }
 
     protected void startMouseMoveOperation(final Element referenceElem, final Point2D referenceOffset,
@@ -553,7 +560,7 @@ public class WorksheetImpl extends Composite implements Worksheet {
     }
 
     public void save() {
-		//TODO: Defrag zIndex of all tools before saving.
+        // TODO: Defrag zIndex of all tools before saving.
         ArrayList<ElementData> activeElems = new ArrayList<ElementData>();
         for (Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo> entry : toolInfoMap.entrySet()) {
             CanvasTool<? extends ElementData> tool = entry.getKey();
@@ -627,17 +634,14 @@ public class WorksheetImpl extends Composite implements Worksheet {
         });
     }
 
-	protected void removeAllTools()
-	{
-		for (ToolInstanceInfo toolInfo : 
-			new ArrayList<ToolInstanceInfo>(this.toolInfoMap.values()))
-		{
-			this.removeToolInstance(toolInfo.toolFrame);
-		}
-	}
-	
+    protected void removeAllTools() {
+        for (ToolInstanceInfo toolInfo : new ArrayList<ToolInstanceInfo>(this.toolInfoMap.values())) {
+            this.removeToolInstance(toolInfo.toolFrame);
+        }
+    }
+
     protected void load(CanvasPage result) {
-		this.removeAllTools();
+        this.removeAllTools();
         // TODO: Currently because it's static.
         ZIndexAllocator.reset();
 
@@ -648,21 +652,22 @@ public class WorksheetImpl extends Composite implements Worksheet {
             updatedElements.put(elem.id, elem);
         }
 
-		//TODO: Support updating already existing items.
-//		for (Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo>  entry 
-//				: new HashSet<Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo>>(toolInfoMap.entrySet()))
-//		{
-//			CanvasTool<? extends ElementData> tool = entry.getKey();
-//			ToolInstanceInfo toolInfo = entry.getValue();
-//			ElementData toolData = tool.getValue();
-//			if (updatedElements.containsKey(toolData.id)) {
-//				tool.setElementData(updatedElements.get(toolData.id));
-//				updatedElements.remove(toolData.id);
-//			}
-//			else {
-//				this.removeToolInstance(toolInfo.toolFrame);
-//			}
-//		}
+        // TODO: Support updating already existing items.
+        // for (Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo> entry
+        // : new HashSet<Entry<CanvasTool<? extends ElementData>,
+        // ToolInstanceInfo>>(toolInfoMap.entrySet()))
+        // {
+        // CanvasTool<? extends ElementData> tool = entry.getKey();
+        // ToolInstanceInfo toolInfo = entry.getValue();
+        // ElementData toolData = tool.getValue();
+        // if (updatedElements.containsKey(toolData.id)) {
+        // tool.setElementData(updatedElements.get(toolData.id));
+        // updatedElements.remove(toolData.id);
+        // }
+        // else {
+        // this.removeToolInstance(toolInfo.toolFrame);
+        // }
+        // }
         createToolInstancesFromData(updatedElements);
     }
 
@@ -690,7 +695,8 @@ public class WorksheetImpl extends Composite implements Worksheet {
                 continue;
             }
             // TODO: Refactor
-            CanvasToolFrame toolFrame = this.createToolInstance(newElement._position, newElement._size, newElement._rotation, factory);
+            CanvasToolFrame toolFrame = this.createToolInstance(newElement._position, newElement._size,
+                    newElement._rotation, factory);
             toolFrame.getTool().setElementData(newElement);
             toolFrame.getTool().setActive(false);
         }
