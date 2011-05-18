@@ -107,26 +107,27 @@ public class ImageTool extends Image implements CanvasTool<ImageData> {
 		if (null == url || url.trim().isEmpty())
 		{ 
 			this.getElement().getStyle().setBackgroundImage("");
+			super.addStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
+			super.removeStyleName(CanvasResources.INSTANCE.main().imageToolSet());
+			return;
 		}
-		else {
-			final RegistrationsManager regs = new RegistrationsManager();
-			regs.add(this.addLoadHandler(new LoadHandler() {
-				@Override
-				public void onLoad(LoadEvent event) {
-					getElement().getStyle().setWidth(getWidth(), Unit.PX);
-					getElement().getStyle().setHeight(getHeight(), Unit.PX);
-					setUrl(""); // don't display the image in the <img>, only as background
-					regs.clear();
-				}
-			}));
-			// Temporarily set auto width/height so that we will be able to find out
-			// the size of the image.
-			getElement().getStyle().setProperty("width", "auto");
-			getElement().getStyle().setProperty("height", "auto");
-			Image.prefetch(url);
-			this.setUrl(url);
-			getElement().getStyle().setBackgroundImage("url(\"" + url + "\")");
-		}
+		final RegistrationsManager regs = new RegistrationsManager();
+		regs.add(this.addLoadHandler(new LoadHandler() {
+			@Override
+			public void onLoad(LoadEvent event) {
+				getElement().getStyle().setWidth(getWidth(), Unit.PX);
+				getElement().getStyle().setHeight(getHeight(), Unit.PX);
+				setUrl(""); // don't display the image in the <img>, only as background
+				regs.clear();
+			}
+		}));
+		// Temporarily set auto width/height so that we will be able to find out
+		// the size of the image.
+		getElement().getStyle().setProperty("width", "auto");
+		getElement().getStyle().setProperty("height", "auto");
+		Image.prefetch(url);
+		this.setUrl(url);
+		getElement().getStyle().setBackgroundImage("url(\"" + url + "\")");
 		super.removeStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
 		super.addStyleName(CanvasResources.INSTANCE.main().imageToolSet());
 	}
