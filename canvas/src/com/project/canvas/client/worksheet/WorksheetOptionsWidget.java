@@ -5,6 +5,8 @@ import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.TakesValue;
@@ -120,6 +122,7 @@ public class WorksheetOptionsWidget extends Composite implements TakesValue<Canv
 			this.stretchYOption.setValue(sizeParts[1].equals("100%"));
 		}
 		this.centerOption.setValue(this.value.backgroundPosition.toLowerCase().trim().equals("center center"));
+		this.previewImage();
 	}
 
 	@Override
