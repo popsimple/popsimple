@@ -58,7 +58,7 @@ public interface MainStyles extends CssResource {
 
 	String taskList();
 
-	String taskListRemoveImage();
+  String taskRemoveImage();
 
 	String taskListTextChecked();
 
@@ -75,8 +75,6 @@ public interface MainStyles extends CssResource {
 	String taskImageContainer();
 
 	String taskImageChecked();
-
-	String taskImage();
 
 	String imageBox();
 

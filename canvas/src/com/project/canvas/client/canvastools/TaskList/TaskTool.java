@@ -10,11 +10,12 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.TakesValue;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Focusable;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.events.SimpleEvent;
@@ -38,10 +39,10 @@ public class TaskTool extends Composite
 	CheckBox checkTask;
 
 	@UiField
-	Button imageRemove;
+	Anchor imageRemove;
 
 	@UiField
-	Image imageTask;
+	FlowPanel imageTask;
 
 	private ImageProvider imageProvider = new ImageProvider();
 
@@ -84,7 +85,14 @@ public class TaskTool extends Composite
 			}
 		});
 
-		this.imageTask.setUrl(imageProvider.GetDefaultImageUrl());
+		this.setImageUrl(imageProvider.GetDefaultImageUrl());
+	}
+	
+	//TODO: Share with ImageTool.
+	protected void setImageUrl(String url)
+	{
+		this.imageTask.getElement().getStyle().setBackgroundImage(
+				"url(\"" + url + "\")");
 	}
 
 	public void AddKillRequestEventHandler(SimpleEvent.Handler<TaskTool> handler) {
@@ -97,7 +105,7 @@ public class TaskTool extends Composite
 	}
 
 	protected void textValueChanges(String text) {
-		imageTask.setUrl(imageProvider.GetImageUrl(text));
+		this.setImageUrl(imageProvider.GetImageUrl(text));
 	}
 
 	protected void setCompleted(boolean checked) {
@@ -141,7 +149,7 @@ public class TaskTool extends Composite
 		this.data = value;
 		this.textTask.setText(value._description);
 		this.checkTask.setValue(value._completed);
-		this.imageTask.setUrl(value._imageUrl);
+		this.setImageUrl(value._imageUrl);
 		// TODO: Support image alternate text
 		this.setCompleted(value._completed);
 	}
@@ -150,9 +158,22 @@ public class TaskTool extends Composite
 	public TaskData getValue() {
 		this.data._description = this.textTask.getText();
 		this.data._completed = this.checkTask.getValue();
-		this.data._imageUrl = this.imageTask.getUrl();
+		this.data._imageUrl = this.getImageUrl();
 		// TODO: Support image alternate text
 		return this.data;
+	}
+	
+	//TODO: Share with ImageTool.
+	protected String getImageUrl()
+	{
+		String imageCss = this.imageTask.getElement().getStyle().getBackgroundImage();
+		if (imageCss.contains("url(")) {
+			return imageCss.substring("url(\"".length(), imageCss.length() - "\")".length());
+		}
+		else 
+		{
+			return "";
+		}
 	}
 
 }

@@ -24,7 +24,7 @@ public interface CanvasResources extends ClientBundle {
 	ImageResource toolboxImageIcon();
 
 	@Source("com/project/canvas/client/resources/images/bitmaps/delete.png")
-	ImageResource taskListRemoveIcon();
+	ImageResource taskRemoveIcon();
 
 	@Source("com/project/canvas/client/resources/images/bitmaps/resizeIcon.png")
 	ImageResource resizeIcon();
@@ -37,4 +37,7 @@ public interface CanvasResources extends ClientBundle {
 
 	@Source("com/project/canvas/client/resources/images/bitmaps/moveFrontIcon.png")
 	ImageResource moveFrontIcon();
+	
+	@Source("com/project/canvas/client/resources/images/bitmaps/helpIcon_blue_32.png")
+	ImageResource taskDefaultIcon();
 }

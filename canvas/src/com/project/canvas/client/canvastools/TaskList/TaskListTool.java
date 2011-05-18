@@ -42,6 +42,8 @@ public class TaskListTool extends Composite
 	@UiField
 	Button buttonAdd;
 
+	protected int _tabIndex = 0;
+	protected char _accessKey = 0;
 	private SimpleEvent<String> killRequestedEvent = new SimpleEvent<String>();
 	private ArrayList<TaskTool> taskWidgets = new ArrayList<TaskTool>();
 
@@ -93,21 +95,25 @@ public class TaskListTool extends Composite
 	}
 
 	private TaskTool getFirstTaskWidget() {
+		if (this.taskWidgets.isEmpty())
+		{
+			return null;
+		}
 		return this.taskWidgets.get(0);
 	}
 
 	public int getTabIndex() {
 		// TODO Auto-generated method stub
-		return this.getFirstTaskWidget().getTabIndex();
+		return this._tabIndex;
 	}
 
 	public void setAccessKey(char key) {
 		// TODO Auto-generated method stub
-		this.getFirstTaskWidget().setAccessKey(key);
+		this._accessKey = key;
 	}
 
 	public void setTabIndex(int index) {
-		this.getFirstTaskWidget().setTabIndex(index);
+		this._tabIndex = index;
 	}
 
 	public SimpleEvent<String> getKillRequestedEvent() {
@@ -116,7 +122,12 @@ public class TaskListTool extends Composite
 
 	@Override
 	public void setFocus(boolean focused) {
-		this.getFirstTaskWidget().setFocus(focused);
+		TaskTool taskTool = this .getFirstTaskWidget();
+		if (null == taskTool)
+		{
+			return;
+		}
+		taskTool.setFocus(focused);
 	}
 
 	@Override

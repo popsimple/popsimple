@@ -174,18 +174,15 @@
 	gwt-image: "toolboxCursorIcon";
 }
 
-.taskImage
-{
-	width: 32px;
-	height: 32px;
-}
-
 .taskImageContainer
 {
 	display:inline-block;
 	width: 32px;
 	height: 32px;
+	background-position: center;
+	background-repeat: no-repeat;
 	vertical-align: middle;
+	padding: 1px;
 }
 
 .taskImageChecked
@@ -203,13 +200,14 @@
     background-color: #FFFFC9;
 }
 
-@sprite .taskListRemoveImage{
+@sprite .taskRemoveImage{
 	cursor: pointer;
-	gwt-image: "taskListRemoveIcon";
+	gwt-image: "taskRemoveIcon";
 	border-style: none;
 	height:16px;
 	width:16px;
 	vertical-align: middle;
+	display: inline-block;
 }
 
 .taskListTextChecked{

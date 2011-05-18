@@ -3,6 +3,7 @@ package com.project.canvas.client.canvastools.TaskList;
 import java.util.HashMap;
 
 import com.google.gwt.regexp.shared.RegExp;
+import com.project.canvas.client.resources.CanvasResources;
 
 public class ImageProvider {
 	private static String UNKNOWN_IMAGE_URL = "http://cdn2.iconfinder.com/data/icons/oxygen/32x32/categories/system-help.png";
@@ -37,7 +38,7 @@ public class ImageProvider {
 	}
 
 	public String GetDefaultImageUrl() {
-		return UNKNOWN_IMAGE_URL;
+		return CanvasResources.INSTANCE.taskDefaultIcon().getURL();
 	}
 
 	public String GetImageUrl(String imageTag) {

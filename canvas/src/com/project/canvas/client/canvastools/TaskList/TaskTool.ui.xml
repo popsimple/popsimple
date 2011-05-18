@@ -9,11 +9,9 @@
 	<g:HTMLPanel>
 		<g:FlowPanel>
 			<g:CheckBox ui:field="checkTask"></g:CheckBox>
-			<g:AbsolutePanel addStyleNames="{res.main.taskImageContainer}">
-				<g:Image ui:field="imageTask" addStyleNames="{res.main.taskImage}"></g:Image>
-			</g:AbsolutePanel>
+			<g:FlowPanel ui:field="imageTask" addStyleNames="{res.main.taskImageContainer}"></g:FlowPanel>
 			<my:HoverTextBox ui:field="textTask">Type your task here...</my:HoverTextBox>
-			<g:Button ui:field="imageRemove" addStyleNames="{res.main.taskListRemoveImage}"></g:Button>
+			<g:Anchor ui:field="imageRemove" addStyleNames="{res.main.taskRemoveImage}"></g:Anchor>
 		</g:FlowPanel>
 	</g:HTMLPanel>
 </ui:UiBinder> 
