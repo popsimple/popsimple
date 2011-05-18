@@ -9,7 +9,7 @@ public interface Worksheet {
 
 	SimpleEvent<Void> getDefaultToolRequestEvent();
 
-	void setActiveTool(ToolboxItem toolboxItem);
+	void setActiveToolboxItem(ToolboxItem toolboxItem);
 
 	void save();
 	

@@ -207,11 +207,9 @@ public class WorksheetImpl extends Composite implements Worksheet {
 			@Override
 			public void onPreviewNativeEvent(NativePreviewEvent event) {
 				String type = event.getNativeEvent().getType();
-				if (type.equals("keypress")) {
-					if (event.getNativeEvent().getKeyCode() == 27) {
-						// Escape
-						escapeOperation();
-					}
+				if (type.equals("keypress") && (event.getNativeEvent().getKeyCode() == 27)) {
+					// Escape
+					escapeOperation();
 				}
 			}
 		});
@@ -436,7 +434,7 @@ public class WorksheetImpl extends Composite implements Worksheet {
 	 * @see com.project.canvas.client.worksheet.Worksheet#setActiveTool(com.project.canvas.client.canvastools.base.ToolboxItem)
 	 */
 	@Override
-	public void setActiveTool(ToolboxItem toolboxItem) {
+	public void setActiveToolboxItem(ToolboxItem toolboxItem) {
 		this.clearActiveToolboxItem();
 		
 		this.activeToolboxItem = toolboxItem;

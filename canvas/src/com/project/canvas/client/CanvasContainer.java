@@ -34,7 +34,7 @@ public class CanvasContainer extends Composite {
 		initWidget(uiBinder.createAndBindUi(this));
 		this.toolbox.getToolChosenEvent().addHandler(new SimpleEvent.Handler<ToolboxItem>() {
 			public void onFire(ToolboxItem arg) {
-				worksheet.setActiveTool(arg);
+				worksheet.setActiveToolboxItem(arg);
 			}
 		});
 		this.worksheet.getDefaultToolRequestEvent().addHandler(new SimpleEvent.Handler<Void>() {
