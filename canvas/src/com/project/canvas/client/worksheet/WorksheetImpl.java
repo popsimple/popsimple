@@ -328,6 +328,7 @@ public class WorksheetImpl extends Composite implements Worksheet {
 				{
 					toolFrame.setToolSize(size);
 				}
+				//TODO: Set zIndex according to the data instead.
 				ZIndexAllocator.allocateSetZIndex(toolFrame.getElement());
 			}
 		});
@@ -361,7 +362,8 @@ public class WorksheetImpl extends Composite implements Worksheet {
 
 	protected void startResizeCanvasToolFrame(final CanvasToolFrame toolFrame, final MouseEvent<?>  startEvent)
 	{
-		final Point2D initialSize = new Point2D(toolFrame.getOffsetWidth(), toolFrame.getOffsetHeight());
+		final Point2D initialSize = toolFrame.getToolSize();
+				
 		final SimpleEvent.Handler<Point2D> resizeHandler = new SimpleEvent.Handler<Point2D>() {
 			@Override
 			public void onFire(Point2D size) {
@@ -374,7 +376,10 @@ public class WorksheetImpl extends Composite implements Worksheet {
 				toolFrame.setToolSize(initialSize);
 			}
 		};
-		this.startMouseMoveOperation(toolFrame.getElement(), Point2D.zero, resizeHandler, null, cancelHandler);
+		final Element toolElement = toolFrame.getTool().asWidget().getElement();
+		this.startMouseMoveOperation(toolElement, 
+				relativePosition(startEvent, toolElement).minus(initialSize), 
+				resizeHandler, null, cancelHandler);
 	}
 
 	
@@ -506,6 +511,7 @@ public class WorksheetImpl extends Composite implements Worksheet {
 	}
 	
 	public void save() {
+		//TODO: Defrag zIndex of all tools before saving.
 		ArrayList<ElementData> activeElems = new ArrayList<ElementData>();
 		for (Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo>  entry : toolInfoMap.entrySet())
 		{
