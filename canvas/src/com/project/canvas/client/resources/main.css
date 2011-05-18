@@ -300,11 +300,13 @@
 {
 	position: absolute;
 	display:inline-block;
+	padding:1px;
 }
 
 
 .toolFramePanel:hover, .toolFramePanel.hover
 {
+	padding:0px;
 	border-style: solid;
 	border-width: 1px;
 	border-radius: 5px;
@@ -315,7 +317,7 @@
 .toolFrameBodyPanel 
 {
     cursor:default;
-	padding:0px 5px 10px 5px;
+	padding:1px 5px 10px 5px;
 	display:inline-block;
 	position: relative;
 }				

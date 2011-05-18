@@ -1,8 +1,6 @@
 package com.project.canvas.client.canvastools.TextEdit;
 
 
-import com.google.gwt.event.dom.client.BlurEvent;
-import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyDownEvent;
@@ -44,11 +42,6 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 	}
 
 	private void registerHandlers() {
-		this.editBox.addBlurHandler(new BlurHandler() {
-			public void onBlur(BlurEvent event) {
-				editBlur();
-			}
-		});
 		this.editBox.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				event.stopPropagation();
@@ -76,10 +69,6 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 		Point2D newSize = TextEditUtils.autoSizeWidget(this, this.editBox.getText(), true);
 		this.setWidth(newSize.getX() + "px");
 		this.setHeight(newSize.getY() + "px");
-	}
-
-	protected void editBlur() {
-		this.setActive(false);
 	}
 
 	@Override
