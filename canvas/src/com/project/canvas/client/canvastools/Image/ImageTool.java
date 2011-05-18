@@ -34,12 +34,16 @@ public class ImageTool extends Image implements CanvasTool<ImageData> {
 	public ImageTool() {
 		CanvasToolCommon.initCanvasToolWidget(this);
 		WidgetUtils.disableDrag(this);
+	}
+
+	@Override
+	public void bind() {
 		super.setTitle("Click for image options; Shift-click to drag");
 		super.addStyleName(CanvasResources.INSTANCE.main().imageBox());
 		super.addStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
 		this.registerHandlers();
 	}
-
+	
 	private void registerHandlers() {
 		this.addClickHandler(new ClickHandler() {
 			@Override

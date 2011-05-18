@@ -14,7 +14,6 @@
 	<inherits name='com.google.gwt.resources.Resources' />
  	<!-- <inherits name='com.google.gwt.maps.GoogleMaps' />-->
 
-	<inherits name='com.axeiya.gwtckeditor.Gwtckeditor'/>
 	<inherits name='com.ghusse.dolomite.Dolomite'/>
 	
     <set-configuration-property name="UiBinder.useSafeHtmlTemplates" value="true"/>

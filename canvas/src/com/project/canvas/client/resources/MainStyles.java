@@ -20,7 +20,6 @@ public interface MainStyles extends CssResource {
   String textEditNotFocused();
   String textEditNoToolbars();
   String textEditToolbar();
-  String textEditEditorElementBody();
   
   String toolbox();
   
@@ -114,4 +113,6 @@ public interface MainStyles extends CssResource {
   String imagePickerResultImage();
 
   String selected();
+
+  String textEditBox();
 }

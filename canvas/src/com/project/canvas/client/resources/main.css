@@ -140,6 +140,8 @@
 	min-height:40px;
 	height:100px;
 }
+.textEditBox {
+}
 .textEditFocused {
 	margin-top:-1px;
 	margin-left:-2px;
@@ -148,27 +150,8 @@
 
 .textEditNotFocused {
 }
-
-@external .cke_top, .cke_bottom, .cke_wrapper .cke_skin_kama .cke_contents;
-
-.textEditNoToolbars .cke_top {
-	visibility: hidden !important;
-}
-.textEditNoToolbars .cke_bottom {
-	display: none  !important;
-}
-.textEdit span.cke_skin_kama {
-	border-style:none;
-	padding:none;
-}
-.textEditEditorElementBody {
-	background-color: transparent;
-}
-.textEdit .cke_contents  iframe {
-	background-color: transparent !important;
-}
-.textEdit .cke_wrapper {
-	background: transparent !important;
+.textEditNoToolbars
+{
 }
 .textEditToolbar {
 	/*margin-top:-80px;*/

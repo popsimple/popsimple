@@ -338,6 +338,7 @@ public class WorksheetImpl extends Composite implements Worksheet {
 				ZIndexAllocator.allocateSetZIndex(toolFrame.getElement());
 			}
 		});
+		tool.bind();
 		return toolFrame;
 	}
 	

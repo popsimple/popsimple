@@ -19,4 +19,7 @@ public interface CanvasTool<T extends ElementData> extends IsWidget, TakesValue<
 
 	// Notifies the tool that it became active/inactive in the worksheet.
 	void setActive(boolean isActive);
+	
+	// Start handling events
+	void bind(); 
 }

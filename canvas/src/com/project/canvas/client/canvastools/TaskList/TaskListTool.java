@@ -50,7 +50,10 @@ public class TaskListTool extends Composite implements CanvasTool<TaskListData>,
 		CanvasToolCommon.initCanvasToolWidget(this);
 		
 		this.createNewTaskWidget();
-		
+	}
+
+	@Override
+	public void bind() {
 		buttonAdd.addClickHandler(new ClickHandler() {
 			
 			public void onClick(ClickEvent event) {
