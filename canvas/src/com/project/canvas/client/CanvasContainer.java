@@ -10,7 +10,6 @@ import com.project.canvas.client.canvastools.base.ToolboxItem;
 import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.worksheet.Worksheet;
-import com.project.canvas.client.worksheet.WorksheetImpl;
 
 public class CanvasContainer extends Composite {
 
@@ -22,7 +21,7 @@ public class CanvasContainer extends Composite {
     @UiField
     Toolbox toolbox;
     @UiField
-    WorksheetImpl worksheet;
+    Worksheet worksheet;
 
     public Worksheet getWorksheet() {
         return worksheet;

@@ -12,10 +12,7 @@ public class ElementData implements Serializable, IsSerializable {
     public Long id;
 
     @Embedded
-    public Point2D _position;
-    @Embedded
-    public Point2D _size;
-
-    public int _rotation;
-    public int _zIndex;
+    public Transform2D transform = new Transform2D();
+    
+    public int zIndex = 0;
 }

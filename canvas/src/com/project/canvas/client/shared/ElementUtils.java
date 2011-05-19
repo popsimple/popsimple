@@ -3,7 +3,7 @@ package com.project.canvas.client.shared;
 import java.util.HashMap;
 
 import com.google.gwt.dom.client.Element;
-import com.project.canvas.shared.data.Rectangle2D;
+import com.project.canvas.shared.data.Rectangle;
 
 public abstract class ElementUtils {
     public static boolean isOverlappingElements(Element element1, Element element2) {
@@ -11,8 +11,8 @@ public abstract class ElementUtils {
                 ElementUtils.getElementRectangle(element2));
     }
 
-    public static Rectangle2D getElementRectangle(Element element) {
-        return new Rectangle2D(element.getAbsoluteLeft(), element.getAbsoluteTop(),
+    public static Rectangle getElementRectangle(Element element) {
+        return new Rectangle(element.getAbsoluteLeft(), element.getAbsoluteTop(),
                 element.getAbsoluteRight(), element.getAbsoluteBottom());
     }
 

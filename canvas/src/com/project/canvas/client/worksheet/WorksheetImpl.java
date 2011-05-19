@@ -23,20 +23,12 @@ import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.canvastools.Image.ImageToolFactory;
 import com.project.canvas.client.canvastools.TaskList.TaskListToolFactory;
@@ -61,51 +53,18 @@ import com.project.canvas.shared.data.ImageData;
 import com.project.canvas.shared.data.Point2D;
 import com.project.canvas.shared.data.TaskListData;
 import com.project.canvas.shared.data.TextData;
+import com.project.canvas.shared.data.Transform2D;
 
-public class WorksheetImpl extends Composite implements Worksheet {
-
+public class WorksheetImpl extends WorksheetWidget implements Worksheet 
+{
     private static final int ROTATION_ROUND_RESOLUTION = 3; // 1 = best, the
                                                             // highest means
                                                             // bigger angle
                                                             // steps (lower
                                                             // resolution)
 
-    private static WorksheetImplUiBinder uiBinder = GWT.create(WorksheetImplUiBinder.class);
-
-    interface WorksheetImplUiBinder extends UiBinder<Widget, WorksheetImpl> {
-    }
 
     RegistrationsManager activeToolRegistrations = new RegistrationsManager();
-
-    @UiField
-    FlowPanel worksheetPanel;
-
-    @UiField
-    Button saveButton;
-
-    @UiField
-    TextBox loadIdBox;
-
-    @UiField
-    Button loadButton;
-
-    @UiField
-    Button viewButton;
-
-    @UiField
-    HTMLPanel worksheetContainer;
-
-    @UiField
-    HTMLPanel worksheetHeader;
-
-    @UiField
-    Anchor optionsBackground;
-
-    @UiField
-    FlowPanel worksheetBackground;
-
-    @UiField
-    HTMLPanel dragPanel;
 
     ToolboxItem activeToolboxItem;
     Widget activeToolFloatingWidget;
@@ -161,13 +120,15 @@ public class WorksheetImpl extends Composite implements Worksheet {
     final HashMap<CanvasTool<?>, ToolInstanceInfo> toolInfoMap = new HashMap<CanvasTool<?>, ToolInstanceInfo>();
     protected CanvasPage page = new CanvasPage();
 
-    public WorksheetImpl() {
-        initWidget(uiBinder.createAndBindUi(this));
+	public WorksheetImpl() {
+		super();
         optionsDialog.setText("Worksheet options");
         optionsDialog.add(this.optionsWidget);
         setRegistrations();
         this.dragPanel.setVisible(false);
-    }
+	}
+
+
 
     private void setRegistrations() {
         this.saveButton.addClickHandler(new ClickHandler() {
@@ -271,6 +232,7 @@ public class WorksheetImpl extends Composite implements Worksheet {
                 .getToolFactory();
         Point2D pos = relativePosition(event, this.worksheetPanel.getElement());
         createToolInstance(pos, toolFactory);
+        
         if (toolFactory.isOneShot()) {
             defaultToolRequestEvent.dispatch(null);
         }
@@ -282,11 +244,12 @@ public class WorksheetImpl extends Composite implements Worksheet {
 
     private CanvasToolFrame createToolInstance(final Point2D relativePos,
             CanvasToolFactory<? extends CanvasTool<? extends ElementData>> toolFactory) {
-        return this.createToolInstance(relativePos, null, 0, toolFactory);
+        return this.createToolInstance(new Transform2D(relativePos, null, 0), toolFactory);
     }
 
-    private CanvasToolFrame createToolInstance(final Point2D relativePos, final Point2D size,
-            final int rotation, CanvasToolFactory<? extends CanvasTool<? extends ElementData>> toolFactory) {
+    private CanvasToolFrame createToolInstance(final Transform2D transform, 
+    		CanvasToolFactory<? extends CanvasTool<? extends ElementData>> toolFactory) 
+    {
         final CanvasTool<? extends ElementData> tool = toolFactory.create();
         final CanvasToolFrame toolFrame = new CanvasToolFrame(tool);
 
@@ -294,7 +257,38 @@ public class WorksheetImpl extends Composite implements Worksheet {
         ToolInstanceInfo toolInfo = new ToolInstanceInfo(toolFactory, toolFrame, null);
         this.toolInfoMap.put(tool, toolInfo);
 
-        RegistrationsManager regs = toolInfo.registrations;
+        RegistrationsManager regs = registerToolInstanceHandlers(toolFrame, toolInfo);
+
+        this.worksheetPanel.add(toolFrame);
+        toolInfo.killRegistration = tool.getKillRequestedEvent().addHandler(
+                new SimpleEvent.Handler<String>() {
+                    public void onFire(String arg) {
+                        removeToolInstance(toolFrame);
+                    }
+                });
+        regs.add(toolInfo.killRegistration);
+        
+        tool.asWidget().setVisible(false);
+        Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+            @Override
+            public void execute() {
+                tool.asWidget().setVisible(true);
+                setToolFramePosition(limitPosToWorksheet(transform.translation.plus(creationOffset), toolFrame), toolFrame);
+                ElementUtils.setRotation(toolFrame.getElement(), transform.rotation);
+                if (null != transform.size) {
+                    toolFrame.setToolSize(transform.size);
+                }
+                // TODO: Set zIndex according to the data instead.
+                ZIndexAllocator.allocateSetZIndex(toolFrame.getElement());
+            }
+        });
+        tool.bind();
+        return toolFrame;
+    }
+
+	public RegistrationsManager registerToolInstanceHandlers(
+			final CanvasToolFrame toolFrame, ToolInstanceInfo toolInfo) {
+		RegistrationsManager regs = toolInfo.registrations;
         regs.add(toolFrame.getCloseRequest().addHandler(new SimpleEvent.Handler<Void>() {
             @Override
             public void onFire(Void arg) {
@@ -332,33 +326,8 @@ public class WorksheetImpl extends Composite implements Worksheet {
                 ZIndexAllocator.moveElementAbove(toolFrame.getElement());
             }
         }));
-
-        this.worksheetPanel.add(toolFrame);
-        toolInfo.killRegistration = tool.getKillRequestedEvent().addHandler(
-                new SimpleEvent.Handler<String>() {
-                    public void onFire(String arg) {
-                        removeToolInstance(toolFrame);
-                    }
-                });
-        regs.add(toolInfo.killRegistration);
-        tool.asWidget().setVisible(false);
-        Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-            @Override
-            public void execute() {
-                tool.asWidget().setVisible(true);
-                setToolFramePosition(limitPosToWorksheet(relativePos.plus(creationOffset), toolFrame),
-                        toolFrame);
-                ElementUtils.setRotation(toolFrame.getElement(), rotation);
-                if (null != size) {
-                    toolFrame.setToolSize(size);
-                }
-                // TODO: Set zIndex according to the data instead.
-                ZIndexAllocator.allocateSetZIndex(toolFrame.getElement());
-            }
-        });
-        tool.bind();
-        return toolFrame;
-    }
+		return regs;
+	}
 
     protected void startRotateCanvasToolFrame(final CanvasToolFrame toolFrame, MouseEvent<?> arg) {
         Point2D frameSize = new Point2D(toolFrame.getOffsetWidth(), toolFrame.getOffsetHeight());
@@ -565,10 +534,10 @@ public class WorksheetImpl extends Composite implements Worksheet {
             ElementData toolData = tool.getValue();
             int x = Integer.valueOf(toolInfo.toolFrame.getElement().getOffsetLeft());
             int y = Integer.valueOf(toolInfo.toolFrame.getElement().getOffsetTop());
-            toolData._position = new Point2D(x, y);
-            toolData._zIndex = ZIndexAllocator.getElementZIndex(toolInfo.toolFrame.getElement());
-            toolData._size = toolInfo.toolFrame.getToolSize();
-            toolData._rotation = ElementUtils.getRotation(toolInfo.toolFrame.getElement());
+            toolData.zIndex = ZIndexAllocator.getElementZIndex(toolInfo.toolFrame.getElement());
+            toolData.transform.translation = new Point2D(x, y);
+            toolData.transform.size = toolInfo.toolFrame.getToolSize();
+            toolData.transform.rotation = ElementUtils.getRotation(toolInfo.toolFrame.getElement());
             activeElems.add(toolData);
         }
         this.page.elements.clear();
@@ -671,7 +640,7 @@ public class WorksheetImpl extends Composite implements Worksheet {
     protected Collection<ElementData> sortByZIndex(Collection<ElementData> elements) {
         TreeMap<Integer, ElementData> elementsByZIndex = new TreeMap<Integer, ElementData>();
         for (ElementData element : elements) {
-            elementsByZIndex.put(element._zIndex, element);
+            elementsByZIndex.put(element.zIndex, element);
         }
         return elementsByZIndex.values();
     }
@@ -692,8 +661,7 @@ public class WorksheetImpl extends Composite implements Worksheet {
                 continue;
             }
             // TODO: Refactor
-            CanvasToolFrame toolFrame = this.createToolInstance(newElement._position, newElement._size,
-                    newElement._rotation, factory);
+            CanvasToolFrame toolFrame = this.createToolInstance(newElement.transform, factory);
             toolFrame.getTool().setElementData(newElement);
             toolFrame.getTool().setActive(false);
         }
@@ -736,4 +704,5 @@ public class WorksheetImpl extends Composite implements Worksheet {
     public int roundedAngle(int rotation) {
         return ROTATION_ROUND_RESOLUTION * (rotation / ROTATION_ROUND_RESOLUTION);
     }
+	
 }
