@@ -7,6 +7,7 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
+import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -37,13 +38,13 @@ import com.project.canvas.shared.data.ElementData;
 import com.project.canvas.shared.data.Point2D;
 import com.project.canvas.shared.data.Transform2D;
 
-public class WorksheetWidget extends Composite implements WorksheetView
+public class WorksheetViewImpl extends Composite implements WorksheetView
 {
-    interface WorksheetWidgetUiBinder extends UiBinder<Widget, WorksheetWidget>
+    interface WorksheetViewImplUiBinder extends UiBinder<Widget, WorksheetViewImpl>
     {
     }
 
-    private static WorksheetWidgetUiBinder uiBinder = GWT.create(WorksheetWidgetUiBinder.class);
+    private static WorksheetViewImplUiBinder uiBinder = GWT.create(WorksheetViewImplUiBinder.class);
 
     @UiField
     HTMLPanel dragPanel;
@@ -85,7 +86,7 @@ public class WorksheetWidget extends Composite implements WorksheetView
     
     private final ToolFrameTransformer _toolFrameTransformer;
     
-    public WorksheetWidget()
+    public WorksheetViewImpl()
     {
         initWidget(uiBinder.createAndBindUi(this));
         _toolFrameTransformer  = new ToolFrameTransformer(worksheetPanel, dragPanel, stopOperationEvent);
@@ -132,16 +133,22 @@ public class WorksheetWidget extends Composite implements WorksheetView
     }
 
     @Override
-    public void addToolInstanceWidget(final CanvasToolFrame toolFrame, Transform2D transform, Point2D additionalOffset)
+    public void addToolInstanceWidget(final CanvasToolFrame toolFrame, final Transform2D transform, final Point2D additionalOffset)
     {
         RegistrationsManager regs = new RegistrationsManager();
         toolFrameRegistrations.put(toolFrame, regs);
-        this.worksheetPanel.add(toolFrame);
-        _toolFrameTransformer.setToolFramePosition(toolFrame, transform.translation.plus(additionalOffset));
-        ElementUtils.setRotation(toolFrame.getElement(), transform.rotation);
-        if (null != transform.size) {
-            toolFrame.setToolSize(transform.size);
-        }
+        
+        regs.add(toolFrame.addAttachHandler(new AttachEvent.Handler() {
+            @Override
+            public void onAttachOrDetach(AttachEvent event)
+            {
+                _toolFrameTransformer.setToolFramePosition(toolFrame, transform.translation.plus(additionalOffset));
+                ElementUtils.setRotation(toolFrame.getElement(), transform.rotation);
+                if (null != transform.size) {
+                    toolFrame.setToolSize(transform.size);
+                }
+            }
+        }));
         
         regs.add(toolFrame.getMoveStartRequest().addHandler(new SimpleEvent.Handler<MouseEvent<?>>() {
             @Override
@@ -161,6 +168,8 @@ public class WorksheetWidget extends Composite implements WorksheetView
                 _toolFrameTransformer.startRotateCanvasToolFrame(toolFrame, arg);
             }
         }));
+        
+        this.worksheetPanel.add(toolFrame);
     }
 
     @Override
@@ -243,6 +252,9 @@ public class WorksheetWidget extends Composite implements WorksheetView
 		}
 		
 		final Widget floatingWidget = factory.getFloatingWidget();
+		if (null == floatingWidget) {
+		    return;
+		}
         floatingWidget.addStyleName(CanvasResources.INSTANCE.main().floatingToolStyle());
         this.worksheetPanel.add(floatingWidget);
 

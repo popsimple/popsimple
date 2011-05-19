@@ -94,9 +94,7 @@ public class WorksheetImpl implements Worksheet
             int x = Integer.valueOf(toolInfo.toolFrame.getElement().getOffsetLeft());
             int y = Integer.valueOf(toolInfo.toolFrame.getElement().getOffsetTop());
             toolData.zIndex = ZIndexAllocator.getElementZIndex(toolInfo.toolFrame.getElement());
-            toolData.transform.translation = new Point2D(x, y);
-            toolData.transform.size = toolInfo.toolFrame.getToolSize();
-            toolData.transform.rotation = ElementUtils.getRotation(toolInfo.toolFrame.getElement());
+            toolData.transform = new Transform2D(new Point2D(x, y), toolInfo.toolFrame.getToolSize(), ElementUtils.getRotation(toolInfo.toolFrame.getElement()));
             activeElems.add(toolData);
         }
         this.page.elements.clear();

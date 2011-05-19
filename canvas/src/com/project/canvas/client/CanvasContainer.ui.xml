@@ -10,6 +10,6 @@
 	
 	<g:HTMLPanel addStyleNames="{res.main.canvasContainer}" >
 	   <my:Toolbox ui:field="toolbox"/>
-	   <myWorksheet:WorksheetWidget ui:field="worksheetWidget"/>
+	   <myWorksheet:WorksheetViewImpl ui:field="worksheetWidget"/>
 	</g:HTMLPanel>
 </ui:UiBinder> 
