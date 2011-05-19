@@ -13,6 +13,6 @@ public interface Worksheet {
 
     void save();
 
-    void load(String idStr);
+    void load(String id);
 
 }

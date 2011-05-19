@@ -10,6 +10,8 @@ import com.project.canvas.client.canvastools.base.ToolboxItem;
 import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.worksheet.Worksheet;
+import com.project.canvas.client.worksheet.WorksheetImpl;
+import com.project.canvas.client.worksheet.WorksheetWidget;
 
 public class CanvasContainer extends Composite {
 
@@ -21,7 +23,9 @@ public class CanvasContainer extends Composite {
     @UiField
     Toolbox toolbox;
     @UiField
-    Worksheet worksheet;
+    WorksheetWidget worksheetWidget;
+    
+    private Worksheet worksheet;
 
     public Worksheet getWorksheet() {
         return worksheet;
@@ -29,6 +33,8 @@ public class CanvasContainer extends Composite {
 
     public CanvasContainer() {
         initWidget(uiBinder.createAndBindUi(this));
+        this.worksheet = new WorksheetImpl(worksheetWidget);
+        
         this.toolbox.getToolChosenEvent().addHandler(new SimpleEvent.Handler<ToolboxItem>() {
             public void onFire(ToolboxItem arg) {
                 worksheet.setActiveToolboxItem(arg);

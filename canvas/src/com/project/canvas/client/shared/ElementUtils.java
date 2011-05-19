@@ -3,6 +3,7 @@ package com.project.canvas.client.shared;
 import java.util.HashMap;
 
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.MouseEvent;
 import com.project.canvas.shared.data.Point2D;
 import com.project.canvas.shared.data.Rectangle;
@@ -49,5 +50,9 @@ public abstract class ElementUtils {
 	public static Point2D relativePosition(MouseEvent<?> event, Element elem) {
 	    return new Point2D(event.getRelativeX(elem), event.getRelativeY(elem));
 	} 
-
+	
+	public static void setElementPosition(Point2D pos, Element element) {
+		element.getStyle().setLeft(pos.getX(), Unit.PX);
+		element.getStyle().setTop(pos.getY(), Unit.PX);
+    }
 }
