@@ -142,10 +142,13 @@ public class WorksheetViewImpl extends Composite implements WorksheetView
             @Override
             public void onAttachOrDetach(AttachEvent event)
             {
-                _toolFrameTransformer.setToolFramePosition(toolFrame, transform.translation.plus(additionalOffset));
-                ElementUtils.setRotation(toolFrame.getElement(), transform.rotation);
-                if (null != transform.size) {
-                    toolFrame.setToolSize(transform.size);
+                if (event.isAttached()) {
+                    _toolFrameTransformer.setToolFramePosition(toolFrame, transform.translation.plus(additionalOffset));
+                    ElementUtils.setRotation(toolFrame.getElement(), transform.rotation);
+                    if (null != transform.size) {
+                        toolFrame.setToolSize(transform.size);
+
+                    }
                 }
             }
         }));

@@ -2,12 +2,14 @@ package com.project.canvas.shared.data;
 
 import java.io.Serializable;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
+import com.vercer.engine.persist.annotation.Embed;
 
-public class Transform2D implements Serializable, IsSerializable {
+public class Transform2D implements Serializable {
     private static final long serialVersionUID = 1L;
     
+    @Embed
     public Point2D translation;
+    @Embed
 	public Point2D size; // could be "null" which means no specific size is set.
     public int rotation; // degrees, around the center of the object
 
@@ -17,6 +19,6 @@ public class Transform2D implements Serializable, IsSerializable {
 		this.rotation = rotation;
 	}
     public Transform2D() {
-    	this(Point2D.zero, null, 0);
+    	this(Point2D.zero, Point2D.zero, 0);
     }
 }

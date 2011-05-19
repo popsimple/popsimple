@@ -4,16 +4,15 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.code.twig.annotation.Embedded;
-import com.google.code.twig.annotation.Id;
-import com.google.gwt.user.client.rpc.IsSerializable;
+import com.vercer.engine.persist.annotation.Embed;
+import com.vercer.engine.persist.annotation.Id;
 
-public class CanvasPage implements Serializable, IsSerializable {
+public class CanvasPage implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
     public Long id;
-    @Embedded
+    @Embed
     public CanvasPageOptions options = new CanvasPageOptions();
 
     public List<ElementData> elements = new ArrayList<ElementData>();

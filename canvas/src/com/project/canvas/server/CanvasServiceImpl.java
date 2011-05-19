@@ -3,12 +3,12 @@ package com.project.canvas.server;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import com.google.code.twig.ObjectDatastore;
-import com.google.code.twig.annotation.AnnotationObjectDatastore;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.project.canvas.shared.contracts.CanvasService;
 import com.project.canvas.shared.data.CanvasPage;
 import com.project.canvas.shared.data.ElementData;
+import com.vercer.engine.persist.ObjectDatastore;
+import com.vercer.engine.persist.annotation.AnnotationObjectDatastore;
 
 /**
  * The server side implementation of the RPC service.
@@ -28,7 +28,6 @@ public class CanvasServiceImpl extends RemoteServiceServlet implements CanvasSer
             elemIds.add(elem.id);
         }
 
-        datastore.setActivationDepth(2);
         if (null != page.id) {
             CanvasPage existingPage = datastore.load(CanvasPage.class, page.id);
             for (ElementData elem : existingPage.elements) {
