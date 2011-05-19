@@ -2,8 +2,8 @@ package com.project.canvas.shared.data;
 
 import java.io.Serializable;
 
+import com.google.code.twig.annotation.Id;
 import com.google.gwt.user.client.rpc.IsSerializable;
-import com.vercer.engine.persist.annotation.Id;
 
 public class TaskData implements Serializable, IsSerializable {
     private static final long serialVersionUID = 1L;

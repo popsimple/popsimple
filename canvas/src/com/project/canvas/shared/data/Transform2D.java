@@ -4,8 +4,8 @@ import java.io.Serializable;
 
 import javax.jdo.annotations.Embedded;
 
+import com.google.code.twig.annotation.Embed;
 import com.google.gwt.user.client.rpc.IsSerializable;
-import com.vercer.engine.persist.annotation.Embed;
 
 public class Transform2D implements Serializable, IsSerializable {
     private static final long serialVersionUID = 1L;
