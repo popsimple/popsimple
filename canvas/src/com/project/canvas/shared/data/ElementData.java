@@ -2,8 +2,7 @@ package com.project.canvas.shared.data;
 
 import java.io.Serializable;
 
-import javax.jdo.annotations.Embedded;
-
+import com.google.code.twig.annotation.Embedded;
 import com.google.code.twig.annotation.Id;
 import com.google.gwt.user.client.rpc.IsSerializable;
 

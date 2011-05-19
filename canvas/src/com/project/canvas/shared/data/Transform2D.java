@@ -2,19 +2,15 @@ package com.project.canvas.shared.data;
 
 import java.io.Serializable;
 
-import javax.jdo.annotations.Embedded;
-
-import com.google.code.twig.annotation.Embed;
+import com.google.code.twig.annotation.Embedded;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class Transform2D implements Serializable, IsSerializable {
     private static final long serialVersionUID = 1L;
     
     @Embedded
-    @Embed
     public Point2D translation;
     @Embedded
-    @Embed
 	public Point2D size; // could be "null" which means no specific size is set.
     public int rotation; // degrees, around the center of the object
 
