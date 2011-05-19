@@ -3,6 +3,8 @@ package com.project.canvas.client.shared;
 import java.util.HashMap;
 
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.dom.client.MouseEvent;
+import com.project.canvas.shared.data.Point2D;
 import com.project.canvas.shared.data.Rectangle;
 
 public abstract class ElementUtils {
@@ -42,6 +44,10 @@ public abstract class ElementUtils {
     
     private static final native void cssIESetRotation(Element element, int degrees) /*-{
         element.style['-ms-transform'] = "rotate(" + degrees + "deg)";
-    }-*/; 
+    }-*/;
+
+	public static Point2D relativePosition(MouseEvent<?> event, Element elem) {
+	    return new Point2D(event.getRelativeX(elem), event.getRelativeY(elem));
+	} 
 
 }
