@@ -19,7 +19,7 @@ public interface CanvasResources extends ClientBundle {
     @Source("com/project/canvas/client/resources/images/bitmaps/tasklist_2_48.png")
     ImageResource toolboxTaskListIcon();
 
-    @Source("com/project/canvas/client/resources/images/bitmaps/image_48.png")
+    @Source("com/project/canvas/client/resources/images/bitmaps/image_flickr_48.png")
     ImageResource toolboxImageIcon();
 
     @Source("com/project/canvas/client/resources/images/bitmaps/delete.png")
@@ -60,4 +60,7 @@ public interface CanvasResources extends ClientBundle {
 
     @Source("com/project/canvas/client/resources/images/bitmaps/robot_32.png")
     ImageResource robotIcon32();
+    
+    @Source("com/project/canvas/client/resources/images/bitmaps/image_bing_48.png")
+    ImageResource toolboxImageBingIcon();
 }

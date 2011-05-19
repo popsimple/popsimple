@@ -127,4 +127,6 @@ public interface MainStyles extends CssResource {
     String selected();
 
     String textEditBox();
+    
+    String toolboxImageBingIconStyle();
 }
