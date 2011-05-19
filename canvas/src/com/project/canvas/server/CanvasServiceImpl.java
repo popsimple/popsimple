@@ -19,7 +19,6 @@ public class CanvasServiceImpl extends RemoteServiceServlet implements CanvasSer
     @Override
     public CanvasPage SavePage(CanvasPage page) {
         ObjectDatastore datastore = new AnnotationObjectDatastore();
-        datastore.setActivationDepth(5);
         // String serverInfo = getServletContext().getServerInfo();
         // String userAgent = getThreadLocalRequest().getHeader("User-Agent");
         // Get existing elements
@@ -51,7 +50,11 @@ public class CanvasServiceImpl extends RemoteServiceServlet implements CanvasSer
         // TODO find out wtf is going on here. we should need to refresh anything.
         // how do we load all the graph (nested children all the way) implicitly?
         ObjectDatastore datastore = new AnnotationObjectDatastore();
+        datastore.setActivationDepth(5);
         CanvasPage page = datastore.load(CanvasPage.class, id);
+        for (ElementData elem : page.elements) {
+        	datastore.refresh(elem);
+        }
         return page;
     }
 }

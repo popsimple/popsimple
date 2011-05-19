@@ -10,7 +10,7 @@ public class TaskData implements Serializable, IsSerializable {
 
     public @Id
     Long id;
-    public String _description;
-    public boolean _completed;
-    public String _imageUrl;
+    public String description;
+    public boolean completed;
+    public String imageUrl;
 }

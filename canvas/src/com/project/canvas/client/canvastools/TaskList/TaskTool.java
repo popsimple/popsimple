@@ -136,18 +136,18 @@ public class TaskTool extends Composite implements Focusable, TakesValue<TaskDat
     @Override
     public void setValue(TaskData value) {
         this.data = value;
-        this.textTask.setText(value._description);
-        this.checkTask.setValue(value._completed);
-        this.setImageUrl(value._imageUrl);
+        this.textTask.setText(value.description);
+        this.checkTask.setValue(value.completed);
+        this.setImageUrl(value.imageUrl);
         // TODO: Support image alternate text
-        this.setCompleted(value._completed);
+        this.setCompleted(value.completed);
     }
 
     @Override
     public TaskData getValue() {
-        this.data._description = this.textTask.getText();
-        this.data._completed = this.checkTask.getValue();
-        this.data._imageUrl = this.getImageUrl();
+        this.data.description = this.textTask.getText();
+        this.data.completed = this.checkTask.getValue();
+        this.data.imageUrl = this.getImageUrl();
         // TODO: Support image alternate text
         return this.data;
     }

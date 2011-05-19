@@ -131,21 +131,21 @@ public class TaskListTool extends Composite implements CanvasTool<TaskListData>,
 
     @Override
     public TaskListData getValue() {
-        this.data._title = this.title.getText();
-        this.data._tasks.clear();
+        this.data.title = this.title.getText();
+        this.data.tasks.clear();
         for (TaskTool taskWidget : this.taskWidgets) {
-            this.data._tasks.add(taskWidget.getValue());
+            this.data.tasks.add(taskWidget.getValue());
         }
         return this.data;
     }
 
     @Override
     public void setValue(TaskListData data) {
-        this.title.setText(data._title);
+        this.title.setText(data.title);
         this.data = data;
         this.taskWidgets.clear();
         this.panelTaskList.clear();
-        for (TaskData task : this.data._tasks) {
+        for (TaskData task : this.data.tasks) {
             TaskTool taskWidget = new TaskTool();
             taskWidget.setValue(task);
             this.addTaskWidget(taskWidget);

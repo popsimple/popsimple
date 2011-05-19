@@ -139,13 +139,13 @@ public class ImageTool extends FlowPanel implements CanvasTool<ImageData> {
     public ImageData getValue() {
         String imageCss = this.getElement().getStyle().getBackgroundImage();
         // TIP: use this page to check java regex: http://www.regexplanet.com/simple/index.html
-        this.data._url = imageCss.trim().replaceAll("^(url\\(\\\"?)(.*?)(\\\"?\\))$", "$2");
+        this.data.url = imageCss.trim().replaceAll("^(url\\(\\\"?)(.*?)(\\\"?\\))$", "$2");
         return this.data;
     }
 
     public void setValue(ImageData data, boolean autoSize) {
         this.data = data;
-        this.setImageUrl(this.data._url, autoSize);
+        this.setImageUrl(this.data.url, autoSize);
     }
 
     @Override
