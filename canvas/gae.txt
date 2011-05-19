@@ -10,3 +10,9 @@ Key:
 
 Secret:
 ca01f8b684334832 
+
+Bing
+------
+app: canvasapp
+user: janitormasters@live.com
+Key: 68910216D550D46A50E65B86A92F0FC245EFE6B7

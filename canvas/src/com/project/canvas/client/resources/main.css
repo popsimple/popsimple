@@ -426,3 +426,6 @@
 	border-color:#000;
 	background-color: #eee;
 }
+
+@sprite .toolboxImageBingIconStyle {
+	gwt-image: "toolboxImageBingIcon";
