@@ -16,8 +16,8 @@ import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.canvastools.Image.BingImage.BingImagePicker.ImageInfo;
-import com.project.canvas.client.shared.UrlUtils;
 import com.project.canvas.client.shared.events.SimpleEvent;
+import com.project.canvas.shared.UrlUtils;
 import com.project.canvas.shared.data.ImageData;
 
 public class BingImageToolOptions extends Composite implements TakesValue<ImageData>, Focusable {

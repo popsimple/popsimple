@@ -198,7 +198,8 @@ public class WorksheetImpl implements Worksheet
             @Override
             public void onFire(ToolCreationRequest arg)
             {
-                createToolInstance(arg.getPosition(), arg.getFactory());
+                CanvasToolFrame toolFrame = createToolInstance(arg.getPosition(), arg.getFactory());
+                toolFrame.getTool().setActive(true);
                 if (arg.getFactory().isOneShot()) {
                     defaultToolRequestEvent.dispatch(null);
                 }

@@ -1,4 +1,4 @@
-package com.project.canvas.client.shared;
+package com.project.canvas.shared;
 
 import java.util.Map;
 import java.util.Map.Entry;

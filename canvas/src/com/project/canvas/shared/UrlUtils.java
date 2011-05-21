@@ -1,4 +1,4 @@
-package com.project.canvas.client.shared;
+package com.project.canvas.shared;
 
 import com.google.gwt.regexp.shared.RegExp;
 
