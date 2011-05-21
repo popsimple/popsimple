@@ -359,7 +359,7 @@ public class WorksheetImpl implements Worksheet
             return;
         }
         this.page.options = value;
-
+        view.setOptions(value);
     }
 
     public void load(Long id)

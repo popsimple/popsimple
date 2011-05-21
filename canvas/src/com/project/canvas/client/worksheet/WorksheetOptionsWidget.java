@@ -46,7 +46,7 @@ public class WorksheetOptionsWidget extends Composite implements TakesValue<Canv
     @UiField
     CheckBox centerOption;
 
-    private CanvasPageOptions value;
+    private CanvasPageOptions value = new CanvasPageOptions();
 
     protected final SimpleEvent<Void> doneEvent = new SimpleEvent<Void>();
     protected final SimpleEvent<Void> cancelEvent = new SimpleEvent<Void>();
