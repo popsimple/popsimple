@@ -242,12 +242,6 @@ public class WorksheetViewImpl extends Composite implements WorksheetView
 	    this.activeToolboxItem = toolboxItem;
         clearFloatingWidget();
         this.worksheetPanel.addStyleName(toolboxItem.getCanvasStyleInCreateMode());
-		this.worksheetPanel.addDomHandler(new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                Point2D pos = ElementUtils.relativePosition(event, worksheetPanel.getElement());
-            	toolCreationRequestEvent.dispatch(new ToolCreationRequest(pos, toolboxItem.getToolFactory()));
-            }
-        }, ClickEvent.getType());
 		
 		CanvasToolFactory<? extends CanvasTool<? extends ElementData>> factory = toolboxItem.getToolFactory();
 		if (null == factory) {
@@ -312,6 +306,15 @@ public class WorksheetViewImpl extends Composite implements WorksheetView
 
     private void addRegistrations()
     {
+		this.worksheetPanel.addDomHandler(new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                if (null != activeToolboxItem) {
+                	Point2D pos = ElementUtils.relativePosition(event, worksheetPanel.getElement());
+                	toolCreationRequestEvent.dispatch(new ToolCreationRequest(pos, activeToolboxItem.getToolFactory()));
+                }
+            }
+        }, ClickEvent.getType());
+
         this.optionsBackground.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event)

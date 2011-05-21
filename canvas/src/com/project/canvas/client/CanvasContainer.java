@@ -26,7 +26,8 @@ public class CanvasContainer extends Composite {
     WorksheetViewImpl worksheetWidget;
     
     private Worksheet worksheet;
-
+    private final ToolboxItem defaultTool = BuiltinTools.cursorTool;
+    
     public Worksheet getWorksheet() {
         return worksheet;
     }
@@ -43,7 +44,7 @@ public class CanvasContainer extends Composite {
         this.worksheet.getDefaultToolRequestEvent().addHandler(new SimpleEvent.Handler<Void>() {
             @Override
             public void onFire(Void arg) {
-                toolbox.setActiveTool(BuiltinTools.cursorTool);
+                toolbox.setActiveTool(defaultTool);
             }
         });
 
