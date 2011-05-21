@@ -32,6 +32,9 @@ public class ImageTool extends FlowPanel implements CanvasTool<ImageData> {
 
     private ImageData data = new ImageData();
     private final Image image = new Image();
+    private ImageToolOptions imageToolOptionsWidget;
+    private DialogBox imageSelectionDialog;
+	private boolean optionsWidgetInited = false;
 
     public ImageTool() {
         CanvasToolCommon.initCanvasToolWidget(this);
@@ -67,35 +70,45 @@ public class ImageTool extends FlowPanel implements CanvasTool<ImageData> {
     }
 
     protected void uploadImage() {
-        final DialogBox imageSelectionDialog = new DialogWithZIndex(false, true);
+    	initOptionsWidget();
+        imageToolOptionsWidget.setValue(data);
 
-        final ImageToolOptions dialogContents = new ImageToolOptions(this.getValue());
-        dialogContents.getCancelEvent().addHandler(new SimpleEvent.Handler<Void>() {
-            @Override
-            public void onFire(Void arg) {
-                imageSelectionDialog.hide();
-            }
-        });
-        dialogContents.getDoneEvent().addHandler(new SimpleEvent.Handler<Void>() {
-            @Override
-            public void onFire(Void arg) {
-                setValue(dialogContents.getValue(), true);
-                imageSelectionDialog.hide();
-            }
-        });
-
-        imageSelectionDialog.add(dialogContents);
-        imageSelectionDialog.setGlassEnabled(true);
-        imageSelectionDialog.setText("Image options");
-        imageSelectionDialog.center();
         Scheduler.get().scheduleDeferred(new ScheduledCommand() {
             @Override
             public void execute() {
-                dialogContents.setFocus(true);
+                imageToolOptionsWidget.setFocus(true);
                 imageSelectionDialog.center();
             }
         });
     }
+
+	private void initOptionsWidget() {
+		if (optionsWidgetInited) {
+			return;
+		}
+		this.optionsWidgetInited = true;
+		this.imageSelectionDialog = new DialogWithZIndex(false, true);
+		imageSelectionDialog.setAnimationEnabled(true);
+        imageSelectionDialog.setGlassEnabled(true);
+        imageSelectionDialog.setText("Image options");
+        
+		this.imageToolOptionsWidget = new ImageToolOptions();
+        imageSelectionDialog.add(imageToolOptionsWidget);
+
+		imageToolOptionsWidget.getCancelEvent().addHandler(new SimpleEvent.Handler<Void>() {
+		    @Override
+		    public void onFire(Void arg) {
+		        imageSelectionDialog.hide();
+		    }
+		});
+		imageToolOptionsWidget.getDoneEvent().addHandler(new SimpleEvent.Handler<Void>() {
+		    @Override
+		    public void onFire(Void arg) {
+		        setValue(imageToolOptionsWidget.getValue(), true);
+		        imageSelectionDialog.hide();
+		    }
+		});
+	}
 
     @Override
     public void setActive(boolean isFocused) {

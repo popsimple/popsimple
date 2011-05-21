@@ -29,9 +29,9 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
-import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.RadioButton;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.resources.CanvasResources;
@@ -55,7 +55,10 @@ public class ImagePicker extends Composite {
     TextBox searchText;
 
     @UiField
-    HTMLPanel resultsPanel;
+    FlowPanel resultsPanel;
+    
+    @UiField
+    ScrollPanel resultsPanelContainer;
 
     @UiField
     FormPanel formPanel;
@@ -122,6 +125,7 @@ public class ImagePicker extends Composite {
     protected void setSearchResult(PhotosResponse result) {
         registrationsManager.clear();
         resultsPanel.clear();
+        resultsPanelContainer.scrollToTop();
 
         PhotosPage photosPage = result.getPhotosPage();
         for (int i = 0; i < photosPage.getPhotos().length(); i++) {

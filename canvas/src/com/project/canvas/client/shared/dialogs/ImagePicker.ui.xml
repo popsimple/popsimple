@@ -23,6 +23,8 @@
 			</g:HTMLPanel>
 		</g:FormPanel>
 		<g:FlowPanel ui:field="photoSizesPanel"/>
-		<g:HTMLPanel ui:field="resultsPanel" addStyleNames="{style.resultsPanel}"></g:HTMLPanel>
+		<g:ScrollPanel ui:field="resultsPanelContainer" addStyleNames="{style.resultsPanel}">
+		  <g:FlowPanel ui:field="resultsPanel"></g:FlowPanel>
+		</g:ScrollPanel>
 	</g:HTMLPanel>
 </ui:UiBinder> 

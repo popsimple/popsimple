@@ -49,9 +49,8 @@ public class ImageToolOptions extends Composite implements TakesValue<ImageData>
 
     private SimpleEvent<Void> cancelEvent = new SimpleEvent<Void>();
 
-    public ImageToolOptions(ImageData value) {
+    public ImageToolOptions() {
         initWidget(uiBinder.createAndBindUi(this));
-        this.setValue(value);
         this.doneButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
