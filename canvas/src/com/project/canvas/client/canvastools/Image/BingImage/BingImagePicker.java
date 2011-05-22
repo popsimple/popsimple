@@ -13,6 +13,7 @@ import com.ghusse.dolomite.flickr.PhotosResponse;
 import com.ghusse.dolomite.flickr.photos.GetSizes;
 import com.ghusse.dolomite.flickr.photos.Search;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JsArray;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -34,6 +35,9 @@ import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.project.canvas.client.canvastools.Image.BingImage.BingSearch.BingSearchProvider;
+import com.project.canvas.client.canvastools.Image.BingImage.BingSearch.ImageResponse;
+import com.project.canvas.client.canvastools.Image.BingImage.BingSearch.ImageResult;
 import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.RegistrationsManager;
 import com.project.canvas.client.shared.events.SimpleEvent;
@@ -41,7 +45,7 @@ import com.project.canvas.shared.data.Point2D;
 
 public class BingImagePicker extends Composite {
 
-    private static final String API_KEY = "023322961d08d84124ba870f1adce55b";
+    private static final String API_KEY = "68910216D550D46A50E65B86A92F0FC245EFE6B7";
 
     private static ImagePickerUiBinder uiBinder = GWT.create(ImagePickerUiBinder.class);
 
@@ -75,9 +79,7 @@ public class BingImagePicker extends Composite {
 
     protected final SimpleEvent<ImageInfo> imagePicked = new SimpleEvent<ImageInfo>();
 
-    protected final Credentials credentials = new Credentials(API_KEY);
-    protected final Search searcher = new Search(credentials);
-    protected final GetSizes photoSizesGetter = new GetSizes(credentials);
+    protected final BingSearchProvider searcher = new BingSearchProvider(API_KEY);
     protected final RegistrationsManager registrationsManager = new RegistrationsManager();
 
     protected PhotoSize searchResultPhotoSize = PhotoSize.THUMBNAIL;
@@ -91,16 +93,16 @@ public class BingImagePicker extends Composite {
     }
 
     @UiHandler("searchButton")
-    void handleClick(ClickEvent e) {
+    void handleClick(ClickEvent e) 
+    {
         String text = this.searchText.getText().trim();
         if (text.isEmpty()) {
             return;
         }
-        searcher.setText(text);
         searchButton.setEnabled(false);
-        searcher.send(new AsyncCallback<PhotosResponse>() {
+        searcher.searchImages(text, new AsyncCallback<ImageResponse>() {
             @Override
-            public void onSuccess(PhotosResponse result) {
+            public void onSuccess(ImageResponse result) {
                 setSearchResult(result);
                 searchButton.setEnabled(true);
             }
@@ -119,34 +121,34 @@ public class BingImagePicker extends Composite {
         });
     }
 
-    protected void setSearchResult(PhotosResponse result) {
+    protected void setSearchResult(ImageResponse result) {
         registrationsManager.clear();
         resultsPanel.clear();
 
-        PhotosPage photosPage = result.getPhotosPage();
-        for (int i = 0; i < photosPage.getPhotos().length(); i++) {
-            Photo photo = photosPage.getPhotos().get(i);
-            Widget imageWidget = createPhoto(photo);
+        JsArray<ImageResult> imageResults = result.getResults();
+        for (int i = 0; i < imageResults.length(); i++) 
+        {
+            Widget imageWidget = createPhoto(imageResults.get(i));
             if (null != imageWidget) {
                 resultsPanel.add(imageWidget);
             }
         }
     }
 
-    public Widget createPhoto(final Photo photo) {
-        if (null == photo) {
+    public Widget createPhoto(final ImageResult imageResult) {
+        if (null == imageResult) {
             return null;
         }
         final InlineLabel image = new InlineLabel();
         image.addStyleName(CanvasResources.INSTANCE.main().imagePickerResultImage());
         image.getElement().getStyle()
-                .setBackgroundImage("url(" + photo.getSourceUrl(searchResultPhotoSize) + ")");
-        this.registrationsManager.add(image.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                imageSelected(photo, image);
-            }
-        }));
+                .setBackgroundImage("url(" + imageResult.getThumbnail().getUrl() + ")");
+//        this.registrationsManager.add(image.addClickHandler(new ClickHandler() {
+//            @Override
+//            public void onClick(ClickEvent event) {
+//                imageSelected(photo, image);
+//            }
+//        }));
         return image;
     }
 
@@ -177,18 +179,18 @@ public class BingImagePicker extends Composite {
         this.selectedImage = image;
         image.addStyleName(CanvasResources.INSTANCE.main().selected());
         photoSizesPanel.clear();
-        photoSizesGetter.setPhoto(photo);
-        photoSizesGetter.send(new AsyncCallback<PhotoSizesResponse>() {
-            @Override
-            public void onSuccess(PhotoSizesResponse result) {
-                setPhotoSizes(result);
-            }
-
-            @Override
-            public void onFailure(Throwable caught) {
-                // TODO Auto-generated method stub
-            }
-        });
+//        photoSizesGetter.setPhoto(photo);
+//        photoSizesGetter.send(new AsyncCallback<PhotoSizesResponse>() {
+//            @Override
+//            public void onSuccess(PhotoSizesResponse result) {
+//                setPhotoSizes(result);
+//            }
+//
+//            @Override
+//            public void onFailure(Throwable caught) {
+//                // TODO Auto-generated method stub
+//            }
+//        });
     }
 
     protected void setPhotoSizes(PhotoSizesResponse result) {
