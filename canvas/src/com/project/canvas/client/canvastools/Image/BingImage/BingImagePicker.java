@@ -143,12 +143,13 @@ public class BingImagePicker extends Composite {
         image.addStyleName(CanvasResources.INSTANCE.main().imagePickerResultImage());
         image.getElement().getStyle()
                 .setBackgroundImage("url(" + imageResult.getThumbnail().getUrl() + ")");
-//        this.registrationsManager.add(image.addClickHandler(new ClickHandler() {
-//            @Override
-//            public void onClick(ClickEvent event) {
-//                imageSelected(photo, image);
-//            }
-//        }));
+        image.setTitle(imageResult.getMediaUrl());
+        this.registrationsManager.add(image.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                imageSelected(imageResult, image);
+            }
+        }));
         return image;
     }
 
@@ -172,13 +173,17 @@ public class BingImagePicker extends Composite {
         return this.imagePicked.addHandler(handler);
     }
 
-    public void imageSelected(final Photo photo, final InlineLabel image) {
+    public void imageSelected(final ImageResult imageResult, final InlineLabel image) {
         if (null != selectedImage) {
             selectedImage.removeStyleName(CanvasResources.INSTANCE.main().selected());
         }
         this.selectedImage = image;
         image.addStyleName(CanvasResources.INSTANCE.main().selected());
-        photoSizesPanel.clear();
+        
+        imagePicked.dispatch(new ImageInfo(imageResult.getMediaUrl(), 
+                new Point2D(imageResult.getWidth(), imageResult.getHeight())));
+        
+//        photoSizesPanel.clear();
 //        photoSizesGetter.setPhoto(photo);
 //        photoSizesGetter.send(new AsyncCallback<PhotoSizesResponse>() {
 //            @Override
@@ -193,33 +198,33 @@ public class BingImagePicker extends Composite {
 //        });
     }
 
-    protected void setPhotoSizes(PhotoSizesResponse result) {
-        final HashMap<RadioButton, PhotoSizeResponse> selectionMap = new HashMap<RadioButton, PhotoSizeResponse>();
-        photoSizesPanel.clear();
-        List<PhotoSizeResponse> sizes = result.getSizes();
-        int defaultSelectionIndex = sizes.size() / 2;
-        int i = 0;
-        for (final PhotoSizeResponse size : sizes) {
-            String sizeStr = size.getWidth() + " x " + size.getHeight();
-            RadioButton radioButton = new RadioButton("sizes", sizeStr);
-            selectionMap.put(radioButton, size);
-            photoSizesPanel.add(radioButton);
-            radioButton.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-                @Override
-                public void onValueChange(ValueChangeEvent<Boolean> event) {
-                    if (event.getValue()) {
-                        imageSizeSelected(size);
-                    }
-                }
-            });
-        	if (i == defaultSelectionIndex) {
-        		radioButton.setValue(true);
-                imageSizeSelected(size);
-        	}
-        	i++;
-        }
-        photoSizesPanel.setVisible(true);
-    }
+//    protected void setPhotoSizes(PhotoSizesResponse result) {
+//        final HashMap<RadioButton, PhotoSizeResponse> selectionMap = new HashMap<RadioButton, PhotoSizeResponse>();
+//        photoSizesPanel.clear();
+//        List<PhotoSizeResponse> sizes = result.getSizes();
+//        int defaultSelectionIndex = sizes.size() / 2;
+//        int i = 0;
+//        for (final PhotoSizeResponse size : sizes) {
+//            String sizeStr = size.getWidth() + " x " + size.getHeight();
+//            RadioButton radioButton = new RadioButton("sizes", sizeStr);
+//            selectionMap.put(radioButton, size);
+//            photoSizesPanel.add(radioButton);
+//            radioButton.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+//                @Override
+//                public void onValueChange(ValueChangeEvent<Boolean> event) {
+//                    if (event.getValue()) {
+//                        imageSizeSelected(size);
+//                    }
+//                }
+//            });
+//        	if (i == defaultSelectionIndex) {
+//        		radioButton.setValue(true);
+//                imageSizeSelected(size);
+//        	}
+//        	i++;
+//        }
+//        photoSizesPanel.setVisible(true);
+//    }
 
     public void imageSizeSelected(final PhotoSizeResponse selectedSize) {
         imagePicked.dispatch(new ImageInfo(selectedSize.getSource(), new Point2D(Integer.valueOf(selectedSize
