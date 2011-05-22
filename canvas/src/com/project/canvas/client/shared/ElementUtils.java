@@ -5,7 +5,6 @@ import java.util.HashMap;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.MouseEvent;
-import com.project.canvas.client.canvastools.base.CanvasToolFrame;
 import com.project.canvas.shared.data.Point2D;
 import com.project.canvas.shared.data.Rectangle;
 

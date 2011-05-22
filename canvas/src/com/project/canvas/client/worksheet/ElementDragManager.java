@@ -1,13 +1,19 @@
 package com.project.canvas.client.worksheet;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseMoveHandler;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.shared.ElementUtils;
 import com.project.canvas.client.shared.NativeUtils;
@@ -42,12 +48,13 @@ public class ElementDragManager
      * @param floatingWidgetStop Called when the operation ends
      * @param cancelHandler Called when the operation is cancelled
      * @param stopConditions Conditions for stopping the operation - a bit field of StopCondition values. At least one value must be set.
-     * @return
+     * @return a handler which the caller must doFire when it wants to force a stop on the operation
      */
-    protected RegistrationsManager startMouseMoveOperation(final Element referenceElem, final Point2D referenceOffset,
+    protected SimpleEvent.Handler<Void> startMouseMoveOperation(final Element referenceElem, final Point2D referenceOffset,
             final SimpleEvent.Handler<Point2D> moveHandler, final Handler<Point2D> floatingWidgetStop,
             final SimpleEvent.Handler<Void> cancelHandler, int stopConditions)
     {
+    	
         final RegistrationsManager regs = new RegistrationsManager();
 
         NativeUtils.disableTextSelectInternal(_container.getElement(), true);
@@ -60,6 +67,23 @@ public class ElementDragManager
                 event.stopPropagation();
             }
         }, MouseMoveEvent.getType()));
+        regs.add(_dragPanel.addDomHandler(new MouseOverHandler() {
+			@Override
+			public void onMouseOver(MouseOverEvent event) {
+				GWT.log("mouse over");
+				if (_dragPanel.isVisible()) {
+					Event.setCapture(_dragPanel.getElement());
+					GWT.log("capturing");
+				}
+			}
+		}, MouseOverEvent.getType()));
+        regs.add(_dragPanel.addDomHandler(new MouseOutHandler() {
+			@Override
+			public void onMouseOut(MouseOutEvent event) {
+				GWT.log("mouse out - release");
+				Event.releaseCapture(_dragPanel.getElement());
+			}
+		}, MouseOutEvent.getType()));
         
         if (false == setStopConditionHandlers(referenceElem, floatingWidgetStop, stopConditions, regs)) {
         	throw new RuntimeException("Must specify at least one stop condition. The bitfield was: " + stopConditions);
@@ -75,8 +99,14 @@ public class ElementDragManager
                 }
             }));
         }
+        Event.setCapture(_dragPanel.getElement());
         _dragPanel.setVisible(true);
-        return regs;
+        return new Handler<Void>() {
+			@Override
+			public void onFire(Void arg) {
+				stopMouseMoveOperation(regs);
+			}
+		};
     }
 
 	private boolean setStopConditionHandlers(final Element referenceElem,
@@ -111,8 +141,10 @@ public class ElementDragManager
     protected void stopMouseMoveOperation(final RegistrationsManager regs)
     {
         NativeUtils.disableTextSelectInternal(_container.getElement(), false);
-        regs.clear();
         _dragPanel.setVisible(false);
+        // regs.clear must be after setting non-visible to prevent us from re-capturing mouse event (calling setCapture)
+        regs.clear();
+    	Event.releaseCapture(_dragPanel.getElement());
     }
 
     public void operationEnded(final Element referenceElem, final Handler<Point2D> floatingWidgetStop,

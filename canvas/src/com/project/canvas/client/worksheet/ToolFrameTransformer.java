@@ -1,11 +1,9 @@
 package com.project.canvas.client.worksheet;
 
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.event.dom.client.MouseEvent;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.canvastools.base.CanvasToolFrame;
 import com.project.canvas.client.resources.CanvasResources;
@@ -85,10 +83,10 @@ public class ToolFrameTransformer
         final Point2D initialFrameSize = ElementUtils.getElementSize(toolFrame.getElement());
         final Point2D startDragPos = ElementUtils.relativePosition(startEvent, _container.getElement());
         final Point2D startPos = startDragPos.minus(ElementUtils.relativePosition(startEvent, toolFrame.getElement()));
-
-        ElementUtils.setTransformOriginTopLeft(toolFrame.getElement());
         Point2D initialCenter = initialFrameSize.mul(0.5);
         final Point2D tempPos = transformPointRotate(angle, startPos, initialCenter, true);
+
+        ElementUtils.setTransformOriginTopLeft(toolFrame.getElement());
         setToolFramePosition(toolFrame, tempPos);
         
         final SimpleEvent.Handler<Point2D> resizeHandler = new SimpleEvent.Handler<Point2D>() {
@@ -105,8 +103,8 @@ public class ToolFrameTransformer
             {
             	Point2D size = sizeFromRotatedSizeOffset(angle, initialSize, startDragPos, pos);
                 toolFrame.setToolSize(size);
-                Point2D frameSize = ElementUtils.getElementSize(toolFrame.getElement());
                 ElementUtils.resetTransformOrigin(toolFrame.getElement());
+                Point2D frameSize = ElementUtils.getElementSize(toolFrame.getElement());
                 Point2D center = frameSize.mul(0.5);
                 // Move the element back to the origin position, taking the new size into account.
                 setToolFramePosition(toolFrame, transformPointRotate(angle, tempPos, center, false));

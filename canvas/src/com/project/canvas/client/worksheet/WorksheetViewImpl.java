@@ -70,7 +70,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView
     FlowPanel worksheetPanel;
 
 
-    private RegistrationsManager _floatingWidgetRegistrations;
+    private Handler<Void> _floatingWidgetTerminator;
     private Widget floatingWidget;
     private ToolboxItem activeToolboxItem;
     private CanvasPageOptions pageOptions;
@@ -220,11 +220,11 @@ public class WorksheetViewImpl extends Composite implements WorksheetView
         if (null != this.floatingWidget){ 
             this.worksheetPanel.remove(floatingWidget);
         }
-        if (null != this._floatingWidgetRegistrations) {
-            this._floatingWidgetRegistrations.clear();
+        if (null != this._floatingWidgetTerminator) {
+            this._floatingWidgetTerminator.onFire(null);
         }
         this.floatingWidget = null;
-        this._floatingWidgetRegistrations = null;
+        this._floatingWidgetTerminator = null;
     }
 
     @Override
@@ -270,7 +270,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView
             }
         };
         this.floatingWidget = floatingWidget;
-        this._floatingWidgetRegistrations = this._toolFrameTransformer.getElementDragManager()
+        this._floatingWidgetTerminator = this._toolFrameTransformer.getElementDragManager()
 		    .startMouseMoveOperation(this.worksheetPanel.getElement(), Point2D.zero, 
 		            floatingWidgetMoveHandler, floatingWidgetStop, null, 
 		            ElementDragManager.StopCondition.STOP_CONDITION_MOUSE_CLICK);
