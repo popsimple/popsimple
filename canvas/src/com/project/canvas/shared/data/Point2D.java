@@ -51,6 +51,10 @@ public class Point2D implements Serializable, IsSerializable {
     public double radius() {
         return Math.sqrt(x * x + y * y);
     }
+    
+    public Point2D abs() {
+    	return new Point2D(Math.abs(this.x), Math.abs(this.y));
+    }
 
     public static Point2D min(Point2D first, Point2D other) {
         return new Point2D(Math.min(first.x, other.x), Math.min(first.y, other.y));
