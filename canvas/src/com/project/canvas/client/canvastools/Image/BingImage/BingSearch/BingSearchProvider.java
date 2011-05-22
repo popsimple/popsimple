@@ -1,8 +1,8 @@
 package com.project.canvas.client.canvastools.Image.BingImage.BingSearch;
 
-import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.http.client.URL;
 import com.google.gwt.http.client.UrlBuilder;
-import com.google.gwt.user.client.Window;
+import com.google.gwt.jsonp.client.JsonpRequestBuilder;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class BingSearchProvider 
@@ -17,13 +17,10 @@ public class BingSearchProvider
     private static final String PARAMETER_CALLBACK = "JsonCallback";
     private static final String PARAMETER_IMAGE_COUNT = "Image.Count";
     
-    private static final String JSON_TYPE_CALLBACK = "callback";
-    
-    AsyncCallback<ImageResponse> callback = null;
     private static final String SOURCES_IMAGES = "Image";
+    private static final String JSON_TYPE_CALLBACK = "callback";
+    private static final int CALLBACK_TIMEOUT_MS = 1000;
     
-    private int jsonRequestId = 0; 
-        
     protected String appID = "";
     
     public BingSearchProvider(String appID)
@@ -31,15 +28,8 @@ public class BingSearchProvider
         this.appID = appID;
     }
     
-    public String BuildUniqueCallbackId()
-    {
-        return "callback" + jsonRequestId++;
-    }
-    
     public void searchImages(String query, final AsyncCallback<ImageResponse> callback)
     {
-        // TEMP
-        this.callback = callback;
         UrlBuilder urlBuilder = new UrlBuilder();
         urlBuilder.setProtocol(PROTOCOL_HTTP);
         urlBuilder.setHost(BING_JSON_SEARCH_URL);
@@ -49,47 +39,25 @@ public class BingSearchProvider
         urlBuilder.setParameter(PARAMETER_JSON_TYPE, JSON_TYPE_CALLBACK);
         urlBuilder.setParameter(PARAMETER_IMAGE_COUNT, "50");
         
-        String callbackId =  this.BuildUniqueCallbackId();
-        urlBuilder.setParameter(PARAMETER_CALLBACK, callbackId);
-        
-        try
-        {
-            getJson(callbackId, urlBuilder.buildString(), this);
-        }
-        catch (Exception ex)
-        {
-            callback.onFailure(ex);
-        }
-    }
-    
-    public native static void getJson(String callbackId, String url, BingSearchProvider handler) /*-{
-        var script = document.createElement("script");
-        script.setAttribute("src", url);
-        script.setAttribute("type", "text/javascript");
-        
-        window[callbackId] = function(jsonObj) {
-            handler.@com.project.canvas.client.canvastools.Image.BingImage.BingSearch.BingSearchProvider::handleJsonResponse(Lcom/google/gwt/core/client/JavaScriptObject;)(jsonObj);
-            window[callbackId + "done"] = true;
-        }
-        setTimeout(function() {
-            if (!window[callbackId + "done"]) {
-                handler.@com.project.canvas.client.canvastools.Image.BingImage.BingSearch.BingSearchProvider::handleJsonResponse(Lcom/google/gwt/core/client/JavaScriptObject;)(null);
+        JsonpRequestBuilder requestBuilder = new JsonpRequestBuilder();
+        requestBuilder.setCallbackParam(PARAMETER_CALLBACK);
+        requestBuilder.setTimeout(CALLBACK_TIMEOUT_MS);
+        requestBuilder.requestObject(urlBuilder.buildString(), new AsyncCallback<SearchResult>() {
+
+            @Override
+            public void onFailure(Throwable caught) {
+                callback.onFailure(caught);
             }
-            document.body.removeChild(script);
-            delete window[callbackId];
-            delete window[callbackId + "done"];
-        }, 1000);
-        
-        document.getElementsByTagName('head')[0].appendChild(script);
-    }-*/;
-    
-    public void handleJsonResponse(JavaScriptObject jsObject) 
-    {
-        if (null == jsObject) 
-        {
-          this.callback.onFailure(null);
-          return;
-        }
-        this.callback.onSuccess(((SearchResult)jsObject).getSearchResponse().getImageResponse());
+
+            @Override
+            public void onSuccess(SearchResult result) {
+                if (null == result)
+                {
+                    //TODO: Replace with proper exception.
+                    callback.onFailure(new Exception("Null result"));
+                    return;
+                }
+                callback.onSuccess(result.getSearchResponse().getImageResponse());
+            }});
     }
 }
