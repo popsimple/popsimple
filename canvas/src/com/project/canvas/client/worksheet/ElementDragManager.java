@@ -1,6 +1,5 @@
 package com.project.canvas.client.worksheet;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -70,17 +69,14 @@ public class ElementDragManager
         regs.add(_dragPanel.addDomHandler(new MouseOverHandler() {
 			@Override
 			public void onMouseOver(MouseOverEvent event) {
-				GWT.log("mouse over");
 				if (_dragPanel.isVisible()) {
 					Event.setCapture(_dragPanel.getElement());
-					GWT.log("capturing");
 				}
 			}
 		}, MouseOverEvent.getType()));
         regs.add(_dragPanel.addDomHandler(new MouseOutHandler() {
 			@Override
 			public void onMouseOut(MouseOutEvent event) {
-				GWT.log("mouse out - release");
 				Event.releaseCapture(_dragPanel.getElement());
 			}
 		}, MouseOutEvent.getType()));
