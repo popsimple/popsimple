@@ -41,7 +41,7 @@ public class ElementDragManager
      * @param moveHandler Called when the mouse moves
      * @param floatingWidgetStop Called when the operation ends
      * @param cancelHandler Called when the operation is cancelled
-     * @param stopConditions Conditions for stopping the operation - a bit field of StopCondition values
+     * @param stopConditions Conditions for stopping the operation - a bit field of StopCondition values. At least one value must be set.
      * @return
      */
     protected RegistrationsManager startMouseMoveOperation(final Element referenceElem, final Point2D referenceOffset,
@@ -60,27 +60,11 @@ public class ElementDragManager
                 event.stopPropagation();
             }
         }, MouseMoveEvent.getType()));
-        if (0 != (stopConditions & StopCondition.STOP_CONDITION_MOUSE_UP)) {
-            regs.add(_dragPanel.addDomHandler(new MouseUpHandler() {
-                @Override
-                public void onMouseUp(MouseUpEvent event)
-                {
-                    operationEnded(referenceElem, floatingWidgetStop, regs, event);
-                }
-            }, MouseUpEvent.getType()));
-        }
-        if (0 != (stopConditions & StopCondition.STOP_CONDITION_MOUSE_CLICK)) {
-            regs.add(_dragPanel.addDomHandler(new ClickHandler() {
-                @Override
-                public void onClick(ClickEvent event)
-                {
-                    operationEnded(referenceElem, floatingWidgetStop, regs, event);
-                }
-            }, ClickEvent.getType()));
-        }
-        else {
+        
+        if (false == setStopConditionHandlers(referenceElem, floatingWidgetStop, stopConditions, regs)) {
         	throw new RuntimeException("Must specify at least one stop condition. The bitfield was: " + stopConditions);
         }
+        
         if (null != _stopOperationEvent) {
             regs.add(_stopOperationEvent.addHandler(new SimpleEvent.Handler<Void>() {
                 @Override
@@ -94,6 +78,35 @@ public class ElementDragManager
         _dragPanel.setVisible(true);
         return regs;
     }
+
+	private boolean setStopConditionHandlers(final Element referenceElem,
+			final Handler<Point2D> floatingWidgetStop, int stopConditions,
+			final RegistrationsManager regs) 
+	{
+		boolean stopConditionFound = false;
+		
+		if (0 != (stopConditions & StopCondition.STOP_CONDITION_MOUSE_UP)) {
+        	stopConditionFound = true;
+            regs.add(_dragPanel.addDomHandler(new MouseUpHandler() {
+                @Override
+                public void onMouseUp(MouseUpEvent event)
+                {
+                    operationEnded(referenceElem, floatingWidgetStop, regs, event);
+                }
+            }, MouseUpEvent.getType()));
+        }
+        if (0 != (stopConditions & StopCondition.STOP_CONDITION_MOUSE_CLICK)) {
+        	stopConditionFound = true;
+            regs.add(_dragPanel.addDomHandler(new ClickHandler() {
+                @Override
+                public void onClick(ClickEvent event)
+                {
+                    operationEnded(referenceElem, floatingWidgetStop, regs, event);
+                }
+            }, ClickEvent.getType()));
+        }
+		return stopConditionFound;
+	}
 
     protected void stopMouseMoveOperation(final RegistrationsManager regs)
     {
