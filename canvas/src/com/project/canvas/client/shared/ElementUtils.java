@@ -5,6 +5,7 @@ import java.util.HashMap;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.MouseEvent;
+import com.project.canvas.client.canvastools.base.CanvasToolFrame;
 import com.project.canvas.shared.data.Point2D;
 import com.project.canvas.shared.data.Rectangle;
 
@@ -29,6 +30,24 @@ public abstract class ElementUtils {
         }
         rotations.put(element, degrees);
     }
+    
+    public static void setTransformOriginTopLeft(Element element) {
+    	String originValue = "0 0";
+        setTransformOrigin(element, originValue);
+    }
+
+	private static void setTransformOrigin(Element element, String originValue) {
+		element.getStyle().setProperty("transformOrigin", originValue);
+        element.getStyle().setProperty("MozTransformOrigin", originValue);
+        element.getStyle().setProperty("WebkitTransformOrigin", originValue);
+        element.getStyle().setProperty("MsTransformOrigin", originValue);
+        cssSetMSProperty(element, "transform-origin", originValue);
+	}
+    
+    public static void resetTransformOrigin(Element element) { 
+        setTransformOrigin(element, "");
+    }
+    
 
     public static int getRotation(Element element) {
         Integer rotation = rotations.get(element);
@@ -56,4 +75,8 @@ public abstract class ElementUtils {
 		element.getStyle().setLeft(pos.getX(), Unit.PX);
 		element.getStyle().setTop(pos.getY(), Unit.PX);
     }
+
+	public static Point2D getElementSize(Element element) {
+		return new Point2D(element.getOffsetWidth(), element.getOffsetHeight());
+	}
 }
