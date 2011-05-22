@@ -63,5 +63,17 @@ public class Point2D implements Serializable, IsSerializable {
     public static Point2D max(Point2D first, Point2D other) {
         return new Point2D(Math.max(first.x, other.x), Math.max(first.y, other.y));
     }
+    
+    
+    public static Point2D fromPolar(double radius, double radians)
+    {
+    	return new Point2D((int)(radius * Math.cos(radians)), (int) (radius * Math.sin(radians)));
+    }
+    
+    public Point2D rotate(double radians)
+    {
+    	double newAngle = this.radians() + radians;
+    	return Point2D.fromPolar(this.radius(), newAngle);
+    }
 
 }
