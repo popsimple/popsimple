@@ -8,7 +8,6 @@ import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseMoveHandler;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
-import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.shared.ElementUtils;
 import com.project.canvas.client.shared.NativeUtils;
@@ -79,6 +78,9 @@ public class ElementDragManager
                 }
             }, ClickEvent.getType()));
         }
+        else {
+        	throw new RuntimeException("Must specify at least one stop condition. The bitfield was: " + stopConditions);
+        }
         if (null != _stopOperationEvent) {
             regs.add(_stopOperationEvent.addHandler(new SimpleEvent.Handler<Void>() {
                 @Override
@@ -89,7 +91,6 @@ public class ElementDragManager
                 }
             }));
         }
-        Event.setCapture(_dragPanel.getElement());
         _dragPanel.setVisible(true);
         return regs;
     }
@@ -97,7 +98,6 @@ public class ElementDragManager
     protected void stopMouseMoveOperation(final RegistrationsManager regs)
     {
         NativeUtils.disableTextSelectInternal(_container.getElement(), false);
-        Event.releaseCapture(_dragPanel.getElement());
         regs.clear();
         _dragPanel.setVisible(false);
     }
