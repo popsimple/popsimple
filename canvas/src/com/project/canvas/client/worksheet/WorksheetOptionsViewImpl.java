@@ -5,9 +5,9 @@ import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -16,15 +16,16 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.shared.events.SimpleEvent;
+import com.project.canvas.client.worksheet.interfaces.WorksheetOptionsView;
 import com.project.canvas.shared.GenericUtils;
 import com.project.canvas.shared.UrlUtils;
 import com.project.canvas.shared.data.CanvasPageOptions;
 
-public class WorksheetOptionsWidget extends Composite implements TakesValue<CanvasPageOptions> {
+public class WorksheetOptionsViewImpl extends Composite implements WorksheetOptionsView {
 
-    private static WorksheetOptionsWidgetUiBinder uiBinder = GWT.create(WorksheetOptionsWidgetUiBinder.class);
+    private static WorksheetOptionsViewImplUiBinder uiBinder = GWT.create(WorksheetOptionsViewImplUiBinder.class);
 
-    interface WorksheetOptionsWidgetUiBinder extends UiBinder<Widget, WorksheetOptionsWidget> {
+    interface WorksheetOptionsViewImplUiBinder extends UiBinder<Widget, WorksheetOptionsViewImpl> {
     }
 
     @UiField
@@ -51,15 +52,17 @@ public class WorksheetOptionsWidget extends Composite implements TakesValue<Canv
     protected final SimpleEvent<Void> doneEvent = new SimpleEvent<Void>();
     protected final SimpleEvent<Void> cancelEvent = new SimpleEvent<Void>();
 
-    public SimpleEvent<Void> getDoneEvent() {
-        return doneEvent;
+    @Override
+    public HandlerRegistration addDoneHandler(SimpleEvent.Handler<Void> handler) {
+        return doneEvent.addHandler(handler);
     }
 
-    public SimpleEvent<Void> getCancelEvent() {
-        return cancelEvent;
+    @Override
+    public HandlerRegistration addCancelHandler(SimpleEvent.Handler<Void> handler) {
+        return cancelEvent.addHandler(handler);
     }
 
-    public WorksheetOptionsWidget() {
+    public WorksheetOptionsViewImpl() {
         initWidget(uiBinder.createAndBindUi(this));
         this.doneButton.addClickHandler(new ClickHandler() {
             @Override

@@ -33,6 +33,10 @@ import com.project.canvas.client.shared.ElementUtils;
 import com.project.canvas.client.shared.RegistrationsManager;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.shared.events.SimpleEvent.Handler;
+import com.project.canvas.client.worksheet.interfaces.ElementDragManager;
+import com.project.canvas.client.worksheet.interfaces.ToolFrameTransformer;
+import com.project.canvas.client.worksheet.interfaces.WorksheetOptionsView;
+import com.project.canvas.client.worksheet.interfaces.WorksheetView;
 import com.project.canvas.shared.data.CanvasPageOptions;
 import com.project.canvas.shared.data.ElementData;
 import com.project.canvas.shared.data.Point2D;
@@ -40,56 +44,53 @@ import com.project.canvas.shared.data.Transform2D;
 
 public class WorksheetViewImpl extends Composite implements WorksheetView
 {
-    interface WorksheetViewImplUiBinder extends UiBinder<Widget, WorksheetViewImpl>
-    {
-    }
-
+    interface WorksheetViewImplUiBinder extends UiBinder<Widget, WorksheetViewImpl> {}
     private static WorksheetViewImplUiBinder uiBinder = GWT.create(WorksheetViewImplUiBinder.class);
 
     @UiField
     HTMLPanel dragPanel;
     @UiField
     Button loadButton;
-
     @UiField
     TextBox loadIdBox;
+    
     @UiField
     Anchor optionsBackground;
     @UiField
     Button saveButton;
     @UiField
-    Button viewButton; 
-
+    Button viewButton;
+    
     @UiField
     FlowPanel worksheetBackground;
     @UiField
     HTMLPanel worksheetContainer;
+    
     @UiField
     HTMLPanel worksheetHeader;
+    
     @UiField
     FlowPanel worksheetPanel;
-
-
+    
     private Handler<Void> _floatingWidgetTerminator;
-    private Widget floatingWidget;
     private ToolboxItem activeToolboxItem;
+    private Widget floatingWidget;
     private CanvasPageOptions pageOptions;
     
-    private final SimpleEvent<CanvasPageOptions> optionsUpdatedEvent = new SimpleEvent<CanvasPageOptions>();
-    private final SimpleEvent<Void> stopOperationEvent = new SimpleEvent<Void>();
-    private final SimpleEvent<ToolCreationRequest> toolCreationRequestEvent = new SimpleEvent<ToolCreationRequest>();
+    private final ToolFrameTransformer _toolFrameTransformer;
     
     private final DialogBox optionsDialog = new DialogWithZIndex(false, true);
-    private final WorksheetOptionsWidget optionsWidget = new WorksheetOptionsWidget();
-    
+    private final WorksheetOptionsView optionsWidget = new WorksheetOptionsViewImpl();
     private final HashMap<Widget, RegistrationsManager> toolFrameRegistrations = new HashMap<Widget, RegistrationsManager>();
     
-    private final ToolFrameTransformer _toolFrameTransformer;
+    private final SimpleEvent<CanvasPageOptions> optionsUpdatedEvent = new SimpleEvent<CanvasPageOptions>(); 
+    private final SimpleEvent<Void> stopOperationEvent = new SimpleEvent<Void>();
+    private final SimpleEvent<ToolCreationRequest> toolCreationRequestEvent = new SimpleEvent<ToolCreationRequest>();
     
     public WorksheetViewImpl()
     {
         initWidget(uiBinder.createAndBindUi(this));
-        _toolFrameTransformer  = new ToolFrameTransformer(worksheetPanel, dragPanel, stopOperationEvent);
+        _toolFrameTransformer  = new ToolFrameTransformerImpl(worksheetPanel, dragPanel, stopOperationEvent);
         optionsDialog.setText("Worksheet options");
         optionsDialog.add(this.optionsWidget);
         this.dragPanel.setVisible(false);
@@ -215,18 +216,6 @@ public class WorksheetViewImpl extends Composite implements WorksheetView
         }
     }
 
-    protected void clearFloatingWidget()
-    {
-        if (null != this.floatingWidget){ 
-            this.worksheetPanel.remove(floatingWidget);
-        }
-        if (null != this._floatingWidgetTerminator) {
-            this._floatingWidgetTerminator.onFire(null);
-        }
-        this.floatingWidget = null;
-        this._floatingWidgetTerminator = null;
-    }
-
     @Override
     public void removeToolInstanceWidget(CanvasToolFrame widget)
     {
@@ -322,14 +311,14 @@ public class WorksheetViewImpl extends Composite implements WorksheetView
                 optionsDialog.center();
             }
         });
-        this.optionsWidget.cancelEvent.addHandler(new SimpleEvent.Handler<Void>() {
+        this.optionsWidget.addCancelHandler(new SimpleEvent.Handler<Void>() {
             @Override
             public void onFire(Void arg)
             {
                 optionsDialog.hide();
             }
         });
-        this.optionsWidget.doneEvent.addHandler(new SimpleEvent.Handler<Void>() {
+        this.optionsWidget.addDoneHandler(new SimpleEvent.Handler<Void>() {
 
             @Override
             public void onFire(Void arg)
@@ -362,5 +351,17 @@ public class WorksheetViewImpl extends Composite implements WorksheetView
             button.setText(doneText);
             button.setEnabled(true);
         }
+    }
+
+    private void clearFloatingWidget()
+    {
+        if (null != this.floatingWidget){ 
+            this.worksheetPanel.remove(floatingWidget);
+        }
+        if (null != this._floatingWidgetTerminator) {
+            this._floatingWidgetTerminator.onFire(null);
+        }
+        this.floatingWidget = null;
+        this._floatingWidgetTerminator = null;
     }
 }

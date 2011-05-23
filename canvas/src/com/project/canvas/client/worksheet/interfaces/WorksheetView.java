@@ -1,4 +1,4 @@
-package com.project.canvas.client.worksheet;
+package com.project.canvas.client.worksheet.interfaces;
 
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.IsWidget;
