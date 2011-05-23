@@ -17,6 +17,7 @@ import com.project.canvas.client.canvastools.base.CanvasToolCommon;
 import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.shared.events.SimpleEvent.Handler;
+import com.project.canvas.client.shared.nicedit.NicEditor;
 import com.project.canvas.shared.data.ElementData;
 import com.project.canvas.shared.data.Point2D;
 import com.project.canvas.shared.data.TextData;
@@ -26,6 +27,7 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
     private final TextArea editBox = new TextArea();
     private final SimpleEvent<String> killRequestEvent = new SimpleEvent<String>();
     private TextData data;
+    private NicEditor nicEditor;
 
     public TextEditTool() {
         CanvasToolCommon.initCanvasToolWidget(this);
@@ -33,6 +35,8 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
         this.addStyleName(CanvasResources.INSTANCE.main().textEdit());
         this.add(editBox);
         this.editBox.addStyleName(CanvasResources.INSTANCE.main().textEditBox());
+        this.nicEditor = new NicEditor(this.editBox.getElement());
+        
     }
 
     @Override
