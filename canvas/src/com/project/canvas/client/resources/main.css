@@ -428,10 +428,6 @@
 	background-color: #eee;
 }
 
-@sprite .toolboxImageBingIconStyle {
-	gwt-image: "toolboxImageBingIcon";
-}
-
 .imageToolSearchProviderPanelStyle
 {
 	display: inline-block;
