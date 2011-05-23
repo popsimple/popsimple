@@ -7,14 +7,19 @@ import com.google.gwt.dom.client.ScriptElement;
 
 public class NicEditor
 {
+    private static int id = 0;
     private final JavaScriptObject nativeNicEditor;
-    private final JavaScriptObject nativeNicInstance;
 
     public NicEditor(Element element) {
         NicEditor.staticInit();
-        
-        nativeNicEditor = NicEditor.nativeCreateNicEdit();
-        nativeNicInstance = NicEditor.addInstance(nativeNicEditor, element.getId());
+        String elemId = element.getId();
+        if (elemId.isEmpty()) {
+            // TODO make this random and unique.
+            elemId = this.getClass().getName() + "_" + NicEditor.id;
+            element.setId(elemId);
+            NicEditor.id++;
+        }
+        nativeNicEditor = NicEditor.nativeCreateNicEdit(elemId);
     }
     
     private static boolean inited = false;
@@ -32,21 +37,19 @@ public class NicEditor
     }
 
     public String getContent() {
-        return NicEditor.getContent(nativeNicInstance);
+        return NicEditor.getContent(nativeNicEditor);
     }
     
     private native static final String getContent(JavaScriptObject nicInstance) /*-{
         return nicInstance.getContent();
     }-*/;
 
-    private static native final JavaScriptObject nativeCreateNicEdit()
+    private static native final JavaScriptObject nativeCreateNicEdit(String id)
     /*-{
         var e = $wnd.nicEditor;
-        return new e();
+        var inst = new e();
+        inst.panelInstance(id);
+        return inst;
     }-*/;
     
-    private static native final JavaScriptObject addInstance(JavaScriptObject nicEditorInstance, String elementId)
-    /*-{
-        return nicEditorInstance.addInstance(elementId, null);
-    }-*/;
 }

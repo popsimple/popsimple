@@ -7,6 +7,7 @@ import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
+import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -33,10 +34,15 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
         CanvasToolCommon.initCanvasToolWidget(this);
         this.data = new TextData();
         this.addStyleName(CanvasResources.INSTANCE.main().textEdit());
+        editBox.addAttachHandler(new AttachEvent.Handler() {
+            @Override
+            public void onAttachOrDetach(AttachEvent event)
+            {
+                nicEditor = new NicEditor(editBox.getElement());
+            }
+        });
         this.add(editBox);
         this.editBox.addStyleName(CanvasResources.INSTANCE.main().textEditBox());
-        this.nicEditor = new NicEditor(this.editBox.getElement());
-        
     }
 
     @Override
