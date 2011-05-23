@@ -69,20 +69,43 @@ public class ToolFrameTransformer
         
         setToolFrameDragStyles(toolFrame, true);
         
-        _elementDragManager.startMouseMoveOperation(_dragPanelElement,
+        _elementDragManager.startMouseMoveOperation(_container.getElement(),
                 ElementUtils.relativePosition(startEvent, toolFrame.getElement()), dragHandler, stopMoveHandler,
                 cancelMoveHandler, ElementDragManager.StopCondition.STOP_CONDITION_MOUSE_UP);
     }
 
     protected void startResizeCanvasToolFrame(final CanvasToolFrame toolFrame, final MouseEvent<?> startEvent)
     {
+        final double angle = Math.toRadians(ElementUtils.getRotation(toolFrame.getElement()));
         final Point2D initialSize = toolFrame.getToolSize();
+        final Point2D initialFrameSize = ElementUtils.getElementSize(toolFrame.getElement());
+        final Point2D startDragPos = ElementUtils.relativePosition(startEvent, _container.getElement());
+        final Point2D startPos = startDragPos.minus(ElementUtils.relativePosition(startEvent, toolFrame.getElement()));
+        Point2D initialCenter = initialFrameSize.mul(0.5);
+        final Point2D tempPos = transformPointRotate(angle, startPos, initialCenter, true);
 
+        ElementUtils.setTransformOriginTopLeft(toolFrame.getElement());
+        setToolFramePosition(toolFrame, tempPos);
+        
         final SimpleEvent.Handler<Point2D> resizeHandler = new SimpleEvent.Handler<Point2D>() {
             @Override
-            public void onFire(Point2D size)
+            public void onFire(Point2D pos)
             {
+            	Point2D size = sizeFromRotatedSizeOffset(angle, initialSize, startDragPos, pos);
                 toolFrame.setToolSize(size);
+            }
+        };
+        final SimpleEvent.Handler<Point2D> stopHandler = new SimpleEvent.Handler<Point2D>() {
+            @Override
+            public void onFire(Point2D pos)
+            {
+            	Point2D size = sizeFromRotatedSizeOffset(angle, initialSize, startDragPos, pos);
+                toolFrame.setToolSize(size);
+                ElementUtils.resetTransformOrigin(toolFrame.getElement());
+                Point2D frameSize = ElementUtils.getElementSize(toolFrame.getElement());
+                Point2D center = frameSize.mul(0.5);
+                // Move the element back to the origin position, taking the new size into account.
+                setToolFramePosition(toolFrame, transformPointRotate(angle, tempPos, center, false));
             }
         };
         final SimpleEvent.Handler<Void> cancelHandler = new SimpleEvent.Handler<Void>() {
@@ -90,23 +113,35 @@ public class ToolFrameTransformer
             public void onFire(Void arg)
             {
                 toolFrame.setToolSize(initialSize);
+                ElementUtils.resetTransformOrigin(toolFrame.getElement());
+                setToolFramePosition(toolFrame, startPos);
             }
         };
-        final Element toolElement = toolFrame.getTool().asWidget().getElement();
-        _elementDragManager.startMouseMoveOperation(toolElement, ElementUtils.relativePosition(startEvent, toolElement)
-                .minus(initialSize), resizeHandler, null, cancelHandler, ElementDragManager.StopCondition.STOP_CONDITION_MOUSE_UP);
+        _elementDragManager.startMouseMoveOperation(_container.getElement(), 
+        		Point2D.zero, resizeHandler, stopHandler, cancelHandler, 
+        		ElementDragManager.StopCondition.STOP_CONDITION_MOUSE_UP);
     }
 
-    protected void startRotateCanvasToolFrame(final CanvasToolFrame toolFrame, MouseEvent<?> arg)
+    /**
+     * Transforms a given point to and from rotated and unrotated coordinates, relative to the given axis point 
+     * @param angle rotation angle in radians
+     * @param point coordinates of point to rotate
+     * @param axisPoint
+     * @param toRotated true = from unrotated to rotated, false = opposite transformation
+     * @return transformed point
+     */
+	private Point2D transformPointRotate(double angle, Point2D point, Point2D axisPoint, boolean toRotated) 
+	{
+		int direction = toRotated ? 1 : -1;
+		return point.minus(axisPoint.rotate(angle).minus(axisPoint).mul(direction));
+	}
+
+    protected void startRotateCanvasToolFrame(final CanvasToolFrame toolFrame, MouseEvent<?> startEvent)
     {
-        Point2D frameSize = new Point2D(toolFrame.getOffsetWidth(), toolFrame.getOffsetHeight());
-        Point2D toolCenterPos = frameSize.mul(0.5); // relative to tool top-left
-        Point2D startEventRelativeToTopLeft = ElementUtils.relativePosition(arg, toolFrame.getElement());
-        Point2D startEventRelativeToCenter = startEventRelativeToTopLeft.minus(toolCenterPos);
+        Point2D toolCenterPos = toolCenterRelativeToToolTopLeft(toolFrame);
         Point2D bottomLeftRelativeToCenter = new Point2D(-toolCenterPos.getX(), toolCenterPos.getY());
         final int bottomLeftAngle = (int) Math.toDegrees(bottomLeftRelativeToCenter.radians());
-        final int startAngle = roundedAngle((int) Math.toDegrees(startEventRelativeToCenter.radians())
-                - bottomLeftAngle);
+        final int startAngle = ElementUtils.getRotation(toolFrame.getElement());
 
         final SimpleEvent.Handler<Point2D> rotateHandler = new SimpleEvent.Handler<Point2D>() {
             @Override
@@ -127,6 +162,12 @@ public class ToolFrameTransformer
                 cancelHandler, ElementDragManager.StopCondition.STOP_CONDITION_MOUSE_UP);
     }
 
+	private Point2D toolCenterRelativeToToolTopLeft(final Widget widget) {
+		Point2D frameSize = new Point2D(widget.getOffsetWidth(), widget.getOffsetHeight());
+        Point2D toolCenterPos = frameSize.mul(0.5); // relative to tool top-left
+		return toolCenterPos;
+	}
+
     protected int roundedAngle(int rotation)
     {
         return ROTATION_ROUND_RESOLUTION * (rotation / ROTATION_ROUND_RESOLUTION);
@@ -143,5 +184,13 @@ public class ToolFrameTransformer
             toolFrame.removeStyleName(CanvasResources.INSTANCE.main().drag());
         }
     }
+
+	private Point2D sizeFromRotatedSizeOffset(final double angle,
+			final Point2D initialSize, final Point2D startDragPos, Point2D pos) {
+		Point2D rotatedSizeOffset = pos.minus(startDragPos);
+		Point2D sizeOffset = rotatedSizeOffset.rotate(-angle);
+		Point2D size = Point2D.max(initialSize.plus(sizeOffset), Point2D.zero);
+		return size;
+	}
 
 }

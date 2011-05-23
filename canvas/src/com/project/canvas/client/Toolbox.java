@@ -58,6 +58,7 @@ public class Toolbox extends Composite {
         elem.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
                 setActiveTool(toolboxItem);
+                event.stopPropagation();
             }
         });
     }
