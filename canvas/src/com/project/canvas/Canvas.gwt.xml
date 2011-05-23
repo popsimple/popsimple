@@ -15,6 +15,7 @@
  	<!-- <inherits name='com.google.gwt.maps.GoogleMaps' />-->
 
 	<inherits name='com.ghusse.dolomite.Dolomite'/>
+	<inherits name='com.project.gwtbing.GwtBing'/>
 	
     <set-configuration-property name="UiBinder.useSafeHtmlTemplates" value="true"/>
 	<!-- for debugging only -->

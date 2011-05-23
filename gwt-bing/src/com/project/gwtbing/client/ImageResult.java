@@ -1,4 +1,4 @@
-package com.project.canvas.client.canvastools.Image.BingImage.BingSearch;
+package com.project.gwtbing.client;
 
 
 public class ImageResult extends ImageBase 

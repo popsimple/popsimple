@@ -1,4 +1,4 @@
-package com.project.canvas.client.canvastools.Image.BingImage.BingSearch;
+package com.project.gwtbing.client;
 
 import com.google.gwt.core.client.JavaScriptObject;
 
