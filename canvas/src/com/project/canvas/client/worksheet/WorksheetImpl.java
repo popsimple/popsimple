@@ -23,8 +23,10 @@ import com.project.canvas.client.shared.RegistrationsManager;
 import com.project.canvas.client.shared.ZIndexAllocator;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.shared.events.SimpleEvent.Handler;
-import com.project.canvas.client.worksheet.WorksheetView.OperationStatus;
-import com.project.canvas.client.worksheet.WorksheetView.ToolCreationRequest;
+import com.project.canvas.client.worksheet.interfaces.Worksheet;
+import com.project.canvas.client.worksheet.interfaces.WorksheetView;
+import com.project.canvas.client.worksheet.interfaces.WorksheetView.OperationStatus;
+import com.project.canvas.client.worksheet.interfaces.WorksheetView.ToolCreationRequest;
 import com.project.canvas.shared.contracts.CanvasService;
 import com.project.canvas.shared.contracts.CanvasServiceAsync;
 import com.project.canvas.shared.data.CanvasPage;
@@ -38,18 +40,14 @@ import com.project.canvas.shared.data.Transform2D;
 
 public class WorksheetImpl implements Worksheet
 {
-    public final SimpleEvent<Void> defaultToolRequestEvent = new SimpleEvent<Void>();
-
-    public final SimpleEvent<Boolean> viewModeEvent = new SimpleEvent<Boolean>();
-    private WorksheetView view;
-
-    protected CanvasPage page = new CanvasPage();
-
-    ToolboxItem activeToolboxItem;
-
-    RegistrationsManager activeToolRegistrations = new RegistrationsManager();
-
-    final HashMap<CanvasTool<?>, ToolInstanceInfo> toolInfoMap = new HashMap<CanvasTool<?>, ToolInstanceInfo>();
+    private CanvasPage page = new CanvasPage();
+    private ToolboxItem activeToolboxItem;
+    
+    private final SimpleEvent<Void> defaultToolRequestEvent = new SimpleEvent<Void>();
+    private final SimpleEvent<Boolean> viewModeEvent = new SimpleEvent<Boolean>();
+    private final WorksheetView view;
+    private final RegistrationsManager activeToolRegistrations = new RegistrationsManager();
+    private final HashMap<CanvasTool<?>, ToolInstanceInfo> toolInfoMap = new HashMap<CanvasTool<?>, ToolInstanceInfo>();
 
     public WorksheetImpl(WorksheetView view)
     {
@@ -68,6 +66,45 @@ public class WorksheetImpl implements Worksheet
     public SimpleEvent<Boolean> getViewModeEvent()
     {
         return viewModeEvent;
+    }
+
+    public void load(Long id)
+    {
+        CanvasServiceAsync service = (CanvasServiceAsync) GWT.create(CanvasService.class);
+
+        view.onLoadOperationChange(OperationStatus.PENDING, null);
+        
+        if (null == id) {
+            if (null != this.page.id) {
+                id = this.page.id;
+            }
+            else {
+                // Can't reload a page that was never saved!
+                view.onLoadOperationChange(OperationStatus.FAILURE, "Can't reload because this page was never saved.");
+                return;
+            }
+        }
+
+        service.GetPage(id, new AsyncCallback<CanvasPage>() {
+            @Override
+            public void onFailure(Throwable caught)
+            {
+                view.onLoadOperationChange(OperationStatus.FAILURE, caught.toString());
+            }
+
+            @Override
+            public void onSuccess(CanvasPage result)
+            {
+                view.onLoadOperationChange(OperationStatus.SUCCESS, null);
+                if (null != result) {
+                    String newURL = Window.Location.createUrlBuilder().setHash(result.id.toString()).buildString();
+                    Window.Location.replace(newURL);
+                    load(result);
+                } else {
+                    Window.alert("No such page on server.");
+                }
+            }
+        });
     }
 
     @Override
@@ -141,13 +178,12 @@ public class WorksheetImpl implements Worksheet
         final CanvasTool<? extends ElementData> tool = toolFactory.create();
         final CanvasToolFrame toolFrame = new CanvasToolFrame(tool);
 
-        final Point2D creationOffset = toolFactory.getCreationOffset();
         ToolInstanceInfo toolInfo = new ToolInstanceInfo(toolFactory, toolFrame, null);
         this.toolInfoMap.put(tool, toolInfo);
 
         RegistrationsManager regs = registerToolInstanceHandlers(toolFrame, toolInfo);
 
-        view.addToolInstanceWidget(toolFrame, transform, creationOffset);
+        view.addToolInstanceWidget(toolFrame, transform, toolFactory.getCreationOffset());
         toolInfo.killRegistration = tool.getKillRequestedEvent().addHandler(new SimpleEvent.Handler<String>() {
             @Override
             public void onFire(String arg)
@@ -258,13 +294,13 @@ public class WorksheetImpl implements Worksheet
         });
     }
 
-    protected void clearActiveToolboxItem()
+    private void clearActiveToolboxItem()
     {
         activeToolRegistrations.clear();
         view.clearActiveToolboxItem();
     }
 
-    protected void escapeOperation()
+    private void escapeOperation()
     {
         clearActiveToolboxItem();
         // TODO dispatch stop operation
@@ -272,7 +308,7 @@ public class WorksheetImpl implements Worksheet
         defaultToolRequestEvent.dispatch(null);
     }
 
-    protected void load(CanvasPage result)
+    private void load(CanvasPage result)
     {
         this.removeAllTools();
         // TODO: Currently because it's static.
@@ -304,7 +340,7 @@ public class WorksheetImpl implements Worksheet
         createToolInstancesFromData(updatedElements);
     }
 
-    protected RegistrationsManager registerToolInstanceHandlers(final CanvasToolFrame toolFrame,
+    private RegistrationsManager registerToolInstanceHandlers(final CanvasToolFrame toolFrame,
             ToolInstanceInfo toolInfo)
     {
         RegistrationsManager regs = toolInfo.registrations;
@@ -334,14 +370,14 @@ public class WorksheetImpl implements Worksheet
         return regs;
     }
 
-    protected void removeAllTools()
+    private void removeAllTools()
     {
         for (ToolInstanceInfo toolInfo : new ArrayList<ToolInstanceInfo>(this.toolInfoMap.values())) {
             this.removeToolInstance(toolInfo.toolFrame);
         }
     }
 
-    protected void removeToolInstance(CanvasToolFrame toolFrame)
+    private void removeToolInstance(CanvasToolFrame toolFrame)
     {
         ZIndexAllocator.deallocateZIndex(toolFrame.getElement());
         ToolInstanceInfo info = this.toolInfoMap.remove(toolFrame.getTool());
@@ -349,7 +385,7 @@ public class WorksheetImpl implements Worksheet
         info.registrations.clear();
     }
 
-    protected Collection<ElementData> sortByZIndex(Collection<ElementData> elements)
+    private Collection<ElementData> sortByZIndex(Collection<ElementData> elements)
     {
         TreeMap<Integer, ElementData> elementsByZIndex = new TreeMap<Integer, ElementData>();
         for (ElementData element : elements) {
@@ -358,51 +394,12 @@ public class WorksheetImpl implements Worksheet
         return elementsByZIndex.values();
     }
 
-    protected void updateOptions(CanvasPageOptions value)
+    private void updateOptions(CanvasPageOptions value)
     {
         if (null == value) {
             return;
         }
         this.page.options = value;
         view.setOptions(value);
-    }
-
-    public void load(Long id)
-    {
-        CanvasServiceAsync service = (CanvasServiceAsync) GWT.create(CanvasService.class);
-
-        view.onLoadOperationChange(OperationStatus.PENDING, null);
-        
-        if (null == id) {
-            if (null != this.page.id) {
-                id = this.page.id;
-            }
-            else {
-                // Can't reload a page that was never saved!
-                view.onLoadOperationChange(OperationStatus.FAILURE, "Can't reload because this page was never saved.");
-                return;
-            }
-        }
-
-        service.GetPage(id, new AsyncCallback<CanvasPage>() {
-            @Override
-            public void onFailure(Throwable caught)
-            {
-                view.onLoadOperationChange(OperationStatus.FAILURE, caught.toString());
-            }
-
-            @Override
-            public void onSuccess(CanvasPage result)
-            {
-                view.onLoadOperationChange(OperationStatus.SUCCESS, null);
-                if (null != result) {
-                    String newURL = Window.Location.createUrlBuilder().setHash(result.id.toString()).buildString();
-                    Window.Location.replace(newURL);
-                    load(result);
-                } else {
-                    Window.alert("No such page on server.");
-                }
-            }
-        });
     }
 }
