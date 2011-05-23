@@ -424,11 +424,10 @@ var nicEditorInstance = bkClass.extend({
 		var isTextarea = (e.nodeName.toLowerCase() == "textarea");
 		if(isTextarea || this.options.hasPanel) {
 			var ie7s = (bkLib.isMSIE && !((typeof document.body.style.maxHeight != "undefined") && document.compatMode == "CSS1Compat"))
-			var s = {border : '1px solid #ccc', borderTop : 0, overflowY : 'auto', overflowX: 'hidden' };
+			var s = {borderTop : 0, overflowY : 'auto', overflowX: 'hidden' };
 			s[(ie7s) ? 'height' : 'maxHeight'] = (this.ne.options.maxHeight) ? this.ne.options.maxHeight+'px' : null;
 			this.editorContain = new bkElement('DIV').setStyle(s).appendBefore(e);
-			var editorElm = new bkElement('DIV').setStyle({ margin: '4px'})
-												.addClass('main')
+			var editorElm = new bkElement('DIV').addClass('main')
 												.appendTo(this.editorContain);
 
 			e.setStyle({display : 'none'});
@@ -663,8 +662,8 @@ var nicEditorPanel = bkClass.extend({
 		this.panelButtons = new Array();
 		this.buttonList = bkExtend([],this.ne.options.buttonList);
 		
-		this.panelContain = new bkElement('DIV').setStyle({overflow : 'hidden', width : '100%', border : '1px solid #cccccc', backgroundColor : '#efefef'}).addClass('panelContain');
-		this.panelElm = new bkElement('DIV').setStyle({margin : '2px', marginTop : '0px', zoom : 1, overflow : 'hidden'}).addClass('panel').appendTo(this.panelContain);
+		this.panelContain = new bkElement('DIV').setStyle({overflow : 'hidden', border : '1px solid #cccccc', backgroundColor : '#efefef'}).addClass('panelContain');
+		this.panelElm = new bkElement('DIV').setStyle({zoom : 1, overflow : 'hidden'}).addClass('panel').appendTo(this.panelContain);
 		this.panelContain.appendTo(e);
 
 		var opt = this.ne.options;
