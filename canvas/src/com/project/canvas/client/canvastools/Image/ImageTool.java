@@ -22,6 +22,7 @@ import com.project.canvas.client.shared.RegistrationsManager;
 import com.project.canvas.client.shared.WidgetUtils;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.shared.events.SimpleEvent.Handler;
+import com.project.canvas.client.shared.searchProviders.interfaces.ImageSearchProvider;
 import com.project.canvas.shared.data.ElementData;
 import com.project.canvas.shared.data.ImageData;
 
@@ -35,8 +36,12 @@ public class ImageTool extends FlowPanel implements CanvasTool<ImageData> {
     private ImageToolOptions imageToolOptionsWidget;
     private DialogBox imageSelectionDialog;
 	private boolean optionsWidgetInited = false;
+	private ImageSearchProvider[] searchProviders = null;  
 
-    public ImageTool() {
+    public ImageTool(ImageSearchProvider... imageSearchProviders) 
+    {
+        this.searchProviders = imageSearchProviders;
+        
         CanvasToolCommon.initCanvasToolWidget(this);
         WidgetUtils.disableDrag(this);
         super.addStyleName(CanvasResources.INSTANCE.main().imageBox());
@@ -95,7 +100,9 @@ public class ImageTool extends FlowPanel implements CanvasTool<ImageData> {
 		this.imageToolOptionsWidget = new ImageToolOptions();
         imageSelectionDialog.add(imageToolOptionsWidget);
 
-		imageToolOptionsWidget.getCancelEvent().addHandler(new SimpleEvent.Handler<Void>() {
+		//TODO: Support multiple providers.
+        this.imageToolOptionsWidget.setSearchProvider(this.searchProviders[0]);
+        imageToolOptionsWidget.getCancelEvent().addHandler(new SimpleEvent.Handler<Void>() {
 		    @Override
 		    public void onFire(Void arg) {
 		        imageSelectionDialog.hide();

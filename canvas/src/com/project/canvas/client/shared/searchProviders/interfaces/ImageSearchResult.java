@@ -1,4 +1,4 @@
-package com.project.canvas.client.shared.searchProviders;
+package com.project.canvas.client.shared.searchProviders.interfaces;
 
 import java.util.ArrayList;
 
