@@ -2,10 +2,12 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:g="urn:import:com.google.gwt.user.client.ui">
 	<ui:with field='res' type='com.project.canvas.client.resources.CanvasResources' />
 	<ui:style>
-		
+		.focusPanel {
+			outline:none;
+		}
 	</ui:style>
 	<g:FlowPanel ui:field="framePanel" addStyleNames="{res.main.toolFramePanel}">
-		<g:FocusPanel ui:field="focusPanel">
+		<g:FocusPanel ui:field="focusPanel" addStyleNames="{style.focusPanel}">
 			<g:FlowPanel>
 				<g:HTMLPanel ui:field="frameHeader" addStyleNames="{res.main.toolFrameHeader}">
 					<g:FlowPanel ui:field="buttonsPanel" addStyleNames="{res.main.toolFrameButtonsPanel}">
