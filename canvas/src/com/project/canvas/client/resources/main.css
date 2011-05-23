@@ -158,8 +158,8 @@
 	margin:0 0 2px 2px;
 }
 .textEditNotFocused .nicEdit-panelContain {
-    /*visibility: hidden;*/
-    display:none;
+    visibility: hidden;
+    /*display:none;*/
 }
 .textEditBox {
 	width:100%;

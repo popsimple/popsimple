@@ -156,9 +156,6 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData>
     		return;
         }
 		this.isActive = isActive; 
-    	// check if we had the NotFocused style, to know if we need to fire the moveRequestEvent
-    	boolean hadNotFocusedStyle = this.getStyleName().contains(CanvasResources.INSTANCE.main().textEditNotFocused());
-    	
         if (isActive) {
         	if (null != this.editSize) {
         		// Set only the width - the height depends on the contents
@@ -168,16 +165,8 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData>
 
         	this.addStyleName(CanvasResources.INSTANCE.main().textEditFocused());
         	this.removeStyleName(CanvasResources.INSTANCE.main().textEditNotFocused());
-
-        	if (hadNotFocusedStyle) {
-        		this.moveRequestEvent.dispatch(getEditorOffsetPos().mul(-1));
-        	}
         } 
         else {
-        	if (false == hadNotFocusedStyle) {
-        		this.moveRequestEvent.dispatch(getEditorOffsetPos());
-        	}
-        	
         	this.editSize = ElementUtils.getElementSize(this.getElement());
         	
         	// Must be done AFTER saving size and move offset
