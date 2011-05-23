@@ -427,7 +427,7 @@ var nicEditorInstance = bkClass.extend({
 			var s = {border : '1px solid #ccc', borderTop : 0, overflowY : 'auto', overflowX: 'hidden' };
 			s[(ie7s) ? 'height' : 'maxHeight'] = (this.ne.options.maxHeight) ? this.ne.options.maxHeight+'px' : null;
 			this.editorContain = new bkElement('DIV').setStyle(s).appendBefore(e);
-			var editorElm = new bkElement('DIV').setStyle({ margin: '4px', minHeight : newY+'px'})
+			var editorElm = new bkElement('DIV').setStyle({ margin: '4px'})
 												.addClass('main')
 												.appendTo(this.editorContain);
 

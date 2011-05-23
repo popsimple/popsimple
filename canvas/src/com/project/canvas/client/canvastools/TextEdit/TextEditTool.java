@@ -151,4 +151,16 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
     public HandlerRegistration addMoveStartEventHandler(Handler<MouseEvent<?>> handler) {
         return null;
     }
+
+    @Override
+    public boolean hasResizeableWidth()
+    {
+        return true;
+    }
+
+    @Override
+    public boolean hasResizeableHeight()
+    {
+        return false;
+    }
 }

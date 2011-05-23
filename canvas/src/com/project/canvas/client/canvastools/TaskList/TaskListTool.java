@@ -161,4 +161,16 @@ public class TaskListTool extends Composite implements CanvasTool<TaskListData>,
     public HandlerRegistration addMoveStartEventHandler(Handler<MouseEvent<?>> handler) {
         return null;
     }
+
+    @Override
+    public boolean hasResizeableWidth()
+    {
+        return true;
+    }
+
+    @Override
+    public boolean hasResizeableHeight()
+    {
+        return true;
+    }
 }
