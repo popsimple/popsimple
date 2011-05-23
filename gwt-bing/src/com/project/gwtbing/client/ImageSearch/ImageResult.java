@@ -1,4 +1,4 @@
-package com.project.gwtbing.client;
+package com.project.gwtbing.client.ImageSearch;
 
 
 public class ImageResult extends ImageBase 

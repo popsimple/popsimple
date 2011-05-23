@@ -8,6 +8,13 @@ public class ImageInfoImpl implements ImageInfo
     private int width = 0;
     private int height = 0;
     
+    public ImageInfoImpl(String mediaUrl, int width, int height)
+    {
+        this.mediaUrl = mediaUrl;
+        this.width = width;
+        this.height = height;
+    }
+    
     @Override
     public String getMediaUrl() {
         // TODO Auto-generated method stub

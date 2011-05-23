@@ -1,4 +1,4 @@
-package com.project.gwtbing.client;
+package com.project.gwtbing.client.ImageSearch;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
