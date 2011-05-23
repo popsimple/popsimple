@@ -2,15 +2,11 @@ package com.project.canvas.client.canvastools.TextEdit;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.KeyDownEvent;
-import com.google.gwt.event.dom.client.KeyDownHandler;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
-import com.google.gwt.event.logical.shared.AttachEvent;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.project.canvas.client.canvastools.base.CanvasTool;
@@ -27,27 +23,39 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 
     private final TextArea editBox = new TextArea();
     private final SimpleEvent<String> killRequestEvent = new SimpleEvent<String>();
-    private TextData data;
     private NicEditor nicEditor;
+    private TextData data;
+    private boolean nicEditorReady = false;
+    
+    protected AsyncCallback<Void> editorReady = new AsyncCallback<Void>() {
+        @Override
+        public void onSuccess(Void result)
+        {
+            nicEditorReady = true;
+            registerHandlers();
+        }
+        
+        @Override
+        public void onFailure(Throwable caught)
+        {
+            // TODO Auto-generated method stub
+            
+        }
+    };
 
     public TextEditTool() {
         CanvasToolCommon.initCanvasToolWidget(this);
         this.data = new TextData();
         this.addStyleName(CanvasResources.INSTANCE.main().textEdit());
-        editBox.addAttachHandler(new AttachEvent.Handler() {
-            @Override
-            public void onAttachOrDetach(AttachEvent event)
-            {
-                nicEditor = new NicEditor(editBox.getElement());
-            }
-        });
         this.add(editBox);
         this.editBox.addStyleName(CanvasResources.INSTANCE.main().textEditBox());
     }
 
     @Override
     public void bind() {
-        this.registerHandlers();
+        if (null == nicEditor) {
+            nicEditor = new NicEditor(editBox, editorReady);
+        }
     }
 
     private void registerHandlers() {
@@ -56,38 +64,45 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
                 event.stopPropagation();
             }
         });
-        this.editBox.addValueChangeHandler(new ValueChangeHandler<String>() {
-            public void onValueChange(ValueChangeEvent<String> event) {
+        this.editBox.addKeyPressHandler(new KeyPressHandler() {
+            public void onKeyPress(KeyPressEvent event) {
                 updateEditBoxVisibleLength();
             }
         });
-        this.editBox.addKeyUpHandler(new KeyUpHandler() {
-            public void onKeyUp(KeyUpEvent event) {
-                updateEditBoxVisibleLength();
-            }
-        });
-        this.editBox.addKeyDownHandler(new KeyDownHandler() {
-            public void onKeyDown(KeyDownEvent event) {
-                updateEditBoxVisibleLength();
-            }
-        });
+        //        this.editBox.addValueChangeHandler(new ValueChangeHandler<String>() {
+//            public void onValueChange(ValueChangeEvent<String> event) {
+//                updateEditBoxVisibleLength();
+//            }
+//        });
+//        this.editBox.addKeyUpHandler(new KeyUpHandler() {
+//            public void onKeyUp(KeyUpEvent event) {
+//                updateEditBoxVisibleLength();
+//            }
+//        });
+//        this.editBox.addKeyDownHandler(new KeyDownHandler() {
+//            public void onKeyDown(KeyDownEvent event) {
+//                updateEditBoxVisibleLength();
+//            }
+//        });
     }
 
     protected void updateEditBoxVisibleLength() {
         // this.editBox.setVisibleLength(Math.max(MINIMUM_EDITBOX_VISIBLE_LENGTH,
         // spareLength));
-        Point2D newSize = TextEditUtils.autoSizeWidget(this, this.editBox.getText(), true);
+        Point2D newSize = TextEditUtils.autoSizeWidget(this, this.nicEditor.getContent(), true);
         this.setWidth(newSize.getX() + "px");
         this.setHeight(newSize.getY() + "px");
     }
 
     @Override
     public void setActive(boolean isActive) {
+        if (false == nicEditorReady) {
+            return;
+        }
         if (isActive) {
-            updateEditBoxVisibleLength();
-            this.editBox.setFocus(true);
+                updateEditBoxVisibleLength();
         } else {
-            String text = this.editBox.getText();
+            String text = this.nicEditor.getContent();
             if (text.trim().isEmpty()) {
                 this.killRequestEvent.dispatch("Empty");
             }

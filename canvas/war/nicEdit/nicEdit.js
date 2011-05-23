@@ -113,9 +113,10 @@ var bkElement = bkClass.extend({
 					this.className = st[itm];
 					break;
 				default:
-					//if(document.compatMode || itm != "cursor") { // Nasty Workaround for IE 5.5
+					// if(document.compatMode || itm != "cursor") { // Nasty
+					// Workaround for IE 5.5
 						elmStyle[itm] = st[itm];
-					//}		
+					// }
 			}
 		}
 		return this;
@@ -320,7 +321,7 @@ var nicEditor = bkClass.extend({
 	
 	panelInstance : function(e,o) {
 		e = this.checkReplace($BK(e));
-		var panelElm = new bkElement('DIV').setStyle({width : (parseInt(e.getStyle('width')) || e.clientWidth)+'px'}).appendBefore(e);
+		var panelElm = new bkElement('DIV').appendBefore(e);
 		this.setPanel(panelElm);
 		return this.addInstance(e,o);	
 	},
@@ -423,10 +424,12 @@ var nicEditorInstance = bkClass.extend({
 		var isTextarea = (e.nodeName.toLowerCase() == "textarea");
 		if(isTextarea || this.options.hasPanel) {
 			var ie7s = (bkLib.isMSIE && !((typeof document.body.style.maxHeight != "undefined") && document.compatMode == "CSS1Compat"))
-			var s = {width: newX+'px', border : '1px solid #ccc', borderTop : 0, overflowY : 'auto', overflowX: 'hidden' };
+			var s = {border : '1px solid #ccc', borderTop : 0, overflowY : 'auto', overflowX: 'hidden' };
 			s[(ie7s) ? 'height' : 'maxHeight'] = (this.ne.options.maxHeight) ? this.ne.options.maxHeight+'px' : null;
 			this.editorContain = new bkElement('DIV').setStyle(s).appendBefore(e);
-			var editorElm = new bkElement('DIV').setStyle({width : (newX-8)+'px', margin: '4px', minHeight : newY+'px'}).addClass('main').appendTo(this.editorContain);
+			var editorElm = new bkElement('DIV').setStyle({ margin: '4px', minHeight : newY+'px'})
+												.addClass('main')
+												.appendTo(this.editorContain);
 
 			e.setStyle({display : 'none'});
 				
@@ -452,7 +455,11 @@ var nicEditorInstance = bkClass.extend({
 			this.setContent('<br />');
 		}
 		this.instanceDoc = document.defaultView;
-		this.elm.addEvent('mousedown',this.selected.closureListener(this)).addEvent('keypress',this.keyDown.closureListener(this)).addEvent('focus',this.selected.closure(this)).addEvent('blur',this.blur.closure(this)).addEvent('keyup',this.selected.closure(this));
+		this.elm.addEvent('mousedown',this.selected.closureListener(this))
+				.addEvent('keypress',this.keyDown.closureListener(this))
+				.addEvent('focus',this.selected.closure(this))
+				.addEvent('blur',this.blur.closure(this))
+				.addEvent('keyup',this.selected.closure(this));
 		this.ne.fireEvent('add',this);
 	},
 	
@@ -522,9 +529,7 @@ var nicEditorInstance = bkClass.extend({
 	},
 	
 	keyDown : function(e,t) {
-		if(e.ctrlKey) {
-			this.ne.fireEvent('key',this,e);
-		}
+		this.ne.fireEvent('key',this,e);
 	},
 	
 	selected : function(e,t) {
@@ -589,7 +594,7 @@ var nicEditorIFrameInstance = nicEditorInstance.extend({
 		
 		this.elmFrame = new bkElement('iframe').setAttributes({'src' : 'javascript:;', 'frameBorder' : 0, 'allowTransparency' : 'true', 'scrolling' : 'no'}).setStyle({height: '100px', width: '100%'}).addClass('frame').appendTo(this.elm);
 
-		if(this.copyElm) { this.elmFrame.setStyle({width : (this.elm.offsetWidth-4)+'px'}); }
+		if(this.copyElm) { this.elmFrame; }
 		
 		var styleList = ['font-size','font-family','font-weight','color'];
 		for(itm in styleList) {
@@ -617,7 +622,10 @@ var nicEditorIFrameInstance = nicEditorInstance.extend({
 		this.instanceDoc = this.frameWin.document.defaultView;
 		
 		this.heightUpdate();
-		this.frameDoc.addEvent('mousedown', this.selected.closureListener(this)).addEvent('keyup',this.heightUpdate.closureListener(this)).addEvent('keydown',this.keyDown.closureListener(this)).addEvent('keyup',this.selected.closure(this));
+		this.frameDoc.addEvent('mousedown', this.selected.closureListener(this))
+					 .addEvent('keyup',this.heightUpdate.closureListener(this))
+					 .addEvent('keydown',this.keyDown.closureListener(this))
+					 .addEvent('keyup',this.selected.closure(this));
 		this.ne.fireEvent('add',this);
 	},
 	

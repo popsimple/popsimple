@@ -52,7 +52,7 @@ public class TextEditUtils {
         // Also prepend a character
         // (if the text begins with whitespace the browser may strip it in the
         // test widget)
-        testWidget.getElement().setInnerHTML(html + "\n<BR>M");
+        testWidget.getElement().setInnerHTML(html + "<br>");
 
         int testerWidth = testWidget.getOffsetWidth();
         int newWidth = (testerWidth + comfortZone) >= minWidth ? testerWidth + comfortZone : minWidth;

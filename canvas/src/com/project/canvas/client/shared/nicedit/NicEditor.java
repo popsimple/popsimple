@@ -3,31 +3,57 @@ package com.project.canvas.client.shared.nicedit;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.ScriptElement;
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.BlurHandler;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Widget;
 
 public class NicEditor
 {
     private static int id = 0;
     private JavaScriptObject nativeNicEditor;
+    private Widget widget;
 
-    public NicEditor(final Element element) {
+    public NicEditor(Widget widget, final AsyncCallback<Void> ready) {
+        this.widget = widget;
+        final Element element = widget.getElement();
         NicEditor.staticInit(new AsyncCallback<Void>() {
             @Override
             public void onSuccess(Void result)
             {
                 replaceElement(element);
+                ready.onSuccess(result);
             }
             
             @Override
             public void onFailure(Throwable caught)
             {
-                // TODO Auto-generated method stub
-                
+                ready.onFailure(caught);
             }
         });
     }
 
+    public HandlerRegistration addBlurHandler(BlurHandler handler) {
+        return this.widget.addDomHandler(handler, BlurEvent.getType());
+    }
+
+    public HandlerRegistration addKeyPressHandler(KeyPressHandler handler) {
+        return this.widget.addDomHandler(handler, KeyPressEvent.getType());
+    }
+    
+    private void dispatchBlur() {
+        BlurEvent.fireNativeEvent(Document.get().createBlurEvent(), this.widget);
+    }
+    private void dispatchKeyPress(NativeEvent event) {
+        NativeEvent keyPressEvent = Document.get().createKeyPressEvent(event.getCtrlKey(), event.getAltKey(), event.getShiftKey(), event.getMetaKey(), event.getCharCode());
+        KeyPressEvent.fireNativeEvent(keyPressEvent, this.widget);
+    }
+    
     public void replaceElement(Element element)
     {
         String elemId = element.getId();
@@ -37,7 +63,7 @@ public class NicEditor
             element.setId(elemId);
             NicEditor.id++;
         }
-        nativeNicEditor = NicEditor.nativeCreateNicEdit(elemId);
+        nativeNicEditor = nativeCreateNicEdit(elemId);
     }
     
     private static boolean inited = false;
@@ -45,6 +71,7 @@ public class NicEditor
     private static void staticInit(AsyncCallback<Void> callback)
     {
         if (inited) {
+            callback.onSuccess(null);
             return;
         }
         inited = true;
@@ -74,16 +101,31 @@ public class NicEditor
         return NicEditor.getContent(nativeNicEditor);
     }
     
+    public Element getEditorElement() {
+        return NicEditor.getEditorElement(nativeNicEditor);
+    }
+    
+    private native static final Element getEditorElement(JavaScriptObject nicInstance) /*-{
+        return nicInstance.getElm();
+    }-*/;
+    
     private native static final String getContent(JavaScriptObject nicInstance) /*-{
         return nicInstance.getContent();
     }-*/;
 
-    private static native final JavaScriptObject nativeCreateNicEdit(String id)
+    private native final JavaScriptObject nativeCreateNicEdit(String id)
     /*-{
+        var me = this;
         var e = $wnd.nicEditor;
         var inst = new e();
-        inst.panelInstance(id);
-        return inst;
+        var res = inst.panelInstance(id);
+        var nicInstance = res.nicInstances[0];
+        nicInstance.addEvent('blur', function() { 
+            me.@com.project.canvas.client.shared.nicedit.NicEditor::dispatchBlur()(); 
+        }); 
+        nicInstance.addEvent('key', function(src, ev) { 
+            me.@com.project.canvas.client.shared.nicedit.NicEditor::dispatchKeyPress(Lcom/google/gwt/dom/client/NativeEvent;)(ev); 
+        }); 
+        return nicInstance;
     }-*/;
-    
 }
