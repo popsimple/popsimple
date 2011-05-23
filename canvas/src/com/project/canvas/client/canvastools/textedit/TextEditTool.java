@@ -44,6 +44,7 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData>
     private final TextArea editBox = new TextArea();
     private final SimpleEvent<String> killRequestEvent = new SimpleEvent<String>();
     private final SimpleEvent<Point2D> moveRequestEvent = new SimpleEvent<Point2D>();
+    private final SimpleEvent<Boolean> rotationStateEvent = new SimpleEvent<Boolean>();
     
     private NicEditor nicEditor;
     private TextData data;
@@ -137,7 +138,8 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData>
     private void registerHandlers() {
         this.editBox.addKeyPressHandler(new KeyPressHandler() {
             public void onKeyPress(KeyPressEvent event) {
-                setActive(true);
+            	boolean isEscape = (event.getNativeEvent().getKeyCode() == 27);
+                setActive(false == isEscape);
             }
         });
     }
@@ -156,7 +158,7 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData>
 		this.isActive = isActive; 
     	// check if we had the NotFocused style, to know if we need to fire the moveRequestEvent
     	boolean hadNotFocusedStyle = this.getStyleName().contains(CanvasResources.INSTANCE.main().textEditNotFocused());
-
+    	
         if (isActive) {
         	if (null != this.editSize) {
         		// Set only the width - the height depends on the contents
@@ -181,7 +183,7 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData>
         	// Must be done AFTER saving size and move offset
         	this.removeStyleName(CanvasResources.INSTANCE.main().textEditFocused());
         	this.addStyleName(CanvasResources.INSTANCE.main().textEditNotFocused());
-
+        	
             String text = this.nicEditor.getContent();
             if (k1illIfEmpty) {
 	            if (text.trim().isEmpty()) {

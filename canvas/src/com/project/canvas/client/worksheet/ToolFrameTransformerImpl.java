@@ -91,7 +91,7 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
         final Point2D startDragPos = ElementUtils.relativePosition(startEvent, _container.getElement());
         final Point2D startPos = startDragPos.minus(ElementUtils.relativePosition(startEvent, toolFrame.getElement()));
         Point2D initialCenter = initialFrameSize.mul(0.5);
-        final Point2D tempPos = transformPointRotate(angle, startPos, initialCenter, true);
+        final Point2D tempPos = startPos.rotate(angle, initialCenter, true);
 
         ElementUtils.setTransformOriginTopLeft(toolFrame.getElement());
         setToolFramePosition(toolFrame, tempPos);
@@ -114,7 +114,7 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
                 Point2D frameSize = ElementUtils.getElementSize(toolFrame.getElement());
                 Point2D center = frameSize.mul(0.5);
                 // Move the element back to the origin position, taking the new size into account.
-                setToolFramePosition(toolFrame, transformPointRotate(angle, tempPos, center, false));
+                setToolFramePosition(toolFrame, tempPos.rotate(angle, center, false));
             }
         };
         final SimpleEvent.Handler<Void> cancelHandler = new SimpleEvent.Handler<Void>() {
@@ -175,21 +175,7 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
 		return toolCenterPos;
 	}
 
-	/**
-     * Transforms a given point to and from rotated and unrotated coordinates, relative to the given axis point 
-     * @param angle rotation angle in radians
-     * @param point coordinates of point to rotate
-     * @param axisPoint
-     * @param toRotated true = from unrotated to rotated, false = opposite transformation
-     * @return transformed point
-     */
-	private Point2D transformPointRotate(double angle, Point2D point, Point2D axisPoint, boolean toRotated) 
-	{
-		int direction = toRotated ? 1 : -1;
-		return point.minus(axisPoint.rotate(angle).minus(axisPoint).mul(direction));
-	}
-
-    protected Point2D limitPosToContainer(Point2D pos, Widget elem)
+	protected Point2D limitPosToContainer(Point2D pos, Widget elem)
     {
         Point2D maxPos = new Point2D(this._container.getOffsetWidth() - 20, this._container.getOffsetHeight() - 20);
 

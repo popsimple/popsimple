@@ -74,6 +74,8 @@ public class CanvasToolFrame extends Composite implements Focusable, HasFocusHan
     protected final SimpleEvent<MouseEvent<?>> resizeStartRequest = new SimpleEvent<MouseEvent<?>>();
     protected final SimpleEvent<MouseEvent<?>> rotateStartRequest = new SimpleEvent<MouseEvent<?>>();
 
+	protected Integer rotation;
+
     public CanvasToolFrame(CanvasTool<?> canvasTool) {
         initWidget(uiBinder.createAndBindUi(this));
         //WidgetUtils.stopClickPropagation(this);
@@ -107,10 +109,7 @@ public class CanvasToolFrame extends Composite implements Focusable, HasFocusHan
         tool.addMoveEventHandler(new Handler<Point2D>() {
 			@Override
 			public void onFire(Point2D offset) {
-				
-				Point2D newPos = ElementUtils.getElementPosition(getElement())
-											 .plus(offset);
-				ElementUtils.setElementPosition(newPos, getElement());
+				toolSelfMoveRequest(offset);
 			}
 		});
         this.addDomHandler(new MouseDownHandler(){
@@ -118,6 +117,7 @@ public class CanvasToolFrame extends Composite implements Focusable, HasFocusHan
 			public void onMouseDown(MouseDownEvent event) {
 				focusPanel.setFocus(true); // take away focus from any others
 			}}, MouseDownEvent.getType());
+        
         this.registerTransformHandlers();
 
         WidgetUtils.stopClickPropagation(this.closeLink.asWidget());
@@ -218,5 +218,11 @@ public class CanvasToolFrame extends Composite implements Focusable, HasFocusHan
 	@Override
 	public HandlerRegistration addFocusHandler(FocusHandler handler) {
 		return this.focusPanel.addFocusHandler(handler);
+	}
+
+	private void toolSelfMoveRequest(Point2D offset) {
+		Point2D newPos = ElementUtils.getElementPosition(getElement())
+									 .plus(offset);
+		ElementUtils.setElementPosition(newPos, getElement());
 	}
 }
