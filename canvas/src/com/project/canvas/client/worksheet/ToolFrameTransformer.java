@@ -1,7 +1,5 @@
 package com.project.canvas.client.worksheet;
 
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.user.client.ui.Widget;

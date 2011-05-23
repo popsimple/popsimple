@@ -16,8 +16,8 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.shared.events.SimpleEvent;
-import com.project.canvas.shared.UrlUtils;
 import com.project.canvas.shared.GenericUtils;
+import com.project.canvas.shared.UrlUtils;
 import com.project.canvas.shared.data.CanvasPageOptions;
 
 public class WorksheetOptionsWidget extends Composite implements TakesValue<CanvasPageOptions> {

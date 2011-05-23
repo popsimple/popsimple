@@ -1,6 +1,5 @@
 package com.project.canvas.client.canvastools.Image.BingImage.BingSearch;
 
-import com.google.gwt.http.client.URL;
 import com.google.gwt.http.client.UrlBuilder;
 import com.google.gwt.jsonp.client.JsonpRequestBuilder;
 import com.google.gwt.user.client.rpc.AsyncCallback;
