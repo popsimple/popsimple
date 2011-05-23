@@ -19,6 +19,7 @@ import com.project.canvas.client.canvastools.base.CanvasToolCommon;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.shared.events.SimpleEvent.Handler;
 import com.project.canvas.shared.data.ElementData;
+import com.project.canvas.shared.data.Point2D;
 import com.project.canvas.shared.data.TaskData;
 import com.project.canvas.shared.data.TaskListData;
 
@@ -173,4 +174,10 @@ public class TaskListTool extends Composite implements CanvasTool<TaskListData>,
     {
         return true;
     }
+
+    @Override
+	public HandlerRegistration addMoveEventHandler(Handler<Point2D> handler) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

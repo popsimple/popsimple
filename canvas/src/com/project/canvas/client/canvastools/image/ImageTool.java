@@ -28,6 +28,7 @@ import com.project.canvas.client.shared.searchProviders.interfaces.ImageSearchPr
 import com.project.canvas.client.shared.widgets.DialogWithZIndex;
 import com.project.canvas.shared.data.ElementData;
 import com.project.canvas.shared.data.ImageData;
+import com.project.canvas.shared.data.Point2D;
 
 public class ImageTool extends FlowPanel implements CanvasTool<ImageData> {
 
@@ -198,4 +199,11 @@ public class ImageTool extends FlowPanel implements CanvasTool<ImageData> {
     {
         return true;
     }
+
+
+    @Override
+	public HandlerRegistration addMoveEventHandler(Handler<Point2D> handler) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

@@ -19,6 +19,7 @@ public abstract class ElementUtils {
                 element.getAbsoluteRight(), element.getAbsoluteBottom());
     }
 
+
     // TODO: warning, this may keep element objects alive after not being used!
     private static HashMap<Element, Integer> rotations = new HashMap<Element, Integer>();
 
@@ -74,7 +75,15 @@ public abstract class ElementUtils {
 		element.getStyle().setLeft(pos.getX(), Unit.PX);
 		element.getStyle().setTop(pos.getY(), Unit.PX);
     }
-
+	
+	public static Point2D getElementPosition(Element element) {
+    	return new Point2D(element.getOffsetLeft(), element.getOffsetTop());
+    }
+	
+    public static Point2D getElementAbsolutePosition(Element element) {
+    	return new Point2D(element.getAbsoluteLeft(), element.getAbsoluteTop());
+    }
+    
 	public static Point2D getElementSize(Element element) {
 		return new Point2D(element.getOffsetWidth(), element.getOffsetHeight());
 	}

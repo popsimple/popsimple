@@ -277,10 +277,11 @@ public class WorksheetViewImpl extends Composite implements WorksheetView
     }
 
     @Override
-    public void removeToolInstanceWidget(CanvasToolFrame widget)
+    public void removeToolInstanceWidget(CanvasToolFrame toolFrame)
     {
-        this.worksheetPanel.remove(widget);
-        RegistrationsManager regs = toolFrameRegistrations.remove(widget);
+        this.worksheetPanel.remove(toolFrame);
+        this.overToolFrames.remove(toolFrame);
+        RegistrationsManager regs = toolFrameRegistrations.remove(toolFrame);
         if (null != regs) {
             regs.clear();
         }

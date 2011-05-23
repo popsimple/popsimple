@@ -21,9 +21,11 @@ import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.project.canvas.client.shared.ElementUtils;
 import com.project.canvas.client.shared.NativeUtils;
 import com.project.canvas.client.shared.WidgetUtils;
 import com.project.canvas.client.shared.events.SimpleEvent;
+import com.project.canvas.client.shared.events.SimpleEvent.Handler;
 import com.project.canvas.shared.data.Point2D;
 
 public class CanvasToolFrame extends Composite implements Focusable, HasFocusHandlers, HasBlurHandlers {
@@ -102,10 +104,19 @@ public class CanvasToolFrame extends Composite implements Focusable, HasFocusHan
                 moveStartRequest.dispatch(event);
             }
         }, MouseDownEvent.getType());
+        tool.addMoveEventHandler(new Handler<Point2D>() {
+			@Override
+			public void onFire(Point2D offset) {
+				
+				Point2D newPos = ElementUtils.getElementPosition(getElement())
+											 .plus(offset);
+				ElementUtils.setElementPosition(newPos, getElement());
+			}
+		});
         this.addDomHandler(new MouseDownHandler(){
 			@Override
 			public void onMouseDown(MouseDownEvent event) {
-				focusPanel.setFocus(true);
+				focusPanel.setFocus(true); // take away focus from any others
 			}}, MouseDownEvent.getType());
         this.registerTransformHandlers();
 

@@ -301,6 +301,9 @@ public class WorksheetImpl implements Worksheet
 
 	private void setActiveToolInstance(CanvasTool<?> tool) 
 	{
+		if (tool == this.activeToolInstance) {
+			return;
+		}
 		if (null != this.activeToolInstance) {
 			this.activeToolInstance.setActive(false);
 		}
