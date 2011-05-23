@@ -1,4 +1,4 @@
-package com.project.canvas.client.canvastools.Image;
+package com.project.canvas.client.canvastools.image;
 
 import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.canvastools.base.CanvasToolFactory;

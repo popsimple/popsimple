@@ -1,4 +1,4 @@
-package com.project.canvas.client.canvastools.TaskList;
+package com.project.canvas.client.canvastools.tasklist;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;

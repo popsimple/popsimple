@@ -1,23 +1,23 @@
-package com.project.canvas.client.canvastools.Image;
+package com.project.canvas.client.canvastools.image;
 
-import java.util.Collection;
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Focusable;
-import com.google.gwt.user.client.ui.FormPanel;
-import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
-import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.project.canvas.client.shared.NativeUtils;
 import com.project.canvas.client.shared.dialogs.ImagePicker;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.shared.searchProviders.interfaces.ImageInfo;
@@ -33,7 +33,7 @@ public class ImageToolOptions extends Composite implements TakesValue<ImageData>
     }
 
     @UiField
-    FormPanel formPanel;
+    FlowPanel formPanel;
 
     @UiField
     TextBox urlTextBox;
@@ -58,13 +58,7 @@ public class ImageToolOptions extends Composite implements TakesValue<ImageData>
         this.doneButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                boolean empty = urlTextBox.getText().trim().isEmpty();
-                boolean valid = UrlUtils.isValidUrl(urlTextBox.getText(), false);
-                if (empty || valid) {
-                    doneEvent.dispatch(null);
-                } else {
-                    Window.alert("Invalid url.");
-                }
+                doneClicked();
             }
         });
         this.cancelButton.addClickHandler(new ClickHandler() {
@@ -79,10 +73,13 @@ public class ImageToolOptions extends Composite implements TakesValue<ImageData>
                 urlTextBox.setText(imageInfo.getMediaUrl());
             }
         });
-        this.formPanel.addSubmitHandler(new SubmitHandler() {
+        this.urlTextBox.addKeyPressHandler(new KeyPressHandler() {
             @Override
-            public void onSubmit(SubmitEvent event) {
-                event.cancel();
+            public void onKeyPress(KeyPressEvent event)
+            {
+                if (NativeUtils.keyIsEnter(event)) {
+                    doneClicked();
+                }
             }
         });
     }
@@ -130,5 +127,16 @@ public class ImageToolOptions extends Composite implements TakesValue<ImageData>
     @Override
     public void setTabIndex(int index) {
         this.urlTextBox.setTabIndex(index);
+    }
+
+    public void doneClicked()
+    {
+        boolean empty = urlTextBox.getText().trim().isEmpty();
+        boolean valid = UrlUtils.isValidUrl(urlTextBox.getText(), false);
+        if (empty || valid) {
+            doneEvent.dispatch(null);
+        } else {
+            Window.alert("Invalid url.");
+        }
     }
 }

@@ -1,4 +1,4 @@
-package com.project.canvas.client.canvastools.TextEdit;
+package com.project.canvas.client.canvastools.textedit;
 
 import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.canvastools.base.CanvasToolFactory;

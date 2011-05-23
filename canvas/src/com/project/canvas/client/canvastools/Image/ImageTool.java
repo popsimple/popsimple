@@ -1,4 +1,4 @@
-package com.project.canvas.client.canvastools.Image;
+package com.project.canvas.client.canvastools.image;
 
 import java.util.ArrayList;
 import java.util.Collection;

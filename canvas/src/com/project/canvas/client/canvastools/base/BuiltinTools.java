@@ -3,9 +3,9 @@ package com.project.canvas.client.canvastools.base;
 import java.util.ArrayList;
 
 import com.project.canvas.client.canvastools.CursorToolboxItem;
-import com.project.canvas.client.canvastools.Image.ImageToolboxItem;
-import com.project.canvas.client.canvastools.TaskList.TaskListToolboxItem;
-import com.project.canvas.client.canvastools.TextEdit.TextEditToolboxItem;
+import com.project.canvas.client.canvastools.image.ImageToolboxItem;
+import com.project.canvas.client.canvastools.tasklist.TaskListToolboxItem;
+import com.project.canvas.client.canvastools.textedit.TextEditToolboxItem;
 
 public class BuiltinTools {
     public static final CursorToolboxItem cursorTool = new CursorToolboxItem();

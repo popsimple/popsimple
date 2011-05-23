@@ -12,7 +12,7 @@
 			padding:5px;
 		}
 	</ui:style>
-	<g:FormPanel ui:field="formPanel">
+	<g:FlowPanel ui:field="formPanel">
 		<g:HTMLPanel addStyleNames="{style.padded}">
 			<g:HTMLPanel addStyleNames="{style.padded}">
 				Add an image from the web - enter a URL:
@@ -21,8 +21,8 @@
 			<g:HTMLPanel addStyleNames="{style.padded}">
 				<my:ImagePicker ui:field="imagePicker"/>
 			</g:HTMLPanel>
-			<g:SubmitButton ui:field="doneButton" addStyleNames="{style.padded}">Done</g:SubmitButton>
+			<g:Button ui:field="doneButton" addStyleNames="{style.padded}">Done</g:Button>
 			<g:Button ui:field="cancelButton" addStyleNames="{style.padded}">Cancel</g:Button>
 		</g:HTMLPanel>
-	</g:FormPanel>
+	</g:FlowPanel>
 </ui:UiBinder> 

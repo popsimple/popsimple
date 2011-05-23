@@ -1,6 +1,5 @@
 package com.project.canvas.client.shared.searchProviders.bing;
 
-import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.searchProviders.ImageSearchOptions;

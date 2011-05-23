@@ -1,4 +1,4 @@
-package com.project.canvas.client.canvastools.TextEdit;
+package com.project.canvas.client.canvastools.textedit;
 
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Display;

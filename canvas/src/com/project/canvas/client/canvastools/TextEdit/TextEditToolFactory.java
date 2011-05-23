@@ -1,4 +1,4 @@
-package com.project.canvas.client.canvastools.TextEdit;
+package com.project.canvas.client.canvastools.textedit;
 
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.canvastools.base.CanvasToolFactoryBase;

@@ -1,4 +1,4 @@
-package com.project.canvas.client.canvastools.TextEdit;
+package com.project.canvas.client.canvastools.textedit;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;

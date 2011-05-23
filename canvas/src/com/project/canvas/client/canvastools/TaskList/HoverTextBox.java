@@ -1,4 +1,4 @@
-package com.project.canvas.client.canvastools.TaskList;
+package com.project.canvas.client.canvastools.tasklist;
 
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;

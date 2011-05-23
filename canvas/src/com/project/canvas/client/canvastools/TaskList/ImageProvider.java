@@ -1,4 +1,4 @@
-package com.project.canvas.client.canvastools.TaskList;
+package com.project.canvas.client.canvastools.tasklist;
 
 import java.util.HashMap;
 

@@ -15,15 +15,15 @@
 		}
 	</ui:style>
 	<g:HTMLPanel>
-		<g:FormPanel ui:field="formPanel">
+		<g:FlowPanel ui:field="formPanel">
 			<g:HTMLPanel>
 				<g:FlowPanel ui:field="providersPanel">
 				</g:FlowPanel>
 				<g:TextBox ui:field="searchText">Search...</g:TextBox>
-				<g:SubmitButton ui:field="searchButton"  >Find Images</g:SubmitButton>
+				<g:Button ui:field="searchButton"  >Find Images</g:Button>
 				
 			</g:HTMLPanel>
-		</g:FormPanel>
+		</g:FlowPanel>
 		<g:FlowPanel ui:field="photoSizesPanel"/>
 		<g:ScrollPanel ui:field="resultsPanelContainer" addStyleNames="{style.resultsPanel}">
 		  <g:FlowPanel ui:field="resultsPanel"></g:FlowPanel>

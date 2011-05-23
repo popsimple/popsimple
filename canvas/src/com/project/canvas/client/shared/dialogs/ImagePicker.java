@@ -1,18 +1,17 @@
 package com.project.canvas.client.shared.dialogs;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.safehtml.shared.SafeHtml;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -21,15 +20,13 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.FormPanel;
-import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
-import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.resources.CanvasResources;
+import com.project.canvas.client.shared.NativeUtils;
 import com.project.canvas.client.shared.RegistrationsManager;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.shared.searchProviders.interfaces.ImageInfo;
@@ -58,7 +55,7 @@ public class ImagePicker extends Composite {
     ScrollPanel resultsPanelContainer;
 
     @UiField
-    FormPanel formPanel;
+    FlowPanel formPanel;
 
     @UiField
     FlowPanel photoSizesPanel;
@@ -77,6 +74,15 @@ public class ImagePicker extends Composite {
     public ImagePicker() 
     {
         initWidget(uiBinder.createAndBindUi(this));
+        this.searchText.addKeyPressHandler(new KeyPressHandler() {
+            @Override
+            public void onKeyPress(KeyPressEvent event)
+            {
+                if (NativeUtils.keyIsEnter(event)) {
+                    searchSubmitted();
+                }
+            }
+        });
     }
     
     public void setSearchProviders(List<ImageSearchProvider> searchProviders)
@@ -87,38 +93,48 @@ public class ImagePicker extends Composite {
         }
         for (final ImageSearchProvider searchProvider : searchProviders)
         {
-            RadioButtonPanel radioButtonPanel = new RadioButtonPanel();
-            radioButtonPanel.addStyleName(
-                    CanvasResources.INSTANCE.main().imageToolSearchProviderPanelStyle());
-            radioButtonPanel.setName("searchProviders");
-            FlowPanel imagePanel = new FlowPanel();
-            imagePanel.addStyleName(
-                    CanvasResources.INSTANCE.main().imageToolSearchProviderIconStyle());
-            imagePanel.getElement().getStyle()
-                .setBackgroundImage("url(" + searchProvider.getIconUrl() + ")");
-            radioButtonPanel.add(imagePanel);
-            radioButtonPanel.add(new InlineLabel(searchProvider.getTitle()));
-            
-            radioButtonPanel.getRadioButton().addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-                
-                @Override
-                public void onValueChange(ValueChangeEvent<Boolean> event) {
-                    if (false == event.getValue())
-                    {
-                        return;
-                    }
-                    _selectedSearchProvider = searchProvider; 
-                }
-            });
-            this.providersPanel.add(radioButtonPanel);
-            this._searchProviderMap.put(searchProvider, radioButtonPanel);
+            addProvider(searchProvider);
         }
         this._selectedSearchProvider = searchProviders.get(0);
         this._searchProviderMap.get(this._selectedSearchProvider).getRadioButton().setValue(true);
     }
+
+    public void addProvider(final ImageSearchProvider searchProvider)
+    {
+        RadioButtonPanel radioButtonPanel = new RadioButtonPanel();
+        radioButtonPanel.addStyleName(
+                CanvasResources.INSTANCE.main().imageToolSearchProviderPanelStyle());
+        radioButtonPanel.setName("searchProviders");
+        FlowPanel imagePanel = new FlowPanel();
+        imagePanel.addStyleName(
+                CanvasResources.INSTANCE.main().imageToolSearchProviderIconStyle());
+        imagePanel.getElement().getStyle()
+            .setBackgroundImage("url(" + searchProvider.getIconUrl() + ")");
+        radioButtonPanel.add(imagePanel);
+        radioButtonPanel.add(new InlineLabel(searchProvider.getTitle()));
+        
+        radioButtonPanel.getRadioButton().addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+            
+            @Override
+            public void onValueChange(ValueChangeEvent<Boolean> event) {
+                if (false == event.getValue())
+                {
+                    return;
+                }
+                _selectedSearchProvider = searchProvider; 
+            }
+        });
+        this.providersPanel.add(radioButtonPanel);
+        this._searchProviderMap.put(searchProvider, radioButtonPanel);
+    }
     
     @UiHandler("searchButton")
     void handleClick(ClickEvent e) {
+        searchSubmitted();
+    }
+
+    private void searchSubmitted()
+    {
         String text = this.searchText.getText().trim();
         if (text.isEmpty()) {
             return;
@@ -139,12 +155,6 @@ public class ImagePicker extends Composite {
             public void onFailure(Throwable caught) {
                 Window.alert("Search failed: " + caught);
                 searchButton.setEnabled(true);
-            }
-        });
-        formPanel.addSubmitHandler(new SubmitHandler() {
-            @Override
-            public void onSubmit(SubmitEvent event) {
-                event.cancel();
             }
         });
     }
