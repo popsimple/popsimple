@@ -5,7 +5,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import com.project.canvas.client.canvastools.base.BuiltinTools;
+import com.project.canvas.client.canvastools.base.builtintools;
 import com.project.canvas.client.canvastools.base.ToolboxItem;
 import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.events.SimpleEvent;
@@ -26,7 +26,7 @@ public class CanvasContainer extends Composite {
     WorksheetViewImpl worksheetWidget;
     
     private Worksheet worksheet;
-    private final ToolboxItem defaultTool = BuiltinTools.cursorTool;
+    private final ToolboxItem defaultTool = builtintools.cursorTool;
     
     public Worksheet getWorksheet() {
         return worksheet;
