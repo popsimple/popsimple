@@ -4,6 +4,7 @@ import com.ghusse.dolomite.flickr.Credentials;
 import com.ghusse.dolomite.flickr.PhotosResponse;
 import com.ghusse.dolomite.flickr.photos.Search;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.searchProviders.ImageSearchOptions;
 import com.project.canvas.client.shared.searchProviders.flickr.adapters.PhotosResponseToImageSearchAdapter;
 import com.project.canvas.client.shared.searchProviders.interfaces.ImageSearchProvider;
@@ -54,5 +55,15 @@ public class FlickrSearchProvider implements ImageSearchProvider
     {
         //TODO: Support search options.
         this.search(query, callback);
+    }
+
+    @Override
+    public String getTitle() {
+        return "Flickr";
+    }
+
+    @Override
+    public String getIconUrl() {
+        return CanvasResources.INSTANCE.flickrLogo32().getURL();
     }
 }

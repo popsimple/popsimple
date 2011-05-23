@@ -1,6 +1,8 @@
 package com.project.canvas.client.shared.searchProviders.bing;
 
+import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.searchProviders.ImageSearchOptions;
 import com.project.canvas.client.shared.searchProviders.bing.adapters.ImageResponseToToImageSearchAdapter;
 import com.project.canvas.client.shared.searchProviders.interfaces.ImageSearchProvider;
@@ -41,6 +43,16 @@ public class BingSearchProvider implements ImageSearchProvider
     {
         //TODO: Support ImageSearchOptions
         this.search(query, callback);
+    }
+
+    @Override
+    public String getTitle() {
+        return "Bing";
+    }
+
+    @Override
+    public String getIconUrl() {
+        return CanvasResources.INSTANCE.bingLogo32().getURL();
     }
 
 }

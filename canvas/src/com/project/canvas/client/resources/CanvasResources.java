@@ -63,4 +63,10 @@ public interface CanvasResources extends ClientBundle {
     
     @Source("com/project/canvas/client/resources/images/bitmaps/image_bing_48.png")
     ImageResource toolboxImageBingIcon();
+    
+    @Source("com/project/canvas/client/resources/images/bitmaps/bingLogo_32.png")
+    ImageResource bingLogo32();
+    
+    @Source("com/project/canvas/client/resources/images/bitmaps/flickrLogo_32.png")
+    ImageResource flickrLogo32();
 }

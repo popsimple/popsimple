@@ -1,5 +1,8 @@
 package com.project.canvas.client.canvastools.Image;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style.Unit;
@@ -36,20 +39,21 @@ public class ImageTool extends FlowPanel implements CanvasTool<ImageData> {
     private ImageToolOptions imageToolOptionsWidget;
     private DialogBox imageSelectionDialog;
 	private boolean optionsWidgetInited = false;
-	private ImageSearchProvider[] searchProviders = null;  
+	private ArrayList<ImageSearchProvider> searchProviders = new ArrayList<ImageSearchProvider>();  
 
-    public ImageTool(ImageSearchProvider... imageSearchProviders) 
+    public ImageTool(Collection<ImageSearchProvider> imageSearchProviders) 
     {
-        this.searchProviders = imageSearchProviders;
-        
         CanvasToolCommon.initCanvasToolWidget(this);
+        
+        searchProviders.addAll(imageSearchProviders);
+
         WidgetUtils.disableDrag(this);
         super.addStyleName(CanvasResources.INSTANCE.main().imageBox());
         super.addStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
         this.add(this.image);
         this.image.setVisible(false);
     }
-
+    
     @Override
     public void bind() {
         super.setTitle("Click for image options; Shift-click to drag");
@@ -101,7 +105,7 @@ public class ImageTool extends FlowPanel implements CanvasTool<ImageData> {
         imageSelectionDialog.add(imageToolOptionsWidget);
 
 		//TODO: Support multiple providers.
-        this.imageToolOptionsWidget.setSearchProvider(this.searchProviders[0]);
+        this.imageToolOptionsWidget.setSearchProviders(this.searchProviders);
         imageToolOptionsWidget.getCancelEvent().addHandler(new SimpleEvent.Handler<Void>() {
 		    @Override
 		    public void onFire(Void arg) {

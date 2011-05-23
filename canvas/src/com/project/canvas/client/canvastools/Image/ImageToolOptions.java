@@ -1,5 +1,7 @@
 package com.project.canvas.client.canvastools.Image;
 
+import java.util.Collection;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -92,9 +94,9 @@ public class ImageToolOptions extends Composite implements TakesValue<ImageData>
         return this.cancelEvent;
     }
 
-    public void setSearchProvider(ImageSearchProvider searchProvider)
+    public void setSearchProviders(Collection<ImageSearchProvider> searchProviders)
     {
-        this.imagePicker.setSearchProvider(searchProvider);
+        this.imagePicker.setSearchProviders(searchProviders);
     }
     
     @Override

@@ -8,4 +8,7 @@ public interface ImageSearchProvider
     void search(String query, final AsyncCallback<ImageSearchResult> callback);
     void search(String query, ImageSearchOptions searchOptions, 
             final AsyncCallback<ImageSearchResult> callback);
+    
+    String getTitle();
+    String getIconUrl();
 }
