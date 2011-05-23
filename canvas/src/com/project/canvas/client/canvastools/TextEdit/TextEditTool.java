@@ -33,7 +33,9 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
         {
             nicEditorReady = true;
             registerHandlers();
-            nicEditor.setContent(data.text);
+            if (null != data) {
+                nicEditor.setContent(data.text);
+            }
         }
         
         @Override

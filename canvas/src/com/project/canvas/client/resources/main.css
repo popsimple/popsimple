@@ -145,6 +145,7 @@
     border-width: 1px;
     overflow: hidden;
     padding: 4px 4px 10px;
+    min-height:15px;
 }
 .textEdit .nicEdit-panel {
 	margin:0 0 2px 2px;
