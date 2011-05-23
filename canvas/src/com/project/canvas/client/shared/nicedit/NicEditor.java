@@ -4,14 +4,32 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ScriptElement;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class NicEditor
 {
     private static int id = 0;
-    private final JavaScriptObject nativeNicEditor;
+    private JavaScriptObject nativeNicEditor;
 
-    public NicEditor(Element element) {
-        NicEditor.staticInit();
+    public NicEditor(final Element element) {
+        NicEditor.staticInit(new AsyncCallback<Void>() {
+            @Override
+            public void onSuccess(Void result)
+            {
+                replaceElement(element);
+            }
+            
+            @Override
+            public void onFailure(Throwable caught)
+            {
+                // TODO Auto-generated method stub
+                
+            }
+        });
+    }
+
+    public void replaceElement(Element element)
+    {
         String elemId = element.getId();
         if (elemId.isEmpty()) {
             // TODO make this random and unique.
@@ -23,7 +41,8 @@ public class NicEditor
     }
     
     private static boolean inited = false;
-    private static void staticInit()
+    private static AsyncCallback<Void> loadCallback;
+    private static void staticInit(AsyncCallback<Void> callback)
     {
         if (inited) {
             return;
@@ -33,8 +52,23 @@ public class NicEditor
         elem.setSrc("nicEdit/nicEdit.js");
         elem.setLang("javascript");
         elem.setType("text/javascript");
+        waitForElem(elem);
         Document.get().getElementsByTagName("head").getItem(0).appendChild(elem);
+        // TODO chain more than one callback
+        loadCallback = callback;
     }
+
+    private static final void scriptArrived()
+    {
+       loadCallback.onSuccess(null);
+    }
+    
+    private static native final void waitForElem(Element elem)
+    /*-{
+        elem.onload = function() {
+            @com.project.canvas.client.shared.nicedit.NicEditor::scriptArrived()();
+        };
+    }-*/;
 
     public String getContent() {
         return NicEditor.getContent(nativeNicEditor);
