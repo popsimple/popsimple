@@ -186,4 +186,16 @@ public class ImageTool extends FlowPanel implements CanvasTool<ImageData> {
     public HandlerRegistration addMoveStartEventHandler(Handler<MouseEvent<?>> handler) {
         return this.moveStartEvent.addHandler(handler);
     }
+
+    @Override
+    public boolean hasResizeableWidth()
+    {
+        return true;
+    }
+
+    @Override
+    public boolean hasResizeableHeight()
+    {
+        return true;
+    }
 }

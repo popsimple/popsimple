@@ -28,7 +28,4 @@
 
 	<!-- Specify the app entry point class. -->
 	<entry-point class='com.project.canvas.client.Canvas' />
-	
-	<script src="http://js.nicedit.com/nicEdit-latest.js" />
-	
 </module>

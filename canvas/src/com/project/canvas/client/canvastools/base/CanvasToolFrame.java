@@ -160,7 +160,11 @@ public class CanvasToolFrame extends Composite {
     }
 
     public void setToolSize(Point2D size) {
-        this.tool.asWidget().getElement().getStyle().setWidth(size.getX(), Unit.PX);
-        this.tool.asWidget().getElement().getStyle().setHeight(size.getY(), Unit.PX);
+        if (this.tool.hasResizeableWidth()) {
+            this.tool.asWidget().getElement().getStyle().setWidth(size.getX(), Unit.PX);
+        }
+        if (this.tool.hasResizeableHeight()) {
+            this.tool.asWidget().getElement().getStyle().setHeight(size.getY(), Unit.PX);
+        }
     }
 }

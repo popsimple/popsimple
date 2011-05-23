@@ -2,14 +2,11 @@ package com.project.canvas.client.canvastools.TextEdit;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.KeyDownEvent;
-import com.google.gwt.event.dom.client.KeyDownHandler;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.project.canvas.client.canvastools.base.CanvasTool;
@@ -17,6 +14,7 @@ import com.project.canvas.client.canvastools.base.CanvasToolCommon;
 import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.shared.events.SimpleEvent.Handler;
+import com.project.canvas.client.shared.nicedit.NicEditor;
 import com.project.canvas.shared.data.ElementData;
 import com.project.canvas.shared.data.Point2D;
 import com.project.canvas.shared.data.TextData;
@@ -25,7 +23,26 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 
     private final TextArea editBox = new TextArea();
     private final SimpleEvent<String> killRequestEvent = new SimpleEvent<String>();
+    private NicEditor nicEditor;
     private TextData data;
+    private boolean nicEditorReady = false;
+    
+    protected AsyncCallback<Void> editorReady = new AsyncCallback<Void>() {
+        @Override
+        public void onSuccess(Void result)
+        {
+            nicEditorReady = true;
+            registerHandlers();
+            nicEditor.setContent(data.text);
+        }
+        
+        @Override
+        public void onFailure(Throwable caught)
+        {
+            // TODO Auto-generated method stub
+            
+        }
+    };
 
     public TextEditTool() {
         CanvasToolCommon.initCanvasToolWidget(this);
@@ -37,7 +54,9 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 
     @Override
     public void bind() {
-        this.registerHandlers();
+        if (null == nicEditor) {
+            nicEditor = new NicEditor(editBox, editorReady);
+        }
     }
 
     private void registerHandlers() {
@@ -46,38 +65,46 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
                 event.stopPropagation();
             }
         });
-        this.editBox.addValueChangeHandler(new ValueChangeHandler<String>() {
-            public void onValueChange(ValueChangeEvent<String> event) {
+        this.editBox.addKeyPressHandler(new KeyPressHandler() {
+            public void onKeyPress(KeyPressEvent event) {
                 updateEditBoxVisibleLength();
             }
         });
-        this.editBox.addKeyUpHandler(new KeyUpHandler() {
-            public void onKeyUp(KeyUpEvent event) {
-                updateEditBoxVisibleLength();
-            }
-        });
-        this.editBox.addKeyDownHandler(new KeyDownHandler() {
-            public void onKeyDown(KeyDownEvent event) {
-                updateEditBoxVisibleLength();
-            }
-        });
+        //        this.editBox.addValueChangeHandler(new ValueChangeHandler<String>() {
+//            public void onValueChange(ValueChangeEvent<String> event) {
+//                updateEditBoxVisibleLength();
+//            }
+//        });
+//        this.editBox.addKeyUpHandler(new KeyUpHandler() {
+//            public void onKeyUp(KeyUpEvent event) {
+//                updateEditBoxVisibleLength();
+//            }
+//        });
+//        this.editBox.addKeyDownHandler(new KeyDownHandler() {
+//            public void onKeyDown(KeyDownEvent event) {
+//                updateEditBoxVisibleLength();
+//            }
+//        });
     }
 
     protected void updateEditBoxVisibleLength() {
         // this.editBox.setVisibleLength(Math.max(MINIMUM_EDITBOX_VISIBLE_LENGTH,
         // spareLength));
-        Point2D newSize = TextEditUtils.autoSizeWidget(this, this.editBox.getText(), true);
+        Point2D newSize = TextEditUtils.autoSizeWidget(this, this.getElement().getInnerHTML(), true);
+        newSize = newSize.plus(new Point2D(10,20));
         this.setWidth(newSize.getX() + "px");
         this.setHeight(newSize.getY() + "px");
     }
 
     @Override
     public void setActive(boolean isActive) {
+        if (false == nicEditorReady) {
+            return;
+        }
         if (isActive) {
-            updateEditBoxVisibleLength();
-            this.editBox.setFocus(true);
+                updateEditBoxVisibleLength();
         } else {
-            String text = this.editBox.getText();
+            String text = this.nicEditor.getContent();
             if (text.trim().isEmpty()) {
                 this.killRequestEvent.dispatch("Empty");
             }
@@ -102,15 +129,17 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 
     @Override
     public TextData getValue() {
-        this.data.text = this.editBox.getText();
+        this.data.text = this.nicEditorReady ? this.nicEditor.getContent() : "";
         return this.data;
     }
 
     @Override
     public void setValue(TextData data) {
         this.data = data;
-        this.editBox.setText(this.data.text);
-        this.updateEditBoxVisibleLength();
+        if (nicEditorReady) {
+            this.nicEditor.setContent(this.data.text);
+            this.updateEditBoxVisibleLength();
+        }
     }
 
     @Override
@@ -121,5 +150,17 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
     @Override
     public HandlerRegistration addMoveStartEventHandler(Handler<MouseEvent<?>> handler) {
         return null;
+    }
+
+    @Override
+    public boolean hasResizeableWidth()
+    {
+        return true;
+    }
+
+    @Override
+    public boolean hasResizeableHeight()
+    {
+        return false;
     }
 }
