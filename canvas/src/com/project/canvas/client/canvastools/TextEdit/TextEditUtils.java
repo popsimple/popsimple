@@ -41,18 +41,19 @@ public class TextEditUtils {
         int minWidth = 0;
         Style widgetStyle = widget.getElement().getStyle();
         copyTextSizingProps(targetStyle, widgetStyle);
-        targetStyle.setFontSize(16.0, Unit.PX);
+        //targetStyle.setFontSize(16.0, Unit.PX);
         if (usePreWhiteSpace) {
             targetStyle.setProperty("whiteSpace", "pre");
         }
 
-        // append a char after every newline. fixes some PRE formatting bugs
-        // (esp. last empty line)
-        html.replace("\n", "\nM");
-        // Also prepend a character
-        // (if the text begins with whitespace the browser may strip it in the
-        // test widget)
-        testWidget.getElement().setInnerHTML(html + "<br>");
+//        // append a char after every newline. fixes some PRE formatting bugs
+//        // (esp. last empty line)
+//        html.replace("\n", "\nM");
+//        // Also prepend a character
+//        // (if the text begins with whitespace the browser may strip it in the
+//        // test widget)
+//        html = html + "<br>";
+        testWidget.getElement().setInnerHTML(html);
 
         int testerWidth = testWidget.getOffsetWidth();
         int newWidth = (testerWidth + comfortZone) >= minWidth ? testerWidth + comfortZone : minWidth;

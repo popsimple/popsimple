@@ -100,7 +100,16 @@ public class NicEditor
     public String getContent() {
         return NicEditor.getContent(nativeNicEditor);
     }
+
+    public void setContent(String content) {
+        NicEditor.setContent(nativeNicEditor, content);
+    }
     
+    private static final native void setContent(JavaScriptObject nicInstance, String content)
+    /*-{
+        return nicInstance.setContent(content);
+    }-*/;
+
     public Element getEditorElement() {
         return NicEditor.getEditorElement(nativeNicEditor);
     }
@@ -120,10 +129,10 @@ public class NicEditor
         var inst = new e();
         var res = inst.panelInstance(id);
         var nicInstance = res.nicInstances[0];
-        nicInstance.addEvent('blur', function() { 
+        res.addEvent('blur', function() { 
             me.@com.project.canvas.client.shared.nicedit.NicEditor::dispatchBlur()(); 
         }); 
-        nicInstance.addEvent('key', function(src, ev) { 
+        res.addEvent('key', function(src, ev) { 
             me.@com.project.canvas.client.shared.nicedit.NicEditor::dispatchKeyPress(Lcom/google/gwt/dom/client/NativeEvent;)(ev); 
         }); 
         return nicInstance;

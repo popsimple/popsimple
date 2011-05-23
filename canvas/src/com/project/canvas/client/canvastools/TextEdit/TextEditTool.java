@@ -33,6 +33,7 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
         {
             nicEditorReady = true;
             registerHandlers();
+            nicEditor.setContent(data.text);
         }
         
         @Override
@@ -89,7 +90,8 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
     protected void updateEditBoxVisibleLength() {
         // this.editBox.setVisibleLength(Math.max(MINIMUM_EDITBOX_VISIBLE_LENGTH,
         // spareLength));
-        Point2D newSize = TextEditUtils.autoSizeWidget(this, this.nicEditor.getContent(), true);
+        Point2D newSize = TextEditUtils.autoSizeWidget(this, this.getElement().getInnerHTML(), true);
+        newSize = newSize.plus(new Point2D(10,20));
         this.setWidth(newSize.getX() + "px");
         this.setHeight(newSize.getY() + "px");
     }
@@ -127,15 +129,17 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 
     @Override
     public TextData getValue() {
-        this.data.text = this.editBox.getText();
+        this.data.text = this.nicEditorReady ? this.nicEditor.getContent() : "";
         return this.data;
     }
 
     @Override
     public void setValue(TextData data) {
         this.data = data;
-        this.editBox.setText(this.data.text);
-        this.updateEditBoxVisibleLength();
+        if (nicEditorReady) {
+            this.nicEditor.setContent(this.data.text);
+            this.updateEditBoxVisibleLength();
+        }
     }
 
     @Override
