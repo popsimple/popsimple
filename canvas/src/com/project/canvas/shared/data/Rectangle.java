@@ -28,4 +28,8 @@ public class Rectangle {
         }
         return true;
     }
+    
+    public boolean contains(Point2D point) {
+    	return this.isOverlapping(new Rectangle(point.getX(), point.getY(), point.getX(), point.getY()));
+    }
 }

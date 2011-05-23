@@ -28,6 +28,9 @@ public class CanvasToolFrame extends Composite {
     }
 
     @UiField
+    HTMLPanel frameHeader;
+    
+    @UiField
     HTMLPanel toolPanel;
 
     @UiField
@@ -62,45 +65,41 @@ public class CanvasToolFrame extends Composite {
 
     public CanvasToolFrame(CanvasTool<?> canvasTool) {
         initWidget(uiBinder.createAndBindUi(this));
-        WidgetUtils.stopClickPropagation(this);
+        //WidgetUtils.stopClickPropagation(this);
         this.tool = canvasTool;
         this.toolPanel.add(canvasTool);
         this.closeLink.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 closeRequest.dispatch(null);
-                event.stopPropagation();
             }
         });
         this.moveBackLink.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 moveBackRequest.dispatch(null);
-                event.stopPropagation();
             }
         });
         this.moveFrontLink.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 moveFrontRequest.dispatch(null);
-                event.stopPropagation();
             }
         });
 
-        this.framePanel.addDomHandler(new MouseDownHandler() {
+        this.frameHeader.addDomHandler(new MouseDownHandler() {
             @Override
-            public void onMouseDown(MouseDownEvent event) {
+            public void onMouseDown(final MouseDownEvent event) {
                 moveStartRequest.dispatch(event);
-                event.stopPropagation();
             }
         }, MouseDownEvent.getType());
 
         this.registerTransformHandlers();
 
-        // CanvasToolCommon.stopClickPropagation(buttonsPanel);
-        WidgetUtils.stopClickPropagation(closeLink);
-        WidgetUtils.stopClickPropagation(moveBackLink);
-        WidgetUtils.stopClickPropagation(moveFrontLink);
+        WidgetUtils.stopClickPropagation(this.closeLink.asWidget());
+        WidgetUtils.stopClickPropagation(this.moveBackLink.asWidget());
+        WidgetUtils.stopClickPropagation(this.moveFrontLink.asWidget());
+        
         NativeUtils.disableTextSelectInternal(this.buttonsPanel.getElement(), true);
     }
 
@@ -115,14 +114,12 @@ public class CanvasToolFrame extends Composite {
             @Override
             public void onMouseDown(MouseDownEvent event) {
                 resizeStartRequest.dispatch(event);
-                event.stopPropagation();
             }
         }, MouseDownEvent.getType());
         this.rotatePanel.addDomHandler(new MouseDownHandler() {
             @Override
             public void onMouseDown(MouseDownEvent event) {
                 rotateStartRequest.dispatch(event);
-                event.stopPropagation();
             }
         }, MouseDownEvent.getType());
     }

@@ -136,19 +136,29 @@
 
 .textEdit {
 }
-@external nicEdit-main, nicEdit-panel;
+@external nicEdit-main, nicEdit-panel, .nicEdit-panelContain;
 .textEdit .nicEdit-main {
 	cursor:text;
+    padding: 4px 4px 10px;
+    min-height:15px;
+}
+.textEditFocused .nicEdit-main {
     background-color: #FFFFFF;
     border-color: #CCCCCC;
     border-style: solid;
     border-width: 1px;
+    overflow: auto;
+}
+.textEditNotFocused .nicEdit-main {
+    background-color: transparent;
+    border-style: none;
     overflow: hidden;
-    padding: 4px 4px 10px;
-    min-height:15px;
 }
 .textEdit .nicEdit-panel {
 	margin:0 0 2px 2px;
+}
+.textEditNotFocused .nicEdit-panelContain {
+    visibility: hidden;
 }
 .textEditBox {
 	width:100%;

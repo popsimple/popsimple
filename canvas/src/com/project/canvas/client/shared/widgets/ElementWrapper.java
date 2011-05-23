@@ -1,4 +1,4 @@
-package com.project.canvas.client.shared;
+package com.project.canvas.client.shared.widgets;
 
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.SimplePanel;

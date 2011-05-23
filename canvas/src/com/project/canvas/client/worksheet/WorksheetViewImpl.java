@@ -1,11 +1,14 @@
 package com.project.canvas.client.worksheet;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.MouseDownEvent;
+import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -28,11 +31,11 @@ import com.project.canvas.client.canvastools.base.CanvasToolFactory;
 import com.project.canvas.client.canvastools.base.CanvasToolFrame;
 import com.project.canvas.client.canvastools.base.ToolboxItem;
 import com.project.canvas.client.resources.CanvasResources;
-import com.project.canvas.client.shared.DialogWithZIndex;
 import com.project.canvas.client.shared.ElementUtils;
 import com.project.canvas.client.shared.RegistrationsManager;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.shared.events.SimpleEvent.Handler;
+import com.project.canvas.client.shared.widgets.DialogWithZIndex;
 import com.project.canvas.client.worksheet.interfaces.ElementDragManager;
 import com.project.canvas.client.worksheet.interfaces.ToolFrameTransformer;
 import com.project.canvas.client.worksheet.interfaces.WorksheetOptionsView;
@@ -40,6 +43,7 @@ import com.project.canvas.client.worksheet.interfaces.WorksheetView;
 import com.project.canvas.shared.data.CanvasPageOptions;
 import com.project.canvas.shared.data.ElementData;
 import com.project.canvas.shared.data.Point2D;
+import com.project.canvas.shared.data.Rectangle;
 import com.project.canvas.shared.data.Transform2D;
 
 public class WorksheetViewImpl extends Composite implements WorksheetView
@@ -81,11 +85,12 @@ public class WorksheetViewImpl extends Composite implements WorksheetView
     
     private final DialogBox optionsDialog = new DialogWithZIndex(false, true);
     private final WorksheetOptionsView optionsWidget = new WorksheetOptionsViewImpl();
-    private final HashMap<Widget, RegistrationsManager> toolFrameRegistrations = new HashMap<Widget, RegistrationsManager>();
+    private final HashMap<CanvasToolFrame, RegistrationsManager> toolFrameRegistrations = new HashMap<CanvasToolFrame, RegistrationsManager>();
     
     private final SimpleEvent<CanvasPageOptions> optionsUpdatedEvent = new SimpleEvent<CanvasPageOptions>(); 
     private final SimpleEvent<Void> stopOperationEvent = new SimpleEvent<Void>();
     private final SimpleEvent<ToolCreationRequest> toolCreationRequestEvent = new SimpleEvent<ToolCreationRequest>();
+	private final SimpleEvent<ArrayList<CanvasToolFrame>> toolFrameClickEvent = new SimpleEvent<ArrayList<CanvasToolFrame>>();
     
     public WorksheetViewImpl()
     {
@@ -115,6 +120,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView
         return optionsUpdatedEvent.addHandler(handler);
     }
 
+
     @Override
     public HandlerRegistration addSaveHandler(Handler<Void> handler)
     {
@@ -132,6 +138,11 @@ public class WorksheetViewImpl extends Composite implements WorksheetView
     {
         return toolCreationRequestEvent.addHandler(handler);
     }
+
+    @Override
+	public HandlerRegistration addToolFrameClickHandler(Handler<ArrayList<CanvasToolFrame>> handler) {
+		return this.toolFrameClickEvent.addHandler(handler);
+	}
 
     @Override
     public void addToolInstanceWidget(final CanvasToolFrame toolFrame, final Transform2D transform, final Point2D additionalOffset)
@@ -182,6 +193,20 @@ public class WorksheetViewImpl extends Composite implements WorksheetView
         return viewButton.addClickHandler(SimpleEvent.AsClickHandler(handler));
     }
 
+    private void changeButtonStatus(Button button, OperationStatus status, String pendingText, String doneText)
+    {
+        switch (status) {
+        case PENDING:
+            button.setText(pendingText);
+            button.setEnabled(false);
+            break;
+        case SUCCESS:
+        case FAILURE:
+            button.setText(doneText);
+            button.setEnabled(true);
+        }
+    }
+
     @Override
     public void clearActiveToolboxItem()
     {
@@ -190,6 +215,18 @@ public class WorksheetViewImpl extends Composite implements WorksheetView
             this.worksheetPanel.removeStyleName(this.activeToolboxItem.getCanvasStyleInCreateMode());
             this.activeToolboxItem = null;
         }
+    }
+
+    private void clearFloatingWidget()
+    {
+        if (null != this.floatingWidget){ 
+            this.worksheetPanel.remove(floatingWidget);
+        }
+        if (null != this._floatingWidgetTerminator) {
+            this._floatingWidgetTerminator.onFire(null);
+        }
+        this.floatingWidget = null;
+        this._floatingWidgetTerminator = null;
     }
 
     public void load(Handler<String> handler)
@@ -228,6 +265,9 @@ public class WorksheetViewImpl extends Composite implements WorksheetView
 
     @Override
 	public void setActiveToolboxItem(final ToolboxItem toolboxItem) {
+    	if (toolboxItem == this.activeToolboxItem) {
+    		return;
+    	}
 	    this.activeToolboxItem = toolboxItem;
         clearFloatingWidget();
         this.worksheetPanel.addStyleName(toolboxItem.getCanvasStyleInCreateMode());
@@ -281,6 +321,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView
         style.setProperty("backgroundPosition", value.backgroundPosition);
     }
 
+
     @Override
     public void setViewMode(boolean isViewMode)
     {
@@ -295,14 +336,11 @@ public class WorksheetViewImpl extends Composite implements WorksheetView
 
     private void addRegistrations()
     {
-		this.worksheetPanel.addDomHandler(new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                if (null != activeToolboxItem) {
-                	Point2D pos = ElementUtils.relativePosition(event, worksheetPanel.getElement());
-                	toolCreationRequestEvent.dispatch(new ToolCreationRequest(pos, activeToolboxItem.getToolFactory()));
-                }
+		this.worksheetPanel.addDomHandler(new MouseDownHandler() {
+            public void onMouseDown(MouseDownEvent event) {
+                worksheetPanelClicked(event);
             }
-        }, ClickEvent.getType());
+        }, MouseDownEvent.getType());
 
         this.optionsBackground.addClickHandler(new ClickHandler() {
             @Override
@@ -338,30 +376,37 @@ public class WorksheetViewImpl extends Composite implements WorksheetView
             }
         });
     }
+    
+	private void worksheetPanelClicked(MouseEvent<?> event) 
+	{
+		if (null != activeToolboxItem) {
+			// Dispatch event about request to create a tool instance
+			Point2D pos = ElementUtils.relativePosition(event, worksheetPanel.getElement());
+			toolCreationRequestEvent.dispatch(new ToolCreationRequest(pos, activeToolboxItem.getToolFactory()));
+			return;
+		}
+		
+		checkClickedToolFrames(event);
+	}
 
-    private void changeButtonStatus(Button button, OperationStatus status, String pendingText, String doneText)
-    {
-        switch (status) {
-        case PENDING:
-            button.setText(pendingText);
-            button.setEnabled(false);
-            break;
-        case SUCCESS:
-        case FAILURE:
-            button.setText(doneText);
-            button.setEnabled(true);
-        }
-    }
-
-    private void clearFloatingWidget()
-    {
-        if (null != this.floatingWidget){ 
-            this.worksheetPanel.remove(floatingWidget);
-        }
-        if (null != this._floatingWidgetTerminator) {
-            this._floatingWidgetTerminator.onFire(null);
-        }
-        this.floatingWidget = null;
-        this._floatingWidgetTerminator = null;
-    }
+	private void checkClickedToolFrames(MouseEvent<?> event) 
+	{
+		Point2D clickPoint = new Point2D(event.getClientX(), event.getClientY());
+		Rectangle workAreaRect = ElementUtils.getElementRectangle(worksheetPanel.getElement());
+		if (false == workAreaRect.contains(clickPoint)) {
+			return;
+		}
+		ArrayList<CanvasToolFrame> clickedFrames = new ArrayList<CanvasToolFrame>();
+		for (CanvasToolFrame toolFrame : toolFrameRegistrations.keySet())
+		{
+			Rectangle rect = ElementUtils.getElementRectangle(toolFrame.getElement());
+			if (rect.contains(clickPoint)) {
+				clickedFrames.add(toolFrame);
+			}
+		}
+		if (clickedFrames.isEmpty()) {
+			return;
+		}
+		this.toolFrameClickEvent.dispatch(clickedFrames);
+	}
 }

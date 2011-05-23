@@ -6,13 +6,8 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseMoveHandler;
-import com.google.gwt.event.dom.client.MouseOutEvent;
-import com.google.gwt.event.dom.client.MouseOutHandler;
-import com.google.gwt.event.dom.client.MouseOverEvent;
-import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
-import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.shared.ElementUtils;
 import com.project.canvas.client.shared.NativeUtils;
@@ -56,20 +51,20 @@ public class ElementDragManagerImpl implements ElementDragManager
                 event.stopPropagation();
             }
         }, MouseMoveEvent.getType()));
-        regs.add(_dragPanel.addDomHandler(new MouseOverHandler() {
-			@Override
-			public void onMouseOver(MouseOverEvent event) {
-				if (_dragPanel.isVisible()) {
-					Event.setCapture(_dragPanel.getElement());
-				}
-			}
-		}, MouseOverEvent.getType()));
-        regs.add(_dragPanel.addDomHandler(new MouseOutHandler() {
-			@Override
-			public void onMouseOut(MouseOutEvent event) {
-				Event.releaseCapture(_dragPanel.getElement());
-			}
-		}, MouseOutEvent.getType()));
+//        regs.add(_dragPanel.addDomHandler(new MouseOverHandler() {
+//			@Override
+//			public void onMouseOver(MouseOverEvent event) {
+//				if (_dragPanel.isVisible()) {
+//					Event.setCapture(_dragPanel.getElement());
+//				}
+//			}
+//		}, MouseOverEvent.getType()));
+//        regs.add(_dragPanel.addDomHandler(new MouseOutHandler() {
+//			@Override
+//			public void onMouseOut(MouseOutEvent event) {
+//				Event.releaseCapture(_dragPanel.getElement());
+//			}
+//		}, MouseOutEvent.getType()));
         
         if (false == setStopConditionHandlers(referenceElem, floatingWidgetStop, stopConditions, regs)) {
         	throw new RuntimeException("Must specify at least one stop condition. The bitfield was: " + stopConditions);
@@ -85,7 +80,7 @@ public class ElementDragManagerImpl implements ElementDragManager
                 }
             }));
         }
-        Event.setCapture(_dragPanel.getElement());
+        //Event.setCapture(_dragPanel.getElement());
         _dragPanel.setVisible(true);
         return new Handler<Void>() {
 			@Override
@@ -130,7 +125,7 @@ public class ElementDragManagerImpl implements ElementDragManager
         _dragPanel.setVisible(false);
         // regs.clear must be after setting non-visible to prevent us from re-capturing mouse event (calling setCapture)
         regs.clear();
-    	Event.releaseCapture(_dragPanel.getElement());
+//    	Event.releaseCapture(_dragPanel.getElement());
     }
 
     protected void operationEnded(final Element referenceElem, final Handler<Point2D> floatingWidgetStop,

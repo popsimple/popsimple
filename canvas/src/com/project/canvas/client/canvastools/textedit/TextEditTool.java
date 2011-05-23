@@ -1,7 +1,5 @@
 package com.project.canvas.client.canvastools.textedit;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
@@ -62,11 +60,6 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
     }
 
     private void registerHandlers() {
-        this.editBox.addClickHandler(new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                event.stopPropagation();
-            }
-        });
         this.editBox.addKeyPressHandler(new KeyPressHandler() {
             public void onKeyPress(KeyPressEvent event) {
                 updateEditBoxVisibleLength();
@@ -104,8 +97,12 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
             return;
         }
         if (isActive) {
-                updateEditBoxVisibleLength();
+        	this.addStyleName(CanvasResources.INSTANCE.main().textEditFocused());
+        	this.removeStyleName(CanvasResources.INSTANCE.main().textEditNotFocused());
+        	updateEditBoxVisibleLength();
         } else {
+        	this.removeStyleName(CanvasResources.INSTANCE.main().textEditFocused());
+        	this.addStyleName(CanvasResources.INSTANCE.main().textEditNotFocused());
             String text = this.nicEditor.getContent();
             if (text.trim().isEmpty()) {
                 this.killRequestEvent.dispatch("Empty");

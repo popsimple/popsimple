@@ -1,6 +1,8 @@
 package com.project.canvas.client.shared.nicedit;
 
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
@@ -68,10 +70,18 @@ public class NicEditor
     
     private static boolean inited = false;
     private static AsyncCallback<Void> loadCallback;
-    private static void staticInit(AsyncCallback<Void> callback)
+    private static void staticInit(final AsyncCallback<Void> callback)
     {
         if (inited) {
-            callback.onSuccess(null);
+        	// Already inited, call the callback - but not immediately, 
+        	// because the caller may be expecting us to return before the callback is called.
+        	// (staticInit is used in the constructor of NicEditor)
+            Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+				@Override
+				public void execute() {
+					callback.onSuccess(null);
+				}
+			});
             return;
         }
         inited = true;
