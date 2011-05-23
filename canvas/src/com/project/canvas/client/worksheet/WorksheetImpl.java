@@ -291,30 +291,13 @@ public class WorksheetImpl implements Worksheet
                 escapeOperation();
             }
         });
-        view.addToolFrameClickHandler(new Handler<ArrayList<CanvasToolFrame>>() {
+        view.addToolFrameClickHandler(new Handler<CanvasToolFrame>() {
 			@Override
-			public void onFire(ArrayList<CanvasToolFrame> arg) {
-				toolFramesClicked(arg);
+			public void onFire(CanvasToolFrame frame) {
+		    	setActiveToolInstance(frame.getTool());
 			}
 		});
     }
-
-    private void toolFramesClicked(ArrayList<CanvasToolFrame> arg) 
-    {
-    	int highestZ = -1;
-    	CanvasToolFrame highestFrame = null;
-    	for (CanvasToolFrame frame : arg) {
-    		int currentZ = ZIndexAllocator.getElementZIndex(frame.getElement());
-    		if (currentZ > highestZ) {
-    			highestZ = currentZ;
-    			highestFrame = frame;
-    		}
-    	}
-    	if (null == highestFrame) {
-    		return;
-    	}
-    	this.setActiveToolInstance(highestFrame.getTool());
-	}
 
 	private void setActiveToolInstance(CanvasTool<?> tool) 
 	{

@@ -1,5 +1,7 @@
 package com.project.canvas.client.canvastools.textedit;
 
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
@@ -17,14 +19,9 @@ import com.project.canvas.shared.data.ElementData;
 import com.project.canvas.shared.data.Point2D;
 import com.project.canvas.shared.data.TextData;
 
-public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
+public class TextEditTool extends FlowPanel implements CanvasTool<TextData> 
+{
 
-    private final TextArea editBox = new TextArea();
-    private final SimpleEvent<String> killRequestEvent = new SimpleEvent<String>();
-    private NicEditor nicEditor;
-    private TextData data;
-    private boolean nicEditorReady = false;
-    
     protected AsyncCallback<Void> editorReady = new AsyncCallback<Void>() {
         @Override
         public void onSuccess(Void result)
@@ -34,6 +31,7 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
             if (null != data) {
                 nicEditor.setContent(data.text);
             }
+        	setActive(isActive);
         }
         
         @Override
@@ -43,6 +41,13 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
             
         }
     };
+    
+    private final TextArea editBox = new TextArea();
+    private final SimpleEvent<String> killRequestEvent = new SimpleEvent<String>();
+    private NicEditor nicEditor;
+    private TextData data;
+    private boolean nicEditorReady = false;
+	private boolean isActive = false;
 
     public TextEditTool() {
         CanvasToolCommon.initCanvasToolWidget(this);
@@ -65,6 +70,12 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
                 updateEditBoxVisibleLength();
             }
         });
+        this.nicEditor.addBlurHandler(new BlurHandler() {
+			@Override
+			public void onBlur(BlurEvent event) {
+				setLooksActive(false, false);
+			}
+		});
         //        this.editBox.addValueChangeHandler(new ValueChangeHandler<String>() {
 //            public void onValueChange(ValueChangeEvent<String> event) {
 //                updateEditBoxVisibleLength();
@@ -93,6 +104,11 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 
     @Override
     public void setActive(boolean isActive) {
+    	setLooksActive(isActive, true);
+    }
+
+	private void setLooksActive(boolean isActive, boolean k1illIfEmpty) {
+		this.isActive = isActive;
         if (false == nicEditorReady) {
             return;
         }
@@ -104,11 +120,13 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
         	this.removeStyleName(CanvasResources.INSTANCE.main().textEditFocused());
         	this.addStyleName(CanvasResources.INSTANCE.main().textEditNotFocused());
             String text = this.nicEditor.getContent();
-            if (text.trim().isEmpty()) {
-                this.killRequestEvent.dispatch("Empty");
+            if (k1illIfEmpty) {
+	            if (text.trim().isEmpty()) {
+	                this.killRequestEvent.dispatch("Empty");
+	            }
             }
         }
-    }
+	}
 
     public SimpleEvent<String> getKillRequestedEvent() {
         return this.killRequestEvent;

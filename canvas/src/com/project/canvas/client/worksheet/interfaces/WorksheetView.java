@@ -1,7 +1,5 @@
 package com.project.canvas.client.worksheet.interfaces;
 
-import java.util.ArrayList;
-
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.project.canvas.client.canvastools.base.CanvasTool;
@@ -68,7 +66,7 @@ public interface WorksheetView extends IsWidget
      * @param handler
      * @return
      */
-    HandlerRegistration addToolFrameClickHandler(SimpleEvent.Handler<ArrayList<CanvasToolFrame>> handler);
+    HandlerRegistration addToolFrameClickHandler(SimpleEvent.Handler<CanvasToolFrame> handler);
     
     void addToolInstanceWidget(final CanvasToolFrame toolFrame, Transform2D transform, Point2D additionalOffset);
 
