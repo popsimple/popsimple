@@ -131,4 +131,6 @@ public interface MainStyles extends CssResource {
     String toolboxImageBingIconStyle();
     
     String imageToolSearchProviderIconStyle();
+    
+    String imageToolSearchProviderPanelStyle();
 }

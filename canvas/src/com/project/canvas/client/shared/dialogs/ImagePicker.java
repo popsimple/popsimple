@@ -3,6 +3,7 @@ package com.project.canvas.client.shared.dialogs;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -67,23 +68,28 @@ public class ImagePicker extends Composite {
 
     protected final SimpleEvent<ImageInfo> imagePicked = new SimpleEvent<ImageInfo>();
 
-    protected ArrayList<ImageSearchProvider> searchProviders = new ArrayList<ImageSearchProvider>();
     protected final RegistrationsManager registrationsManager = new RegistrationsManager();
+    private ImageSearchProvider _selectedSearchProvider = null; 
 
     private InlineLabel selectedImage;
+    private HashMap<ImageSearchProvider, RadioButtonPanel> _searchProviderMap = new HashMap<ImageSearchProvider, RadioButtonPanel>();
 
     public ImagePicker() 
     {
         initWidget(uiBinder.createAndBindUi(this));
     }
     
-    public void setSearchProviders(Collection<ImageSearchProvider> searchProviders)
+    public void setSearchProviders(List<ImageSearchProvider> searchProviders)
     {
-        this.searchProviders.addAll(searchProviders);
-        
-        for (ImageSearchProvider searchProvider : this.searchProviders)
+        if (0 == searchProviders.size())
+        {
+            return;
+        }
+        for (final ImageSearchProvider searchProvider : searchProviders)
         {
             RadioButtonPanel radioButtonPanel = new RadioButtonPanel();
+            radioButtonPanel.addStyleName(
+                    CanvasResources.INSTANCE.main().imageToolSearchProviderPanelStyle());
             radioButtonPanel.setName("searchProviders");
             FlowPanel imagePanel = new FlowPanel();
             imagePanel.addStyleName(
@@ -92,28 +98,37 @@ public class ImagePicker extends Composite {
                 .setBackgroundImage("url(" + searchProvider.getIconUrl() + ")");
             radioButtonPanel.add(imagePanel);
             radioButtonPanel.add(new InlineLabel(searchProvider.getTitle()));
+            
+            radioButtonPanel.getRadioButton().addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+                
+                @Override
+                public void onValueChange(ValueChangeEvent<Boolean> event) {
+                    if (false == event.getValue())
+                    {
+                        return;
+                    }
+                    _selectedSearchProvider = searchProvider; 
+                }
+            });
             this.providersPanel.add(radioButtonPanel);
+            this._searchProviderMap.put(searchProvider, radioButtonPanel);
         }
+        this._selectedSearchProvider = searchProviders.get(0);
+        this._searchProviderMap.get(this._selectedSearchProvider).getRadioButton().setValue(true);
     }
     
-    private ImageSearchProvider getSearchProvider()
-    {
-        return null;
-    }
-
     @UiHandler("searchButton")
     void handleClick(ClickEvent e) {
         String text = this.searchText.getText().trim();
         if (text.isEmpty()) {
             return;
         }
-        ImageSearchProvider searchProvider = this.getSearchProvider();
-        if (null == searchProvider)
+        if (null == this._selectedSearchProvider)
         {
             return;
         }
         searchButton.setEnabled(false);
-        searchProvider.search(text, new AsyncCallback<ImageSearchResult>() {
+        this._selectedSearchProvider.search(text, new AsyncCallback<ImageSearchResult>() {
             @Override
             public void onSuccess(ImageSearchResult result) {
                 setSearchResult(result);

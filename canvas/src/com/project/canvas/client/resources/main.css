@@ -432,6 +432,11 @@
 	gwt-image: "toolboxImageBingIcon";
 }
 
+.imageToolSearchProviderPanelStyle
+{
+	display: inline-block;
+}
+
 .imageToolSearchProviderIconStyle
 {
 	width: 32px;
