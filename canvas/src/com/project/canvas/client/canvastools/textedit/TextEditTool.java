@@ -1,7 +1,5 @@
 package com.project.canvas.client.canvastools.textedit;
 
-import com.google.gwt.event.dom.client.BlurEvent;
-import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
@@ -13,7 +11,6 @@ import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.canvastools.base.CanvasToolCommon;
 import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.ElementUtils;
-import com.project.canvas.client.shared.WidgetUtils;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.shared.events.SimpleEvent.Handler;
 import com.project.canvas.client.shared.nicedit.NicEditor;
@@ -63,40 +60,50 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData>
     }
 
     @Override
+	public HandlerRegistration addMoveEventHandler(Handler<Point2D> handler) {
+		return this.moveRequestEvent.addHandler(handler);
+	}
+
+    @Override
+    public HandlerRegistration addMoveStartEventHandler(Handler<MouseEvent<?>> handler) {
+        return null;
+    }
+
+    @Override
     public void bind() {
         if (null == nicEditor) {
             nicEditor = new NicEditor(editBox, editorReady);
         }
     }
 
-    private void registerHandlers() {
-//        this.editBox.addKeyPressHandler(new KeyPressHandler() {
-//            public void onKeyPress(KeyPressEvent event) {
-//                updateEditBoxVisibleLength();
-//            }
-//        });
-
-        //        this.editBox.addValueChangeHandler(new ValueChangeHandler<String>() {
-//            public void onValueChange(ValueChangeEvent<String> event) {
-//                updateEditBoxVisibleLength();
-//            }
-//        });
-//        this.editBox.addKeyUpHandler(new KeyUpHandler() {
-//            public void onKeyUp(KeyUpEvent event) {
-//                updateEditBoxVisibleLength();
-//            }
-//        });
-//        this.editBox.addKeyDownHandler(new KeyDownHandler() {
-//            public void onKeyDown(KeyDownEvent event) {
-//                updateEditBoxVisibleLength();
-//            }
-//        });
+    public SimpleEvent<String> getKillRequestedEvent() {
+        return this.killRequestEvent;
     }
 
-    protected void updateEditBoxVisibleLength() {
-        Point2D newSize = TextEditUtils.autoSizeWidget(this, this.getElement().getInnerHTML(), true);
-        newSize = newSize.plus(new Point2D(10,20));
-    	WidgetUtils.setWidgetSize(this, newSize);
+	public int getTabIndex() {
+        return this.editBox.getTabIndex();
+    }
+
+    @Override
+    public TextData getValue() {
+        this.data.text = this.nicEditorReady ? this.nicEditor.getContent() : "";
+        return this.data;
+    }
+
+	@Override
+    public boolean hasResizeableHeight()
+    {
+        return false;
+    }
+
+    @Override
+    public boolean hasResizeableWidth()
+    {
+        return true;
+    }
+
+    public void setAccessKey(char key) {
+        this.editBox.setAccessKey(key);
     }
 
     @Override
@@ -104,11 +111,52 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData>
     	setLooksActive(isActive, true);
     }
 
-	private void setLooksActive(boolean isActive, boolean k1illIfEmpty) {
-		this.isActive = isActive;
+    @Override
+    public void setElementData(ElementData data) {
+        this.setValue((TextData) data);
+    }
+
+    public void setTabIndex(int index) {
+        this.editBox.setTabIndex(index);
+    }
+
+    @Override
+    public void setValue(TextData data) {
+        this.data = data;
+        if (nicEditorReady) {
+            this.nicEditor.setContent(this.data.text);
+        }
+    }
+
+    private Point2D getEditorOffsetPos() {
+		Point2D editorPos = ElementUtils.getElementAbsolutePosition(this.nicEditor.getEditorElement());
+		Point2D myPos = ElementUtils.getElementAbsolutePosition(this.getElement());
+		return editorPos.minus(myPos);
+	}
+
+    private void registerHandlers() {
+        this.editBox.addKeyPressHandler(new KeyPressHandler() {
+            public void onKeyPress(KeyPressEvent event) {
+                setActive(true);
+            }
+        });
+    }
+
+    private void setLooksActive(boolean isActive, boolean k1illIfEmpty) {
+    	// this.isActive is used for remembering what state to get into when ready event occurs.
+    	// and also for determining whether we need to do anything at all (specifically to prevent multiple
+    	// moveRequestEvent dispatching)
         if (false == nicEditorReady) {
+    		this.isActive = isActive; 
             return;
         }
+        else if (isActive == this.isActive) {
+    		return;
+        }
+		this.isActive = isActive; 
+    	// check if we had the NotFocused style, to know if we need to fire the moveRequestEvent
+    	boolean hadNotFocusedStyle = this.getStyleName().contains(CanvasResources.INSTANCE.main().textEditNotFocused());
+
         if (isActive) {
         	if (null != this.editSize) {
         		// Set only the width - the height depends on the contents
@@ -119,10 +167,14 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData>
         	this.addStyleName(CanvasResources.INSTANCE.main().textEditFocused());
         	this.removeStyleName(CanvasResources.INSTANCE.main().textEditNotFocused());
 
-        	this.moveRequestEvent.dispatch(getEditorOffsetPos().mul(-1));
+        	if (hadNotFocusedStyle) {
+        		this.moveRequestEvent.dispatch(getEditorOffsetPos().mul(-1));
+        	}
         } 
         else {
-        	this.moveRequestEvent.dispatch(getEditorOffsetPos());
+        	if (false == hadNotFocusedStyle) {
+        		this.moveRequestEvent.dispatch(getEditorOffsetPos());
+        	}
         	
         	this.editSize = ElementUtils.getElementSize(this.getElement());
         	
@@ -137,68 +189,5 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData>
 	            }
             }
         }
-	}
-
-    private Point2D getEditorOffsetPos() {
-		Point2D editorPos = ElementUtils.getElementAbsolutePosition(this.nicEditor.getEditorElement());
-		Point2D myPos = ElementUtils.getElementAbsolutePosition(this.getElement());
-		return editorPos.minus(myPos);
-	}
-
-	public SimpleEvent<String> getKillRequestedEvent() {
-        return this.killRequestEvent;
-    }
-
-    public int getTabIndex() {
-        return this.editBox.getTabIndex();
-    }
-
-    public void setAccessKey(char key) {
-        this.editBox.setAccessKey(key);
-    }
-
-    public void setTabIndex(int index) {
-        this.editBox.setTabIndex(index);
-    }
-
-    @Override
-    public TextData getValue() {
-        this.data.text = this.nicEditorReady ? this.nicEditor.getContent() : "";
-        return this.data;
-    }
-
-    @Override
-    public void setValue(TextData data) {
-        this.data = data;
-        if (nicEditorReady) {
-            this.nicEditor.setContent(this.data.text);
-        }
-    }
-
-    @Override
-    public void setElementData(ElementData data) {
-        this.setValue((TextData) data);
-    }
-
-    @Override
-    public HandlerRegistration addMoveStartEventHandler(Handler<MouseEvent<?>> handler) {
-        return null;
-    }
-
-    @Override
-    public boolean hasResizeableWidth()
-    {
-        return true;
-    }
-
-    @Override
-    public boolean hasResizeableHeight()
-    {
-        return false;
-    }
-
-    @Override
-	public HandlerRegistration addMoveEventHandler(Handler<Point2D> handler) {
-		return this.moveRequestEvent.addHandler(handler);
 	}
 }
