@@ -17,6 +17,8 @@
 	<g:HTMLPanel>
 		<g:FormPanel ui:field="formPanel">
 			<g:HTMLPanel>
+				<g:FlowPanel ui:field="providersPanel">
+				</g:FlowPanel>
 				<g:TextBox ui:field="searchText">Search...</g:TextBox>
 				<g:SubmitButton ui:field="searchButton"  >Find Images</g:SubmitButton>
 				

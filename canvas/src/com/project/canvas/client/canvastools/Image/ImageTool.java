@@ -1,5 +1,8 @@
 package com.project.canvas.client.canvastools.Image;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style.Unit;
@@ -22,6 +25,7 @@ import com.project.canvas.client.shared.RegistrationsManager;
 import com.project.canvas.client.shared.WidgetUtils;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.shared.events.SimpleEvent.Handler;
+import com.project.canvas.client.shared.searchProviders.interfaces.ImageSearchProvider;
 import com.project.canvas.shared.data.ElementData;
 import com.project.canvas.shared.data.ImageData;
 
@@ -35,16 +39,21 @@ public class ImageTool extends FlowPanel implements CanvasTool<ImageData> {
     private ImageToolOptions imageToolOptionsWidget;
     private DialogBox imageSelectionDialog;
 	private boolean optionsWidgetInited = false;
+	private ArrayList<ImageSearchProvider> searchProviders = new ArrayList<ImageSearchProvider>();  
 
-    public ImageTool() {
+    public ImageTool(Collection<ImageSearchProvider> imageSearchProviders) 
+    {
         CanvasToolCommon.initCanvasToolWidget(this);
+        
+        searchProviders.addAll(imageSearchProviders);
+
         WidgetUtils.disableDrag(this);
         super.addStyleName(CanvasResources.INSTANCE.main().imageBox());
         super.addStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
         this.add(this.image);
         this.image.setVisible(false);
     }
-
+    
     @Override
     public void bind() {
         super.setTitle("Click for image options; Shift-click to drag");
@@ -95,7 +104,9 @@ public class ImageTool extends FlowPanel implements CanvasTool<ImageData> {
 		this.imageToolOptionsWidget = new ImageToolOptions();
         imageSelectionDialog.add(imageToolOptionsWidget);
 
-		imageToolOptionsWidget.getCancelEvent().addHandler(new SimpleEvent.Handler<Void>() {
+		//TODO: Support multiple providers.
+        this.imageToolOptionsWidget.setSearchProviders(this.searchProviders);
+        imageToolOptionsWidget.getCancelEvent().addHandler(new SimpleEvent.Handler<Void>() {
 		    @Override
 		    public void onFire(Void arg) {
 		        imageSelectionDialog.hide();

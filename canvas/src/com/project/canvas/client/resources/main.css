@@ -444,3 +444,14 @@
 @sprite .toolboxImageBingIconStyle {
 	gwt-image: "toolboxImageBingIcon";
 }
+
+.imageToolSearchProviderIconStyle
+{
+	width: 32px;
+	height: 32px;
+	background-position: center;
+	background-repeat: no-repeat;
+	vertical-align: middle;
+	padding: 1px;
+	display: inline-block;
+}

@@ -1,5 +1,7 @@
 package com.project.canvas.client.canvastools.Image;
 
+import java.util.Collection;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -16,8 +18,9 @@ import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.shared.dialogs.ImagePicker;
-import com.project.canvas.client.shared.dialogs.ImagePicker.ImageInfo;
 import com.project.canvas.client.shared.events.SimpleEvent;
+import com.project.canvas.client.shared.searchProviders.interfaces.ImageInfo;
+import com.project.canvas.client.shared.searchProviders.interfaces.ImageSearchProvider;
 import com.project.canvas.shared.UrlUtils;
 import com.project.canvas.shared.data.ImageData;
 
@@ -72,7 +75,7 @@ public class ImageToolOptions extends Composite implements TakesValue<ImageData>
         this.imagePicker.addImagePickedHandler(new SimpleEvent.Handler<ImageInfo>() {
             @Override
             public void onFire(ImageInfo imageInfo) {
-                urlTextBox.setText(imageInfo.url);
+                urlTextBox.setText(imageInfo.getMediaUrl());
             }
         });
         this.formPanel.addSubmitHandler(new SubmitHandler() {
@@ -91,6 +94,11 @@ public class ImageToolOptions extends Composite implements TakesValue<ImageData>
         return this.cancelEvent;
     }
 
+    public void setSearchProviders(Collection<ImageSearchProvider> searchProviders)
+    {
+        this.imagePicker.setSearchProviders(searchProviders);
+    }
+    
     @Override
     public void setValue(ImageData value) {
         this.data = value;
