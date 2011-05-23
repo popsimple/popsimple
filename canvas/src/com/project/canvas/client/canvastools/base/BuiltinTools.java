@@ -7,7 +7,7 @@ import com.project.canvas.client.canvastools.image.ImageToolboxItem;
 import com.project.canvas.client.canvastools.tasklist.TaskListToolboxItem;
 import com.project.canvas.client.canvastools.textedit.TextEditToolboxItem;
 
-public class builtintools {
+public class BuiltinTools {
     public static final CursorToolboxItem cursorTool = new CursorToolboxItem();
 
     protected static final ArrayList<ToolboxItem> tools = new ArrayList<ToolboxItem>();
