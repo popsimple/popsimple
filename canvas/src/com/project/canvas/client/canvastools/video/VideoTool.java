@@ -161,9 +161,8 @@ public class VideoTool extends FlowPanel implements CanvasTool<MediaData> {
 
     @Override
     public MediaData getValue() {
-        String imageCss = this.getElement().getStyle().getBackgroundImage();
         // TIP: use this page to check java regex: http://www.regexplanet.com/simple/index.html
-        this.data.url = imageCss.trim().replaceAll("^(url\\(\\\"?)(.*?)(\\\"?\\))$", "$2");
+        this.data.url = this.videoFrame.getUrl().trim().replaceAll("^(url\\(\\\"?)(.*?)(\\\"?\\))$", "$2");
         return this.data;
     }
 
