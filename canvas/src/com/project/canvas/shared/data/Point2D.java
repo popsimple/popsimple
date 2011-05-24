@@ -76,4 +76,17 @@ public class Point2D implements Serializable, IsSerializable {
     	return Point2D.fromPolar(this.radius(), newAngle);
     }
 
+	/**
+	 * Transforms a given point to and from rotated and unrotated coordinates, relative to the given axis point 
+	 * @param radians rotation angle in radians
+	 * @param axisOffset 
+	 * @param toRotated true = from unrotated to rotated, false = opposite transformation
+	 * @return transformed point
+	 */
+	public Point2D rotate(double radians, Point2D axisOffset, boolean toRotated) 
+	{
+		int direction = toRotated ? 1 : -1;
+		return this.minus(axisOffset.rotate(radians).minus(axisOffset).mul(direction));
+	}
+
 }

@@ -41,13 +41,12 @@ import com.project.canvas.shared.data.Transform2D;
 public class WorksheetImpl implements Worksheet
 {
     private CanvasPage page = new CanvasPage();
-    private ToolboxItem activeToolboxItem;
-    
     private final SimpleEvent<Void> defaultToolRequestEvent = new SimpleEvent<Void>();
     private final SimpleEvent<Boolean> viewModeEvent = new SimpleEvent<Boolean>();
     private final WorksheetView view;
     private final RegistrationsManager activeToolRegistrations = new RegistrationsManager();
     private final HashMap<CanvasTool<?>, ToolInstanceInfo> toolInfoMap = new HashMap<CanvasTool<?>, ToolInstanceInfo>();
+	private CanvasTool<?> activeToolInstance;
 
     public WorksheetImpl(WorksheetView view)
     {
@@ -163,7 +162,6 @@ public class WorksheetImpl implements Worksheet
     {
         this.clearActiveToolboxItem();
         this.view.setActiveToolboxItem(toolboxItem);
-        this.activeToolboxItem = toolboxItem;
     }
 
     private CanvasToolFrame createToolInstance(final Point2D relativePos,
@@ -202,6 +200,7 @@ public class WorksheetImpl implements Worksheet
             }
         });
         tool.bind();
+        this.setActiveToolInstance(tool);
         return toolFrame;
     }
 
@@ -292,9 +291,29 @@ public class WorksheetImpl implements Worksheet
                 escapeOperation();
             }
         });
+        view.addToolFrameClickHandler(new Handler<CanvasToolFrame>() {
+			@Override
+			public void onFire(CanvasToolFrame frame) {
+		    	setActiveToolInstance(frame.getTool());
+			}
+		});
     }
 
-    private void clearActiveToolboxItem()
+	private void setActiveToolInstance(CanvasTool<?> tool) 
+	{
+		if (tool == this.activeToolInstance) {
+			return;
+		}
+		if (null != this.activeToolInstance) {
+			this.activeToolInstance.setActive(false);
+		}
+		this.activeToolInstance = tool;
+		if (null != tool) {
+		    tool.setActive(true);
+		}
+	}
+
+	private void clearActiveToolboxItem()
     {
         activeToolRegistrations.clear();
         view.clearActiveToolboxItem();
@@ -303,6 +322,7 @@ public class WorksheetImpl implements Worksheet
     private void escapeOperation()
     {
         clearActiveToolboxItem();
+        setActiveToolInstance(null);
         // TODO dispatch stop operation
         // stopOperationEvent.dispatch(null);
         defaultToolRequestEvent.dispatch(null);

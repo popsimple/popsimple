@@ -2,6 +2,7 @@ package com.project.canvas.client.shared;
 
 import java.util.HashMap;
 
+import com.google.gwt.animation.client.Animation;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.MouseEvent;
@@ -18,6 +19,7 @@ public abstract class ElementUtils {
         return new Rectangle(element.getAbsoluteLeft(), element.getAbsoluteTop(),
                 element.getAbsoluteRight(), element.getAbsoluteBottom());
     }
+
 
     // TODO: warning, this may keep element objects alive after not being used!
     private static HashMap<Element, Integer> rotations = new HashMap<Element, Integer>();
@@ -69,12 +71,51 @@ public abstract class ElementUtils {
 	public static Point2D relativePosition(MouseEvent<?> event, Element elem) {
 	    return new Point2D(event.getRelativeX(elem), event.getRelativeY(elem));
 	} 
-	
-	public static void setElementPosition(Point2D pos, Element element) {
-		element.getStyle().setLeft(pos.getX(), Unit.PX);
-		element.getStyle().setTop(pos.getY(), Unit.PX);
+
+    private static class PositionAnimation extends Animation {
+        private Point2D pos;
+        private Point2D oldPos;
+        private Element element;
+
+        public PositionAnimation(Point2D oldPos, Point2D pos, Element element)
+        {
+            this.oldPos = oldPos;
+            this.pos = pos;
+            this.element = element;
+        }
+
+        @Override
+        protected void onUpdate(double progress)
+        {
+            Point2D curPos = pos.minus(oldPos).mul(progress).plus(oldPos);
+            _setElementPosition(curPos, element);
+        }
+    };
+    
+    public static void setElementPosition(final Point2D pos, final Element element, int animationDuration) {
+        final Point2D oldPos = getElementPosition(element);
+        PositionAnimation anim = new PositionAnimation(oldPos, pos, element);
+        anim.run(animationDuration);
     }
 
+	public static void setElementPosition(Point2D pos, Element element) {
+		_setElementPosition(pos, element);
+    }
+
+    private static void _setElementPosition(Point2D pos, Element element)
+    {
+        element.getStyle().setLeft(pos.getX(), Unit.PX);
+		element.getStyle().setTop(pos.getY(), Unit.PX);
+    }
+	
+	public static Point2D getElementPosition(Element element) {
+    	return new Point2D(element.getOffsetLeft(), element.getOffsetTop());
+    }
+	
+    public static Point2D getElementAbsolutePosition(Element element) {
+    	return new Point2D(element.getAbsoluteLeft(), element.getAbsoluteTop());
+    }
+    
 	public static Point2D getElementSize(Element element) {
 		return new Point2D(element.getOffsetWidth(), element.getOffsetHeight());
 	}

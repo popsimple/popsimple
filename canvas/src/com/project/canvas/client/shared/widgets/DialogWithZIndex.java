@@ -1,6 +1,7 @@
-package com.project.canvas.client.shared;
+package com.project.canvas.client.shared.widgets;
 
 import com.google.gwt.user.client.ui.DialogBox;
+import com.project.canvas.client.shared.ZIndexAllocator;
 
 public class DialogWithZIndex extends DialogBox {
     public DialogWithZIndex(boolean autoHide, boolean modal) {

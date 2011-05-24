@@ -11,6 +11,7 @@ import com.google.gwt.event.dom.client.MouseMoveHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.Widget;
+import com.project.canvas.shared.data.Point2D;
 
 public class WidgetUtils {
 
@@ -55,5 +56,10 @@ public class WidgetUtils {
             }
         }, MouseDownEvent.getType());
     }
+
+	public static void setWidgetSize(Widget widget, Point2D editSize) {
+		widget.setWidth(editSize.getX() + "px");
+		widget.setHeight(editSize.getY() + "px");
+	}
 
 }

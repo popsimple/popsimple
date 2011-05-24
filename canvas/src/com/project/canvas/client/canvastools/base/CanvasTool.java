@@ -6,6 +6,7 @@ import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.shared.data.ElementData;
+import com.project.canvas.shared.data.Point2D;
 
 // TODO change getvalue to updateValue to reflect the fact that it mutates the instance of data that was given in the setValue?
 public interface CanvasTool<T extends ElementData> extends IsWidget, TakesValue<T> {
@@ -13,6 +14,9 @@ public interface CanvasTool<T extends ElementData> extends IsWidget, TakesValue<
 
     // tool wants to be dragged around with the mouse
     HandlerRegistration addMoveStartEventHandler(SimpleEvent.Handler<MouseEvent<?>> handler);
+    
+    // Tool wants to move an offset
+    HandlerRegistration addMoveEventHandler(SimpleEvent.Handler<Point2D> handler);
 
     void setElementData(ElementData data); // non-generic version of setValue
 
@@ -24,5 +28,6 @@ public interface CanvasTool<T extends ElementData> extends IsWidget, TakesValue<
     
     boolean hasResizeableWidth();
     boolean hasResizeableHeight();
+    
     
 }

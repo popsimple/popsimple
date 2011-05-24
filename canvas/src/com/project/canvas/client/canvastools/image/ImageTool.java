@@ -20,14 +20,15 @@ import com.google.gwt.user.client.ui.Image;
 import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.canvastools.base.CanvasToolCommon;
 import com.project.canvas.client.resources.CanvasResources;
-import com.project.canvas.client.shared.DialogWithZIndex;
 import com.project.canvas.client.shared.RegistrationsManager;
 import com.project.canvas.client.shared.WidgetUtils;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.shared.events.SimpleEvent.Handler;
 import com.project.canvas.client.shared.searchProviders.interfaces.ImageSearchProvider;
+import com.project.canvas.client.shared.widgets.DialogWithZIndex;
 import com.project.canvas.shared.data.ElementData;
 import com.project.canvas.shared.data.ImageData;
+import com.project.canvas.shared.data.Point2D;
 
 public class ImageTool extends FlowPanel implements CanvasTool<ImageData> {
 
@@ -198,4 +199,11 @@ public class ImageTool extends FlowPanel implements CanvasTool<ImageData> {
     {
         return true;
     }
+
+
+    @Override
+	public HandlerRegistration addMoveEventHandler(Handler<Point2D> handler) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
