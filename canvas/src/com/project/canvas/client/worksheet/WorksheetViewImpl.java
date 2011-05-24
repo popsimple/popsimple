@@ -18,6 +18,7 @@ import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Event.NativePreviewHandler;
@@ -339,7 +340,9 @@ public class WorksheetViewImpl extends Composite implements WorksheetView
             }
         };
         this.floatingWidget = floatingWidget;
-        ElementUtils.setElementPosition(ElementUtils.getElementSize(worksheetPanel.getElement()).mul(0.5).minus(ElementUtils.getElementSize(floatingWidget.getElement())), floatingWidget.getElement());
+        Element floatingElem = floatingWidget.getElement();
+        ElementUtils.setElementPosition(
+                ElementUtils.getElementSize(worksheetPanel.getElement()).mul(0.5).minus(ElementUtils.getElementSize(floatingElem)), floatingElem, 100);
         this._floatingWidgetTerminator = this._toolFrameTransformer.getElementDragManager()
 		    .startMouseMoveOperation(this.worksheetPanel.getElement(), Point2D.zero, 
 		            floatingWidgetMoveHandler, floatingWidgetStop, null, 
