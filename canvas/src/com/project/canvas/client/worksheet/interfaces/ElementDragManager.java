@@ -25,6 +25,7 @@ public interface ElementDragManager
      */
     public abstract SimpleEvent.Handler<Void> startMouseMoveOperation(final Element referenceElem,
             final Point2D referenceOffset, final SimpleEvent.Handler<Point2D> moveHandler,
-            final Handler<Point2D> floatingWidgetStop, final SimpleEvent.Handler<Void> cancelHandler, int stopConditions);
+            final Handler<Point2D> floatingWidgetStop, final SimpleEvent.Handler<Void> cancelHandler, 
+            int stopConditions);
 
 }

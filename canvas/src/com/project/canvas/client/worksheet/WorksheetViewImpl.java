@@ -339,6 +339,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView
             }
         };
         this.floatingWidget = floatingWidget;
+        ElementUtils.setElementPosition(ElementUtils.getElementSize(worksheetPanel.getElement()).mul(0.5).minus(ElementUtils.getElementSize(floatingWidget.getElement())), floatingWidget.getElement());
         this._floatingWidgetTerminator = this._toolFrameTransformer.getElementDragManager()
 		    .startMouseMoveOperation(this.worksheetPanel.getElement(), Point2D.zero, 
 		            floatingWidgetMoveHandler, floatingWidgetStop, null, 

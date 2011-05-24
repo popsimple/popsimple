@@ -30,15 +30,12 @@ public class ElementDragManagerImpl implements ElementDragManager
         this._stopOperationEvent = stopOperationEvent;
     }
 
-    /* (non-Javadoc)
-     * @see com.project.canvas.client.worksheet.ElementDragManager#startMouseMoveOperation(com.google.gwt.dom.client.Element, com.project.canvas.shared.data.Point2D, com.project.canvas.client.shared.events.SimpleEvent.Handler, com.project.canvas.client.shared.events.SimpleEvent.Handler, com.project.canvas.client.shared.events.SimpleEvent.Handler, int)
-     */
     @Override
-    public SimpleEvent.Handler<Void> startMouseMoveOperation(final Element referenceElem, final Point2D referenceOffset,
-            final SimpleEvent.Handler<Point2D> moveHandler, final Handler<Point2D> floatingWidgetStop,
-            final SimpleEvent.Handler<Void> cancelHandler, int stopConditions)
+    public SimpleEvent.Handler<Void> startMouseMoveOperation(final Element referenceElem,
+            final Point2D referenceOffset, final SimpleEvent.Handler<Point2D> moveHandler,
+            final Handler<Point2D> floatingWidgetStop, final SimpleEvent.Handler<Void> cancelHandler, 
+            int stopConditions)
     {
-    	
         final RegistrationsManager regs = new RegistrationsManager();
 
         NativeUtils.disableTextSelectInternal(_container.getElement(), true);
@@ -47,29 +44,15 @@ public class ElementDragManagerImpl implements ElementDragManager
             public void onMouseMove(MouseMoveEvent event)
             {
                 Point2D pos = ElementUtils.relativePosition(event, referenceElem);
-                moveHandler.onFire(pos.minus(referenceOffset));
+                handleMouseMove(referenceElem, referenceOffset, moveHandler, pos);
                 event.stopPropagation();
             }
         }, MouseMoveEvent.getType()));
-//        regs.add(_dragPanel.addDomHandler(new MouseOverHandler() {
-//			@Override
-//			public void onMouseOver(MouseOverEvent event) {
-//				if (_dragPanel.isVisible()) {
-//					Event.setCapture(_dragPanel.getElement());
-//				}
-//			}
-//		}, MouseOverEvent.getType()));
-//        regs.add(_dragPanel.addDomHandler(new MouseOutHandler() {
-//			@Override
-//			public void onMouseOut(MouseOutEvent event) {
-//				Event.releaseCapture(_dragPanel.getElement());
-//			}
-//		}, MouseOutEvent.getType()));
-        
+
         if (false == setStopConditionHandlers(referenceElem, floatingWidgetStop, stopConditions, regs)) {
-        	throw new RuntimeException("Must specify at least one stop condition. The bitfield was: " + stopConditions);
+            throw new RuntimeException("Must specify at least one stop condition. The bitfield was: " + stopConditions);
         }
-        
+
         if (null != _stopOperationEvent) {
             regs.add(_stopOperationEvent.addHandler(new SimpleEvent.Handler<Void>() {
                 @Override
@@ -80,24 +63,35 @@ public class ElementDragManagerImpl implements ElementDragManager
                 }
             }));
         }
-        //Event.setCapture(_dragPanel.getElement());
+        
         _dragPanel.setVisible(true);
+        
         return new Handler<Void>() {
-			@Override
-			public void onFire(Void arg) {
-				stopMouseMoveOperation(regs);
-			}
-		};
+            @Override
+            public void onFire(Void arg)
+            {
+                stopMouseMoveOperation(regs);
+            }
+        };
+        
     }
 
-	private boolean setStopConditionHandlers(final Element referenceElem,
-			final Handler<Point2D> floatingWidgetStop, int stopConditions,
-			final RegistrationsManager regs) 
-	{
-		boolean stopConditionFound = false;
-		
-		if (0 != (stopConditions & StopCondition.STOP_CONDITION_MOUSE_UP)) {
-        	stopConditionFound = true;
+    private void operationEnded(final Element referenceElem, final Handler<Point2D> floatingWidgetStop,
+            final RegistrationsManager regs, MouseEvent<?> event)
+    {
+        stopMouseMoveOperation(regs);
+        if (null != floatingWidgetStop) {
+            floatingWidgetStop.onFire(ElementUtils.relativePosition(event, referenceElem));
+        }
+    }
+
+    private boolean setStopConditionHandlers(final Element referenceElem, final Handler<Point2D> floatingWidgetStop,
+            int stopConditions, final RegistrationsManager regs)
+    {
+        boolean stopConditionFound = false;
+
+        if (0 != (stopConditions & StopCondition.STOP_CONDITION_MOUSE_UP)) {
+            stopConditionFound = true;
             regs.add(_dragPanel.addDomHandler(new MouseUpHandler() {
                 @Override
                 public void onMouseUp(MouseUpEvent event)
@@ -107,7 +101,7 @@ public class ElementDragManagerImpl implements ElementDragManager
             }, MouseUpEvent.getType()));
         }
         if (0 != (stopConditions & StopCondition.STOP_CONDITION_MOUSE_CLICK)) {
-        	stopConditionFound = true;
+            stopConditionFound = true;
             regs.add(_dragPanel.addDomHandler(new ClickHandler() {
                 @Override
                 public void onClick(ClickEvent event)
@@ -116,25 +110,20 @@ public class ElementDragManagerImpl implements ElementDragManager
                 }
             }, ClickEvent.getType()));
         }
-		return stopConditionFound;
-	}
+        return stopConditionFound;
+    }
 
-    protected void stopMouseMoveOperation(final RegistrationsManager regs)
+    private void stopMouseMoveOperation(final RegistrationsManager regs)
     {
         NativeUtils.disableTextSelectInternal(_container.getElement(), false);
         _dragPanel.setVisible(false);
-        // regs.clear must be after setting non-visible to prevent us from re-capturing mouse event (calling setCapture)
         regs.clear();
-//    	Event.releaseCapture(_dragPanel.getElement());
     }
 
-    protected void operationEnded(final Element referenceElem, final Handler<Point2D> floatingWidgetStop,
-            final RegistrationsManager regs, MouseEvent<?> event)
+    private void handleMouseMove(final Element referenceElem, final Point2D referenceOffset,
+            final SimpleEvent.Handler<Point2D> moveHandler, Point2D pos)
     {
-        stopMouseMoveOperation(regs);
-        if (null != floatingWidgetStop) {
-            floatingWidgetStop.onFire(ElementUtils.relativePosition(event, referenceElem));
-        }
+        moveHandler.onFire(pos.minus(referenceOffset));
     }
 
 }
