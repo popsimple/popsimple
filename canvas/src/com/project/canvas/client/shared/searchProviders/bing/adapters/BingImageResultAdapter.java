@@ -42,7 +42,7 @@ public class BingImageResultAdapter implements ImageResult
 
     @Override
     public String getThumbnailUrl() {
+        
         return this._bingImageResult.getThumbnail().getUrl();
     }
-
 }

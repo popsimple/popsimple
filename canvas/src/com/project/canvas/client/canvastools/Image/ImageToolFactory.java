@@ -6,6 +6,7 @@ import com.project.canvas.client.canvastools.base.CanvasToolFactoryBase;
 import com.project.canvas.client.shared.searchProviders.bing.BingSearchProvider;
 import com.project.canvas.client.shared.searchProviders.flickr.FlickrSearchProvider;
 import com.project.canvas.client.shared.searchProviders.interfaces.ImageSearchProvider;
+import com.project.canvas.client.shared.searchProviders.youtube.YouTubeSearchProvider;
 import com.project.canvas.shared.ApiKeys;
 
 public class ImageToolFactory extends CanvasToolFactoryBase<ImageTool> 
@@ -22,6 +23,7 @@ public class ImageToolFactory extends CanvasToolFactoryBase<ImageTool>
         ArrayList<ImageSearchProvider> searchProvides = new ArrayList<ImageSearchProvider>();
         searchProvides.add(new BingSearchProvider(ApiKeys.BING_SEARCH));
         searchProvides.add(new FlickrSearchProvider(ApiKeys.FLICKR_SEARCH));
+        searchProvides.add(new YouTubeSearchProvider());
         return searchProvides;
     }
 }

@@ -179,6 +179,7 @@ public class ImagePicker extends Composite {
             return null;
         }
         final InlineLabel image = new InlineLabel();
+        image.setTitle(imageResult.getTitle());
         image.addStyleName(CanvasResources.INSTANCE.main().imagePickerResultImage());
         image.getElement().getStyle()
                 .setBackgroundImage("url(" + imageResult.getThumbnailUrl() + ")");
