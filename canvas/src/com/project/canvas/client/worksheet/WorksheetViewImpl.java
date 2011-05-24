@@ -1,7 +1,7 @@
 package com.project.canvas.client.worksheet;
 
 import java.util.HashMap;
-import java.util.Stack;
+import java.util.HashSet;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
@@ -92,7 +92,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     private final WorksheetOptionsView optionsWidget = new WorksheetOptionsViewImpl();
     private final HashMap<CanvasToolFrame, RegistrationsManager> toolFrameRegistrations = new HashMap<CanvasToolFrame, RegistrationsManager>();
 
-    private final Stack<CanvasToolFrame> overToolFrames = new Stack<CanvasToolFrame>();
+    private final HashSet<CanvasToolFrame> overToolFrames = new HashSet<CanvasToolFrame>();
 
     private final SimpleEvent<CanvasPageOptions> optionsUpdatedEvent = new SimpleEvent<CanvasPageOptions>();
     private final SimpleEvent<Void> stopOperationEvent = new SimpleEvent<Void>();
@@ -282,8 +282,8 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         if (toolboxItem == this.activeToolboxItem) {
             return;
         }
+        this.clearActiveToolboxItem();
         this.activeToolboxItem = toolboxItem;
-        clearFloatingWidget();
         this.worksheetPanel.addStyleName(toolboxItem.getCanvasStyleInCreateMode());
 
         CanvasToolFactory<? extends CanvasTool<? extends ElementData>> factory = toolboxItem.getToolFactory();

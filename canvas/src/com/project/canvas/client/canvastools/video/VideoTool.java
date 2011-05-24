@@ -5,7 +5,6 @@ import java.util.Collection;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.LoadEvent;
@@ -33,8 +32,7 @@ import com.project.canvas.shared.data.Point2D;
 
 public class VideoTool extends FlowPanel implements CanvasTool<MediaData> {
 
-    private static final int DEFAULT_VIDEO_HEIGHT = 349;
-	private static final int DEFAULT_VIDEO_WIDTH = 425;
+    private static final Point2D DEFAULT_SIZE = new Point2D(425, 349);
 	private final SimpleEvent<String> killRequestEvent = new SimpleEvent<String>();
     private final SimpleEvent<MouseEvent<?>> moveStartEvent = new SimpleEvent<MouseEvent<?>>();
 
@@ -143,16 +141,17 @@ public class VideoTool extends FlowPanel implements CanvasTool<MediaData> {
         }
         if (autoSize) {
             final RegistrationsManager regs = new RegistrationsManager();
+            final VideoTool that = this;
             regs.add(this.videoFrame.addLoadHandler(new LoadHandler() {
                 @Override
                 public void onLoad(LoadEvent event) {
-                    getElement().getStyle().setWidth(videoFrame.getOffsetWidth(), Unit.PX);
-                    getElement().getStyle().setHeight(videoFrame.getOffsetHeight(), Unit.PX);
+                    WidgetUtils.setWidgetSize(that, new Point2D(videoFrame.getOffsetWidth(), videoFrame.getOffsetHeight()));
+                    videoFrame.setWidth("");
+                    videoFrame.setHeight("");
                     regs.clear();
                 }
             }));
-            this.getElement().getStyle().setWidth(DEFAULT_VIDEO_WIDTH, Unit.PX);
-            this.getElement().getStyle().setHeight(DEFAULT_VIDEO_HEIGHT, Unit.PX);
+            WidgetUtils.setWidgetSize(this, DEFAULT_SIZE);
         }
         videoFrame.setUrl(fixEmbeddedUrl(url));
         videoFrame.setVisible(true);
@@ -203,17 +202,6 @@ public class VideoTool extends FlowPanel implements CanvasTool<MediaData> {
         return this.moveStartEvent.addHandler(handler);
     }
 
-    @Override
-    public boolean canResizeWidth()
-    {
-        return true;
-    }
-
-    @Override
-    public boolean canResizeHeight()
-    {
-        return true;
-    }
 
     @Override
     public boolean canRotate() {
@@ -224,5 +212,10 @@ public class VideoTool extends FlowPanel implements CanvasTool<MediaData> {
 	public HandlerRegistration addMoveEventHandler(Handler<Point2D> handler) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public ResizeMode getResizeMode() {
+		return ResizeMode.UNIFORM;
 	}
 }

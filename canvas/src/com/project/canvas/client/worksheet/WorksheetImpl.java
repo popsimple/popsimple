@@ -43,7 +43,6 @@ public class WorksheetImpl implements Worksheet
     private final SimpleEvent<Void> defaultToolRequestEvent = new SimpleEvent<Void>();
     private final SimpleEvent<Boolean> viewModeEvent = new SimpleEvent<Boolean>();
     private final WorksheetView view;
-    private final RegistrationsManager activeToolRegistrations = new RegistrationsManager();
     private final HashMap<CanvasTool<?>, ToolInstanceInfo> toolInfoMap = new HashMap<CanvasTool<?>, ToolInstanceInfo>();
 	private CanvasTool<?> activeToolInstance;
     private ToolboxItem activeToolboxItem;
@@ -166,17 +165,16 @@ public class WorksheetImpl implements Worksheet
             return;
         }
         this.activeToolboxItem = toolboxItem;
-        activeToolRegistrations.clear();
     }
 
     private CanvasToolFrame createToolInstance(final Point2D relativePos,
             CanvasToolFactory<? extends CanvasTool<? extends ElementData>> toolFactory)
     {
-        return this.createToolInstance(new Transform2D(relativePos, null, 0), toolFactory);
+        return this.createToolInstance(new Transform2D(relativePos, null, 0), toolFactory, true);
     }
 
     private CanvasToolFrame createToolInstance(final Transform2D transform,
-            CanvasToolFactory<? extends CanvasTool<? extends ElementData>> toolFactory)
+            CanvasToolFactory<? extends CanvasTool<? extends ElementData>> toolFactory, boolean useCreationOffset)
     {
         final CanvasTool<? extends ElementData> tool = toolFactory.create();
         final CanvasToolFrame toolFrame = new CanvasToolFrame(tool);
@@ -186,7 +184,8 @@ public class WorksheetImpl implements Worksheet
 
         RegistrationsManager regs = registerToolInstanceHandlers(toolFrame, toolInfo);
 
-        view.addToolInstanceWidget(toolFrame, transform, toolFactory.getCreationOffset());
+        Point2D creationOffset = useCreationOffset ? toolFactory.getCreationOffset() : Point2D.zero;
+		view.addToolInstanceWidget(toolFrame, transform, creationOffset);
         toolInfo.killRegistration = tool.getKillRequestedEvent().addHandler(new SimpleEvent.Handler<String>() {
             @Override
             public void onFire(String arg)
@@ -234,7 +233,7 @@ public class WorksheetImpl implements Worksheet
                 continue;
             }
             // TODO: Refactor
-            CanvasToolFrame toolFrame = this.createToolInstance(newElement.transform, factory);
+            CanvasToolFrame toolFrame = this.createToolInstance(newElement.transform, factory, false);
             toolFrame.getTool().setElementData(newElement);
             toolFrame.getTool().setActive(false);
         }
@@ -328,7 +327,6 @@ public class WorksheetImpl implements Worksheet
 
 	private void clearActiveToolboxItem()
     {
-        activeToolRegistrations.clear();
         view.clearActiveToolboxItem();
     }
 

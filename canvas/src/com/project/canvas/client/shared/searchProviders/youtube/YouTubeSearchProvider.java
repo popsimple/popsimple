@@ -4,7 +4,6 @@ import com.google.gwt.http.client.UrlBuilder;
 import com.google.gwt.jsonp.client.JsonpRequestBuilder;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.project.canvas.client.resources.CanvasResources;
-import com.project.canvas.client.shared.searchProviders.interfaces.MediaSearchProvider;
 import com.project.canvas.client.shared.searchProviders.interfaces.MediaSearchResult;
 import com.project.canvas.client.shared.searchProviders.interfaces.VideoSearchProvider;
 import com.project.canvas.client.shared.searchProviders.youtube.adapters.YouTubeResultAdapter;

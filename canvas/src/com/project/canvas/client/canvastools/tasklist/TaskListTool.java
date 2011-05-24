@@ -163,17 +163,11 @@ public class TaskListTool extends Composite implements CanvasTool<TaskListData>,
         return null;
     }
 
-    @Override
-    public boolean canResizeWidth()
-    {
-        return true;
-    }
+	@Override
+	public ResizeMode getResizeMode() {
+		return ResizeMode.BOTH;
+	}
 
-    @Override
-    public boolean canResizeHeight()
-    {
-        return true;
-    }
 
     @Override
 	public HandlerRegistration addMoveEventHandler(Handler<Point2D> handler) {

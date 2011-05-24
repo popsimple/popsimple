@@ -15,15 +15,19 @@ import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
+import com.project.canvas.client.shared.RegistrationsManager;
+import com.project.canvas.client.shared.events.SimpleEvent;
 
 public class NicEditor
 {
 
     private static final String[] buttonsList = { "bold", "italic", "underline", "forecolor", "bgcolor", "left",
             "center", "right", "justify", "ol", "ul", "fontSize", "fontFamily", "indent", "outdent", "link", "unlink" };
+    private static final SimpleEvent<Void> scriptLoadedEvent = new SimpleEvent<Void>();
+    private static final RegistrationsManager loadRegistrationsManager = new RegistrationsManager();
     private static int id = 0;
-    private static boolean inited = false;
-    private static AsyncCallback<Void> loadCallback;
+    private static boolean loaded = false;
+    private static boolean loading = false;
 
     private JavaScriptObject nativeNicEditor;
     private Widget widget;
@@ -32,15 +36,9 @@ public class NicEditor
     {
         this.widget = widget;
         final Element element = widget.getElement();
-        NicEditor.staticInit(new AsyncCallback<Void>() {
+        NicEditor.staticInit(new SimpleEvent.Handler<Void>() {
             @Override
-            public void onFailure(Throwable caught)
-            {
-                ready.onFailure(caught);
-            }
-
-            @Override
-            public void onSuccess(Void result)
+            public void onFire(Void result)
             {
                 replaceElement(element);
                 ready.onSuccess(result);
@@ -129,7 +127,9 @@ public class NicEditor
 
     private static final void scriptArrived()
     {
-        loadCallback.onSuccess(null);
+    	loaded = true;
+        scriptLoadedEvent.dispatch(null);
+        loadRegistrationsManager.clear();
     }
 
     private static final native void setContent(JavaScriptObject nicInstance, String content)
@@ -137,10 +137,10 @@ public class NicEditor
 		return nicInstance.setContent(content);
     }-*/;
 
-    private static void staticInit(final AsyncCallback<Void> callback)
+    private static void staticInit(final SimpleEvent.Handler<Void> handler)
     {
-        if (inited) {
-            // Already inited, call the callback - but not immediately,
+        if (loaded) {
+            // Already loaded the script, call the callback - but not immediately,
             // because the caller may be expecting us to return before the
             // callback is called.
             // (staticInit is used in the constructor of NicEditor)
@@ -148,20 +148,23 @@ public class NicEditor
                 @Override
                 public void execute()
                 {
-                    callback.onSuccess(null);
+                    handler.onFire(null);
                 }
             });
             return;
         }
-        inited = true;
+        
+    	loadRegistrationsManager.add(scriptLoadedEvent.addHandler(handler));
+        if (loading) {
+        	return;
+        }
+        loading = true;
         ScriptElement elem = Document.get().createScriptElement();
         elem.setSrc("nicEdit/nicEdit.js");
         elem.setLang("javascript");
         elem.setType("text/javascript");
         waitForElem(elem);
         Document.get().getElementsByTagName("head").getItem(0).appendChild(elem);
-        // TODO chain more than one callback
-        loadCallback = callback;
     }
 
     private static native final void waitForElem(Element elem)
