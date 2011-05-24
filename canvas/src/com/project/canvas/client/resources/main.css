@@ -468,3 +468,12 @@
 	padding: 1px;
 	display: inline-block;
 }
+
+@sprite .toolboxVideoIconStyle {
+	gwt-image: "toolboxVideoIcon";
+}
+
+.videoCreateModeCanvasStyle
+{
+	cursor: default;
+}

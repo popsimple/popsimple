@@ -6,6 +6,7 @@ import com.project.canvas.client.canvastools.CursorToolboxItem;
 import com.project.canvas.client.canvastools.image.ImageToolboxItem;
 import com.project.canvas.client.canvastools.tasklist.TaskListToolboxItem;
 import com.project.canvas.client.canvastools.textedit.TextEditToolboxItem;
+import com.project.canvas.client.canvastools.video.VideoToolboxItem;
 
 public class BuiltinTools {
     public static final CursorToolboxItem cursorTool = new CursorToolboxItem();
@@ -21,6 +22,7 @@ public class BuiltinTools {
         tools.add(new TextEditToolboxItem());
         tools.add(new TaskListToolboxItem());
         tools.add(new ImageToolboxItem());
+        tools.add(new VideoToolboxItem());
     }
 
     public static Iterable<ToolboxItem> getTools() {

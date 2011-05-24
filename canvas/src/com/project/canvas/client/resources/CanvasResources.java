@@ -69,4 +69,7 @@ public interface CanvasResources extends ClientBundle {
     
     @Source("com/project/canvas/client/resources/images/bitmaps/youtubeLogo_32.png")
     ImageResource youtubeLogo32();
+    
+    @Source("com/project/canvas/client/resources/images/bitmaps/videoIcon_48.png")
+    ImageResource toolboxVideoIcon();
 }
