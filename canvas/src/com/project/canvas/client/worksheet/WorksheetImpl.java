@@ -43,7 +43,6 @@ public class WorksheetImpl implements Worksheet
     private final SimpleEvent<Void> defaultToolRequestEvent = new SimpleEvent<Void>();
     private final SimpleEvent<Boolean> viewModeEvent = new SimpleEvent<Boolean>();
     private final WorksheetView view;
-    private final RegistrationsManager activeToolRegistrations = new RegistrationsManager();
     private final HashMap<CanvasTool<?>, ToolInstanceInfo> toolInfoMap = new HashMap<CanvasTool<?>, ToolInstanceInfo>();
 	private CanvasTool<?> activeToolInstance;
     private ToolboxItem activeToolboxItem;
@@ -166,7 +165,6 @@ public class WorksheetImpl implements Worksheet
             return;
         }
         this.activeToolboxItem = toolboxItem;
-        activeToolRegistrations.clear();
     }
 
     private CanvasToolFrame createToolInstance(final Point2D relativePos,
@@ -328,7 +326,6 @@ public class WorksheetImpl implements Worksheet
 
 	private void clearActiveToolboxItem()
     {
-        activeToolRegistrations.clear();
         view.clearActiveToolboxItem();
     }
 

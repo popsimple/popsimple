@@ -47,6 +47,7 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
     private TextData data;
     private boolean nicEditorReady = false;
     private boolean isActive = false;
+    private boolean activeStateSet = false;
     private Point2D editSize;
 
     public TextEditTool() {
@@ -142,10 +143,12 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
         if (false == nicEditorReady) {
             this.isActive = isActive;
             return;
-        } else if (isActive == this.isActive) {
+        }
+        else if (activeStateSet && (isActive == this.isActive)) {
             return;
         }
         this.isActive = isActive;
+        this.activeStateSet = true;
         if (isActive) {
             if (null != this.editSize) {
                 // Set only the width - the height depends on the contents

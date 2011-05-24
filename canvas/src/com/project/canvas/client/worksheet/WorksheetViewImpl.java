@@ -282,8 +282,8 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         if (toolboxItem == this.activeToolboxItem) {
             return;
         }
+        this.clearActiveToolboxItem();
         this.activeToolboxItem = toolboxItem;
-        clearFloatingWidget();
         this.worksheetPanel.addStyleName(toolboxItem.getCanvasStyleInCreateMode());
 
         CanvasToolFactory<? extends CanvasTool<? extends ElementData>> factory = toolboxItem.getToolFactory();
