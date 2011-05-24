@@ -5,6 +5,8 @@
  * For more information visit http://nicedit.com/
  * Do not remove this copyright message
  */
+
+
 var bkExtend = function(){
 	var args = arguments;
 	if (args.length == 1) args = [this, args[0]];
@@ -1147,8 +1149,16 @@ var nicEditorSelect = bkClass.extend({
 	}
 });
 
+
 var nicEditorFontSizeSelect = nicEditorSelect.extend({
-	sel : {1 : '1&nbsp;(8pt)', 2 : '2&nbsp;(10pt)', 3 : '3&nbsp;(12pt)', 4 : '4&nbsp;(14pt)', 5 : '5&nbsp;(18pt)', 6 : '6&nbsp;(24pt)'},
+	sel : {1 : '10pt', 
+		2 : '13pt', 
+		3 : '16pt', 
+		4 : '18pt', 
+		5 : '24pt', 
+		6 : '32pt',
+		7 : '48pt',
+		},
 	init : function() {
 		this.setDisplay('Font&nbsp;Size...');
 		for(itm in this.sel) {
@@ -1163,7 +1173,7 @@ var nicEditorFontFamilySelect = nicEditorSelect.extend({
 	init : function() {
 		this.setDisplay('Font&nbsp;Family...');
 		for(itm in this.sel) {
-			this.add(itm,'<font face="'+itm+'">'+this.sel[itm]+'</font>');
+			this.add(itm,'<span style="font-family: '+itm+'">'+this.sel[itm]+'</span>');
 		}
 	}
 });
