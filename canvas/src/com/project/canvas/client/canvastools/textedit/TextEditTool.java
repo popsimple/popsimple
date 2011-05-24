@@ -1,6 +1,5 @@
 package com.project.canvas.client.canvastools.textedit;
 
-import com.google.gwt.dom.client.Document;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
@@ -13,7 +12,6 @@ import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.canvastools.base.CanvasToolCommon;
 import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.ElementUtils;
-import com.project.canvas.client.shared.widgets.ElementWrapper;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.shared.events.SimpleEvent.Handler;
 import com.project.canvas.client.shared.nicedit.NicEditor;

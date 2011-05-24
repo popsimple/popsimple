@@ -143,4 +143,7 @@ public interface MainStyles extends CssResource {
     String videoToolSet();
     
     String videoFrame();
+
+	String worksheetModeViewOnly();
+	String worksheetModeEditable();
 }
