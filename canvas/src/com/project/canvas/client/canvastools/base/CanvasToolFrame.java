@@ -24,6 +24,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.canvastools.base.CanvasTool.ResizeMode;
 import com.project.canvas.client.shared.ElementUtils;
 import com.project.canvas.client.shared.NativeUtils;
+import com.project.canvas.client.shared.RegistrationsManager;
 import com.project.canvas.client.shared.WidgetUtils;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.shared.events.SimpleEvent.Handler;
@@ -75,50 +76,17 @@ public class CanvasToolFrame extends Composite implements Focusable, HasFocusHan
     protected final SimpleEvent<MouseEvent<?>> resizeStartRequest = new SimpleEvent<MouseEvent<?>>();
     protected final SimpleEvent<MouseEvent<?>> rotateStartRequest = new SimpleEvent<MouseEvent<?>>();
 
+    protected final RegistrationsManager frameRegs = new RegistrationsManager();
+    
 	protected Integer rotation;
-
+	private boolean viewMode = false;
+	
     public CanvasToolFrame(CanvasTool<?> canvasTool) {
         initWidget(uiBinder.createAndBindUi(this));
         //WidgetUtils.stopClickPropagation(this);
         this.tool = canvasTool;
         this.toolPanel.add(canvasTool);
-        this.closeLink.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                closeRequest.dispatch(null);
-            }
-        });
-        this.moveBackLink.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                moveBackRequest.dispatch(null);
-            }
-        });
-        this.moveFrontLink.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                moveFrontRequest.dispatch(null);
-            }
-        });
-
-        this.frameHeader.addDomHandler(new MouseDownHandler() {
-            @Override
-            public void onMouseDown(final MouseDownEvent event) {
-                moveStartRequest.dispatch(event);
-            }
-        }, MouseDownEvent.getType());
-        tool.addMoveEventHandler(new Handler<Point2D>() {
-			@Override
-			public void onFire(Point2D offset) {
-				toolSelfMoveRequest(offset);
-			}
-		});
-        this.addDomHandler(new MouseDownHandler(){
-			@Override
-			public void onMouseDown(MouseDownEvent event) {
-				focusPanel.setFocus(true); // take away focus from any others
-			}}, MouseDownEvent.getType());
-        
+        this.reRegisterFrameHandlers();
         this.registerTransformHandlers();
 
         WidgetUtils.stopClickPropagation(this.closeLink.asWidget());
@@ -128,6 +96,58 @@ public class CanvasToolFrame extends Composite implements Focusable, HasFocusHan
         NativeUtils.disableTextSelectInternal(this.buttonsPanel.getElement(), true);
     }
 
+	private void reRegisterFrameHandlers() {
+		frameRegs.clear();
+		frameRegs.add(this.closeLink.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                closeRequest.dispatch(null);
+            }
+        }));
+		frameRegs.add(this.moveBackLink.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                moveBackRequest.dispatch(null);
+            }
+        }));
+		frameRegs.add(this.moveFrontLink.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                moveFrontRequest.dispatch(null);
+            }
+        }));
+		frameRegs.add(this.resizePanel.addDomHandler(new MouseDownHandler() {
+            @Override
+            public void onMouseDown(MouseDownEvent event) {
+                resizeStartRequest.dispatch(event);
+            }
+        }, MouseDownEvent.getType()));
+		frameRegs.add(this.rotatePanel.addDomHandler(new MouseDownHandler() {
+            @Override
+            public void onMouseDown(MouseDownEvent event) {
+                rotateStartRequest.dispatch(event);
+            }
+        }, MouseDownEvent.getType()));
+
+		frameRegs.add(this.frameHeader.addDomHandler(new MouseDownHandler() {
+            @Override
+            public void onMouseDown(final MouseDownEvent event) {
+                moveStartRequest.dispatch(event);
+            }
+        }, MouseDownEvent.getType()));
+		frameRegs.add(tool.addMoveEventHandler(new Handler<Point2D>() {
+			@Override
+			public void onFire(Point2D offset) {
+				toolSelfMoveRequest(offset);
+			}
+		}));
+		frameRegs.add(this.addDomHandler(new MouseDownHandler(){
+			@Override
+			public void onMouseDown(MouseDownEvent event) {
+				focusPanel.setFocus(true); // take away focus from any others
+			}}, MouseDownEvent.getType()));
+	}
+
     protected void registerTransformHandlers() {
         this.tool.addMoveStartEventHandler(new SimpleEvent.Handler<MouseEvent<?>>() {
             @Override
@@ -135,20 +155,21 @@ public class CanvasToolFrame extends Composite implements Focusable, HasFocusHan
                 moveStartRequest.dispatch(arg);
             }
         });
-        this.resizePanel.addDomHandler(new MouseDownHandler() {
-            @Override
-            public void onMouseDown(MouseDownEvent event) {
-                resizeStartRequest.dispatch(event);
-            }
-        }, MouseDownEvent.getType());
-        this.rotatePanel.addDomHandler(new MouseDownHandler() {
-            @Override
-            public void onMouseDown(MouseDownEvent event) {
-                rotateStartRequest.dispatch(event);
-            }
-        }, MouseDownEvent.getType());
     }
 
+    public void setViewMode(boolean inViewMode) {
+    	if (inViewMode == this.viewMode) {
+    		return;
+    	}
+    	this.viewMode = inViewMode;
+    	if (viewMode) {
+    		frameRegs.clear();
+    	}
+    	else {
+    		this.reRegisterFrameHandlers();
+    	}
+    }
+    
     public CanvasTool<?> getTool() {
         return this.tool;
     }
@@ -230,6 +251,10 @@ public class CanvasToolFrame extends Composite implements Focusable, HasFocusHan
 	}
 
 	private void toolSelfMoveRequest(Point2D offset) {
+		// TODO find a more global way of handling view mode.
+		if (this.viewMode) {
+			return;
+		}
 		Point2D newPos = ElementUtils.getElementPosition(getElement())
 									 .plus(offset);
 		ElementUtils.setElementPosition(newPos, getElement());

@@ -327,7 +327,7 @@
 }
 
 
-.toolFramePanel:hover, .toolFramePanel.hover
+.worksheetModeEditable .toolFramePanel:hover, .worksheetModeEditable .toolFramePanel.hover
 {
 	padding:0px;
 	border-style: solid;
@@ -338,6 +338,10 @@
 	background-color: rgba(232,232,232,0.5);
 /*	-sand-transform:rotate(0deg);*/
 }
+
+.worksheetModeViewOnly {
+}
+
 .toolFrameBodyPanel 
 {
     cursor:default;
@@ -372,7 +376,7 @@
 {
 	cursor: pointer;
 }
-.toolFrameCloseLink:hover 
+.worksheetModeEditable .toolFrameCloseLink:hover 
 {
 }
 .toolFrameHeader 
@@ -384,7 +388,7 @@
     visibility: hidden;
     text-align:right;
 }
-.toolFramePanel:hover .toolFrameHeader, .toolFramePanel.hover .toolFrameHeader 
+.worksheetModeEditable .toolFramePanel:hover .toolFrameHeader, .worksheetModeEditable .toolFramePanel.hover .toolFrameHeader 
 {
 	visibility: visible;
 }
@@ -424,11 +428,10 @@
 .toolFrameHoverVisibleElement {
 	visibility: hidden;
 }
-.toolFramePanel:hover .toolFrameHoverVisibleElement, .toolFramePanel.hover .toolFrameHoverVisibleElement
+.worksheetModeEditable .toolFramePanel:hover .toolFrameHoverVisibleElement, .worksheetModeEditable .toolFramePanel.hover .toolFrameHoverVisibleElement
 {
 	visibility: visible;
 }
-
 /*---------------------------------------------*/
 
 .imagePickerResultImage {
@@ -445,7 +448,7 @@
 	border-width:1px;
     width: 100px;
 }
-.imagePickerResultImage:hover,  .imagePickerResultImage.hover {
+.worksheetModeEditable .imagePickerResultImage:hover,  .worksheetModeEditable .imagePickerResultImage.hover {
 	border-color:#ccc;
 }
 .imagePickerResultImage.selected {

@@ -99,6 +99,9 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     private final SimpleEvent<ToolCreationRequest> toolCreationRequestEvent = new SimpleEvent<ToolCreationRequest>();
     private final SimpleEvent<CanvasToolFrame> toolFrameClickEvent = new SimpleEvent<CanvasToolFrame>();
 
+	private boolean viewMode;
+	private boolean viewModeSet = false;
+
     public WorksheetViewImpl() {
         initWidget(uiBinder.createAndBindUi(this));
         _toolFrameTransformer = new ToolFrameTransformerImpl(worksheetPanel, dragPanel, stopOperationEvent);
@@ -106,6 +109,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         optionsDialog.add(this.optionsWidget);
         this.dragPanel.setVisible(false);
         this.addRegistrations();
+        this.setViewMode(false);
     }
 
     @Override
@@ -356,12 +360,24 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
     @Override
     public void setViewMode(boolean isViewMode) {
+    	if (this.viewModeSet && (this.viewMode == isViewMode)) {
+    		return;
+    	}
+    	this.viewMode = isViewMode;
+    	this.viewModeSet = true;
+    	for (CanvasToolFrame frame : toolFrameRegistrations.keySet()) {
+    		frame.setViewMode(isViewMode);
+    	}
         if (isViewMode) {
             worksheetHeader.addStyleName(CanvasResources.INSTANCE.main().displayNone());
             addStyleName(CanvasResources.INSTANCE.main().worksheetFullView());
+            addStyleName(CanvasResources.INSTANCE.main().worksheetModeViewOnly());
+            removeStyleName(CanvasResources.INSTANCE.main().worksheetModeEditable());
         } else {
             worksheetHeader.removeStyleName(CanvasResources.INSTANCE.main().displayNone());
             removeStyleName(CanvasResources.INSTANCE.main().worksheetFullView());
+            removeStyleName(CanvasResources.INSTANCE.main().worksheetModeViewOnly());
+            addStyleName(CanvasResources.INSTANCE.main().worksheetModeEditable());
         }
     }
 
