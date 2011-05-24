@@ -33,7 +33,9 @@ import com.project.canvas.shared.data.Point2D;
 
 public class VideoTool extends FlowPanel implements CanvasTool<MediaData> {
 
-    private final SimpleEvent<String> killRequestEvent = new SimpleEvent<String>();
+    private static final int DEFAULT_VIDEO_HEIGHT = 349;
+	private static final int DEFAULT_VIDEO_WIDTH = 425;
+	private final SimpleEvent<String> killRequestEvent = new SimpleEvent<String>();
     private final SimpleEvent<MouseEvent<?>> moveStartEvent = new SimpleEvent<MouseEvent<?>>();
 
     private MediaData data = null;
@@ -149,8 +151,8 @@ public class VideoTool extends FlowPanel implements CanvasTool<MediaData> {
                     regs.clear();
                 }
             }));
-            videoFrame.asWidget().getElement().getStyle().setWidth(425, Unit.PX);
-            videoFrame.asWidget().getElement().getStyle().setHeight(349, Unit.PX);
+            this.getElement().getStyle().setWidth(DEFAULT_VIDEO_WIDTH, Unit.PX);
+            this.getElement().getStyle().setHeight(DEFAULT_VIDEO_HEIGHT, Unit.PX);
         }
         videoFrame.setUrl(fixEmbeddedUrl(url));
         videoFrame.setVisible(true);
