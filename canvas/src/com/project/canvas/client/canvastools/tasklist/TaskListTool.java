@@ -16,6 +16,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.canvastools.base.CanvasToolCommon;
+import com.project.canvas.client.canvastools.base.CanvasTool.ResizeMode;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.shared.events.SimpleEvent.Handler;
 import com.project.canvas.shared.data.ElementData;
@@ -163,17 +164,11 @@ public class TaskListTool extends Composite implements CanvasTool<TaskListData>,
         return null;
     }
 
-    @Override
-    public boolean canResizeWidth()
-    {
-        return true;
-    }
+	@Override
+	public ResizeMode getResizeMode() {
+		return ResizeMode.BOTH;
+	}
 
-    @Override
-    public boolean canResizeHeight()
-    {
-        return true;
-    }
 
     @Override
 	public HandlerRegistration addMoveEventHandler(Handler<Point2D> handler) {

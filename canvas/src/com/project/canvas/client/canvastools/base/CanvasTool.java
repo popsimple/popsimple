@@ -10,6 +10,14 @@ import com.project.canvas.shared.data.Point2D;
 
 // TODO change getvalue to updateValue to reflect the fact that it mutates the instance of data that was given in the setValue?
 public interface CanvasTool<T extends ElementData> extends IsWidget, TakesValue<T> {
+	
+	public enum ResizeMode {
+		BOTH,
+		UNIFORM,
+		WIDTH_ONLY,
+		HEIGHT_ONLY,
+		NONE,
+	}
     SimpleEvent<String> getKillRequestedEvent();
 
     // tool wants to be dragged around with the mouse
@@ -26,8 +34,6 @@ public interface CanvasTool<T extends ElementData> extends IsWidget, TakesValue<
     // Start handling events
     void bind();
     
-    boolean canResizeWidth();
-    boolean canResizeHeight();
-    
+    ResizeMode getResizeMode();
     boolean canRotate();
 }

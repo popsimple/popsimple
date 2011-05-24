@@ -88,15 +88,11 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
         return this.data;
     }
 
-    @Override
-    public boolean canResizeHeight() {
-        return false;
-    }
+	@Override
+	public ResizeMode getResizeMode() {
+		return ResizeMode.WIDTH_ONLY;
+	}
 
-    @Override
-    public boolean canResizeWidth() {
-        return true;
-    }
 
     public void setAccessKey(char key) {
         this.editBox.setAccessKey(key);

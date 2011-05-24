@@ -21,6 +21,7 @@ import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.project.canvas.client.canvastools.base.CanvasTool.ResizeMode;
 import com.project.canvas.client.shared.ElementUtils;
 import com.project.canvas.client.shared.NativeUtils;
 import com.project.canvas.client.shared.WidgetUtils;
@@ -182,11 +183,19 @@ public class CanvasToolFrame extends Composite implements Focusable, HasFocusHan
     }
 
     public void setToolSize(Point2D size) {
-        if (this.tool.canResizeWidth()) {
+    	ResizeMode resizeMode = this.tool.getResizeMode();
+    	if (ResizeMode.NONE == resizeMode) {
+    		return;
+    	}
+        if (ResizeMode.BOTH  == resizeMode || ResizeMode.WIDTH_ONLY == resizeMode) {
             this.tool.asWidget().getElement().getStyle().setWidth(size.getX(), Unit.PX);
         }
-        if (this.tool.canResizeHeight()) {
+        if (ResizeMode.BOTH  == resizeMode || ResizeMode.HEIGHT_ONLY == resizeMode) {
             this.tool.asWidget().getElement().getStyle().setHeight(size.getY(), Unit.PX);
+        }
+        if (ResizeMode.UNIFORM == resizeMode) {
+        	int uniformSize = (size.getX() + size.getY()) / 2;
+        	WidgetUtils.setWidgetSize(this.tool.asWidget(), new Point2D(uniformSize, uniformSize));
         }
     }
 
