@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import com.google.gwt.core.client.JsArray;
 import com.project.canvas.client.shared.searchProviders.interfaces.MediaResult;
 import com.project.canvas.client.shared.searchProviders.interfaces.MediaSearchResult;
-import com.project.gwtbing.client.ImageSearch.ImageResponse;
+import com.project.gwtbing.client.imagesearch.ImageResponse;
 
 public class ImageResponseToToImageSearchAdapter implements MediaSearchResult 
 {
@@ -39,7 +39,7 @@ public class ImageResponseToToImageSearchAdapter implements MediaSearchResult
     @Override
     public ArrayList<MediaResult> getMediaResults() {
         ArrayList<MediaResult> resultList = new ArrayList<MediaResult>();
-        JsArray<com.project.gwtbing.client.ImageSearch.ImageResult> bingImageResults = this._imageResponse.getResults();
+        JsArray<com.project.gwtbing.client.imagesearch.ImageResult> bingImageResults = this._imageResponse.getResults();
         for (int index = 0; index < bingImageResults.length(); index++)
         {
             resultList.add(new BingImageResultAdapter(bingImageResults.get(index)));

@@ -6,8 +6,8 @@ import com.project.canvas.client.shared.searchProviders.ImageSearchOptions;
 import com.project.canvas.client.shared.searchProviders.bing.adapters.ImageResponseToToImageSearchAdapter;
 import com.project.canvas.client.shared.searchProviders.interfaces.ImageSearchProvider;
 import com.project.canvas.client.shared.searchProviders.interfaces.MediaSearchResult;
-import com.project.gwtbing.client.ImageSearch.BingImageSearchRequest;
-import com.project.gwtbing.client.ImageSearch.ImageResponse;
+import com.project.gwtbing.client.imagesearch.BingImageSearchRequest;
+import com.project.gwtbing.client.imagesearch.ImageResponse;
 
 public class BingSearchProvider implements ImageSearchProvider 
 {

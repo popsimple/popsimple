@@ -1,4 +1,4 @@
-package com.project.gwtbing.client.ImageSearch;
+package com.project.gwtbing.client.imagesearch;
 
 import java.util.HashMap;
 

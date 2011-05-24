@@ -6,13 +6,13 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.project.canvas.client.shared.searchProviders.ImageInfoImpl;
 import com.project.canvas.client.shared.searchProviders.interfaces.MediaInfo;
 import com.project.canvas.client.shared.searchProviders.interfaces.MediaResult;
-import com.project.gwtbing.client.ImageSearch.Thumbnail;
+import com.project.gwtbing.client.imagesearch.Thumbnail;
 
 public class BingImageResultAdapter implements MediaResult 
 {
-    com.project.gwtbing.client.ImageSearch.ImageResult _bingImageResult = null;
+    com.project.gwtbing.client.imagesearch.ImageResult _bingImageResult = null;
     
-    public BingImageResultAdapter(com.project.gwtbing.client.ImageSearch.ImageResult bingImageResult)
+    public BingImageResultAdapter(com.project.gwtbing.client.imagesearch.ImageResult bingImageResult)
     {
         this._bingImageResult = bingImageResult;
     }
