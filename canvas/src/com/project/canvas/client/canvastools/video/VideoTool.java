@@ -152,11 +152,22 @@ public class VideoTool extends FlowPanel implements CanvasTool<MediaData> {
             videoFrame.asWidget().getElement().getStyle().setWidth(425, Unit.PX);
             videoFrame.asWidget().getElement().getStyle().setHeight(349, Unit.PX);
         }
-        videoFrame.setUrl(url + "?wmode=transparent");
+        videoFrame.setUrl(fixEmbeddedUrl(url));
         videoFrame.setVisible(true);
         
         super.removeStyleName(CanvasResources.INSTANCE.main().videoToolEmpty());
         super.addStyleName(CanvasResources.INSTANCE.main().videoToolSet());
+    }
+    
+    //TODO: Build the url properly when returning from the media picker.
+    private String fixEmbeddedUrl(String url)
+    {
+        String newUrl = url.replaceAll("/v/", "/embed/");
+        if (newUrl.indexOf("&wmode=transparent") == -1)
+        {
+            return newUrl.concat("&wmode=transparent");
+        }
+        return newUrl;
     }
 
     @Override

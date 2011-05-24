@@ -21,6 +21,7 @@ public class YouTubeSearchProvider implements VideoSearchProvider
         urlBuilder.setParameter("v", "2");
         urlBuilder.setParameter("format", "5"); // only embeddable videos.
         urlBuilder.setParameter("q", query);
+        urlBuilder.setParameter("wmode", "transparent");
         
         JsonpRequestBuilder requestBuilder = new JsonpRequestBuilder();
         requestBuilder.setCallbackParam("callback");
