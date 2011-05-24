@@ -1,186 +1,206 @@
 .monospace {
-	font-family:monospace;
+	font-family: monospace;
 }
 
 .selected {
+	
 }
 
-.drag
-{
-	opacity:0.8;
+.drag {
+	opacity: 0.8;
 }
 
 .canvasContainer {
-    height:100%;
-    width:100%;
+	height: 100%;
+	width: 100%;
 }
 
 .worksheet {
-	height:100%;
-	margin-left:120px;
+	height: 100%;
+	margin-left: 120px;
 	border-left: 2px solid black;
-    position: relative;
+	position: relative;
 }
 
 /* Worksheet when in full-view mode */
 .worksheetFullView {
-	border-style:none;
-	margin:0;
+	border-style: none;
+	margin: 0;
 }
+
 .worksheetFullView .worksheetHeader {
-	display:none;
+	display: none;
 }
+
 .worksheetFullView .worksheetPanel {
-	top:0;
+	top: 0;
 }
+
 .worksheetFullView .worksheetBackground {
-	top:0;
+	top: 0;
 }
 /*************************************/
-
 .outOfBounds {
-	position:absolute;
-	left:9999px;
-	top:9999px;
+	position: absolute;
+	left: 9999px;
+	top: 9999px;
 }
 
 .worksheetHeader {
-	margin-left:10px;
-	font-size:1.5em;
-    padding:5px;
-    height:25px;
+	margin-left: 10px;
+	font-size: 1.5em;
+	padding: 5px;
+	height: 25px;
 }
+
 .worksheetOptions {
-	margin-left:4px;
-	font-size:14px;
-	display:inline-block;
+	margin-left: 4px;
+	font-size: 14px;
+	display: inline-block;
 }
+
 .worksheetOptions a {
-	cursor:pointer;
-	text-decoration:underline;
+	cursor: pointer;
+	text-decoration: underline;
 }
 
 @eval baseZIndex com.project.canvas.client.shared.ZIndexProvider.baseZIndex;
-
 .worksheetPanel {
-	top:35px;
-	bottom:0px;
-	width:100%;
-    position: absolute;
-    overflow:hidden;
+	top: 35px;
+	bottom: 0px;
+	width: 100%;
+	position: absolute;
+	overflow: hidden;
 }
-.worksheetBackground {
-	opacity:0.3;
-	position:absolute;
-	top:0;
-	bottom:0;
-	width:100%;
-}
-.worksheetButtons {
-	float:right;
-}
-.worksheetRightButton {
 
+.worksheetBackground {
+	opacity: 0.3;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: 100%;
 }
+
+.worksheetButtons {
+	float: right;
+}
+
+.worksheetRightButton {
+	
+}
+
 .worksheetDragPanel {
 	z-index: 1000;
 	background-color: transparent;
-	opacity : 0;
+	opacity: 0;
 	position: absolute;
-	top:    0;
-	left:   0;
-	right:  0;
+	top: 0;
+	left: 0;
+	right: 0;
 	bottom: 0;
 }
 
 .toolbox {
-	float:left;
-    width:120px;
-    height: 100%;
+	float: left;
+	width: 120px;
+	height: 100%;
 }
 
 .toolboxHeader {
-	font-size:1.5em;
-	padding:5px;
+	font-size: 1.5em;
+	padding: 5px;
 	text-align: center;
-	margin-bottom:10px;
+	margin-bottom: 10px;
 }
 
 .toolboxTools {
-	padding:5px;
-	text-align:center;
+	padding: 5px;
+	text-align: center;
 }
 
 .toolboxCommonIconStyle {
 	margin: 10px auto;
-    width: 48px;
-    hight: 48px;
-    padding: 5px;
+	width: 48px;
+	hight: 48px;
+	padding: 5px;
 }
 
 .toolboxCommonIconStyle:hover {
-    padding: 4px;
+	padding: 4px;
 	border-color: #ddd;
-    border-radius: 5px 5px 5px 5px;
-    border-width: 1px;
+	border-radius: 5px 5px 5px 5px;
+	border-width: 1px;
 	border-style: solid;
 }
 
-.toolboxCommonSelectedIconStyle, .toolboxCommonSelectedIconStyle:hover {
-    padding: 4px;
-    border-color: #aaa;
-    border-radius: 5px 5px 5px 5px;
-    border-width: 1px;
-    border-style: solid;
+.toolboxCommonSelectedIconStyle,.toolboxCommonSelectedIconStyle:hover {
+	padding: 4px;
+	border-color: #aaa;
+	border-radius: 5px 5px 5px 5px;
+	border-width: 1px;
+	border-style: solid;
 }
 
 .textEdit {
+	
 }
-@external nicEdit-main, nicEdit-panel, .nicEdit-panelContain;
-.textEdit .nicEdit-main {
-	cursor:text;
-    padding: 4px 4px 10px;
-    min-height:15px;
+
+@external gwt-RichTextArea, gwt-RichTextToolbar;
+.textEdit .gwt-RichTextArea {
+	cursor: text;
+	padding: 4px 4px 10px;
+	min-height: 15px;
+	width: 100%;
+	word-wrap: break-word;
 }
-.textEditFocused .nicEdit-main {
-    background-color: #FFFFFF;
-    border-color: #CCCCCC;
-    border-style: solid;
-    border-width: 1px;
-    overflow: auto;
+
+.textEditFocused .gwt-RichTextArea {
+	background-color: #FFFFFF;
+	border-color: #CCCCCC;
+	border-style: solid;
+	border-width: 1px;
+	overflow: auto;
 }
-.textEditNotFocused .nicEdit-main {
-    background-color: transparent;
-    border-style: none;
-    overflow: hidden;
+
+.textEditNotFocused .gwt-RichTextArea {
+	background-color: transparent;
+	border-style: none;
+	overflow: hidden;
 }
-.textEdit .nicEdit-panel {
-	margin:0 0 2px 2px;
+
+.textEdit .gwt-RichTextToolbar {
+	margin: 0 0 2px 2px;
 }
-.textEditNotFocused .nicEdit-panelContain {
-    visibility: hidden;
-    /*display:none;*/
+
+.textEditNotFocused .gwt-RichTextToolbar {
+	visibility: hidden;
+	/*display:none;*/
 }
+
 .textEditBox {
-	width:100%;
-	height:100%;
-	border-style:none;
-	background:transparent;
+	width: 100%;
+	height: 100%;
+	border-style: none;
+	background: transparent;
 	resize: none;
 }
+
 .textEditFocused {
-	margin-top:-1px;
-	margin-left:-2px;
-	padding:2px;
+	margin-top: -1px;
+	margin-left: -2px;
+	padding: 2px;
 }
 
 .textEditNotFocused {
+	
 }
-.textEditNoToolbars
-{
+
+.textEditNoToolbars {
+	
 }
-.textEditToolbar {
-	/*margin-top:-80px;*/
+
+.textEditToolbar { /*margin-top:-80px;*/
+	
 }
 
 .textBoxCreateModeCanvasStyle {
@@ -199,9 +219,8 @@
 	gwt-image: "toolboxCursorIcon";
 }
 
-.taskImageContainer
-{
-	display:inline-block;
+.taskImageContainer {
+	display: inline-block;
 	width: 32px;
 	height: 32px;
 	background-position: center;
@@ -210,256 +229,248 @@
 	padding: 1px;
 }
 
-.taskImageChecked
-{
-	opacity:0.2;
+.taskImageChecked {
+	opacity: 0.2;
 }
 
 .taskListCreateModeCanvasStyle {
+	
 }
 
 .taskList {
 	border-radius: 5px 5px 5px 5px;
-    border-width: 1px;
-    border-style: solid;
-    background-color: #FFFFC9;
+	border-width: 1px;
+	border-style: solid;
+	background-color: #FFFFC9;
 }
 
-@sprite .taskRemoveImage{
+@sprite .taskRemoveImage {
 	cursor: pointer;
 	gwt-image: "taskRemoveIcon";
 	border-style: none;
-	height:16px;
-	width:16px;
+	height: 16px;
+	width: 16px;
 	vertical-align: middle;
 	display: inline-block;
 }
 
-.taskListTextChecked{
+.taskListTextChecked {
 	border-style: none;
 	text-decoration: line-through;
 	background-color: transparent;
 }
 
-.taskListBody
-{
-	position:relative;
+.taskListBody {
+	position: relative;
 	padding: 5px 5px 5px 5px;
 	border-bottom-left-radius: 5px;
 	border-bottom-right-radius: 5px;
 }
 
 .taskListHeader {
-	
 	background-color: #EEE;
 	border-top-left-radius: 5px;
 	border-top-right-radius: 5px;
-    border-width: 1px;
-    text-align: center;
-    padding-top: 5px;
-    padding-bottom: 5px;
+	border-width: 1px;
+	text-align: center;
+	padding-top: 5px;
+	padding-bottom: 5px;
 }
 
-.taskListFooter
-{
+.taskListFooter {
+	
 }
 
 @sprite .toolboxTaskListIconStyle {
 	gwt-image: "toolboxTaskListIcon";
 }
 
-.hoverTextBoxView
-{
+.hoverTextBoxView {
 	border-style: none;
 	background-color: transparent;
-	padding:3px;
+	padding: 3px;
 }
 
-.hoverTextBoxEdit
-{
+.hoverTextBoxEdit {
+	
 }
 
-.imageBox
-{
-	display:block;
-	border-radius:2px;
+.imageBox {
+	display: block;
+	border-radius: 2px;
 }
+
 .imageToolEmpty {
-	width:200px;
-	height:200px;
-	background-color:#aaa;
-}
-.imageToolSet {
-	width:auto;
-	height:auto;
-	background-repeat: no-repeat;
-    background-size: 100% 100%;
+	width: 200px;
+	height: 200px;
+	background-color: #aaa;
 }
 
-.displayNone
-{
-	display:none;
+.imageToolSet {
+	width: auto;
+	height: auto;
+	background-repeat: no-repeat;
+	background-size: 100% 100%;
+}
+
+.displayNone {
+	display: none;
 }
 
 @sprite .toolboxImageIconStyle {
 	gwt-image: "toolboxImageIcon";
 }
 
-.imageCreateModeCanvasStyle
-{
+.imageCreateModeCanvasStyle {
 	cursor: default;
 }
 
-.floatingToolStyle
-{
-	z-index:999;
+.floatingToolStyle {
+	z-index: 999;
 	position: absolute;
 	opacity: 0.4;
 }
-	
-/* ToolFrame Styles */	
-	
-.toolFramePanel
-{
+
+/* ToolFrame Styles */
+.toolFramePanel {
 	position: absolute;
-	display:inline-block;
-	padding:1px;
+	display: inline-block;
+	padding: 1px;
 }
 
-
-.toolFramePanel:hover, .toolFramePanel.hover
-{
-	padding:0px;
+.toolFramePanel:hover,.toolFramePanel.hover {
+	padding: 0px;
 	border-style: solid;
 	border-width: 1px;
 	border-radius: 5px;
 	border-color: #ccc;
-	background-color:#ccc;
-	background-color: rgba(232,232,232,0.5);
-/*	-sand-transform:rotate(0deg);*/
-}
-.toolFrameBodyPanel 
-{
-    cursor:default;
-	padding:1px 5px 10px 5px;
-	display:inline-block;
-	position: relative;
-}				
-@sprite .toolFrameCloseLink 
-{
-	gwt-image: "closeIcon";
-	width:16px;
-	height:16px;
-	display: inline-block;
-}
-@sprite .toolFrameBackLink
-{
-	gwt-image: "moveBackIcon";
-	width:16px;
-	height:16px;
-	display: inline-block;
-	float:left;
-}
-@sprite .toolFrameFrontLink 
-{
-	gwt-image: "moveFrontIcon";
-	width:16px;
-	height:16px;
-	display: inline-block;
-	float:left;
-}
-.toolFrameButton
-{
-	cursor: pointer;
-}
-.toolFrameCloseLink:hover 
-{
-}
-.toolFrameHeader 
-{
-    background-color: rgba(200, 200, 200, 0.7);
-    cursor: move;
-    display: block;
-    padding: 2px 0 0 0;
-    visibility: hidden;
-    text-align:right;
-}
-.toolFramePanel:hover .toolFrameHeader, .toolFramePanel.hover .toolFrameHeader 
-{
-	visibility: visible;
-}
-.toolFrameButtonsPanel 
-{
-    font-family: verdana,sans-serif;
-    font-size: 1em;
-    line-height: 1.1em;
-    padding: 0 5px 2px;
+	background-color: #ccc;
+	background-color: rgba(232, 232, 232, 0.5);
+	/*	-sand-transform:rotate(0deg);*/
 }
 
-@sprite .toolFrameBottomLeftRotate
-{
+.toolFrameBodyPanel {
+	cursor: default;
+	padding: 1px 5px 10px 5px;
+	display: inline-block;
+	position: relative;
+}
+
+@sprite .toolFrameCloseLink {
+	gwt-image: "closeIcon";
+	width: 16px;
+	height: 16px;
+	display: inline-block;
+}
+
+@sprite .toolFrameBackLink {
+	gwt-image: "moveBackIcon";
+	width: 16px;
+	height: 16px;
+	display: inline-block;
+	float: left;
+}
+
+@sprite .toolFrameFrontLink {
+	gwt-image: "moveFrontIcon";
+	width: 16px;
+	height: 16px;
+	display: inline-block;
+	float: left;
+}
+
+.toolFrameButton {
+	cursor: pointer;
+}
+
+.toolFrameCloseLink:hover {
+	
+}
+
+.toolFrameHeader {
+	background-color: rgba(200, 200, 200, 0.7);
+	cursor: move;
+	display: block;
+	padding: 2px 0 0 0;
+	visibility: hidden;
+	text-align: right;
+}
+
+.toolFramePanel:hover .toolFrameHeader,.toolFramePanel.hover .toolFrameHeader
+	{
+	visibility: visible;
+}
+
+.toolFrameButtonsPanel {
+	font-family: verdana, sans-serif;
+	font-size: 1em;
+	line-height: 1.1em;
+	padding: 0 5px 2px;
+}
+
+@sprite .toolFrameBottomLeftRotate {
 	cursor: pointer;
 	width: 16px;
 	height: 16px;
 	display: inline-block;
-	position:absolute;
+	position: absolute;
 	bottom: 0;
-	left:0;
+	left: 0;
 	overflow: hidden;
 	gwt-image: "rotateIcon";
 }
 
-@sprite .toolFrameBottomRightResize
-{
+@sprite .toolFrameBottomRightResize {
 	cursor: nw-resize;
 	width: 16px;
 	height: 16px;
 	display: inline-block;
-	position:absolute;
+	position: absolute;
 	bottom: 0;
-	right:0;
+	right: 0;
 	overflow: hidden;
 	gwt-image: "resizeIcon";
 }
+
 .toolFrameHoverVisibleElement {
 	visibility: hidden;
 }
-.toolFramePanel:hover .toolFrameHoverVisibleElement, .toolFramePanel.hover .toolFrameHoverVisibleElement
-{
+
+.toolFramePanel:hover .toolFrameHoverVisibleElement,.toolFramePanel.hover .toolFrameHoverVisibleElement
+	{
 	visibility: visible;
 }
 
 /*---------------------------------------------*/
-
 .imagePickerResultImage {
-    background-color: #FFFFFF;
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-size: 100%;
-    border-radius: 2px 2px 2px 2px;
-    display: inline-block;
-    height: 100px;
-    margin: 2px;
-	border-color:#fff;
-	border-style:solid;
-	border-width:1px;
-    width: 100px;
+	background-color: #FFFFFF;
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-size: 100%;
+	border-radius: 2px 2px 2px 2px;
+	display: inline-block;
+	height: 100px;
+	margin: 2px;
+	border-color: #fff;
+	border-style: solid;
+	border-width: 1px;
+	width: 100px;
 }
-.imagePickerResultImage:hover,  .imagePickerResultImage.hover {
-	border-color:#ccc;
+
+.imagePickerResultImage:hover,.imagePickerResultImage.hover {
+	border-color: #ccc;
 }
+
 .imagePickerResultImage.selected {
-	border-color:#000;
+	border-color: #000;
 	background-color: #eee;
 }
 
-.imageToolSearchProviderPanelStyle
-{
+.imageToolSearchProviderPanelStyle {
 	display: inline-block;
 }
 
-.imageToolSearchProviderIconStyle
-{
+.imageToolSearchProviderIconStyle {
 	width: 32px;
 	height: 32px;
 	background-position: center;

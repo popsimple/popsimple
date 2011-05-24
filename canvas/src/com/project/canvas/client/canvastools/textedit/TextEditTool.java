@@ -1,20 +1,20 @@
 package com.project.canvas.client.canvastools.textedit;
 
-import com.google.gwt.event.dom.client.KeyDownEvent;
-import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.MouseEvent;
+import com.google.gwt.event.logical.shared.InitializeEvent;
+import com.google.gwt.event.logical.shared.InitializeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.RichTextArea;
 import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.canvastools.base.CanvasToolCommon;
+import com.project.canvas.client.gwtsamples.text.RichTextToolbar;
 import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.ElementUtils;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.shared.events.SimpleEvent.Handler;
-import com.project.canvas.client.shared.nicedit.NicEditor;
 import com.project.canvas.shared.data.ElementData;
 import com.project.canvas.shared.data.Point2D;
 import com.project.canvas.shared.data.TextData;
@@ -22,42 +22,35 @@ import com.project.canvas.shared.data.TextData;
 public class TextEditTool extends FlowPanel implements CanvasTool<TextData> 
 {
 
-    protected AsyncCallback<Void> editorReady = new AsyncCallback<Void>() {
-        @Override
-        public void onSuccess(Void result)
-        {
-            nicEditorReady = true;
-            registerHandlers();
-            if (null != data) {
-                nicEditor.setContent(data.text);
-            }
-        	setActive(isActive);
-        }
-        
-        @Override
-        public void onFailure(Throwable caught)
-        {
-            // TODO Auto-generated method stub
-            
-        }
-    };
     
-    private final TextArea editBox = new TextArea();
     private final SimpleEvent<String> killRequestEvent = new SimpleEvent<String>();
     private final SimpleEvent<Point2D> moveRequestEvent = new SimpleEvent<Point2D>();
     
-    private NicEditor nicEditor;
+    private RichTextArea rtfArea = GWT.create(RichTextArea.class);
+    private RichTextToolbar toolbar = new RichTextToolbar(rtfArea);
     private TextData data;
-    private boolean nicEditorReady = false;
+    private boolean editorReady = false;
 	private boolean isActive = false;
 	private Point2D editSize;
+    private boolean needsBinding;
 
     public TextEditTool() {
         CanvasToolCommon.initCanvasToolWidget(this);
         this.data = new TextData();
         this.addStyleName(CanvasResources.INSTANCE.main().textEdit());
-        this.add(editBox);
-        this.editBox.addStyleName(CanvasResources.INSTANCE.main().textEditBox());
+        this.add(toolbar);
+        this.add(rtfArea);
+        //this.rtfArea.addStyleName(CanvasResources.INSTANCE.main().textEditBox());
+        this.rtfArea.addInitializeHandler(new InitializeHandler() {
+            @Override
+            public void onInitialize(InitializeEvent event)
+            {
+                editorReady = true;
+                if (needsBinding) {
+                    internalBind();
+                }
+            }
+        });
     }
 
     @Override
@@ -72,9 +65,19 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData>
 
     @Override
     public void bind() {
-        if (null == nicEditor) {
-            nicEditor = new NicEditor(editBox, editorReady);
+        needsBinding = true;
+        if (editorReady) {
+            internalBind();
         }
+    }
+
+    private void internalBind()
+    {
+        registerHandlers();
+        if (null != data) {
+            rtfArea.setHTML(data.text);
+        }
+        setActive(isActive);
     }
 
     public SimpleEvent<String> getKillRequestedEvent() {
@@ -82,12 +85,12 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData>
     }
 
 	public int getTabIndex() {
-        return this.editBox.getTabIndex();
+        return this.rtfArea.getTabIndex();
     }
 
     @Override
     public TextData getValue() {
-        this.data.text = this.nicEditorReady ? this.nicEditor.getContent() : "";
+        this.data.text = this.editorReady ? this.rtfArea.getHTML() : "";
         return this.data;
     }
 
@@ -104,11 +107,13 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData>
     }
 
     public void setAccessKey(char key) {
-        this.editBox.setAccessKey(key);
+        this.rtfArea.setAccessKey(key);
     }
 
     @Override
     public void setActive(boolean isActive) {
+        rtfArea.setFocus(isActive);
+
     	setLooksActive(isActive, true);
     }
 
@@ -118,32 +123,32 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData>
     }
 
     public void setTabIndex(int index) {
-        this.editBox.setTabIndex(index);
+        this.rtfArea.setTabIndex(index);
     }
 
     @Override
     public void setValue(TextData data) {
         this.data = data;
-        if (nicEditorReady) {
-            this.nicEditor.setContent(this.data.text);
+        if (editorReady) {
+            this.rtfArea.setHTML(this.data.text);
         }
     }
 
     private void registerHandlers() {
-        this.nicEditor.addKeyDownHandler(new KeyDownHandler() {
-            public void onKeyDown(KeyDownEvent event) {
-                // TODO: depends on a hack in NicEditor.dispatchKeyDown
-            	boolean isEscape = (event.getNativeKeyCode() == 27);
-                setActive(false == isEscape);
-            }
-        });
+//        this.rtfArea.addKeyDownHandler(new KeyDownHandler() {
+//            public void onKeyDown(KeyDownEvent event) {
+//                // TODO: depends on a hack in NicEditor.dispatchKeyDown
+//            	boolean isEscape = (event.getNativeKeyCode() == 27);
+//                setActive(false == isEscape);
+//            }
+//        });
     }
 
     private void setLooksActive(boolean isActive, boolean k1illIfEmpty) {
     	// this.isActive is used for remembering what state to get into when ready event occurs.
     	// and also for determining whether we need to do anything at all (specifically to prevent multiple
     	// moveRequestEvent dispatching)
-        if (false == nicEditorReady) {
+        if (false == editorReady) {
     		this.isActive = isActive; 
             return;
         }
@@ -168,7 +173,7 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData>
         	this.removeStyleName(CanvasResources.INSTANCE.main().textEditFocused());
         	this.addStyleName(CanvasResources.INSTANCE.main().textEditNotFocused());
         	
-            String text = new HTML(this.nicEditor.getContent()).getText().replace((char) 160, ' ');
+            String text = new HTML(this.rtfArea.getHTML()).getText().replace((char) 160, ' ');
             if (k1illIfEmpty) {
 	            if (text.trim().isEmpty()) {
 	                this.killRequestEvent.dispatch("Empty");

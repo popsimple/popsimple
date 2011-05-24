@@ -175,16 +175,16 @@ public class RichTextToolbar extends Composite {
             Widget sender = (Widget) event.getSource();
 
             if (sender == backColors) {
-                basic.setBackColor(backColors.getValue(backColors.getSelectedIndex()));
+                formatter.setBackColor(backColors.getValue(backColors.getSelectedIndex()));
                 backColors.setSelectedIndex(0);
             } else if (sender == foreColors) {
-                basic.setForeColor(foreColors.getValue(foreColors.getSelectedIndex()));
+                formatter.setForeColor(foreColors.getValue(foreColors.getSelectedIndex()));
                 foreColors.setSelectedIndex(0);
             } else if (sender == fonts) {
-                basic.setFontName(fonts.getValue(fonts.getSelectedIndex()));
+                formatter.setFontName(fonts.getValue(fonts.getSelectedIndex()));
                 fonts.setSelectedIndex(0);
             } else if (sender == fontSizes) {
-                basic.setFontSize(fontSizesConstants[fontSizes.getSelectedIndex() - 1]);
+                formatter.setFontSize(fontSizesConstants[fontSizes.getSelectedIndex() - 1]);
                 fontSizes.setSelectedIndex(0);
             }
         }
@@ -193,47 +193,47 @@ public class RichTextToolbar extends Composite {
             Widget sender = (Widget) event.getSource();
 
             if (sender == bold) {
-                basic.toggleBold();
+                formatter.toggleBold();
             } else if (sender == italic) {
-                basic.toggleItalic();
+                formatter.toggleItalic();
             } else if (sender == underline) {
-                basic.toggleUnderline();
+                formatter.toggleUnderline();
             } else if (sender == subscript) {
-                basic.toggleSubscript();
+                formatter.toggleSubscript();
             } else if (sender == superscript) {
-                basic.toggleSuperscript();
+                formatter.toggleSuperscript();
             } else if (sender == strikethrough) {
-                extended.toggleStrikethrough();
+                formatter.toggleStrikethrough();
             } else if (sender == indent) {
-                extended.rightIndent();
+                formatter.rightIndent();
             } else if (sender == outdent) {
-                extended.leftIndent();
+                formatter.leftIndent();
             } else if (sender == justifyLeft) {
-                basic.setJustification(RichTextArea.Justification.LEFT);
+                formatter.setJustification(RichTextArea.Justification.LEFT);
             } else if (sender == justifyCenter) {
-                basic.setJustification(RichTextArea.Justification.CENTER);
+                formatter.setJustification(RichTextArea.Justification.CENTER);
             } else if (sender == justifyRight) {
-                basic.setJustification(RichTextArea.Justification.RIGHT);
+                formatter.setJustification(RichTextArea.Justification.RIGHT);
             } else if (sender == insertImage) {
                 String url = Window.prompt("Enter an image URL:", "http://");
                 if (url != null) {
-                    extended.insertImage(url);
+                    formatter.insertImage(url);
                 }
             } else if (sender == createLink) {
                 String url = Window.prompt("Enter a link URL:", "http://");
                 if (url != null) {
-                    extended.createLink(url);
+                    formatter.createLink(url);
                 }
             } else if (sender == removeLink) {
-                extended.removeLink();
+                formatter.removeLink();
             } else if (sender == hr) {
-                extended.insertHorizontalRule();
+                formatter.insertHorizontalRule();
             } else if (sender == ol) {
-                extended.insertOrderedList();
+                formatter.insertOrderedList();
             } else if (sender == ul) {
-                extended.insertUnorderedList();
+                formatter.insertUnorderedList();
             } else if (sender == removeFormat) {
-                extended.removeFormat();
+                formatter.removeFormat();
             } else if (sender == richText) {
                 // We use the RichTextArea's onKeyUp event to update the toolbar
                 // status.
@@ -269,8 +269,7 @@ public class RichTextToolbar extends Composite {
     private EventHandler handler = new EventHandler();
 
     private RichTextArea richText;
-    private RichTextArea.BasicFormatter basic;
-    private RichTextArea.ExtendedFormatter extended;
+    private RichTextArea.Formatter formatter;
 
     private VerticalPanel outer = new VerticalPanel();
     private HorizontalPanel topPanel = new HorizontalPanel();
@@ -307,8 +306,7 @@ public class RichTextToolbar extends Composite {
      */
     public RichTextToolbar(RichTextArea richText) {
         this.richText = richText;
-        this.basic = richText.getBasicFormatter();
-        this.extended = richText.getExtendedFormatter();
+        this.formatter = richText.getFormatter();
 
         outer.add(topPanel);
         outer.add(bottomPanel);
@@ -319,42 +317,37 @@ public class RichTextToolbar extends Composite {
         setStyleName("gwt-RichTextToolbar");
         richText.addStyleName("hasRichTextToolbar");
 
-        if (basic != null) {
-            topPanel.add(bold = createToggleButton(images.bold(), strings.bold()));
-            topPanel.add(italic = createToggleButton(images.italic(), strings.italic()));
-            topPanel.add(underline = createToggleButton(images.underline(), strings.underline()));
-            topPanel.add(subscript = createToggleButton(images.subscript(), strings.subscript()));
-            topPanel.add(superscript = createToggleButton(images.superscript(), strings.superscript()));
-            topPanel.add(justifyLeft = createPushButton(images.justifyLeft(), strings.justifyLeft()));
-            topPanel.add(justifyCenter = createPushButton(images.justifyCenter(), strings.justifyCenter()));
-            topPanel.add(justifyRight = createPushButton(images.justifyRight(), strings.justifyRight()));
-        }
+        topPanel.add(bold = createToggleButton(images.bold(), strings.bold()));
+        topPanel.add(italic = createToggleButton(images.italic(), strings.italic()));
+        topPanel.add(underline = createToggleButton(images.underline(), strings.underline()));
+        topPanel.add(subscript = createToggleButton(images.subscript(), strings.subscript()));
+        topPanel.add(superscript = createToggleButton(images.superscript(), strings.superscript()));
+        topPanel.add(justifyLeft = createPushButton(images.justifyLeft(), strings.justifyLeft()));
+        topPanel.add(justifyCenter = createPushButton(images.justifyCenter(), strings.justifyCenter()));
+        topPanel.add(justifyRight = createPushButton(images.justifyRight(), strings.justifyRight()));
 
-        if (extended != null) {
-            topPanel.add(strikethrough = createToggleButton(images.strikeThrough(), strings.strikeThrough()));
-            topPanel.add(indent = createPushButton(images.indent(), strings.indent()));
-            topPanel.add(outdent = createPushButton(images.outdent(), strings.outdent()));
-            topPanel.add(hr = createPushButton(images.hr(), strings.hr()));
-            topPanel.add(ol = createPushButton(images.ol(), strings.ol()));
-            topPanel.add(ul = createPushButton(images.ul(), strings.ul()));
-            topPanel.add(insertImage = createPushButton(images.insertImage(), strings.insertImage()));
-            topPanel.add(createLink = createPushButton(images.createLink(), strings.createLink()));
-            topPanel.add(removeLink = createPushButton(images.removeLink(), strings.removeLink()));
-            topPanel.add(removeFormat = createPushButton(images.removeFormat(), strings.removeFormat()));
-        }
+        topPanel.add(strikethrough = createToggleButton(images.strikeThrough(), strings.strikeThrough()));
+        topPanel.add(indent = createPushButton(images.indent(), strings.indent()));
+        topPanel.add(outdent = createPushButton(images.outdent(), strings.outdent()));
+        topPanel.add(hr = createPushButton(images.hr(), strings.hr()));
+        topPanel.add(ol = createPushButton(images.ol(), strings.ol()));
+        topPanel.add(ul = createPushButton(images.ul(), strings.ul()));
+        topPanel.add(insertImage = createPushButton(images.insertImage(), strings.insertImage()));
+        topPanel.add(createLink = createPushButton(images.createLink(), strings.createLink()));
+        topPanel.add(removeLink = createPushButton(images.removeLink(), strings.removeLink()));
+        topPanel.add(removeFormat = createPushButton(images.removeFormat(), strings.removeFormat()));
 
-        if (basic != null) {
-            bottomPanel.add(backColors = createColorList("Background"));
-            bottomPanel.add(foreColors = createColorList("Foreground"));
-            bottomPanel.add(fonts = createFontList());
-            bottomPanel.add(fontSizes = createFontSizes());
+        bottomPanel.add(backColors = createColorList("Background"));
+        bottomPanel.add(foreColors = createColorList("Foreground"));
+        bottomPanel.add(fonts = createFontList());
+        bottomPanel.add(fontSizes = createFontSizes());
 
-            // We only use these handlers for updating status, so don't hook
-            // them up
-            // unless at least basic editing is supported.
-            richText.addKeyUpHandler(handler);
-            richText.addClickHandler(handler);
-        }
+        
+        // We only use these handlers for updating status, so don't hook
+        // them up
+        // unless at least formatter editing is supported.
+        richText.addKeyUpHandler(handler);
+        richText.addClickHandler(handler);
     }
 
     private ListBox createColorList(String caption) {
@@ -422,16 +415,16 @@ public class RichTextToolbar extends Composite {
      * Updates the status of all the stateful buttons.
      */
     private void updateStatus() {
-        if (basic != null) {
-            bold.setDown(basic.isBold());
-            italic.setDown(basic.isItalic());
-            underline.setDown(basic.isUnderlined());
-            subscript.setDown(basic.isSubscript());
-            superscript.setDown(basic.isSuperscript());
+        if (formatter != null) {
+            bold.setDown(formatter.isBold());
+            italic.setDown(formatter.isItalic());
+            underline.setDown(formatter.isUnderlined());
+            subscript.setDown(formatter.isSubscript());
+            superscript.setDown(formatter.isSuperscript());
         }
 
-        if (extended != null) {
-            strikethrough.setDown(extended.isStrikethrough());
+        if (formatter != null) {
+            strikethrough.setDown(formatter.isStrikethrough());
         }
     }
 }

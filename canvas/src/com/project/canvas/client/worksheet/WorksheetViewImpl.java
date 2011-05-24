@@ -403,15 +403,15 @@ public class WorksheetViewImpl extends Composite implements WorksheetView
                 optionsUpdatedEvent.dispatch(optionsWidget.getValue());
             }
         });
-        Event.addNativePreviewHandler(new NativePreviewHandler() {
-            @Override
-            public void onPreviewNativeEvent(NativePreviewEvent event)
-            {
-                String type = event.getNativeEvent().getType();
-                if (type.equals("keydown") && (event.getNativeEvent().getKeyCode() == 27)) {
-                    stopOperationEvent.dispatch(null);
-                }
-            }
-        });
+//        Event.addNativePreviewHandler(new NativePreviewHandler() {
+//            @Override
+//            public void onPreviewNativeEvent(NativePreviewEvent event)
+//            {
+//                String type = event.getNativeEvent().getType();
+//                if (type.equals("keydown") && (event.getNativeEvent().getKeyCode() == 27)) {
+//                    stopOperationEvent.dispatch(null);
+//                }
+//            }
+//        });
     }
 }
