@@ -482,6 +482,7 @@
 {
 	display:block;
 	border-radius:2px;
+	padding: 0px 0px 8px 0px;
 }
 .videoToolEmpty {
 	width:200px;
@@ -491,6 +492,9 @@
 .videoToolSet {
 	width:auto;
 	height:auto;
-	background-repeat: no-repeat;
-    background-size: 100% 100%;
+}
+
+.videoFrame {
+	width: 100%;
+	height: 100%;
 }

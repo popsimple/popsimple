@@ -52,6 +52,7 @@ public class VideoTool extends FlowPanel implements CanvasTool<MediaData> {
         WidgetUtils.disableDrag(this);
         super.addStyleName(CanvasResources.INSTANCE.main().videoBox());
         super.addStyleName(CanvasResources.INSTANCE.main().videoToolEmpty());
+        this.videoFrame.addStyleName(CanvasResources.INSTANCE.main().videoFrame());
         this.videoFrame.setVisible(false);
         
         this.add(videoFrame);
@@ -148,8 +149,10 @@ public class VideoTool extends FlowPanel implements CanvasTool<MediaData> {
                     regs.clear();
                 }
             }));
+            videoFrame.asWidget().getElement().getStyle().setWidth(425, Unit.PX);
+            videoFrame.asWidget().getElement().getStyle().setHeight(349, Unit.PX);
         }
-        videoFrame.setUrl(url + "?wmode=opaque");
+        videoFrame.setUrl(url + "?wmode=transparent");
         videoFrame.setVisible(true);
         
         super.removeStyleName(CanvasResources.INSTANCE.main().videoToolEmpty());

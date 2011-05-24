@@ -140,5 +140,7 @@ public interface MainStyles extends CssResource {
     
     String videoToolEmpty();
     
-    String videoToolSet ();
+    String videoToolSet();
+    
+    String videoFrame();
 }
