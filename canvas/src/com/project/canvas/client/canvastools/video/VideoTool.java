@@ -162,7 +162,11 @@ public class VideoTool extends FlowPanel implements CanvasTool<MediaData> {
     //TODO: Build the url properly when returning from the media picker.
     private String fixEmbeddedUrl(String url)
     {
+        //NOTE: Change the url to the new embed method.
         String newUrl = url.replaceAll("/v/", "/embed/");
+
+        //NOTE: according to: 
+        //NOTE: http://www.electrictoolbox.com/float-div-youtube-iframe/
         if (newUrl.indexOf("&wmode=transparent") == -1)
         {
             return newUrl.concat("&wmode=transparent");
