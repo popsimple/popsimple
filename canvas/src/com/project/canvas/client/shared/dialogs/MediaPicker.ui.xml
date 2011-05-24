@@ -17,7 +17,6 @@
 	<g:HTMLPanel>
 		<g:FlowPanel ui:field="formPanel">
 			<g:HTMLPanel>
-				<g:Frame ui:field="testFrame"></g:Frame>
 				<g:FlowPanel ui:field="providersPanel">
 				</g:FlowPanel>
 				<g:TextBox ui:field="searchText">Search...</g:TextBox>

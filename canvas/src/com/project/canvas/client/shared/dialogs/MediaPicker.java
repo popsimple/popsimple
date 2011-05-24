@@ -65,9 +65,6 @@ public class MediaPicker extends Composite {
     @UiField
     FlowPanel providersPanel;
     
-    @UiField
-    Frame testFrame;
-
     protected final SimpleEvent<MediaInfo> mediaPicked = new SimpleEvent<MediaInfo>();
 
     protected final RegistrationsManager registrationsManager = new RegistrationsManager();
@@ -251,6 +248,5 @@ public class MediaPicker extends Composite {
 
     public void imageSizeSelected(final MediaInfo selectedSize) {
         mediaPicked.dispatch(selectedSize);
-        testFrame.setUrl(selectedSize.getMediaUrl());
     }
 }
