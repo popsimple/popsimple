@@ -154,6 +154,7 @@ public class ImageTool extends FlowPanel implements CanvasTool<MediaData> {
                 }
             }));
             Image.prefetch(url);
+            //Set the image url in order for the image element to auto size. 
             image.setUrl(url);
             image.setVisible(true);
         }

@@ -107,7 +107,6 @@ public class VideoTool extends FlowPanel implements CanvasTool<MediaData> {
 		this.mediaToolOptionsWidget = new MediaToolOptions();
         videoSelectionDialog.add(mediaToolOptionsWidget);
 
-		//TODO: Support multiple providers.
         this.mediaToolOptionsWidget.setSearchProviders(this.searchProviders);
         mediaToolOptionsWidget.getCancelEvent().addHandler(new SimpleEvent.Handler<Void>() {
 		    @Override
@@ -150,11 +149,9 @@ public class VideoTool extends FlowPanel implements CanvasTool<MediaData> {
                 }
             }));
         }
-        videoFrame.setVisible(true);
-        videoFrame.setWidth("425px");
-        videoFrame.setHeight("349px");
-        
         videoFrame.setUrl(url + "?wmode=opaque");
+        videoFrame.setVisible(true);
+        
         super.removeStyleName(CanvasResources.INSTANCE.main().videoToolEmpty());
         super.addStyleName(CanvasResources.INSTANCE.main().videoToolSet());
     }
