@@ -2,6 +2,7 @@ package com.project.canvas.client.canvastools.textedit;
 
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.canvastools.base.CanvasToolFactoryBase;
+import com.project.canvas.shared.data.Point2D;
 import com.project.canvas.shared.data.TextData;
 
 public class TextEditToolFactory extends CanvasToolFactoryBase<TextEditTool> {
@@ -23,5 +24,10 @@ public class TextEditToolFactory extends CanvasToolFactoryBase<TextEditTool> {
     @Override
     public Widget getFloatingWidget() {
         return null;
+    }
+    
+    @Override
+    public Point2D getCreationOffset() {
+        return new Point2D(-10, -62);
     }
 }

@@ -1,5 +1,6 @@
 package com.project.canvas.client.canvastools.textedit;
 
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
@@ -12,6 +13,7 @@ import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.canvastools.base.CanvasToolCommon;
 import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.ElementUtils;
+import com.project.canvas.client.shared.widgets.ElementWrapper;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.shared.events.SimpleEvent.Handler;
 import com.project.canvas.client.shared.nicedit.NicEditor;
@@ -29,7 +31,7 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
             if (null != data) {
                 nicEditor.setContent(data.text);
             }
-            setActive(isActive);
+            setActive(_isActive);
         }
 
         @Override
@@ -46,7 +48,7 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
     private NicEditor nicEditor;
     private TextData data;
     private boolean nicEditorReady = false;
-    private boolean isActive = false;
+    private boolean _isActive = false;
     private boolean activeStateSet = false;
     private Point2D editSize;
 
@@ -101,6 +103,9 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
     @Override
     public void setActive(boolean isActive) {
         setLooksActive(isActive, true);
+        if (isActive && nicEditorReady) {
+        	nicEditor.getEditorElement().focus();
+        }
     }
 
     @Override
@@ -137,13 +142,13 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
         // (specifically to prevent multiple
         // moveRequestEvent dispatching)
         if (false == nicEditorReady) {
-            this.isActive = isActive;
+            this._isActive = isActive;
             return;
         }
-        else if (activeStateSet && (isActive == this.isActive)) {
+        else if (activeStateSet && (isActive == this._isActive)) {
             return;
         }
-        this.isActive = isActive;
+        this._isActive = isActive;
         this.activeStateSet = true;
         if (isActive) {
             if (null != this.editSize) {
