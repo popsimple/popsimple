@@ -1,11 +1,12 @@
 package com.project.canvas.client.canvastools.textedit;
 
-import com.google.gwt.event.dom.client.KeyPressEvent;
-import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.TextArea;
 import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.canvastools.base.CanvasToolCommon;
@@ -44,7 +45,6 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData>
     private final TextArea editBox = new TextArea();
     private final SimpleEvent<String> killRequestEvent = new SimpleEvent<String>();
     private final SimpleEvent<Point2D> moveRequestEvent = new SimpleEvent<Point2D>();
-    private final SimpleEvent<Boolean> rotationStateEvent = new SimpleEvent<Boolean>();
     
     private NicEditor nicEditor;
     private TextData data;
@@ -129,16 +129,11 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData>
         }
     }
 
-    private Point2D getEditorOffsetPos() {
-		Point2D editorPos = ElementUtils.getElementAbsolutePosition(this.nicEditor.getEditorElement());
-		Point2D myPos = ElementUtils.getElementAbsolutePosition(this.getElement());
-		return editorPos.minus(myPos);
-	}
-
     private void registerHandlers() {
-        this.editBox.addKeyPressHandler(new KeyPressHandler() {
-            public void onKeyPress(KeyPressEvent event) {
-            	boolean isEscape = (event.getNativeEvent().getKeyCode() == 27);
+        this.nicEditor.addKeyDownHandler(new KeyDownHandler() {
+            public void onKeyDown(KeyDownEvent event) {
+                // TODO: depends on a hack in NicEditor.dispatchKeyDown
+            	boolean isEscape = (event.getNativeKeyCode() == 27);
                 setActive(false == isEscape);
             }
         });
@@ -173,7 +168,7 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData>
         	this.removeStyleName(CanvasResources.INSTANCE.main().textEditFocused());
         	this.addStyleName(CanvasResources.INSTANCE.main().textEditNotFocused());
         	
-            String text = this.nicEditor.getContent();
+            String text = new HTML(this.nicEditor.getContent()).getText().replace((char) 160, ' ');
             if (k1illIfEmpty) {
 	            if (text.trim().isEmpty()) {
 	                this.killRequestEvent.dispatch("Empty");

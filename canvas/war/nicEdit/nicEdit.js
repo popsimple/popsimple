@@ -455,7 +455,7 @@ var nicEditorInstance = bkClass.extend({
 		}
 		this.instanceDoc = document.defaultView;
 		this.elm.addEvent('mousedown',this.selected.closureListener(this))
-				.addEvent('keypress',this.keyDown.closureListener(this))
+				.addEvent('keydown',this.keyDown.closureListener(this))
 				.addEvent('focus',this.selected.closure(this))
 				.addEvent('blur',this.blur.closure(this))
 				.addEvent('keyup',this.selected.closure(this));

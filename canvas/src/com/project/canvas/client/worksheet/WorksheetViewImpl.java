@@ -408,7 +408,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView
             public void onPreviewNativeEvent(NativePreviewEvent event)
             {
                 String type = event.getNativeEvent().getType();
-                if (type.equals("keypress") && (event.getNativeEvent().getKeyCode() == 27)) {
+                if (type.equals("keydown") && (event.getNativeEvent().getKeyCode() == 27)) {
                     stopOperationEvent.dispatch(null);
                 }
             }

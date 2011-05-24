@@ -308,7 +308,9 @@ public class WorksheetImpl implements Worksheet
 			this.activeToolInstance.setActive(false);
 		}
 		this.activeToolInstance = tool;
-		tool.setActive(true);
+		if (null != tool) {
+		    tool.setActive(true);
+		}
 	}
 
 	private void clearActiveToolboxItem()
@@ -320,6 +322,7 @@ public class WorksheetImpl implements Worksheet
     private void escapeOperation()
     {
         clearActiveToolboxItem();
+        setActiveToolInstance(null);
         // TODO dispatch stop operation
         // stopOperationEvent.dispatch(null);
         defaultToolRequestEvent.dispatch(null);
