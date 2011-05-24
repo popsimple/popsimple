@@ -47,6 +47,7 @@ public class WorksheetImpl implements Worksheet
     private final RegistrationsManager activeToolRegistrations = new RegistrationsManager();
     private final HashMap<CanvasTool<?>, ToolInstanceInfo> toolInfoMap = new HashMap<CanvasTool<?>, ToolInstanceInfo>();
 	private CanvasTool<?> activeToolInstance;
+    private ToolboxItem activeToolboxItem;
 
     public WorksheetImpl(WorksheetView view)
     {
@@ -160,8 +161,12 @@ public class WorksheetImpl implements Worksheet
     @Override
     public void setActiveToolboxItem(ToolboxItem toolboxItem)
     {
-        this.clearActiveToolboxItem();
         this.view.setActiveToolboxItem(toolboxItem);
+        if (toolboxItem == this.activeToolboxItem) {
+            return;
+        }
+        this.activeToolboxItem = toolboxItem;
+        activeToolRegistrations.clear();
     }
 
     private CanvasToolFrame createToolInstance(final Point2D relativePos,
