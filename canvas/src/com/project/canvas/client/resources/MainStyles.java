@@ -131,4 +131,16 @@ public interface MainStyles extends CssResource {
     String imageToolSearchProviderIconStyle();
     
     String imageToolSearchProviderPanelStyle();
+    
+    String toolboxVideoIconStyle();
+    
+    String videoCreateModeCanvasStyle();
+    
+    String videoBox();
+    
+    String videoToolEmpty();
+    
+    String videoToolSet();
+    
+    String videoFrame();
 }

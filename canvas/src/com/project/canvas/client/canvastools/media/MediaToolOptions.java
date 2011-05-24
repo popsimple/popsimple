@@ -1,4 +1,4 @@
-package com.project.canvas.client.canvastools.image;
+package com.project.canvas.client.canvastools.media;
 
 import java.util.List;
 
@@ -18,18 +18,18 @@ import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.shared.NativeUtils;
-import com.project.canvas.client.shared.dialogs.ImagePicker;
+import com.project.canvas.client.shared.dialogs.MediaPicker;
 import com.project.canvas.client.shared.events.SimpleEvent;
-import com.project.canvas.client.shared.searchProviders.interfaces.ImageInfo;
-import com.project.canvas.client.shared.searchProviders.interfaces.ImageSearchProvider;
+import com.project.canvas.client.shared.searchProviders.interfaces.MediaInfo;
+import com.project.canvas.client.shared.searchProviders.interfaces.MediaSearchProvider;
 import com.project.canvas.shared.UrlUtils;
-import com.project.canvas.shared.data.ImageData;
+import com.project.canvas.shared.data.MediaData;
 
-public class ImageToolOptions extends Composite implements TakesValue<ImageData>, Focusable {
+public class MediaToolOptions extends Composite implements TakesValue<MediaData>, Focusable {
 
-    private static ImageToolOptionsUiBinder uiBinder = GWT.create(ImageToolOptionsUiBinder.class);
+    private static MediaToolOptionsUiBinder uiBinder = GWT.create(MediaToolOptionsUiBinder.class);
 
-    interface ImageToolOptionsUiBinder extends UiBinder<Widget, ImageToolOptions> {
+    interface MediaToolOptionsUiBinder extends UiBinder<Widget, MediaToolOptions> {
     }
 
     @UiField
@@ -45,15 +45,15 @@ public class ImageToolOptions extends Composite implements TakesValue<ImageData>
     Button cancelButton;
 
     @UiField
-    ImagePicker imagePicker;
+    MediaPicker mediaPicker;
 
-    private ImageData data;
+    private MediaData data;
 
     private SimpleEvent<Void> doneEvent = new SimpleEvent<Void>();
 
     private SimpleEvent<Void> cancelEvent = new SimpleEvent<Void>();
 
-    public ImageToolOptions() {
+    public MediaToolOptions() {
         initWidget(uiBinder.createAndBindUi(this));
         this.doneButton.addClickHandler(new ClickHandler() {
             @Override
@@ -67,9 +67,9 @@ public class ImageToolOptions extends Composite implements TakesValue<ImageData>
                 cancelEvent.dispatch(null);
             }
         });
-        this.imagePicker.addImagePickedHandler(new SimpleEvent.Handler<ImageInfo>() {
+        this.mediaPicker.addMediaPickedHandler(new SimpleEvent.Handler<MediaInfo>() {
             @Override
-            public void onFire(ImageInfo imageInfo) {
+            public void onFire(MediaInfo imageInfo) {
                 urlTextBox.setText(imageInfo.getMediaUrl());
             }
         });
@@ -84,27 +84,27 @@ public class ImageToolOptions extends Composite implements TakesValue<ImageData>
         });
     }
 
-    SimpleEvent<Void> getDoneEvent() {
+    public SimpleEvent<Void> getDoneEvent() {
         return this.doneEvent;
     }
 
-    SimpleEvent<Void> getCancelEvent() {
+    public SimpleEvent<Void> getCancelEvent() {
         return this.cancelEvent;
     }
 
-    public void setSearchProviders(List<ImageSearchProvider> searchProviders)
+    public void setSearchProviders(List<? extends MediaSearchProvider> searchProviders)
     {
-        this.imagePicker.setSearchProviders(searchProviders);
+        this.mediaPicker.setSearchProviders(searchProviders);
     }
     
     @Override
-    public void setValue(ImageData value) {
+    public void setValue(MediaData value) {
         this.data = value;
         this.urlTextBox.setText(value.url);
     }
 
     @Override
-    public ImageData getValue() {
+    public MediaData getValue() {
         this.data.url = this.urlTextBox.getText();
         return this.data;
     }

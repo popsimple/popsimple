@@ -26,8 +26,8 @@ public interface CanvasTool<T extends ElementData> extends IsWidget, TakesValue<
     // Start handling events
     void bind();
     
-    boolean hasResizeableWidth();
-    boolean hasResizeableHeight();
+    boolean canResizeWidth();
+    boolean canResizeHeight();
     
-    
+    boolean canRotate();
 }

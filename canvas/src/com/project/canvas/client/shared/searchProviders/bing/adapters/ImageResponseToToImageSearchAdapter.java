@@ -3,11 +3,11 @@ package com.project.canvas.client.shared.searchProviders.bing.adapters;
 import java.util.ArrayList;
 
 import com.google.gwt.core.client.JsArray;
-import com.project.canvas.client.shared.searchProviders.interfaces.ImageResult;
-import com.project.canvas.client.shared.searchProviders.interfaces.ImageSearchResult;
+import com.project.canvas.client.shared.searchProviders.interfaces.MediaResult;
+import com.project.canvas.client.shared.searchProviders.interfaces.MediaSearchResult;
 import com.project.gwtbing.client.ImageSearch.ImageResponse;
 
-public class ImageResponseToToImageSearchAdapter implements ImageSearchResult 
+public class ImageResponseToToImageSearchAdapter implements MediaSearchResult 
 {
     private ImageResponse _imageResponse = null;
     private int _pageSize = 0;
@@ -37,8 +37,8 @@ public class ImageResponseToToImageSearchAdapter implements ImageSearchResult
     }
 
     @Override
-    public ArrayList<ImageResult> getImageResults() {
-        ArrayList<ImageResult> resultList = new ArrayList<ImageResult>();
+    public ArrayList<MediaResult> getMediaResults() {
+        ArrayList<MediaResult> resultList = new ArrayList<MediaResult>();
         JsArray<com.project.gwtbing.client.ImageSearch.ImageResult> bingImageResults = this._imageResponse.getResults();
         for (int index = 0; index < bingImageResults.length(); index++)
         {

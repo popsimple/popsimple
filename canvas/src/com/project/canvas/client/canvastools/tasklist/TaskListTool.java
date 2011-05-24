@@ -26,7 +26,7 @@ import com.project.canvas.shared.data.TaskListData;
 public class TaskListTool extends Composite implements CanvasTool<TaskListData>, Focusable {
 
     private static TaskListWidgetUiBinder uiBinder = GWT.create(TaskListWidgetUiBinder.class);
-
+    
     interface TaskListWidgetUiBinder extends UiBinder<Widget, TaskListTool> {
     }
 
@@ -44,7 +44,7 @@ public class TaskListTool extends Composite implements CanvasTool<TaskListData>,
     private SimpleEvent<String> killRequestedEvent = new SimpleEvent<String>();
     private ArrayList<TaskTool> taskWidgets = new ArrayList<TaskTool>();
 
-    private TaskListData data = new TaskListData();
+    private TaskListData data = null;
 
     public TaskListTool() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -164,13 +164,13 @@ public class TaskListTool extends Composite implements CanvasTool<TaskListData>,
     }
 
     @Override
-    public boolean hasResizeableWidth()
+    public boolean canResizeWidth()
     {
         return true;
     }
 
     @Override
-    public boolean hasResizeableHeight()
+    public boolean canResizeHeight()
     {
         return true;
     }
@@ -180,4 +180,9 @@ public class TaskListTool extends Composite implements CanvasTool<TaskListData>,
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+    @Override
+    public boolean canRotate() {
+        return true;
+    }
 }

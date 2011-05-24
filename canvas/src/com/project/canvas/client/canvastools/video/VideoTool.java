@@ -1,4 +1,4 @@
-package com.project.canvas.client.canvastools.image;
+package com.project.canvas.client.canvastools.video;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,7 +16,7 @@ import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Frame;
 import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.canvastools.base.CanvasToolCommon;
 import com.project.canvas.client.canvastools.media.MediaToolOptions;
@@ -25,41 +25,42 @@ import com.project.canvas.client.shared.RegistrationsManager;
 import com.project.canvas.client.shared.WidgetUtils;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.shared.events.SimpleEvent.Handler;
-import com.project.canvas.client.shared.searchProviders.interfaces.ImageSearchProvider;
+import com.project.canvas.client.shared.searchProviders.interfaces.VideoSearchProvider;
 import com.project.canvas.client.shared.widgets.DialogWithZIndex;
 import com.project.canvas.shared.data.ElementData;
 import com.project.canvas.shared.data.MediaData;
 import com.project.canvas.shared.data.Point2D;
 
-public class ImageTool extends FlowPanel implements CanvasTool<MediaData> {
-    
+public class VideoTool extends FlowPanel implements CanvasTool<MediaData> {
+
     private final SimpleEvent<String> killRequestEvent = new SimpleEvent<String>();
     private final SimpleEvent<MouseEvent<?>> moveStartEvent = new SimpleEvent<MouseEvent<?>>();
 
     private MediaData data = null;
-    private final Image image = new Image();
+    private final Frame videoFrame = new Frame();
     private MediaToolOptions mediaToolOptionsWidget;
-    private DialogBox imageSelectionDialog;
+    private DialogBox videoSelectionDialog;
 	private boolean optionsWidgetInited = false;
-	private ArrayList<ImageSearchProvider> searchProviders = new ArrayList<ImageSearchProvider>();  
+	private ArrayList<VideoSearchProvider> searchProviders = new ArrayList<VideoSearchProvider>();  
 
-    //TODO: Change to ImageSearchProvider
-	public ImageTool(Collection<ImageSearchProvider> imageSearchProviders) 
+	public VideoTool(Collection<VideoSearchProvider> videoSearchProviders) 
     {
         CanvasToolCommon.initCanvasToolWidget(this);
         
-        searchProviders.addAll(imageSearchProviders);
+        searchProviders.addAll(videoSearchProviders);
 
         WidgetUtils.disableDrag(this);
-        super.addStyleName(CanvasResources.INSTANCE.main().imageBox());
-        super.addStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
-        this.add(this.image);
-        this.image.setVisible(false);
+        super.addStyleName(CanvasResources.INSTANCE.main().videoBox());
+        super.addStyleName(CanvasResources.INSTANCE.main().videoToolEmpty());
+        this.videoFrame.addStyleName(CanvasResources.INSTANCE.main().videoFrame());
+        this.videoFrame.setVisible(false);
+        
+        this.add(videoFrame);
     }
     
     @Override
     public void bind() {
-        super.setTitle("Click for image options; Shift-click to drag");
+        super.setTitle("Click for video options; Shift-click to drag");
         this.registerHandlers();
     }
 
@@ -67,7 +68,7 @@ public class ImageTool extends FlowPanel implements CanvasTool<MediaData> {
         this.addDomHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                uploadImage();
+                uploadVideo();
 
             }
         }, ClickEvent.getType());
@@ -81,15 +82,15 @@ public class ImageTool extends FlowPanel implements CanvasTool<MediaData> {
         }, MouseDownEvent.getType());
     }
 
-    protected void uploadImage() {
+    protected void uploadVideo() {
     	initOptionsWidget();
-        mediaToolOptionsWidget.setValue(data);
+    	mediaToolOptionsWidget.setValue(data);
 
         Scheduler.get().scheduleDeferred(new ScheduledCommand() {
             @Override
             public void execute() {
                 mediaToolOptionsWidget.setFocus(true);
-                imageSelectionDialog.center();
+                videoSelectionDialog.center();
             }
         });
     }
@@ -99,27 +100,26 @@ public class ImageTool extends FlowPanel implements CanvasTool<MediaData> {
 			return;
 		}
 		this.optionsWidgetInited = true;
-		this.imageSelectionDialog = new DialogWithZIndex(false, true);
-//		imageSelectionDialog.setAnimationEnabled(true);
-        imageSelectionDialog.setGlassEnabled(true);
-        imageSelectionDialog.setText("Image options");
+		this.videoSelectionDialog = new DialogWithZIndex(false, true);
+//		videoSelectionDialog.setAnimationEnabled(true);
+        videoSelectionDialog.setGlassEnabled(true);
+        videoSelectionDialog.setText("Video options");
         
 		this.mediaToolOptionsWidget = new MediaToolOptions();
-        imageSelectionDialog.add(mediaToolOptionsWidget);
+        videoSelectionDialog.add(mediaToolOptionsWidget);
 
-		//TODO: Support multiple providers.
         this.mediaToolOptionsWidget.setSearchProviders(this.searchProviders);
         mediaToolOptionsWidget.getCancelEvent().addHandler(new SimpleEvent.Handler<Void>() {
 		    @Override
 		    public void onFire(Void arg) {
-		        imageSelectionDialog.hide();
+		        videoSelectionDialog.hide();
 		    }
 		});
 		mediaToolOptionsWidget.getDoneEvent().addHandler(new SimpleEvent.Handler<Void>() {
 		    @Override
 		    public void onFire(Void arg) {
 		        setValue(mediaToolOptionsWidget.getValue(), true);
-		        imageSelectionDialog.hide();
+		        videoSelectionDialog.hide();
 		    }
 		});
 	}
@@ -133,47 +133,57 @@ public class ImageTool extends FlowPanel implements CanvasTool<MediaData> {
         return this.killRequestEvent;
     }
 
-    protected void setImageUrl(String url, boolean autoSize) {
+    protected void setVideoUrl(String url, boolean autoSize) {
         if (null == url || url.trim().isEmpty()) {
-            this.getElement().getStyle().setBackgroundImage("");
-            super.addStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
-            super.removeStyleName(CanvasResources.INSTANCE.main().imageToolSet());
+            super.addStyleName(CanvasResources.INSTANCE.main().videoToolEmpty());
+            super.removeStyleName(CanvasResources.INSTANCE.main().videoToolSet());
             return;
         }
         if (autoSize) {
             final RegistrationsManager regs = new RegistrationsManager();
-            regs.add(this.image.addLoadHandler(new LoadHandler() {
+            regs.add(this.videoFrame.addLoadHandler(new LoadHandler() {
                 @Override
                 public void onLoad(LoadEvent event) {
-                    getElement().getStyle().setWidth(image.getWidth(), Unit.PX);
-                    getElement().getStyle().setHeight(image.getHeight(), Unit.PX);
-                    image.setUrl(""); // don't display the image in the <img>,
-                                      // only as background
-                    image.setVisible(false);
+                    getElement().getStyle().setWidth(videoFrame.getOffsetWidth(), Unit.PX);
+                    getElement().getStyle().setHeight(videoFrame.getOffsetHeight(), Unit.PX);
                     regs.clear();
                 }
             }));
-            Image.prefetch(url);
-            //Set the image url in order for the image element to auto size. 
-            image.setUrl(url);
-            image.setVisible(true);
+            videoFrame.asWidget().getElement().getStyle().setWidth(425, Unit.PX);
+            videoFrame.asWidget().getElement().getStyle().setHeight(349, Unit.PX);
         }
-        getElement().getStyle().setBackgroundImage("url(\"" + url + "\")");
-        super.removeStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
-        super.addStyleName(CanvasResources.INSTANCE.main().imageToolSet());
+        videoFrame.setUrl(fixEmbeddedUrl(url));
+        videoFrame.setVisible(true);
+        
+        super.removeStyleName(CanvasResources.INSTANCE.main().videoToolEmpty());
+        super.addStyleName(CanvasResources.INSTANCE.main().videoToolSet());
+    }
+    
+    //TODO: Build the url properly when returning from the media picker.
+    private String fixEmbeddedUrl(String url)
+    {
+        //NOTE: Change the url to the new embed method.
+        String newUrl = url.replaceAll("/v/", "/embed/");
+
+        //NOTE: according to: 
+        //NOTE: http://www.electrictoolbox.com/float-div-youtube-iframe/
+        if (newUrl.indexOf("&wmode=transparent") == -1)
+        {
+            return newUrl.concat("&wmode=transparent");
+        }
+        return newUrl;
     }
 
     @Override
     public MediaData getValue() {
-        String imageCss = this.getElement().getStyle().getBackgroundImage();
         // TIP: use this page to check java regex: http://www.regexplanet.com/simple/index.html
-        this.data.url = imageCss.trim().replaceAll("^(url\\(\\\"?)(.*?)(\\\"?\\))$", "$2");
+        this.data.url = this.videoFrame.getUrl().trim().replaceAll("^(url\\(\\\"?)(.*?)(\\\"?\\))$", "$2");
         return this.data;
     }
 
     public void setValue(MediaData data, boolean autoSize) {
         this.data = data;
-        this.setImageUrl(this.data.url, autoSize);
+        this.setVideoUrl(this.data.url, autoSize);
     }
 
     @Override
@@ -205,9 +215,9 @@ public class ImageTool extends FlowPanel implements CanvasTool<MediaData> {
 
     @Override
     public boolean canRotate() {
-        return true;
+        return false;
     }
-
+    
     @Override
 	public HandlerRegistration addMoveEventHandler(Handler<Point2D> handler) {
 		// TODO Auto-generated method stub

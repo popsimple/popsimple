@@ -4,12 +4,12 @@ import java.util.ArrayList;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public interface ImageResult 
+public interface MediaResult 
 {
     String getUrl();
     String getTitle();
     
-    void getImageSizes(final AsyncCallback<ArrayList<ImageInfo>> callback);
+    void getMediaSizes(final AsyncCallback<ArrayList<MediaInfo>> callback);
     
     String getThumbnailUrl();
 }

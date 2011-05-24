@@ -8,7 +8,7 @@ import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.searchProviders.ImageSearchOptions;
 import com.project.canvas.client.shared.searchProviders.flickr.adapters.PhotosResponseToImageSearchAdapter;
 import com.project.canvas.client.shared.searchProviders.interfaces.ImageSearchProvider;
-import com.project.canvas.client.shared.searchProviders.interfaces.ImageSearchResult;
+import com.project.canvas.client.shared.searchProviders.interfaces.MediaSearchResult;
 
 public class FlickrSearchProvider implements ImageSearchProvider 
 {
@@ -22,7 +22,7 @@ public class FlickrSearchProvider implements ImageSearchProvider
     }
     
     @Override
-    public void search(String query, final AsyncCallback<ImageSearchResult> callback) 
+    public void search(String query, final AsyncCallback<MediaSearchResult> callback) 
     {
         this._searcher.setText(query);
         this._searcher.send(new AsyncCallback<PhotosResponse>() {
@@ -51,7 +51,7 @@ public class FlickrSearchProvider implements ImageSearchProvider
 
     @Override
     public void search(String query, ImageSearchOptions searchOptions,
-            final AsyncCallback<ImageSearchResult> callback) 
+            final AsyncCallback<MediaSearchResult> callback) 
     {
         //TODO: Support search options.
         this.search(query, callback);

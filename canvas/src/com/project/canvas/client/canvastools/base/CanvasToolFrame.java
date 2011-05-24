@@ -182,10 +182,10 @@ public class CanvasToolFrame extends Composite implements Focusable, HasFocusHan
     }
 
     public void setToolSize(Point2D size) {
-        if (this.tool.hasResizeableWidth()) {
+        if (this.tool.canResizeWidth()) {
             this.tool.asWidget().getElement().getStyle().setWidth(size.getX(), Unit.PX);
         }
-        if (this.tool.hasResizeableHeight()) {
+        if (this.tool.canResizeHeight()) {
             this.tool.asWidget().getElement().getStyle().setHeight(size.getY(), Unit.PX);
         }
     }

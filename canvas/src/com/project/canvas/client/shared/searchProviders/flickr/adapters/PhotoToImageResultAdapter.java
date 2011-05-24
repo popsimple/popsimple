@@ -9,11 +9,12 @@ import com.ghusse.dolomite.flickr.PhotoSizesResponse;
 import com.ghusse.dolomite.flickr.PhotoSizesResponse.PhotoSizeResponse;
 import com.ghusse.dolomite.flickr.photos.GetSizes;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.project.canvas.client.shared.searchProviders.ImageInfoImpl;
 import com.project.canvas.client.shared.searchProviders.flickr.FlickrSearchErrorException;
-import com.project.canvas.client.shared.searchProviders.interfaces.ImageInfo;
-import com.project.canvas.client.shared.searchProviders.interfaces.ImageResult;
+import com.project.canvas.client.shared.searchProviders.interfaces.MediaInfo;
+import com.project.canvas.client.shared.searchProviders.interfaces.MediaResult;
 
-public class PhotoToImageResultAdapter implements ImageResult 
+public class PhotoToImageResultAdapter implements MediaResult 
 {
     private GetSizes photoSizesGetter = null;
     private Photo photo = null;
@@ -40,7 +41,7 @@ public class PhotoToImageResultAdapter implements ImageResult
     }
 
     @Override
-    public void getImageSizes(final AsyncCallback<ArrayList<ImageInfo>> callback) 
+    public void getMediaSizes(final AsyncCallback<ArrayList<MediaInfo>> callback) 
     {
         this.photoSizesGetter.setPhoto(this.photo);
         this.photoSizesGetter.send(new AsyncCallback<PhotoSizesResponse>() {
@@ -62,12 +63,13 @@ public class PhotoToImageResultAdapter implements ImageResult
         });
     }
     
-    private ArrayList<ImageInfo> createImageInfoArray(PhotoSizesResponse sizeResult)
+    private ArrayList<MediaInfo> createImageInfoArray(PhotoSizesResponse sizeResult)
     {
-        ArrayList<ImageInfo> imageList = new ArrayList<ImageInfo>();
+        ArrayList<MediaInfo> imageList = new ArrayList<MediaInfo>();
         for (PhotoSizeResponse sizeResponse : sizeResult.getSizes())
         {
-            imageList.add(new PhotoSizeResponseToImageInfoAdapter(sizeResponse));
+            imageList.add(new ImageInfoImpl(sizeResponse.getSource(), 
+                    sizeResponse.getWidth(), sizeResponse.getHeight()));
         }
         return imageList;
     }

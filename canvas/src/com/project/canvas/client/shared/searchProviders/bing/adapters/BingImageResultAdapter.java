@@ -4,11 +4,12 @@ import java.util.ArrayList;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.project.canvas.client.shared.searchProviders.ImageInfoImpl;
-import com.project.canvas.client.shared.searchProviders.interfaces.ImageInfo;
-import com.project.canvas.client.shared.searchProviders.interfaces.ImageResult;
+import com.project.canvas.client.shared.searchProviders.MediaInfoImpl;
+import com.project.canvas.client.shared.searchProviders.interfaces.MediaInfo;
+import com.project.canvas.client.shared.searchProviders.interfaces.MediaResult;
 import com.project.gwtbing.client.ImageSearch.Thumbnail;
 
-public class BingImageResultAdapter implements ImageResult 
+public class BingImageResultAdapter implements MediaResult 
 {
     com.project.gwtbing.client.ImageSearch.ImageResult _bingImageResult = null;
     
@@ -28,8 +29,8 @@ public class BingImageResultAdapter implements ImageResult
     }
 
     @Override
-    public void getImageSizes(AsyncCallback<ArrayList<ImageInfo>> callback) {
-        ArrayList<ImageInfo> imageInfoList = new ArrayList<ImageInfo>();
+    public void getMediaSizes(AsyncCallback<ArrayList<MediaInfo>> callback) {
+        ArrayList<MediaInfo> imageInfoList = new ArrayList<MediaInfo>();
         
         Thumbnail thumbnail = this._bingImageResult.getThumbnail();
         imageInfoList.add(new ImageInfoImpl(thumbnail.getUrl(),
@@ -42,7 +43,7 @@ public class BingImageResultAdapter implements ImageResult
 
     @Override
     public String getThumbnailUrl() {
+        
         return this._bingImageResult.getThumbnail().getUrl();
     }
-
 }
