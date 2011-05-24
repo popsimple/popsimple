@@ -19,7 +19,7 @@
 				<g:TextBox ui:field="urlTextBox" addStyleNames="{style.urlTextBox}"/>
 			</g:HTMLPanel>
 			<g:HTMLPanel addStyleNames="{style.padded}">
-				<my:ImagePicker ui:field="imagePicker"/>
+				<my:MediaPicker ui:field="mediaPicker"/>
 			</g:HTMLPanel>
 			<g:Button ui:field="doneButton" addStyleNames="{style.padded}">Done</g:Button>
 			<g:Button ui:field="cancelButton" addStyleNames="{style.padded}">Cancel</g:Button>

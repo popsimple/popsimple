@@ -6,10 +6,10 @@ import com.ghusse.dolomite.flickr.Credentials;
 import com.ghusse.dolomite.flickr.Photo;
 import com.ghusse.dolomite.flickr.PhotosResponse;
 import com.google.gwt.core.client.JsArray;
-import com.project.canvas.client.shared.searchProviders.interfaces.ImageResult;
-import com.project.canvas.client.shared.searchProviders.interfaces.ImageSearchResult;
+import com.project.canvas.client.shared.searchProviders.interfaces.MediaResult;
+import com.project.canvas.client.shared.searchProviders.interfaces.MediaSearchResult;
 
-public class PhotosResponseToImageSearchAdapter implements ImageSearchResult 
+public class PhotosResponseToImageSearchAdapter implements MediaSearchResult 
 {
     private PhotosResponse photosResponse = null;
     private Credentials credentials = null;
@@ -33,9 +33,9 @@ public class PhotosResponseToImageSearchAdapter implements ImageSearchResult
     }
 
     @Override
-    public ArrayList<ImageResult> getImageResults() 
+    public ArrayList<MediaResult> getMediaResults() 
     {
-        ArrayList<ImageResult> imageResultList = new ArrayList<ImageResult>();
+        ArrayList<MediaResult> imageResultList = new ArrayList<MediaResult>();
         JsArray<Photo> photoArray = this.photosResponse.getPhotosPage().getPhotos();
         for (int index = 0; index < photoArray.length(); index++)
         {

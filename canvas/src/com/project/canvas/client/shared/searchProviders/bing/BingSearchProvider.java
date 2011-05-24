@@ -5,7 +5,7 @@ import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.searchProviders.ImageSearchOptions;
 import com.project.canvas.client.shared.searchProviders.bing.adapters.ImageResponseToToImageSearchAdapter;
 import com.project.canvas.client.shared.searchProviders.interfaces.ImageSearchProvider;
-import com.project.canvas.client.shared.searchProviders.interfaces.ImageSearchResult;
+import com.project.canvas.client.shared.searchProviders.interfaces.MediaSearchResult;
 import com.project.gwtbing.client.ImageSearch.BingImageSearchRequest;
 import com.project.gwtbing.client.ImageSearch.ImageResponse;
 
@@ -19,7 +19,7 @@ public class BingSearchProvider implements ImageSearchProvider
     }
     
     @Override
-    public void search(String query, final AsyncCallback<ImageSearchResult> callback) 
+    public void search(String query, final AsyncCallback<MediaSearchResult> callback) 
     {
         this.imageSearchRequest.searchImages(query, new AsyncCallback<ImageResponse>() {
             
@@ -38,7 +38,7 @@ public class BingSearchProvider implements ImageSearchProvider
 
     @Override
     public void search(String query, ImageSearchOptions searchOptions,
-            AsyncCallback<ImageSearchResult> callback) 
+            AsyncCallback<MediaSearchResult> callback) 
     {
         //TODO: Support ImageSearchOptions
         this.search(query, callback);

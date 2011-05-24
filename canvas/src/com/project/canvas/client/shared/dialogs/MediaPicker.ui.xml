@@ -1,6 +1,6 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:d="urn:import:com.google.gwt.dom.client">
 	<ui:style>
 		.resultsPanel {
 		    border-color: #DDDDDD;
@@ -17,11 +17,11 @@
 	<g:HTMLPanel>
 		<g:FlowPanel ui:field="formPanel">
 			<g:HTMLPanel>
+				<g:Frame ui:field="testFrame"></g:Frame>
 				<g:FlowPanel ui:field="providersPanel">
 				</g:FlowPanel>
 				<g:TextBox ui:field="searchText">Search...</g:TextBox>
-				<g:Button ui:field="searchButton"  >Find Images</g:Button>
-				
+				<g:Button ui:field="searchButton">Find Images</g:Button>
 			</g:HTMLPanel>
 		</g:FlowPanel>
 		<g:FlowPanel ui:field="photoSizesPanel"/>

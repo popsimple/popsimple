@@ -1,25 +1,25 @@
 package com.project.canvas.client.shared.searchProviders.youtube;
 
-import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.http.client.UrlBuilder;
 import com.google.gwt.jsonp.client.JsonpRequestBuilder;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.project.canvas.client.resources.CanvasResources;
-import com.project.canvas.client.shared.searchProviders.ImageSearchOptions;
-import com.project.canvas.client.shared.searchProviders.interfaces.ImageSearchProvider;
-import com.project.canvas.client.shared.searchProviders.interfaces.ImageSearchResult;
-import com.project.canvas.client.shared.searchProviders.youtube.adapters.YouTubeResultToImageSearchAdapter;
+import com.project.canvas.client.shared.searchProviders.interfaces.MediaSearchProvider;
+import com.project.canvas.client.shared.searchProviders.interfaces.MediaSearchResult;
+import com.project.canvas.client.shared.searchProviders.interfaces.VideoSearchProvider;
+import com.project.canvas.client.shared.searchProviders.youtube.adapters.YouTubeResultAdapter;
 
-public class YouTubeSearchProvider implements ImageSearchProvider 
+public class YouTubeSearchProvider implements VideoSearchProvider 
 {
     @Override
-    public void search(String query, final AsyncCallback<ImageSearchResult> callback) {
+    public void search(String query, final AsyncCallback<MediaSearchResult> callback) {
         UrlBuilder urlBuilder = new UrlBuilder();
         urlBuilder.setProtocol("HTTP");
         urlBuilder.setHost("gdata.youtube.com");
         urlBuilder.setPath("feeds/api/videos");
         urlBuilder.setParameter("alt", "jsonc");
         urlBuilder.setParameter("v", "2");
+        urlBuilder.setParameter("format", "5"); // only embeddable videos.
         urlBuilder.setParameter("q", query);
         
         JsonpRequestBuilder requestBuilder = new JsonpRequestBuilder();
@@ -33,15 +33,9 @@ public class YouTubeSearchProvider implements ImageSearchProvider
 
             @Override
             public void onSuccess(YouTubeResult result) {
-                callback.onSuccess(new YouTubeResultToImageSearchAdapter(result));
+                callback.onSuccess(new YouTubeResultAdapter(result));
             }
         });
-    }
-
-    @Override
-    public void search(String query, ImageSearchOptions searchOptions,
-            AsyncCallback<ImageSearchResult> callback) {
-        this.search(query, callback);
     }
 
     @Override

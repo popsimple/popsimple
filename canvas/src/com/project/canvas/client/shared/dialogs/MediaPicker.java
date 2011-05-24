@@ -20,6 +20,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Frame;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.ScrollPanel;
@@ -29,17 +30,18 @@ import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.NativeUtils;
 import com.project.canvas.client.shared.RegistrationsManager;
 import com.project.canvas.client.shared.events.SimpleEvent;
-import com.project.canvas.client.shared.searchProviders.interfaces.ImageInfo;
-import com.project.canvas.client.shared.searchProviders.interfaces.ImageResult;
+import com.project.canvas.client.shared.searchProviders.interfaces.MediaInfo;
+import com.project.canvas.client.shared.searchProviders.interfaces.MediaResult;
 import com.project.canvas.client.shared.searchProviders.interfaces.ImageSearchProvider;
-import com.project.canvas.client.shared.searchProviders.interfaces.ImageSearchResult;
+import com.project.canvas.client.shared.searchProviders.interfaces.MediaSearchProvider;
+import com.project.canvas.client.shared.searchProviders.interfaces.MediaSearchResult;
 import com.project.canvas.client.shared.widgets.RadioButtonPanel;
 
-public class ImagePicker extends Composite {
+public class MediaPicker extends Composite {
 
-    private static ImagePickerUiBinder uiBinder = GWT.create(ImagePickerUiBinder.class);
+    private static MediaPickerUiBinder uiBinder = GWT.create(MediaPickerUiBinder.class);
 
-    interface ImagePickerUiBinder extends UiBinder<Widget, ImagePicker> {
+    interface MediaPickerUiBinder extends UiBinder<Widget, MediaPicker> {
     }
 
     @UiField
@@ -62,16 +64,19 @@ public class ImagePicker extends Composite {
     
     @UiField
     FlowPanel providersPanel;
+    
+    @UiField
+    Frame testFrame;
 
-    protected final SimpleEvent<ImageInfo> imagePicked = new SimpleEvent<ImageInfo>();
+    protected final SimpleEvent<MediaInfo> mediaPicked = new SimpleEvent<MediaInfo>();
 
     protected final RegistrationsManager registrationsManager = new RegistrationsManager();
-    private ImageSearchProvider _selectedSearchProvider = null; 
+    private MediaSearchProvider _selectedSearchProvider = null; 
 
-    private InlineLabel selectedImage;
-    private HashMap<ImageSearchProvider, RadioButtonPanel> _searchProviderMap = new HashMap<ImageSearchProvider, RadioButtonPanel>();
+    private InlineLabel selectedThumbnail;
+    private HashMap<MediaSearchProvider, RadioButtonPanel> _searchProviderMap = new HashMap<MediaSearchProvider, RadioButtonPanel>();
 
-    public ImagePicker() 
+    public MediaPicker() 
     {
         initWidget(uiBinder.createAndBindUi(this));
         this.searchText.addKeyPressHandler(new KeyPressHandler() {
@@ -85,13 +90,13 @@ public class ImagePicker extends Composite {
         });
     }
     
-    public void setSearchProviders(List<ImageSearchProvider> searchProviders)
+    public void setSearchProviders(List<? extends MediaSearchProvider> searchProviders)
     {
         if (0 == searchProviders.size())
         {
             return;
         }
-        for (final ImageSearchProvider searchProvider : searchProviders)
+        for (final MediaSearchProvider searchProvider : searchProviders)
         {
             addProvider(searchProvider);
         }
@@ -99,7 +104,7 @@ public class ImagePicker extends Composite {
         this._searchProviderMap.get(this._selectedSearchProvider).getRadioButton().setValue(true);
     }
 
-    public void addProvider(final ImageSearchProvider searchProvider)
+    public void addProvider(final MediaSearchProvider searchProvider)
     {
         RadioButtonPanel radioButtonPanel = new RadioButtonPanel();
         radioButtonPanel.addStyleName(
@@ -144,9 +149,9 @@ public class ImagePicker extends Composite {
             return;
         }
         searchButton.setEnabled(false);
-        this._selectedSearchProvider.search(text, new AsyncCallback<ImageSearchResult>() {
+        this._selectedSearchProvider.search(text, new AsyncCallback<MediaSearchResult>() {
             @Override
-            public void onSuccess(ImageSearchResult result) {
+            public void onSuccess(MediaSearchResult result) {
                 setSearchResult(result);
                 searchButton.setEnabled(true);
             }
@@ -159,13 +164,13 @@ public class ImagePicker extends Composite {
         });
     }
 
-    protected void setSearchResult(ImageSearchResult result) 
+    protected void setSearchResult(MediaSearchResult result) 
     {
         registrationsManager.clear();
         resultsPanel.clear();
         resultsPanelContainer.scrollToTop();
 
-        for (ImageResult imageResult : result.getImageResults()) 
+        for (MediaResult imageResult : result.getMediaResults()) 
         {
             Widget imageWidget = createPhoto(imageResult);
             if (null != imageWidget) {
@@ -174,7 +179,7 @@ public class ImagePicker extends Composite {
         }
     }
 
-    public Widget createPhoto(final ImageResult imageResult) {
+    public Widget createPhoto(final MediaResult imageResult) {
         if (null == imageResult) {
             return null;
         }
@@ -192,21 +197,21 @@ public class ImagePicker extends Composite {
         return image;
     }
 
-    public HandlerRegistration addImagePickedHandler(SimpleEvent.Handler<ImageInfo> handler) {
-        return this.imagePicked.addHandler(handler);
+    public HandlerRegistration addMediaPickedHandler(SimpleEvent.Handler<MediaInfo> handler) {
+        return this.mediaPicked.addHandler(handler);
     }
 
-    public void imageSelected(final ImageResult imageResult, final InlineLabel image) {
-        if (null != selectedImage) {
-            selectedImage.removeStyleName(CanvasResources.INSTANCE.main().selected());
+    public void imageSelected(final MediaResult imageResult, final InlineLabel image) {
+        if (null != selectedThumbnail) {
+            selectedThumbnail.removeStyleName(CanvasResources.INSTANCE.main().selected());
         }
-        this.selectedImage = image;
+        this.selectedThumbnail = image;
         image.addStyleName(CanvasResources.INSTANCE.main().selected());
         
         photoSizesPanel.clear();
-        imageResult.getImageSizes(new AsyncCallback<ArrayList<ImageInfo>>() {
+        imageResult.getMediaSizes(new AsyncCallback<ArrayList<MediaInfo>>() {
             @Override
-            public void onSuccess(ArrayList<ImageInfo> result) {
+            public void onSuccess(ArrayList<MediaInfo> result) {
                 setPhotoSizes(result);
             }
 
@@ -217,35 +222,35 @@ public class ImagePicker extends Composite {
         });
     }
 
-    protected void setPhotoSizes(ArrayList<ImageInfo> result) 
+    protected void setPhotoSizes(ArrayList<MediaInfo> result) 
     {
-        final HashMap<RadioButton, ImageInfo> selectionMap = new HashMap<RadioButton, ImageInfo>();
+        final HashMap<RadioButton, MediaInfo> selectionMap = new HashMap<RadioButton, MediaInfo>();
         photoSizesPanel.clear();
         int defaultSelectionIndex = result.size() / 2;
         int i = 0;
-        for (final ImageInfo imageInfo : result) {
-            String sizeStr = imageInfo.getWidth() + " x " + imageInfo.getHeight();
-            RadioButton radioButton = new RadioButton("sizes", sizeStr);
-            selectionMap.put(radioButton, imageInfo);
+        for (final MediaInfo mediaInfo : result) {
+            RadioButton radioButton = new RadioButton("sizes", mediaInfo.getSizeDescription());
+            selectionMap.put(radioButton, mediaInfo);
             photoSizesPanel.add(radioButton);
             radioButton.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
                 @Override
                 public void onValueChange(ValueChangeEvent<Boolean> event) {
                     if (event.getValue()) {
-                        imageSizeSelected(imageInfo);
+                        imageSizeSelected(mediaInfo);
                     }
                 }
             });
         	if (i == defaultSelectionIndex) {
         		radioButton.setValue(true);
-                imageSizeSelected(imageInfo);
+                imageSizeSelected(mediaInfo);
         	}
         	i++;
         }
         photoSizesPanel.setVisible(true);
     }
 
-    public void imageSizeSelected(final ImageInfo selectedSize) {
-        imagePicked.dispatch(selectedSize);
+    public void imageSizeSelected(final MediaInfo selectedSize) {
+        mediaPicked.dispatch(selectedSize);
+        testFrame.setUrl(selectedSize.getMediaUrl());
     }
 }

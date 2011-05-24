@@ -18,6 +18,7 @@ import com.project.canvas.client.canvastools.base.ToolboxItem;
 import com.project.canvas.client.canvastools.image.ImageToolFactory;
 import com.project.canvas.client.canvastools.tasklist.TaskListToolFactory;
 import com.project.canvas.client.canvastools.textedit.TextEditToolFactory;
+import com.project.canvas.client.canvastools.video.VideoToolFactory;
 import com.project.canvas.client.shared.ElementUtils;
 import com.project.canvas.client.shared.RegistrationsManager;
 import com.project.canvas.client.shared.ZIndexAllocator;
@@ -27,15 +28,13 @@ import com.project.canvas.client.worksheet.interfaces.Worksheet;
 import com.project.canvas.client.worksheet.interfaces.WorksheetView;
 import com.project.canvas.client.worksheet.interfaces.WorksheetView.OperationStatus;
 import com.project.canvas.client.worksheet.interfaces.WorksheetView.ToolCreationRequest;
+import com.project.canvas.shared.ThrowableUtils;
 import com.project.canvas.shared.contracts.CanvasService;
 import com.project.canvas.shared.contracts.CanvasServiceAsync;
 import com.project.canvas.shared.data.CanvasPage;
 import com.project.canvas.shared.data.CanvasPageOptions;
 import com.project.canvas.shared.data.ElementData;
-import com.project.canvas.shared.data.ImageData;
 import com.project.canvas.shared.data.Point2D;
-import com.project.canvas.shared.data.TaskListData;
-import com.project.canvas.shared.data.TextData;
 import com.project.canvas.shared.data.Transform2D;
 
 public class WorksheetImpl implements Worksheet
@@ -144,7 +143,8 @@ public class WorksheetImpl implements Worksheet
             @Override
             public void onFailure(Throwable caught)
             {
-                view.onSaveOperationChange(OperationStatus.FAILURE, caught.toString());
+                view.onSaveOperationChange(OperationStatus.FAILURE, 
+                        ThrowableUtils.joinStackTrace(caught));
             }
 
             @Override
@@ -206,17 +206,25 @@ public class WorksheetImpl implements Worksheet
 
     private void createToolInstancesFromData(HashMap<Long, ElementData> updatedElements)
     {
+        //TODO: Refactor
         for (ElementData newElement : this.sortByZIndex(updatedElements.values())) {
             CanvasToolFactory<? extends CanvasTool<? extends ElementData>> factory = null;
-            Class<?> cls = newElement.getClass();
-            if (cls.equals(TextData.class)) {
+            if (newElement.factoryUniqueId.equals(TextEditToolFactory.UNIQUE_ID)) 
+            {
                 factory = new TextEditToolFactory();
-            } else if (cls.equals(TaskListData.class)) {
+            } 
+            else if (newElement.factoryUniqueId.equals(TaskListToolFactory.UNIQUE_ID)) 
+            { 
                 factory = new TaskListToolFactory();
-            } else if (cls.equals(ImageData.class)) {
+            } 
+            else if (newElement.factoryUniqueId.equals(ImageToolFactory.UNIQUE_ID)) 
+            {
                 factory = new ImageToolFactory();
             }
-
+            else if (newElement.factoryUniqueId.equals(VideoToolFactory.UNIQUE_ID)) 
+            {
+                factory = new VideoToolFactory();
+            }
             if (null == factory) {
                 continue;
             }

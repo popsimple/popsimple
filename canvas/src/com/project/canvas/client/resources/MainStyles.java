@@ -135,4 +135,10 @@ public interface MainStyles extends CssResource {
     String toolboxVideoIconStyle();
     
     String videoCreateModeCanvasStyle();
+    
+    String videoBox();
+    
+    String videoToolEmpty();
+    
+    String videoToolSet ();
 }

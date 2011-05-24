@@ -477,3 +477,20 @@
 {
 	cursor: default;
 }
+
+.videoBox
+{
+	display:block;
+	border-radius:2px;
+}
+.videoToolEmpty {
+	width:200px;
+	height:200px;
+	background-color:#aaa;
+}
+.videoToolSet {
+	width:auto;
+	height:auto;
+	background-repeat: no-repeat;
+    background-size: 100% 100%;
+}

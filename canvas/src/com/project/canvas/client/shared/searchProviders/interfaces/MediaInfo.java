@@ -1,8 +1,10 @@
 package com.project.canvas.client.shared.searchProviders.interfaces;
 
-public interface ImageInfo 
+public interface MediaInfo 
 {
     String getMediaUrl();
+    String getSizeDescription();
+    
     int getWidth();
     int getHeight();
 }

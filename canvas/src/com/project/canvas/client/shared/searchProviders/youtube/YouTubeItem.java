@@ -12,4 +12,6 @@ public class YouTubeItem extends JavaScriptObject
     public final native String getTitle() /*-{ return this.title; }-*/;
     
     public final native YouTubeThumbnail getThumbnail() /*-{ return this.thumbnail; }-*/;
+    
+    public final native String getEmbeddedUrl() /*-{ return this.content['5']; }-*/;
 }

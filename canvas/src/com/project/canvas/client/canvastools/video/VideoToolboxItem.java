@@ -8,7 +8,8 @@ import com.project.canvas.shared.data.ElementData;
 
 public class VideoToolboxItem implements ToolboxItem
 {
-
+    private static VideoToolFactory factory = new VideoToolFactory();
+    
     @Override
     public String getToolboxIconStyle() {
         return CanvasResources.INSTANCE.main().toolboxVideoIconStyle();
@@ -32,7 +33,7 @@ public class VideoToolboxItem implements ToolboxItem
     @Override
     public CanvasToolFactory<? extends CanvasTool<? extends ElementData>> getToolFactory() {
         // TODO Auto-generated method stub
-        return null;
+        return factory;
     }
 
 }

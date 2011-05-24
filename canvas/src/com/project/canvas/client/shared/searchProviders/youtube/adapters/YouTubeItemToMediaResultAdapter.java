@@ -3,16 +3,17 @@ package com.project.canvas.client.shared.searchProviders.youtube.adapters;
 import java.util.ArrayList;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.project.canvas.client.shared.searchProviders.interfaces.ImageInfo;
-import com.project.canvas.client.shared.searchProviders.interfaces.ImageResult;
+import com.project.canvas.client.shared.searchProviders.MediaInfoImpl;
+import com.project.canvas.client.shared.searchProviders.interfaces.MediaInfo;
+import com.project.canvas.client.shared.searchProviders.interfaces.MediaResult;
 import com.project.canvas.client.shared.searchProviders.youtube.YouTubeItem;
 import com.project.canvas.client.shared.searchProviders.youtube.YouTubeThumbnail;
 
-public class YouTubeItemToImageResultAdapter implements ImageResult  
+public class YouTubeItemToMediaResultAdapter implements MediaResult  
 {
     private YouTubeItem _youTubeItem;
 
-    public YouTubeItemToImageResultAdapter(YouTubeItem youTubeItem)
+    public YouTubeItemToMediaResultAdapter(YouTubeItem youTubeItem)
     {
         this._youTubeItem = youTubeItem;
     }
@@ -30,9 +31,11 @@ public class YouTubeItemToImageResultAdapter implements ImageResult
     }
 
     @Override
-    public void getImageSizes(AsyncCallback<ArrayList<ImageInfo>> callback) {
-        // TODO Auto-generated method stub
-        
+    public void getMediaSizes(AsyncCallback<ArrayList<MediaInfo>> callback) {
+        ArrayList<MediaInfo> mediaSizes = new ArrayList<MediaInfo>();
+        mediaSizes.add(new MediaInfoImpl(this._youTubeItem.getEmbeddedUrl(),
+                "Standard", 400, 400));
+        callback.onSuccess(mediaSizes);
     }
 
     @Override
