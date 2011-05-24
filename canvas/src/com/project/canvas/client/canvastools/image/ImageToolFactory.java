@@ -6,8 +6,6 @@ import com.project.canvas.client.canvastools.base.CanvasToolFactoryBase;
 import com.project.canvas.client.shared.searchProviders.bing.BingSearchProvider;
 import com.project.canvas.client.shared.searchProviders.flickr.FlickrSearchProvider;
 import com.project.canvas.client.shared.searchProviders.interfaces.ImageSearchProvider;
-import com.project.canvas.client.shared.searchProviders.interfaces.MediaSearchProvider;
-import com.project.canvas.client.shared.searchProviders.youtube.YouTubeSearchProvider;
 import com.project.canvas.shared.ApiKeys;
 import com.project.canvas.shared.data.MediaData;
 

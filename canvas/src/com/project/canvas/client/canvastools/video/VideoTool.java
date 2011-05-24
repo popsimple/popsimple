@@ -5,7 +5,6 @@ import java.util.Collection;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.LoadEvent;
@@ -21,7 +20,6 @@ import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.canvastools.base.CanvasToolCommon;
 import com.project.canvas.client.canvastools.media.MediaToolOptions;
 import com.project.canvas.client.resources.CanvasResources;
-import com.project.canvas.client.shared.ElementUtils;
 import com.project.canvas.client.shared.RegistrationsManager;
 import com.project.canvas.client.shared.WidgetUtils;
 import com.project.canvas.client.shared.events.SimpleEvent;

@@ -1,7 +1,6 @@
 package com.project.canvas.client.canvastools.tasklist;
 
 import com.project.canvas.client.canvastools.base.CanvasToolFactoryBase;
-import com.project.canvas.shared.data.TaskData;
 import com.project.canvas.shared.data.TaskListData;
 
 public class TaskListToolFactory extends CanvasToolFactoryBase<TaskListTool> {

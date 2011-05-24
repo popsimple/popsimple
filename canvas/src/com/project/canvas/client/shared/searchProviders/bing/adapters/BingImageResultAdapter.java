@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.project.canvas.client.shared.searchProviders.ImageInfoImpl;
-import com.project.canvas.client.shared.searchProviders.MediaInfoImpl;
 import com.project.canvas.client.shared.searchProviders.interfaces.MediaInfo;
 import com.project.canvas.client.shared.searchProviders.interfaces.MediaResult;
 import com.project.gwtbing.client.ImageSearch.Thumbnail;
