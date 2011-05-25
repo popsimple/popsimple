@@ -5,8 +5,8 @@ import com.project.canvas.shared.data.CanvasPage;
 
 public interface CanvasServiceAsync {
 
-    void SavePage(CanvasPage page, AsyncCallback<CanvasPage> callback);
+    void savePage(CanvasPage page, AsyncCallback<CanvasPage> callback);
 
-    void GetPage(long id, AsyncCallback<CanvasPage> callback);
+    void getPage(long id, AsyncCallback<CanvasPage> callback);
 
 }

@@ -11,7 +11,7 @@ public class PointTransformer
         SNAP_Y, // sets x = 0
     }
     
-    public static Point2D Transform(Point2D pos, TransformationMode mode) 
+    public static Point2D transform(Point2D pos, TransformationMode mode) 
     {
         switch (mode) {
             case NONE:   return pos;

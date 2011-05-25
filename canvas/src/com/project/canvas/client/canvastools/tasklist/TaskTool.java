@@ -80,7 +80,7 @@ public class TaskTool extends Composite implements Focusable, TakesValue<TaskDat
             }
         });
 
-        this.setImageUrl(imageProvider.GetDefaultImageUrl());
+        this.setImageUrl(imageProvider.getDefaultImageUrl());
     }
 
     // TODO: Share with ImageTool.
@@ -88,7 +88,7 @@ public class TaskTool extends Composite implements Focusable, TakesValue<TaskDat
         this.imageTask.getElement().getStyle().setBackgroundImage("url(\"" + url + "\")");
     }
 
-    public void AddKillRequestEventHandler(SimpleEvent.Handler<TaskTool> handler) {
+    public void addKillRequestEventHandler(SimpleEvent.Handler<TaskTool> handler) {
         this.killRequestEvent.addHandler(handler);
     }
 
@@ -98,7 +98,7 @@ public class TaskTool extends Composite implements Focusable, TakesValue<TaskDat
     }
 
     protected void textValueChanges(String text) {
-        this.setImageUrl(imageProvider.GetImageUrl(text));
+        this.setImageUrl(imageProvider.getImageUrl(text));
     }
 
     protected void setCompleted(boolean checked) {

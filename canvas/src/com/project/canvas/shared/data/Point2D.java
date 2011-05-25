@@ -12,12 +12,15 @@ public class Point2D implements Serializable, IsSerializable {
     private int x;
     private int y;
 
-    public Point2D() {
-    }
+    public Point2D() {}
 
     public Point2D(int x, int y) {
         this.x = x;
         this.y = y;
+    }
+
+    public Point2D abs() {
+    	return new Point2D(Math.abs(this.x), Math.abs(this.y));
     }
 
     public int getX() {
@@ -28,46 +31,45 @@ public class Point2D implements Serializable, IsSerializable {
         return y;
     }
 
-    public Point2D minus(Point2D other) {
-        return new Point2D(this.x - other.x, this.y - other.y);
+    @Override
+    public boolean equals(Object other) {
+    	if (null == other) {
+    		return false;
+    	}
+    	if (other.getClass() != this.getClass()) {
+    		return false;
+    	}
+    	Point2D otherPoint = (Point2D) other;
+    	return ((this.x == otherPoint.x) && (this.y == otherPoint.y));
     }
 
-    public Point2D plus(Point2D other) {
-        return new Point2D(this.x + other.x, this.y + other.y);
+    @Override
+    public int hashCode() {
+    	return (this.x + this.y + 37) * 13;
+    }
+    
+    public Point2D minus(Point2D other) {
+        return new Point2D(this.x - other.x, this.y - other.y);
     }
 
     public Point2D mul(double scalar) {
         return new Point2D((int) (this.x * scalar), (int) (this.y * scalar));
     }
-
     public Point2D mul(int scalar) {
         return new Point2D(this.x * scalar, this.y * scalar);
+    }
+    
+    public Point2D plus(Point2D other) {
+        return new Point2D(this.x + other.x, this.y + other.y);
     }
 
     public double radians() {
         return Math.atan2(y, x);
     }
-
+    
+    
     public double radius() {
         return Math.sqrt(x * x + y * y);
-    }
-    
-    public Point2D abs() {
-    	return new Point2D(Math.abs(this.x), Math.abs(this.y));
-    }
-
-    public static Point2D min(Point2D first, Point2D other) {
-        return new Point2D(Math.min(first.x, other.x), Math.min(first.y, other.y));
-    }
-
-    public static Point2D max(Point2D first, Point2D other) {
-        return new Point2D(Math.max(first.x, other.x), Math.max(first.y, other.y));
-    }
-    
-    
-    public static Point2D fromPolar(double radius, double radians)
-    {
-    	return new Point2D((int)(radius * Math.cos(radians)), (int) (radius * Math.sin(radians)));
     }
     
     public Point2D rotate(double radians)
@@ -88,5 +90,18 @@ public class Point2D implements Serializable, IsSerializable {
 		int direction = toRotated ? 1 : -1;
 		return this.minus(axisOffset.rotate(radians).minus(axisOffset).mul(direction));
 	}
+
+    public static Point2D fromPolar(double radius, double radians)
+    {
+    	return new Point2D((int)(radius * Math.cos(radians)), (int) (radius * Math.sin(radians)));
+    }
+    
+    public static Point2D max(Point2D first, Point2D other) {
+        return new Point2D(Math.max(first.x, other.x), Math.max(first.y, other.y));
+    }
+
+    public static Point2D min(Point2D first, Point2D other) {
+        return new Point2D(Math.min(first.x, other.x), Math.min(first.y, other.y));
+    }
 
 }

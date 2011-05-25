@@ -23,7 +23,7 @@ public class UrlTextParser implements TextParser {
         return this.embeddableUrl;
     }
 
-    public boolean Parse(String text) {
+    public boolean parse(String text) {
         if (URL_YOUTUBE.test(text)) {
             this.urlType = UrlType.Video;
             MatchResult match = URL_YOUTUBE.exec(text);

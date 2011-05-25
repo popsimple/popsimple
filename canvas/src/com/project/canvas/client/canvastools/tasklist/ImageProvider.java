@@ -11,10 +11,10 @@ public class ImageProvider {
     HashMap<String, String> images = new HashMap<String, String>();
 
     public ImageProvider() {
-        this.InitializeImages();
+        this.initializeImages();
     }
 
-    private void InitializeImages() {
+    private void initializeImages() {
         this.images.put("robot", CanvasResources.INSTANCE.robotIcon32().getURL()); 
         this.images.put("fix", CanvasResources.INSTANCE.fixIcon32().getURL());
         this.images.put("bike", CanvasResources.INSTANCE.bicycleIcon32().getURL());
@@ -24,11 +24,11 @@ public class ImageProvider {
         this.images.put("gay", CanvasResources.INSTANCE.rainbowIcon32().getURL());
     }
 
-    public String GetDefaultImageUrl() {
+    public String getDefaultImageUrl() {
         return CanvasResources.INSTANCE.taskDefaultIcon().getURL();
     }
 
-    public String GetImageUrl(String imageTag) {
+    public String getImageUrl(String imageTag) {
         for (String key : this.images.keySet()) {
             // TODO: Use consts for the RegExp flags.
             if (RegExp.compile(key, "i").test(imageTag)) {

@@ -109,7 +109,7 @@ public class WorksheetOptionsViewImpl extends Composite implements WorksheetOpti
     @Override
     public void setValue(CanvasPageOptions newValue) {
         this.value = newValue != null ? newValue : new CanvasPageOptions();
-        this.urlTextBox.setText(GenericUtils.DefaultIfNull(this.value.backgroundImageURL, ""));
+        this.urlTextBox.setText(GenericUtils.defaultIfNull(this.value.backgroundImageURL, ""));
         this.repeatOption.setValue(this.value.backgroundRepeat.toLowerCase().trim().equals("repeat"));
         this.stretchXOption.setValue(false);
         this.stretchYOption.setValue(false);

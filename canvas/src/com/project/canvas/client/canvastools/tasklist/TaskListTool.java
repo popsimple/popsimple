@@ -69,7 +69,7 @@ public class TaskListTool extends Composite implements CanvasTool<TaskListData>,
     }
 
     public void addTaskWidget(TaskTool taskWidget) {
-        taskWidget.AddKillRequestEventHandler(new Handler<TaskTool>() {
+        taskWidget.addKillRequestEventHandler(new Handler<TaskTool>() {
 
             public void onFire(TaskTool arg) {
                 // TODO Auto-generated method stub

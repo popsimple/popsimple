@@ -17,7 +17,7 @@ import com.project.canvas.shared.data.ElementData;
 public class CanvasServiceImpl extends RemoteServiceServlet implements CanvasService {
 
     @Override
-    public CanvasPage SavePage(CanvasPage page) {
+    public CanvasPage savePage(CanvasPage page) {
         ObjectDatastore datastore = new AnnotationObjectDatastore();
         // String serverInfo = getServletContext().getServerInfo();
         // String userAgent = getThreadLocalRequest().getHeader("User-Agent");
@@ -42,11 +42,11 @@ public class CanvasServiceImpl extends RemoteServiceServlet implements CanvasSer
 
         datastore.store(page);
 
-        return this.GetPage(page.id);
+        return this.getPage(page.id);
     }
 
     @Override
-    public CanvasPage GetPage(long id) {
+    public CanvasPage getPage(long id) {
         ObjectDatastore datastore = new AnnotationObjectDatastore();
         CanvasPage page = datastore.load(CanvasPage.class, id);
         return page;

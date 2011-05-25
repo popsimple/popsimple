@@ -2,12 +2,12 @@ package com.project.canvas.shared;
 
 public class StringUtils 
 {
-    public static String DefaultIfEmptyOrNull(String str, String defaultStr)
+    public static String defaultIfEmptyOrNull(String str, String defaultStr)
     {
-        return StringUtils.IsEmptyOrNull(str) ? defaultStr : str;
+        return StringUtils.isEmptyOrNull(str) ? defaultStr : str;
     }
     
-    public static boolean IsEmptyOrNull(String str)
+    public static boolean isEmptyOrNull(String str)
     {
         if ((null == str) || (str.isEmpty()))
         {

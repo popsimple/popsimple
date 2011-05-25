@@ -133,7 +133,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
     @Override
     public HandlerRegistration addSaveHandler(Handler<Void> handler) {
-        return saveButton.addClickHandler(SimpleEvent.AsClickHandler(handler));
+        return saveButton.addClickHandler(SimpleEvent.asClickHandler(handler));
     }
 
     @Override
@@ -269,7 +269,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
     @Override
     public HandlerRegistration addViewHandler(Handler<Void> handler) {
-        return viewButton.addClickHandler(SimpleEvent.AsClickHandler(handler));
+        return viewButton.addClickHandler(SimpleEvent.asClickHandler(handler));
     }
 
     @Override

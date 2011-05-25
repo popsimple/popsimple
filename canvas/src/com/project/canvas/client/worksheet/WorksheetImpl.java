@@ -10,6 +10,7 @@ import java.util.TreeMap;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.project.canvas.client.canvastools.base.CanvasTool;
@@ -83,8 +84,7 @@ public class WorksheetImpl implements Worksheet
             }
         }
 
-        final WorksheetImpl that = this;
-        service.GetPage(id, new AsyncCallback<CanvasPage>() {
+        service.getPage(id, new AsyncCallback<CanvasPage>() {
             @Override
             public void onFailure(Throwable caught)
             {
@@ -129,10 +129,11 @@ public class WorksheetImpl implements Worksheet
             CanvasTool<? extends ElementData> tool = entry.getKey();
             ToolInstanceInfo toolInfo = entry.getValue();
             ElementData toolData = tool.getValue();
-            int x = Integer.valueOf(toolInfo.toolFrame.getElement().getOffsetLeft());
-            int y = Integer.valueOf(toolInfo.toolFrame.getElement().getOffsetTop());
+            Element frameElement = toolInfo.toolFrame.getElement();
             toolData.zIndex = ZIndexAllocator.getElementZIndex(toolInfo.toolFrame.getElement());
-            toolData.transform = new Transform2D(new Point2D(x, y), toolInfo.toolFrame.getToolSize(), ElementUtils.getRotation(toolInfo.toolFrame.getElement()));
+			toolData.transform = new Transform2D(ElementUtils.getElementOffsetPosition(frameElement),
+ 												 toolInfo.toolFrame.getToolSize(),
+ 												 ElementUtils.getRotation(frameElement));
             activeElems.add(toolData);
         }
         this.page.elements.clear();
@@ -142,7 +143,7 @@ public class WorksheetImpl implements Worksheet
 
         view.onSaveOperationChange(OperationStatus.PENDING, null);
 
-        service.SavePage(page, new AsyncCallback<CanvasPage>() {
+        service.savePage(page, new AsyncCallback<CanvasPage>() {
             @Override
             public void onFailure(Throwable caught)
             {
@@ -443,7 +444,7 @@ public class WorksheetImpl implements Worksheet
 
     private void serverLoadCompleted(CanvasPage result)
     {
-        if ((this.page.id != null) && (result.id != this.page.id)) {
+        if ((null != this.page.id) && (false == this.page.id.equals(result.id))) {
             String newURL = Window.Location.createUrlBuilder().setHash(result.id.toString()).buildString();
             Window.Location.replace(newURL);
         }

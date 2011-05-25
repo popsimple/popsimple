@@ -148,7 +148,7 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData>
             nicEditor.getEditorElement().focus();
         } 
         else {
-            this.editSize = ElementUtils.getElementSize(this.getElement());
+            this.editSize = ElementUtils.getElementOffsetSize(this.getElement());
 
             // Must be done AFTER saving size and move offset
             this.removeStyleName(CanvasResources.INSTANCE.main().textEditFocused());

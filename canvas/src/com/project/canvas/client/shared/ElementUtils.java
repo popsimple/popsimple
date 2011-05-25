@@ -97,7 +97,7 @@ public abstract class ElementUtils {
     };
     
     public static void setElementPosition(final Point2D pos, final Element element, int animationDuration) {
-        final Point2D oldPos = getElementPosition(element);
+        final Point2D oldPos = getElementOffsetPosition(element);
         PositionAnimation anim = new PositionAnimation(oldPos, pos, element);
         anim.run(animationDuration);
     }
@@ -112,7 +112,7 @@ public abstract class ElementUtils {
 		element.getStyle().setTop(pos.getY(), Unit.PX);
     }
 	
-	public static Point2D getElementPosition(Element element) {
+	public static Point2D getElementOffsetPosition(Element element) {
     	return new Point2D(element.getOffsetLeft(), element.getOffsetTop());
     }
 	
@@ -120,7 +120,15 @@ public abstract class ElementUtils {
     	return new Point2D(element.getAbsoluteLeft(), element.getAbsoluteTop());
     }
     
-	public static Point2D getElementSize(Element element) {
+    /**
+     * Note: this size includes padding, scroll bars (and margin?) of the element. 
+     * See https://developer.mozilla.org/en/Determining_the_dimensions_of_elements
+     */
+	public static Point2D getElementOffsetSize(Element element) {
 		return new Point2D(element.getOffsetWidth(), element.getOffsetHeight());
 	}
+	
+    public static Point2D getElementClientSize(Element element) {
+        return new Point2D(element.getClientWidth(), element.getClientHeight());
+    }
 }

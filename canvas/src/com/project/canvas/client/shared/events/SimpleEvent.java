@@ -30,7 +30,7 @@ public class SimpleEvent<T> {
         }
     }
     
-    public static ClickHandler AsClickHandler(final Handler<Void> handler) {
+    public static ClickHandler asClickHandler(final Handler<Void> handler) {
     	return new ClickHandler(){
 			@Override
 			public void onClick(ClickEvent event) {

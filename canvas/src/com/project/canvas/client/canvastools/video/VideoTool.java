@@ -13,13 +13,17 @@ import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Frame;
+import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.Label;
 import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.canvastools.base.CanvasToolCommon;
 import com.project.canvas.client.canvastools.media.MediaToolOptions;
 import com.project.canvas.client.resources.CanvasResources;
+import com.project.canvas.client.shared.ElementUtils;
 import com.project.canvas.client.shared.RegistrationsManager;
 import com.project.canvas.client.shared.WidgetUtils;
 import com.project.canvas.client.shared.events.SimpleEvent;
@@ -33,6 +37,8 @@ import com.project.canvas.shared.data.Point2D;
 public class VideoTool extends FlowPanel implements CanvasTool<MediaData> 
 {
     private static final Point2D DEFAULT_SIZE = new Point2D(425, 349);
+    private static final String OPTIONS_LABEL_VIDEO_UNSET = "Put a video...";
+    private static final String OPTIONS_LABEL_VIDEO_SET = "Change video...";
     private final SimpleEvent<MouseEvent<?>> moveStartEvent = new SimpleEvent<MouseEvent<?>>();
 
     private MediaData data = null;
@@ -43,6 +49,7 @@ public class VideoTool extends FlowPanel implements CanvasTool<MediaData>
 	private ArrayList<VideoSearchProvider> searchProviders = new ArrayList<VideoSearchProvider>();  
 	private final RegistrationsManager registrationsManager = new RegistrationsManager();
     private boolean viewMode;
+    private final Label optionsLabel = new Label(OPTIONS_LABEL_VIDEO_UNSET); 
 	
 	public VideoTool(Collection<VideoSearchProvider> videoSearchProviders) 
     {
@@ -56,7 +63,10 @@ public class VideoTool extends FlowPanel implements CanvasTool<MediaData>
         this.videoFrame.addStyleName(CanvasResources.INSTANCE.main().videoFrame());
         this.videoFrame.setVisible(false);
         
+        this.optionsLabel.addStyleName(CanvasResources.INSTANCE.main().videoOptionsLabel());
+        
         this.add(videoFrame);
+        this.add(optionsLabel);
     }
     
     @Override
@@ -69,7 +79,7 @@ public class VideoTool extends FlowPanel implements CanvasTool<MediaData>
         registrationsManager.add(this.addDomHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                uploadVideo();
+                showOptionsDialog();
 
             }
         }, ClickEvent.getType()));
@@ -81,9 +91,15 @@ public class VideoTool extends FlowPanel implements CanvasTool<MediaData>
                 }
             }
         }, MouseDownEvent.getType()));
+        registrationsManager.add(this.optionsLabel.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                showOptionsDialog();
+            }
+        }));
     }
 
-    protected void uploadVideo() {
+    protected void showOptionsDialog() {
     	initOptionsWidget();
     	mediaToolOptionsWidget.setValue(data);
 
@@ -141,18 +157,26 @@ public class VideoTool extends FlowPanel implements CanvasTool<MediaData>
             regs.add(this.videoFrame.addLoadHandler(new LoadHandler() {
                 @Override
                 public void onLoad(LoadEvent event) {
-                    WidgetUtils.setWidgetSize(that, new Point2D(videoFrame.getOffsetWidth(), videoFrame.getOffsetHeight()));
+                    Point2D videoFrameSize = ElementUtils.getElementOffsetSize(videoFrame.getElement());
+                    WidgetUtils.setWidgetSize(that, videoFrameSize);
                     videoFrame.setWidth("");
                     videoFrame.setHeight("");
                     regs.clear();
                 }
             }));
-            WidgetUtils.setWidgetSize(this, DEFAULT_SIZE);
+            Point2D currentFrameSize = ElementUtils.getElementOffsetSize(videoFrame.getElement());
+            if ((false == videoFrame.isVisible()) || currentFrameSize.equals(Point2D.zero)) {
+            	WidgetUtils.setWidgetSize(this, DEFAULT_SIZE);
+            }
+            else {
+            	WidgetUtils.setWidgetSize(this, ElementUtils.getElementOffsetSize(videoFrame.getElement()));
+            }
         }
         if (false == url.equals(videoFrame.getUrl())) {
             videoFrame.setUrl(url);
         }
         videoFrame.setVisible(true);
+        optionsLabel.setText(OPTIONS_LABEL_VIDEO_SET);
         
         super.removeStyleName(CanvasResources.INSTANCE.main().videoToolEmpty());
         super.addStyleName(CanvasResources.INSTANCE.main().videoToolSet());

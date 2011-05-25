@@ -49,7 +49,7 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
     @Override
     public void startDragCanvasToolFrame(final CanvasToolFrame toolFrame, final MouseEvent<?> startEvent)
     {
-        final Point2D initialPos = ElementUtils.getElementPosition(toolFrame.getElement());
+        final Point2D initialPos = ElementUtils.getElementOffsetPosition(toolFrame.getElement());
         final SimpleEvent.Handler<Point2D> dragHandler = new SimpleEvent.Handler<Point2D>() {
             @Override
             public void onFire(Point2D pos)
@@ -93,7 +93,7 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
     {
         final double angle = Math.toRadians(ElementUtils.getRotation(toolFrame.getElement()));
         final Point2D initialSize = toolFrame.getToolSize();
-        final Point2D initialFrameSize = ElementUtils.getElementSize(toolFrame.getElement());
+        final Point2D initialFrameSize = ElementUtils.getElementOffsetSize(toolFrame.getElement());
         final Point2D startDragPos = ElementUtils.relativePosition(startEvent, _container.getElement());
         final Point2D startPos = startDragPos.minus(ElementUtils.relativePosition(startEvent, toolFrame.getElement()));
         Point2D initialCenter = initialFrameSize.mul(0.5);
@@ -117,7 +117,7 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
                 Point2D size = sizeFromRotatedSizeOffset(angle, initialSize, startDragPos, pos);
                 toolFrame.setToolSize(transformMovement(size, initialSize));
                 ElementUtils.resetTransformOrigin(toolFrame.getElement());
-                Point2D frameSize = ElementUtils.getElementSize(toolFrame.getElement());
+                Point2D frameSize = ElementUtils.getElementOffsetSize(toolFrame.getElement());
                 Point2D center = frameSize.mul(0.5);
                 // Move the element back to the origin position, taking the new
                 // size into account.
@@ -191,8 +191,8 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
     private Point2D limitPosToContainer(Point2D pos, Widget elem)
     {
         Point2D margin = new Point2D(20, 20);
-        Point2D maxPos = ElementUtils.getElementSize(this._container.getElement()).minus(margin);
-        Point2D minPos = Point2D.zero.minus(ElementUtils.getElementSize(elem.getElement()).minus(margin));
+        Point2D maxPos = ElementUtils.getElementOffsetSize(this._container.getElement()).minus(margin);
+        Point2D minPos = Point2D.zero.minus(ElementUtils.getElementOffsetSize(elem.getElement()).minus(margin));
         return Point2D.max(minPos, Point2D.min(maxPos, pos));
     }
 
@@ -236,7 +236,7 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
             else if (event.getAltKey()) {
                 mode = TransformationMode.SNAP_X;
             }
-            sizeDelta = PointTransformer.Transform(sizeDelta, mode);
+            sizeDelta = PointTransformer.transform(sizeDelta, mode);
             if (event.getShiftKey() && event.getAltKey()) {
                 // Snap to grid.
                 sizeDelta = sizeDelta.mul(1/GRID_RESOLUTION).mul(GRID_RESOLUTION);
