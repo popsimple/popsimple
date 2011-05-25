@@ -117,8 +117,8 @@ public class WorksheetImpl implements Worksheet
                 // TODO instead of catching (or in addition) throw an exception? currently quietly ignores...
                 return;
             }
+            load(id);
         }
-        load(id);
     }
 
     @Override
