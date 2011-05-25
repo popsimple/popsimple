@@ -460,6 +460,11 @@
 	{
 	visibility: visible;
 }
+
+.toolFrameSelected{
+	background-color: #BAE2FF;
+}
+	
 /*---------------------------------------------*/
 .imagePickerResultImage {
 	background-color: #FFFFFF;
@@ -549,3 +554,4 @@
 	height: 300px;
 	background-color: #aaa;
 }
+

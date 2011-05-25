@@ -13,8 +13,6 @@ public class BingSearchRequest
     private static final String BING_SEARCH_API_HOST = "api.bing.net";
     private static final String BING_JSON_PATH = "json.aspx";
     
-    private static final int CALLBACK_TIMEOUT_MS = 1000;
-    
     protected String appID = "";
     
     public BingSearchRequest(String appID)
@@ -34,7 +32,6 @@ public class BingSearchRequest
         
         JsonpRequestBuilder requestBuilder = new JsonpRequestBuilder();
         requestBuilder.setCallbackParam(SearchParameters.CALLBACK);
-        requestBuilder.setTimeout(CALLBACK_TIMEOUT_MS);
         requestBuilder.requestObject(searchUrl, new AsyncCallback<SearchResult>() {
 
             @Override

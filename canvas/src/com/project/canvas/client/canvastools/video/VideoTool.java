@@ -102,7 +102,6 @@ public class VideoTool extends FlowPanel implements CanvasTool<MediaData>
 		}
 		this.optionsWidgetInited = true;
 		this.videoSelectionDialog = new DialogWithZIndex(false, true);
-//		videoSelectionDialog.setAnimationEnabled(true);
         videoSelectionDialog.setGlassEnabled(true);
         videoSelectionDialog.setText("Video options");
         
