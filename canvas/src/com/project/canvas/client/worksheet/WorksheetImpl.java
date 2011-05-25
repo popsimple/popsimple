@@ -377,7 +377,7 @@ public class WorksheetImpl implements Worksheet
             ToolInstanceInfo toolInfo)
     {
         RegistrationsManager regs = toolInfo.registrations;
-        regs.add(toolFrame.getCloseRequest().addHandler(new SimpleEvent.Handler<Void>() {
+        regs.add(toolFrame.addCloseRequestHandler(new SimpleEvent.Handler<Void>() {
             @Override
             public void onFire(Void arg)
             {

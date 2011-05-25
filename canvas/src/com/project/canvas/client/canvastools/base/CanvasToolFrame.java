@@ -75,6 +75,7 @@ public class CanvasToolFrame extends Composite implements Focusable, HasFocusHan
     protected final SimpleEvent<MouseEvent<?>> moveStartRequest = new SimpleEvent<MouseEvent<?>>();
     protected final SimpleEvent<MouseEvent<?>> resizeStartRequest = new SimpleEvent<MouseEvent<?>>();
     protected final SimpleEvent<MouseEvent<?>> rotateStartRequest = new SimpleEvent<MouseEvent<?>>();
+    protected final SimpleEvent<Void> selectRequest = new SimpleEvent<Void>();
 
     protected final RegistrationsManager frameRegs = new RegistrationsManager();
     
@@ -132,6 +133,13 @@ public class CanvasToolFrame extends Composite implements Focusable, HasFocusHan
 		frameRegs.add(this.frameHeader.addDomHandler(new MouseDownHandler() {
             @Override
             public void onMouseDown(final MouseDownEvent event) {
+                selectRequest.dispatch(null);
+            }
+        }, MouseDownEvent.getType()));
+		
+		frameRegs.add(this.frameHeader.addDomHandler(new MouseDownHandler() {
+            @Override
+            public void onMouseDown(final MouseDownEvent event) {
                 moveStartRequest.dispatch(event);
             }
         }, MouseDownEvent.getType()));
@@ -175,12 +183,12 @@ public class CanvasToolFrame extends Composite implements Focusable, HasFocusHan
         return this.tool;
     }
 
-    public SimpleEvent<Void> getCloseRequest() {
-        return closeRequest;
+    public HandlerRegistration addCloseRequestHandler(SimpleEvent.Handler<Void> handler) {
+        return this.closeRequest.addHandler(handler);
     }
 
-    public SimpleEvent<MouseEvent<?>> getMoveStartRequest() {
-        return moveStartRequest;
+    public HandlerRegistration addMoveStartRequestHandler(SimpleEvent.Handler<MouseEvent<?>> handler) {
+        return this.moveStartRequest.addHandler(handler);
     }
 
     public HandlerRegistration addMoveBackRequestHandler(SimpleEvent.Handler<Void> handler) {
@@ -198,8 +206,12 @@ public class CanvasToolFrame extends Composite implements Focusable, HasFocusHan
     public HandlerRegistration addRotateStartRequestHandler(SimpleEvent.Handler<MouseEvent<?>> handler) {
         return this.rotateStartRequest.addHandler(handler);
     }
-
     
+    public HandlerRegistration addSelectRequestHandler(SimpleEvent.Handler<Void> handler) 
+    {
+        return this.selectRequest.addHandler(handler);
+    }
+
     public Point2D getToolSize() {
         return new Point2D(this.tool.asWidget().getOffsetWidth(), this.tool.asWidget().getOffsetHeight());
     }

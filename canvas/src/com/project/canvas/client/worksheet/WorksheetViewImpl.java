@@ -1,5 +1,6 @@
 package com.project.canvas.client.worksheet;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -101,6 +102,8 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     private final SimpleEvent<ToolCreationRequest> toolCreationRequestEvent = new SimpleEvent<ToolCreationRequest>();
     private final SimpleEvent<CanvasToolFrame> toolFrameClickEvent = new SimpleEvent<CanvasToolFrame>();
 
+    private HashSet<CanvasToolFrame> selectedTools = new HashSet<CanvasToolFrame>();
+    
 	private boolean viewMode;
 	private boolean viewModeSet = false;
 
@@ -172,7 +175,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
             }
         }));
 
-        regs.add(toolFrame.getMoveStartRequest().addHandler(new SimpleEvent.Handler<MouseEvent<?>>() {
+        regs.add(toolFrame.addMoveStartRequestHandler(new SimpleEvent.Handler<MouseEvent<?>>() {
             @Override
             public void onFire(MouseEvent<?> arg) {
                 _toolFrameTransformer.startDragCanvasToolFrame(toolFrame, arg);
@@ -210,8 +213,66 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
                 overToolFrames.remove(toolFrame);
             }
         }, MouseOutEvent.getType()));
+        regs.add(toolFrame.addSelectRequestHandler(new SimpleEvent.Handler<Void>() {
+            @Override
+            public void onFire(Void arg) {
+                onFrameSelected(toolFrame);
+            }
+        }));
 
         this.worksheetPanel.add(toolFrame);
+    }
+    
+    private void onFrameSelected(CanvasToolFrame toolFrame)
+    {
+        Event event = Event.getCurrentEvent();
+        if ((null != event) && (event.getCtrlKey()))
+        {
+            this.toggleToolFrameSelection(toolFrame);
+        }
+        else
+        {
+            this.clearFrameSelection();
+            this.selectToolFrame(toolFrame);
+        }
+    }
+    
+    private void selectToolFrame(CanvasToolFrame toolFrame)
+    {
+        this.selectedTools.add(toolFrame);
+        toolFrame.addStyleName(CanvasResources.INSTANCE.main().toolFrameSelected());
+    }
+    
+    private void unSelectToolFrame(CanvasToolFrame toolFrame)
+    {
+        this.selectedTools.remove(toolFrame);
+        toolFrame.removeStyleName(CanvasResources.INSTANCE.main().toolFrameSelected());
+    }
+    
+    private boolean isToolFrameSelected(CanvasToolFrame toolFrame)
+    {
+        return this.selectedTools.contains(toolFrame);
+    }
+    
+    private void clearFrameSelection()
+    {
+        ArrayList<CanvasToolFrame> framesToClear = new ArrayList<CanvasToolFrame>(this.selectedTools);
+        for (CanvasToolFrame toolFrame : framesToClear)
+        {
+            this.unSelectToolFrame(toolFrame);
+        }
+    }
+    
+    private void toggleToolFrameSelection(CanvasToolFrame toolFrame)
+    {
+        if (this.isToolFrameSelected(toolFrame))
+        {
+            this.unSelectToolFrame(toolFrame);
+        }
+        else
+        {
+            this.selectToolFrame(toolFrame);
+        }
     }
 
     @Override
