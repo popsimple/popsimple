@@ -135,7 +135,7 @@ public class CanvasToolFrame extends Composite implements Focusable, HasFocusHan
                 moveStartRequest.dispatch(event);
             }
         }, MouseDownEvent.getType()));
-		frameRegs.add(tool.addMoveEventHandler(new Handler<Point2D>() {
+		frameRegs.add(tool.addSelfMoveRequestEventHandler(new Handler<Point2D>() {
 			@Override
 			public void onFire(Point2D offset) {
 				toolSelfMoveRequest(offset);

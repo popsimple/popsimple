@@ -170,7 +170,7 @@ public class TaskListTool extends Composite implements CanvasTool<TaskListData>,
 
 
     @Override
-	public HandlerRegistration addMoveEventHandler(Handler<Point2D> handler) {
+	public HandlerRegistration addSelfMoveRequestEventHandler(Handler<Point2D> handler) {
 		// TODO Auto-generated method stub
 		return null;
 	}

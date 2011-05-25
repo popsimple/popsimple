@@ -16,3 +16,9 @@ Bing
 app: canvasapp
 user: janitormasters@live.com
 Key: 68910216D550D46A50E65B86A92F0FC245EFE6B7
+
+
+Google Maps
+-----------
+user: janitormasters@gmail.com
+Key: ABQIAAAA0K1vgLLrlYHP7gUUpP3b2hQWGqdbMCaezEKcwi1MlV1Ht1nx5BSgxYFpzVKZWhd02H_TxXrt0l9Llw

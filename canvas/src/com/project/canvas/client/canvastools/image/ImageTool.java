@@ -204,7 +204,7 @@ public class ImageTool extends FlowPanel implements CanvasTool<MediaData> {
     }
 
     @Override
-	public HandlerRegistration addMoveEventHandler(Handler<Point2D> handler) {
+	public HandlerRegistration addSelfMoveRequestEventHandler(Handler<Point2D> handler) {
 		// TODO Auto-generated method stub
 		return null;
 	}

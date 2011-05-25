@@ -72,4 +72,7 @@ public interface CanvasResources extends ClientBundle {
     
     @Source("com/project/canvas/client/resources/images/bitmaps/videoIcon_48.png")
     ImageResource toolboxVideoIcon();
+
+    @Source("com/project/canvas/client/resources/images/bitmaps/map_48.png")
+    ImageResource mapIcon48();
 }

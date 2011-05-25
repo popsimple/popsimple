@@ -24,7 +24,7 @@ public interface CanvasTool<T extends ElementData> extends IsWidget, TakesValue<
     HandlerRegistration addMoveStartEventHandler(SimpleEvent.Handler<MouseEvent<?>> handler);
     
     // Tool wants to move an offset
-    HandlerRegistration addMoveEventHandler(SimpleEvent.Handler<Point2D> handler);
+    HandlerRegistration addSelfMoveRequestEventHandler(SimpleEvent.Handler<Point2D> handler);
 
     void setElementData(ElementData data); // non-generic version of setValue
 

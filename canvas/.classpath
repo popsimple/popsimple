@@ -7,6 +7,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/twig-persist-2.0-beta5.jar" sourcepath="libs/twig-persist-2.0-beta5-sources.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/guava-r09.jar"/>
+	<classpathentry kind="lib" path="libs/gwt-maps.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/dolomite"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/gwt-bing"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>

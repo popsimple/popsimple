@@ -61,7 +61,7 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
     }
 
     @Override
-    public HandlerRegistration addMoveEventHandler(Handler<Point2D> handler) {
+    public HandlerRegistration addSelfMoveRequestEventHandler(Handler<Point2D> handler) {
         return this.moveRequestEvent.addHandler(handler);
     }
 
