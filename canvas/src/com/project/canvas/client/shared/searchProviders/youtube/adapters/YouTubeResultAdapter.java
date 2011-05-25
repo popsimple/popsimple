@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.google.gwt.core.client.JsArray;
 import com.project.canvas.client.shared.searchProviders.interfaces.MediaResult;
 import com.project.canvas.client.shared.searchProviders.interfaces.MediaSearchResult;
+import com.project.gwtyoutube.client.YouTubeData;
 import com.project.gwtyoutube.client.YouTubeItem;
 import com.project.gwtyoutube.client.YouTubeResult;
 
@@ -20,14 +21,23 @@ public class YouTubeResultAdapter implements MediaSearchResult
 
     @Override
     public int getTotalPages() {
-        // TODO Auto-generated method stub
-        return 0;
+        YouTubeData youTubeData = this._youTubeResult.getData();
+        if (0 == youTubeData.getItemsPerPage())
+        {
+            return 0;
+        }
+        //TODO: Consider a better calculation.
+        return (int)Math.ceil((double)youTubeData.getTotalItems() / (double)youTubeData.getItemsPerPage());
     }
 
     @Override
-    public int getCurrentPage() {
-        // TODO Auto-generated method stub
-        return 0;
+    public int getCurrentPage() 
+    {
+        YouTubeData youTubeData = this._youTubeResult.getData();
+        int resultCount = youTubeData.getStartIndex() + 
+            youTubeData.getItems().length();
+        //TODO: Consider a better calculation.
+        return (int)(Math.ceil((double)youTubeData.getItemsPerPage() / (double)resultCount));
     }
 
     @Override

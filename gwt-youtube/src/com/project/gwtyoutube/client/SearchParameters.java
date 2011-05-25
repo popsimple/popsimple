@@ -7,4 +7,7 @@ public class SearchParameters
     public static final String VERSION = "v";
     public static final String RETURN_TYPE = "alt";
     public static final String CALLBACK = "callback";
+    public static final String API_KEY = "key";
+    public static final String MAX_RESULTS = "max-results";
+    public static final String START_INDEX = "start-index";
 }

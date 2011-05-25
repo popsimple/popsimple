@@ -22,3 +22,8 @@ Google Maps
 -----------
 user: janitormasters@gmail.com
 Key: ABQIAAAA0K1vgLLrlYHP7gUUpP3b2hQWGqdbMCaezEKcwi1MlV1Ht1nx5BSgxYFpzVKZWhd02H_TxXrt0l9Llw
+
+YouTube
+--------
+user: janitormasters@gmail.com
+Key: AI39si5jW3xjF_6-_XgYViQNbeoesqsagmMHXs8i3jYZZHvGmX2FOXjFEKSRQW4vadfEU5leXbzQkFZGvuyKAngk3WeEddUNMA

@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" output="test-classes" path="test"/>
-	<classpathentry kind="con" path="com.google.appengine.eclipse.core.GAE_CONTAINER"/>
 	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/twig-persist-2.0-beta5.jar" sourcepath="libs/twig-persist-2.0-beta5-sources.jar"/>
@@ -15,5 +14,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/dolomite"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/gwt-bing"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/gwt-youtube"/>
+	<classpathentry kind="con" path="com.google.appengine.eclipse.core.GAE_CONTAINER"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
