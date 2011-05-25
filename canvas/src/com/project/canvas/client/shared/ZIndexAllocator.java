@@ -87,7 +87,7 @@ public abstract class ZIndexAllocator {
             if (element == nextElement) {
                 continue;
             }
-            if (false == ElementUtils.isOverlappingElements(element, nextElement)) {
+            if (false == ElementUtils.areOverlappingElements(element, nextElement)) {
                 elements.add(nextElement);
                 continue;
             }
@@ -108,7 +108,7 @@ public abstract class ZIndexAllocator {
             if (element == nextElement) {
                 continue;
             }
-            if (false == ElementUtils.isOverlappingElements(element, nextElement)) {
+            if (false == ElementUtils.areOverlappingElements(element, nextElement)) {
                 fooElements.add(nextElement);
                 continue;
             }

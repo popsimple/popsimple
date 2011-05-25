@@ -159,7 +159,8 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
     @Override
     public void addToolInstanceWidget(final CanvasToolFrame toolFrame, final Transform2D transform,
-            final Point2D additionalOffset) {
+            final Point2D additionalOffset)
+    {
         RegistrationsManager regs = new RegistrationsManager();
         toolFrameRegistrations.put(toolFrame, regs);
 
@@ -167,15 +168,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
             @Override
             public void onAttachOrDetach(AttachEvent event) {
                 if (event.isAttached()) {
-                    _toolFrameTransformer.setToolFramePosition(toolFrame,
-                            transform.translation.plus(additionalOffset));
-                    if (toolFrame.getTool().canRotate()) {
-                        ElementUtils.setRotation(toolFrame.getElement(), transform.rotation);
-                    }
-                    if (null != transform.size) {
-                        toolFrame.setToolSize(transform.size);
-
-                    }
+                    setToolFrameTransform(toolFrame, transform, additionalOffset);
                 }
             }
         }));
@@ -536,5 +529,18 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         this._floatingWidgetTerminator = this._toolFrameTransformer.getElementDragManager().startMouseMoveOperation(
                 this.worksheetPanel.getElement(), Point2D.zero, floatingWidgetMoveHandler, floatingWidgetStop, null,
                 ElementDragManager.StopCondition.STOP_CONDITION_MOUSE_CLICK);
+    }
+
+    @Override
+    public void setToolFrameTransform(final CanvasToolFrame toolFrame, final Transform2D transform,
+            final Point2D additionalOffset)
+    {
+        if (toolFrame.getTool().canRotate()) {
+            ElementUtils.setRotation(toolFrame.getElement(), transform.rotation);
+        }
+        if (null != transform.size) {
+            toolFrame.setToolSize(transform.size);
+        }
+        _toolFrameTransformer.setToolFramePosition(toolFrame, transform.translation.plus(additionalOffset));
     }
 }

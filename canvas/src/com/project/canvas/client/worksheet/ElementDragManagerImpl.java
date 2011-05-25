@@ -59,7 +59,9 @@ public class ElementDragManagerImpl implements ElementDragManager
                 public void onFire(Void arg)
                 {
                     stopMouseMoveOperation(regs);
-                    cancelHandler.onFire(null);
+                    if (null != cancelHandler) {
+                        cancelHandler.onFire(null);
+                    }
                 }
             }));
         }

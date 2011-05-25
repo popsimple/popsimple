@@ -149,7 +149,9 @@ public class VideoTool extends FlowPanel implements CanvasTool<MediaData>
             }));
             WidgetUtils.setWidgetSize(this, DEFAULT_SIZE);
         }
-        videoFrame.setUrl(url);
+        if (false == url.equals(videoFrame.getUrl())) {
+            videoFrame.setUrl(url);
+        }
         videoFrame.setVisible(true);
         
         super.removeStyleName(CanvasResources.INSTANCE.main().videoToolEmpty());

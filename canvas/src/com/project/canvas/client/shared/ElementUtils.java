@@ -10,14 +10,18 @@ import com.project.canvas.shared.data.Point2D;
 import com.project.canvas.shared.data.Rectangle;
 
 public abstract class ElementUtils {
-    public static boolean isOverlappingElements(Element element1, Element element2) {
-        return ElementUtils.getElementRectangle(element1).isOverlapping(
+    public static boolean areOverlappingElements(Element element1, Element element2) {
+        // TODO: fix bugs in Rectangle and use isOverlapping instead of isExternalCircleOverlapping
+        return ElementUtils.getElementRectangle(element1).isExternalCircleOverlapping(
                 ElementUtils.getElementRectangle(element2));
     }
 
     public static Rectangle getElementRectangle(Element element) {
-        return new Rectangle(element.getAbsoluteLeft(), element.getAbsoluteTop(),
-                element.getAbsoluteRight(), element.getAbsoluteBottom());
+        // remember that css coordinates are from top-left of screen
+        // and css rotation is clockwise
+        return new Rectangle(element.getAbsoluteLeft(),  element.getAbsoluteTop(),
+                             element.getAbsoluteRight(), element.getAbsoluteBottom(),
+                             getRotation(element));
     }
 
 
