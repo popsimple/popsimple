@@ -13,7 +13,7 @@ public interface CanvasTool<T extends ElementData> extends IsWidget, TakesValue<
 	
 	public enum ResizeMode {
 		BOTH,
-		UNIFORM,
+		RELATIVE,  // keeps aspect ratio
 		WIDTH_ONLY,
 		HEIGHT_ONLY,
 		NONE,

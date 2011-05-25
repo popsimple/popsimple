@@ -218,7 +218,7 @@ public class VideoTool extends FlowPanel implements CanvasTool<MediaData> {
 
 	@Override
 	public ResizeMode getResizeMode() {
-		return ResizeMode.UNIFORM;
+		return ResizeMode.BOTH;
 	}
 
     @Override
