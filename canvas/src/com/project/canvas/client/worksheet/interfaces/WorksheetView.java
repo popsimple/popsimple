@@ -69,6 +69,12 @@ public interface WorksheetView extends IsWidget
      */
     HandlerRegistration addToolFrameClickHandler(SimpleEvent.Handler<CanvasToolFrame> handler);
     
+    /**
+     * Adds a new toolFrame to the view. The view will call setToolFrameTransform by itself then the frame is attached and ready to transform. 
+     * @param toolFrame
+     * @param transform
+     * @param additionalOffset
+     */
     void addToolInstanceWidget(final CanvasToolFrame toolFrame, Transform2D transform, Point2D additionalOffset);
 
     HandlerRegistration addViewHandler(SimpleEvent.Handler<Void> handler);
@@ -86,4 +92,6 @@ public interface WorksheetView extends IsWidget
     void setOptions(CanvasPageOptions options);
 
     void setViewMode(boolean isViewMode);
+
+    void setToolFrameTransform(CanvasToolFrame toolFrame, Transform2D transform, Point2D additionalOffset);
 }

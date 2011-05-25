@@ -3,6 +3,7 @@ package com.project.canvas.client.worksheet;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
@@ -83,6 +84,7 @@ public class WorksheetImpl implements Worksheet
             }
         }
 
+        final WorksheetImpl that = this;
         service.GetPage(id, new AsyncCallback<CanvasPage>() {
             @Override
             public void onFailure(Throwable caught)
@@ -93,14 +95,12 @@ public class WorksheetImpl implements Worksheet
             @Override
             public void onSuccess(CanvasPage result)
             {
-                view.onLoadOperationChange(OperationStatus.SUCCESS, null);
-                if (null != result) {
-                    String newURL = Window.Location.createUrlBuilder().setHash(result.id.toString()).buildString();
-                    Window.Location.replace(newURL);
-                    load(result);
-                } else {
-                    Window.alert("No such page on server.");
+                if (null == result) {
+                    view.onLoadOperationChange(OperationStatus.FAILURE, "Page not found");
+                    return;
                 }
+                view.onLoadOperationChange(OperationStatus.SUCCESS, null);
+                serverLoadCompleted(result);
             }
         });
     }
@@ -109,10 +109,14 @@ public class WorksheetImpl implements Worksheet
     public void load(String idStr)
     {
         Long id = null;
-        try {
-            id = Long.valueOf(idStr);
-        } catch (NumberFormatException e) {
-            return;
+        if (false == idStr.trim().isEmpty())
+        {
+            try {
+                id = Long.valueOf(idStr);
+            } catch (NumberFormatException e) {
+                // TODO instead of catching (or in addition) throw an exception? currently quietly ignores...
+                return;
+            }
         }
         load(id);
     }
@@ -211,35 +215,33 @@ public class WorksheetImpl implements Worksheet
         return toolFrame;
     }
 
-    private void createToolInstancesFromData(HashMap<Long, ElementData> updatedElements)
+    private CanvasToolFrame createToolInstanceFromData(ElementData newElement)
     {
-        //TODO: Refactor
-        for (ElementData newElement : this.sortByZIndex(updatedElements.values())) {
-            CanvasToolFactory<? extends CanvasTool<? extends ElementData>> factory = null;
-            if (newElement.factoryUniqueId.equals(TextEditToolFactory.UNIQUE_ID)) 
-            {
-                factory = new TextEditToolFactory();
-            } 
-            else if (newElement.factoryUniqueId.equals(TaskListToolFactory.UNIQUE_ID)) 
-            { 
-                factory = new TaskListToolFactory();
-            } 
-            else if (newElement.factoryUniqueId.equals(ImageToolFactory.UNIQUE_ID)) 
-            {
-                factory = new ImageToolFactory();
-            }
-            else if (newElement.factoryUniqueId.equals(VideoToolFactory.UNIQUE_ID)) 
-            {
-                factory = new VideoToolFactory();
-            }
-            if (null == factory) {
-                continue;
-            }
-            // TODO: Refactor
-            CanvasToolFrame toolFrame = this.createToolInstance(newElement.transform, factory, false);
-            toolFrame.getTool().setElementData(newElement);
-            toolFrame.getTool().setActive(false);
+        CanvasToolFactory<? extends CanvasTool<? extends ElementData>> factory = null;
+        if (newElement.factoryUniqueId.equals(TextEditToolFactory.UNIQUE_ID)) 
+        {
+            factory = new TextEditToolFactory();
+        } 
+        else if (newElement.factoryUniqueId.equals(TaskListToolFactory.UNIQUE_ID)) 
+        { 
+            factory = new TaskListToolFactory();
+        } 
+        else if (newElement.factoryUniqueId.equals(ImageToolFactory.UNIQUE_ID)) 
+        {
+            factory = new ImageToolFactory();
         }
+        else if (newElement.factoryUniqueId.equals(VideoToolFactory.UNIQUE_ID)) 
+        {
+            factory = new VideoToolFactory();
+        }
+        if (null == factory) {
+            return null;
+        }
+        // TODO: Refactor
+        CanvasToolFrame toolFrame = this.createToolInstance(newElement.transform, factory, false);
+        toolFrame.getTool().setElementData(newElement);
+        toolFrame.getTool().setActive(false);
+        return toolFrame;
     }
 
     private void setRegistrations()
@@ -345,36 +347,37 @@ public class WorksheetImpl implements Worksheet
 
     private void load(CanvasPage newPage)
     {
-        this.updateOptions(newPage.options);
-        HashMap<Long, ElementData> existingElements = new HashMap<Long, ElementData>();
-        for (ElementData elem : this.page.elements) {
-            existingElements.put(elem.id, elem);
-        }
-
         this.page = newPage;
+        this.updateOptions(this.page.options);
         
-        this.removeAllTools();
-        // TODO: Currently because it's static.
-        ZIndexAllocator.reset();
-
-
-        // TODO: Support updating already existing items.
-        // for (Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo> entry
-        // : new HashSet<Entry<CanvasTool<? extends ElementData>,
-        // ToolInstanceInfo>>(toolInfoMap.entrySet()))
-        // {
-        // CanvasTool<? extends ElementData> tool = entry.getKey();
-        // ToolInstanceInfo toolInfo = entry.getValue();
-        // ElementData toolData = tool.getValue();
-        // if (updatedElements.containsKey(toolData.id)) {
-        // tool.setElementData(updatedElements.get(toolData.id));
-        // updatedElements.remove(toolData.id);
-        // }
-        // else {
-        // this.removeToolInstance(toolInfo.toolFrame);
-        // }
-        // }
-        createToolInstancesFromData(existingElements);
+        HashMap<Long, ElementData> newElements = new HashMap<Long, ElementData>();
+        for (ElementData elem : this.page.elements) {
+            newElements.put(elem.id, elem);
+        }
+        
+        HashSet<Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo>> entries = 
+            new HashSet<Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo>>(toolInfoMap.entrySet());
+        
+        // Update existing and remove deleted tools
+        for (Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo> entry : entries) {
+            CanvasTool<? extends ElementData> tool = entry.getKey();
+            ToolInstanceInfo toolInfo = entry.getValue();
+            ElementData oldData = tool.getValue();
+            ElementData newData = newElements.get(oldData.id);
+            if (null != newData) {
+                tool.setElementData(newData);
+                view.setToolFrameTransform(toolInfo.toolFrame, newData.transform, Point2D.zero);
+                newElements.remove(oldData.id);
+            } else if (oldData.id != null) {
+                // new data doesn't exist for this id, and oldData has an id (isn't data newly created on the client) 
+                this.removeToolInstance(toolInfo.toolFrame);
+            }
+        }
+        
+        // Create the new tool instances
+        for (ElementData newElement : this.sortByZIndex(newElements.values())) {
+            CanvasToolFrame toolFrame = createToolInstanceFromData(newElement);
+        }
     }
 
     private RegistrationsManager registerToolInstanceHandlers(final CanvasToolFrame toolFrame,
@@ -438,5 +441,16 @@ public class WorksheetImpl implements Worksheet
         }
         this.page.options = value;
         view.setOptions(value);
+    }
+
+    private void serverLoadCompleted(CanvasPage result)
+    {
+        if ((this.page.id != null) && (result.id != this.page.id)) {
+            String newURL = Window.Location.createUrlBuilder().setHash(result.id.toString()).buildString();
+            Window.Location.replace(newURL);
+        }
+        else {
+            load(result);
+        }
     }
 }
