@@ -162,12 +162,13 @@ public class CanvasToolFrame extends Composite implements Focusable, HasFocusHan
     		return;
     	}
     	this.viewMode = inViewMode;
-    	if (viewMode) {
+    	if (this.viewMode) {
     		frameRegs.clear();
     	}
     	else {
     		this.reRegisterFrameHandlers();
     	}
+    	this.tool.setViewMode(this.viewMode);
     }
     
     public CanvasTool<?> getTool() {

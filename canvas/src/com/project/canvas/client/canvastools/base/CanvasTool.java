@@ -36,4 +36,6 @@ public interface CanvasTool<T extends ElementData> extends IsWidget, TakesValue<
     
     ResizeMode getResizeMode();
     boolean canRotate();
+    
+    void setViewMode(boolean isViewMode);
 }

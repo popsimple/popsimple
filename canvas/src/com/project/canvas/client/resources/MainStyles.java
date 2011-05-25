@@ -146,4 +146,6 @@ public interface MainStyles extends CssResource {
 
 	String worksheetModeViewOnly();
 	String worksheetModeEditable();
+
+    String textEditViewBox();
 }

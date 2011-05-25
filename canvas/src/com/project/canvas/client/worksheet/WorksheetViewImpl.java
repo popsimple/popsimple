@@ -9,6 +9,8 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.FocusHandler;
+import com.google.gwt.event.dom.client.MouseDownEvent;
+import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
@@ -336,7 +338,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         this.floatingWidget = floatingWidget;
         Element floatingElem = floatingWidget.getElement();
         ElementUtils.setElementPosition(ElementUtils.getElementSize(worksheetPanel.getElement()).mul(0.5)
-                .minus(ElementUtils.getElementSize(floatingElem)), floatingElem, 100);
+                .minus(ElementUtils.getElementSize(floatingElem)), floatingElem);
         this._floatingWidgetTerminator = this._toolFrameTransformer.getElementDragManager()
                 .startMouseMoveOperation(this.worksheetPanel.getElement(), Point2D.zero,
                         floatingWidgetMoveHandler, floatingWidgetStop, null,
@@ -402,6 +404,16 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
                 optionsUpdatedEvent.dispatch(optionsWidget.getValue());
             }
         });
+        this.worksheetPanel.addDomHandler(new MouseDownHandler() 
+        {
+            @Override
+            public void onMouseDown(MouseDownEvent event)
+            {
+                if (overToolFrames.isEmpty()) {
+                    toolFrameClickEvent.dispatch(null);
+                }
+            }
+        }, MouseDownEvent.getType());
         Event.addNativePreviewHandler(new NativePreviewHandler() {
             @Override
             public void onPreviewNativeEvent(NativePreviewEvent event) {

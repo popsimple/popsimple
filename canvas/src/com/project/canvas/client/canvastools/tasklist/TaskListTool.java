@@ -179,4 +179,10 @@ public class TaskListTool extends Composite implements CanvasTool<TaskListData>,
     public boolean canRotate() {
         return true;
     }
+
+    @Override
+    public void setViewMode(boolean isViewMode)
+    {
+        // TODO How does a task list behave when in view mode? for now same as edit mode
+    }
 }

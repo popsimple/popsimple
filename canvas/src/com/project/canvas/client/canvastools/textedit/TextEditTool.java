@@ -40,6 +40,7 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
     };
     
     private final TextArea editBox = new TextArea();
+    private final HTML viewBox = new HTML();
     private final SimpleEvent<String> killRequestEvent = new SimpleEvent<String>();
     private final SimpleEvent<Point2D> moveRequestEvent = new SimpleEvent<Point2D>();
 
@@ -53,8 +54,10 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
     public TextEditTool() {
         CanvasToolCommon.initCanvasToolWidget(this);
         this.addStyleName(CanvasResources.INSTANCE.main().textEdit());
+        this.add(viewBox);
         this.add(editBox);
         this.editBox.addStyleName(CanvasResources.INSTANCE.main().textEditBox());
+        this.viewBox.addStyleName(CanvasResources.INSTANCE.main().textEditViewBox());
     }
 
     @Override
@@ -74,12 +77,9 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
         }
     }
 
+    @Override
     public SimpleEvent<String> getKillRequestedEvent() {
         return this.killRequestEvent;
-    }
-
-    public int getTabIndex() {
-        return this.editBox.getTabIndex();
     }
 
     @Override
@@ -101,18 +101,11 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
     @Override
     public void setActive(boolean isActive) {
         setLooksActive(isActive, true);
-        if (isActive && nicEditorReady) {
-        	nicEditor.getEditorElement().focus();
-        }
     }
 
     @Override
     public void setElementData(ElementData data) {
         this.setValue((TextData) data);
-    }
-
-    public void setTabIndex(int index) {
-        this.editBox.setTabIndex(index);
     }
 
     @Override
@@ -157,7 +150,9 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
 
             this.addStyleName(CanvasResources.INSTANCE.main().textEditFocused());
             this.removeStyleName(CanvasResources.INSTANCE.main().textEditNotFocused());
-        } else {
+            nicEditor.getEditorElement().focus();
+        } 
+        else {
             this.editSize = ElementUtils.getElementSize(this.getElement());
 
             // Must be done AFTER saving size and move offset
@@ -176,5 +171,13 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
     @Override
     public boolean canRotate() {
         return true;
+    }
+
+    @Override
+    public void setViewMode(boolean isViewMode)
+    {
+        if (isViewMode) {
+            this.viewBox.setHTML(this.nicEditor.getContent());
+        }
     }
 }

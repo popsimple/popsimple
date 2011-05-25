@@ -168,6 +168,14 @@
 	background:transparent;
 	resize: none;
 }
+.textEditViewBox {
+	display:inline-block;
+	background-color: transparent;
+}
+.worksheetModeEditable .textEditViewBox {
+	display:none;
+}
+
 .textEditFocused {
 	margin-top:-1px;
 	margin-left:-2px;

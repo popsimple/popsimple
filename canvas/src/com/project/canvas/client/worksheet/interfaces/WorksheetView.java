@@ -62,7 +62,8 @@ public interface WorksheetView extends IsWidget
     HandlerRegistration addToolCreationRequestHandler(SimpleEvent.Handler<ToolCreationRequest> handler);
 
     /**
-     * The handler will be fired when the user clicks in the region of a tool frame.
+     * The handler will be fired when the user clicks the worksheet, and gives the tool frame
+     * clicked or no tool frame (null) if none are in the region of the click. 
      * @param handler
      * @return
      */

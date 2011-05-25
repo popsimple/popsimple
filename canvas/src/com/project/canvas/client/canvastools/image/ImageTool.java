@@ -35,15 +35,16 @@ public class ImageTool extends FlowPanel implements CanvasTool<MediaData> {
     
     private final SimpleEvent<String> killRequestEvent = new SimpleEvent<String>();
     private final SimpleEvent<MouseEvent<?>> moveStartEvent = new SimpleEvent<MouseEvent<?>>();
+    private final RegistrationsManager registrationsManager = new RegistrationsManager();
 
     private MediaData data = null;
     private final Image image = new Image();
     private MediaToolOptions mediaToolOptionsWidget;
     private DialogBox imageSelectionDialog;
 	private boolean optionsWidgetInited = false;
-	private ArrayList<ImageSearchProvider> searchProviders = new ArrayList<ImageSearchProvider>();  
+	private ArrayList<ImageSearchProvider> searchProviders = new ArrayList<ImageSearchProvider>();
+    private boolean viewMode;  
 
-    //TODO: Change to ImageSearchProvider
 	public ImageTool(Collection<ImageSearchProvider> imageSearchProviders) 
     {
         CanvasToolCommon.initCanvasToolWidget(this);
@@ -60,25 +61,27 @@ public class ImageTool extends FlowPanel implements CanvasTool<MediaData> {
     @Override
     public void bind() {
         super.setTitle("Click for image options; Shift-click to drag");
-        this.registerHandlers();
+        this.setViewMode(viewMode); // do whatever bindings necessary for our mode
     }
 
-    private void registerHandlers() {
-        this.addDomHandler(new ClickHandler() {
+    private void reRegisterHandlers() {
+        registrationsManager.clear();
+        
+        registrationsManager.add(this.addDomHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 uploadImage();
 
             }
-        }, ClickEvent.getType());
-        this.addDomHandler(new MouseDownHandler() {
+        }, ClickEvent.getType()));
+        registrationsManager.add(this.addDomHandler(new MouseDownHandler() {
             @Override
             public void onMouseDown(MouseDownEvent event) {
                 if (event.isShiftKeyDown()) {
                     moveStartEvent.dispatch(event);
                 }
             }
-        }, MouseDownEvent.getType());
+        }, MouseDownEvent.getType()));
     }
 
     protected void uploadImage() {
@@ -100,14 +103,12 @@ public class ImageTool extends FlowPanel implements CanvasTool<MediaData> {
 		}
 		this.optionsWidgetInited = true;
 		this.imageSelectionDialog = new DialogWithZIndex(false, true);
-//		imageSelectionDialog.setAnimationEnabled(true);
         imageSelectionDialog.setGlassEnabled(true);
         imageSelectionDialog.setText("Image options");
         
 		this.mediaToolOptionsWidget = new MediaToolOptions();
         imageSelectionDialog.add(mediaToolOptionsWidget);
 
-		//TODO: Support multiple providers.
         this.mediaToolOptionsWidget.setSearchProviders(this.searchProviders);
         mediaToolOptionsWidget.getCancelEvent().addHandler(new SimpleEvent.Handler<Void>() {
 		    @Override
@@ -207,4 +208,16 @@ public class ImageTool extends FlowPanel implements CanvasTool<MediaData> {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+    @Override
+    public void setViewMode(boolean isViewMode)
+    {
+        this.viewMode = isViewMode;
+        if (isViewMode) {
+            registrationsManager.clear();
+        }
+        else {
+            reRegisterHandlers();
+        }
+    }
 }

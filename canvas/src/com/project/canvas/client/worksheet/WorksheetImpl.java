@@ -165,6 +165,7 @@ public class WorksheetImpl implements Worksheet
             return;
         }
         this.activeToolboxItem = toolboxItem;
+        this.setActiveToolInstance(null);
     }
 
     private CanvasToolFrame createToolInstance(final Point2D relativePos,
@@ -306,7 +307,8 @@ public class WorksheetImpl implements Worksheet
         view.addToolFrameClickHandler(new Handler<CanvasToolFrame>() {
 			@Override
 			public void onFire(CanvasToolFrame frame) {
-		    	setActiveToolInstance(frame.getTool());
+			    CanvasTool<?> tool = frame != null ? frame.getTool() : null;
+		    	setActiveToolInstance(tool);
 			}
 		});
     }

@@ -42,7 +42,9 @@ public class VideoTool extends FlowPanel implements CanvasTool<MediaData> {
     private DialogBox videoSelectionDialog;
 	private boolean optionsWidgetInited = false;
 	private ArrayList<VideoSearchProvider> searchProviders = new ArrayList<VideoSearchProvider>();  
-
+	private final RegistrationsManager registrationsManager = new RegistrationsManager();
+    private boolean viewMode;
+	
 	public VideoTool(Collection<VideoSearchProvider> videoSearchProviders) 
     {
         CanvasToolCommon.initCanvasToolWidget(this);
@@ -61,25 +63,25 @@ public class VideoTool extends FlowPanel implements CanvasTool<MediaData> {
     @Override
     public void bind() {
         super.setTitle("Click for video options; Shift-click to drag");
-        this.registerHandlers();
+        this.setViewMode(viewMode); // do whatever bindings necessary for our mode
     }
 
-    private void registerHandlers() {
-        this.addDomHandler(new ClickHandler() {
+    private void reRegisterHandlers() {
+        registrationsManager.add(this.addDomHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 uploadVideo();
 
             }
-        }, ClickEvent.getType());
-        this.addDomHandler(new MouseDownHandler() {
+        }, ClickEvent.getType()));
+        registrationsManager.add(this.addDomHandler(new MouseDownHandler() {
             @Override
             public void onMouseDown(MouseDownEvent event) {
                 if (event.isShiftKeyDown()) {
                     moveStartEvent.dispatch(event);
                 }
             }
-        }, MouseDownEvent.getType());
+        }, MouseDownEvent.getType()));
     }
 
     protected void uploadVideo() {
@@ -218,4 +220,16 @@ public class VideoTool extends FlowPanel implements CanvasTool<MediaData> {
 	public ResizeMode getResizeMode() {
 		return ResizeMode.UNIFORM;
 	}
+
+    @Override
+    public void setViewMode(boolean isViewMode)
+    {
+        this.viewMode = isViewMode;
+        if (isViewMode) {
+            this.registrationsManager.clear();
+        }
+        else {
+            this.reRegisterHandlers();
+        }
+    }
 }
