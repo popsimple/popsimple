@@ -13,7 +13,7 @@ public class YouTubeItem extends JavaScriptObject
     
     public final native YouTubeThumbnail getThumbnail() /*-{ return this.thumbnail; }-*/;
     
-    public String getEmbeddedUrl()
+    public final String getEmbeddedUrl()
     {
         return YouTubeUrlUtils.buildEmbeddedUrl(this.getId());
     }

@@ -5,7 +5,7 @@ public class YouTubeUrlUtils
     private static final String EMBEDDED_URL = "http://www.youtube.com/embed/";
     //TODO: Shouldn't be here, currently supports transparent window.
     //NOTE: according to: http://www.electrictoolbox.com/float-div-youtube-iframe/
-    private static final String WMODE_TRANSPARENT = "&wmode=transparent";
+    private static final String WMODE_TRANSPARENT = "?wmode=transparent";
     
     public static String buildEmbeddedUrl(String videoId)
     {
