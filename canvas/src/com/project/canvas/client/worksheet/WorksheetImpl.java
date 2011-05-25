@@ -78,8 +78,7 @@ public class WorksheetImpl implements Worksheet
                 id = this.page.id;
             }
             else {
-                // Can't reload a page that was never saved!
-                view.onLoadOperationChange(OperationStatus.FAILURE, "Can't reload because this page was never saved.");
+            	// Trying to reload when page wasn't yet saved. Might as well do nothing.
                 return;
             }
         }
@@ -109,7 +108,7 @@ public class WorksheetImpl implements Worksheet
     public void load(String idStr)
     {
         Long id = null;
-        if (false == idStr.trim().isEmpty())
+        if ((null != idStr) && (false == idStr.trim().isEmpty()))
         {
             try {
                 id = Long.valueOf(idStr);
@@ -117,8 +116,8 @@ public class WorksheetImpl implements Worksheet
                 // TODO instead of catching (or in addition) throw an exception? currently quietly ignores...
                 return;
             }
-            load(id);
         }
+        load(id);
     }
 
     @Override
