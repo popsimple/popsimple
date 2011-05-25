@@ -1,6 +1,7 @@
 package com.project.canvas.client.worksheet;
 
 import com.google.gwt.event.dom.client.MouseEvent;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.canvastools.base.CanvasToolFrame;
 import com.project.canvas.client.resources.CanvasResources;
@@ -9,12 +10,16 @@ import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.shared.events.SimpleEvent.Handler;
 import com.project.canvas.client.worksheet.interfaces.ElementDragManager;
 import com.project.canvas.client.worksheet.interfaces.ToolFrameTransformer;
+import com.project.canvas.shared.PointTransformer;
+import com.project.canvas.shared.PointTransformer.TransformationMode;
 import com.project.canvas.shared.data.Point2D;
 
 public class ToolFrameTransformerImpl implements ToolFrameTransformer
 {
     // 1 = best, higer value means bigger angle steps (lower resolution)
     private static final int ROTATION_ROUND_RESOLUTION = 3;
+
+    private static final double GRID_RESOLUTION = 10;
 
     private final Widget _container;
     private final ElementDragManager _elementDragManager;
@@ -44,11 +49,12 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
     @Override
     public void startDragCanvasToolFrame(final CanvasToolFrame toolFrame, final MouseEvent<?> startEvent)
     {
+        final Point2D initialPos = ElementUtils.getElementPosition(toolFrame.getElement());
         final SimpleEvent.Handler<Point2D> dragHandler = new SimpleEvent.Handler<Point2D>() {
             @Override
             public void onFire(Point2D pos)
             {
-                setToolFramePosition(toolFrame, pos);
+                setToolFramePosition(toolFrame, transformMovement(pos, initialPos));
             }
         };
         SimpleEvent.Handler<Point2D> stopMoveHandler = new SimpleEvent.Handler<Point2D>() {
@@ -62,6 +68,7 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
             @Override
             public void onFire(Void arg)
             {
+                setToolFramePosition(toolFrame, initialPos);
                 setToolFrameDragStyles(toolFrame, false);
             }
         };
@@ -100,7 +107,7 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
             public void onFire(Point2D pos)
             {
                 Point2D size = sizeFromRotatedSizeOffset(angle, initialSize, startDragPos, pos);
-                toolFrame.setToolSize(size);
+                toolFrame.setToolSize(transformMovement(size, initialSize));
             }
         };
         final SimpleEvent.Handler<Point2D> stopHandler = new SimpleEvent.Handler<Point2D>() {
@@ -108,7 +115,7 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
             public void onFire(Point2D pos)
             {
                 Point2D size = sizeFromRotatedSizeOffset(angle, initialSize, startDragPos, pos);
-                toolFrame.setToolSize(size);
+                toolFrame.setToolSize(transformMovement(size, initialSize));
                 ElementUtils.resetTransformOrigin(toolFrame.getElement());
                 Point2D frameSize = ElementUtils.getElementSize(toolFrame.getElement());
                 Point2D center = frameSize.mul(0.5);
@@ -181,7 +188,7 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
         return toolCenterPos;
     }
 
-    protected Point2D limitPosToContainer(Point2D pos, Widget elem)
+    private Point2D limitPosToContainer(Point2D pos, Widget elem)
     {
         Point2D margin = new Point2D(20, 20);
         Point2D maxPos = ElementUtils.getElementSize(this._container.getElement()).minus(margin);
@@ -189,12 +196,12 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
         return Point2D.max(minPos, Point2D.min(maxPos, pos));
     }
 
-    protected int roundedAngle(int rotation)
+    private int roundedAngle(int rotation)
     {
         return ROTATION_ROUND_RESOLUTION * (rotation / ROTATION_ROUND_RESOLUTION);
     }
 
-    protected void setToolFrameDragStyles(final CanvasToolFrame toolFrame, boolean dragging)
+    private void setToolFrameDragStyles(final CanvasToolFrame toolFrame, boolean dragging)
     {
         if (dragging) {
             toolFrame.addStyleName(CanvasResources.INSTANCE.main().hover());
@@ -203,6 +210,34 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
             toolFrame.removeStyleName(CanvasResources.INSTANCE.main().hover());
             toolFrame.removeStyleName(CanvasResources.INSTANCE.main().drag());
         }
+    }
+
+
+    private Point2D transformMovement(Point2D size, Point2D initialCoords)
+    {
+        Point2D sizeDelta = size.minus(initialCoords);
+        Event event = Event.getCurrentEvent();
+        if (null != event) {
+            TransformationMode mode = TransformationMode.NONE;
+            if (event.getCtrlKey()) {
+                mode = TransformationMode.MEAN;
+            }
+            else if (event.getShiftKey()) {
+                Point2D absDelta = sizeDelta.abs();
+                if (absDelta.getX() < absDelta.getY()) {
+                    mode = TransformationMode.SNAP_Y;
+                }
+                else {
+                    mode = TransformationMode.SNAP_X;
+                }
+            }
+            sizeDelta = PointTransformer.Transform(sizeDelta, mode);
+            if (event.getAltKey()) {
+                // Snap to grid.
+                sizeDelta = sizeDelta.mul(1/GRID_RESOLUTION).mul(GRID_RESOLUTION);
+            }
+        }
+        return initialCoords.plus(sizeDelta);
     }
 
 }

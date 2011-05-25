@@ -23,9 +23,10 @@ public interface ElementDragManager
      * @param stopConditions Conditions for stopping the operation - a bit field of StopCondition values. At least one value must be set.
      * @return a handler which the caller must doFire when it wants to force a stop on the operation
      */
-    public abstract SimpleEvent.Handler<Void> startMouseMoveOperation(final Element referenceElem,
+    SimpleEvent.Handler<Void> startMouseMoveOperation(final Element referenceElem,
             final Point2D referenceOffset, final SimpleEvent.Handler<Point2D> moveHandler,
             final Handler<Point2D> floatingWidgetStop, final SimpleEvent.Handler<Void> cancelHandler, 
             int stopConditions);
 
+    
 }
