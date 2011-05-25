@@ -19,7 +19,7 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
     // 1 = best, higer value means bigger angle steps (lower resolution)
     private static final int ROTATION_ROUND_RESOLUTION = 3;
 
-    private static final double GRID_RESOLUTION = 10;
+    private static final double GRID_RESOLUTION = 15;
 
     private final Widget _container;
     private final ElementDragManager _elementDragManager;
@@ -54,7 +54,7 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
             @Override
             public void onFire(Point2D pos)
             {
-                setToolFramePosition(toolFrame, transformMovement(pos, initialPos));
+                setToolFramePosition(toolFrame, transformMovement(pos, initialPos, false));
             }
         };
         SimpleEvent.Handler<Point2D> stopMoveHandler = new SimpleEvent.Handler<Point2D>() {
@@ -215,24 +215,29 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
 
     private Point2D transformMovement(Point2D size, Point2D initialCoords)
     {
+        return transformMovement(size, initialCoords, true);
+    }
+
+    private Point2D transformMovement(Point2D size, Point2D initialCoords, boolean allowMean)
+    {
         Point2D sizeDelta = size.minus(initialCoords);
         Event event = Event.getCurrentEvent();
         if (null != event) {
             TransformationMode mode = TransformationMode.NONE;
-            if (event.getCtrlKey()) {
+            if (allowMean && event.getCtrlKey()) {
                 mode = TransformationMode.MEAN;
             }
+            else if (event.getShiftKey() && event.getAltKey()) {
+                // do nothing here.
+            }
             else if (event.getShiftKey()) {
-                Point2D absDelta = sizeDelta.abs();
-                if (absDelta.getX() < absDelta.getY()) {
-                    mode = TransformationMode.SNAP_Y;
-                }
-                else {
-                    mode = TransformationMode.SNAP_X;
-                }
+                mode = TransformationMode.SNAP_Y;
+            }
+            else if (event.getAltKey()) {
+                mode = TransformationMode.SNAP_X;
             }
             sizeDelta = PointTransformer.Transform(sizeDelta, mode);
-            if (event.getAltKey()) {
+            if (event.getShiftKey() && event.getAltKey()) {
                 // Snap to grid.
                 sizeDelta = sizeDelta.mul(1/GRID_RESOLUTION).mul(GRID_RESOLUTION);
             }
