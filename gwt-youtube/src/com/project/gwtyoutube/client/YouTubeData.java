@@ -1,4 +1,4 @@
-package com.project.canvas.client.shared.searchProviders.youtube;
+package com.project.gwtyoutube.client;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;

@@ -1,4 +1,4 @@
-package com.project.canvas.client.shared.searchProviders.youtube;
+package com.project.gwtyoutube.client;
 
 import com.google.gwt.core.client.JavaScriptObject;
 
@@ -13,5 +13,8 @@ public class YouTubeItem extends JavaScriptObject
     
     public final native YouTubeThumbnail getThumbnail() /*-{ return this.thumbnail; }-*/;
     
-    public final native String getEmbeddedUrl() /*-{ return this.content['5']; }-*/;
+    public final String getEmbeddedUrl()
+    {
+        return YouTubeUrlUtils.buildEmbeddedUrl(this.getId());
+    }
 }
