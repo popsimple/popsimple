@@ -18,7 +18,8 @@ public interface CanvasTool<T extends ElementData> extends IsWidget, TakesValue<
 		HEIGHT_ONLY,
 		NONE,
 	}
-    SimpleEvent<String> getKillRequestedEvent();
+	
+    HandlerRegistration addKillRequestEventHandler(SimpleEvent.Handler<String> handler);
 
     // tool wants to be dragged around with the mouse
     HandlerRegistration addMoveStartEventHandler(SimpleEvent.Handler<MouseEvent<?>> handler);

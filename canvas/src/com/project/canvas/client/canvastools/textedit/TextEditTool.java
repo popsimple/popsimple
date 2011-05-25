@@ -19,8 +19,8 @@ import com.project.canvas.shared.data.ElementData;
 import com.project.canvas.shared.data.Point2D;
 import com.project.canvas.shared.data.TextData;
 
-public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
-
+public class TextEditTool extends FlowPanel implements CanvasTool<TextData> 
+{
     protected AsyncCallback<Void> editorReady = new AsyncCallback<Void>() {
         @Override
         public void onSuccess(Void result) {
@@ -75,11 +75,6 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
         if (null == nicEditor) {
             nicEditor = new NicEditor(editBox, editorReady);
         }
-    }
-
-    @Override
-    public SimpleEvent<String> getKillRequestedEvent() {
-        return this.killRequestEvent;
     }
 
     @Override
@@ -179,5 +174,11 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData> {
         if (isViewMode) {
             this.viewBox.setHTML(this.nicEditor.getContent());
         }
+    }
+
+    @Override
+    public HandlerRegistration addKillRequestEventHandler(Handler<String> handler)
+    {
+        return this.killRequestEvent.addHandler(handler);
     }
 }

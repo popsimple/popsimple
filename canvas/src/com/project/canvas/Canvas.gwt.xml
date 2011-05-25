@@ -12,8 +12,8 @@
 
 	<!-- Other module inherits -->
 	<inherits name='com.google.gwt.resources.Resources' />
- 	<!-- <inherits name='com.google.gwt.maps.GoogleMaps' />-->
 
+ 	<inherits name='com.google.gwt.maps.GoogleMaps' />
 	<inherits name='com.ghusse.dolomite.Dolomite'/>
 	<inherits name='com.project.gwtbing.GwtBing'/>
 	

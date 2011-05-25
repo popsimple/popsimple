@@ -19,9 +19,7 @@ class ToolInstanceInfo {
 
     CanvasToolFrame toolFrame;
     HandlerRegistration killRegistration;
-    @SuppressWarnings("unused")
     Date createdOn;
-    @SuppressWarnings("unused")
     CanvasToolFactory<?> factory;
     RegistrationsManager registrations = new RegistrationsManager();
 }

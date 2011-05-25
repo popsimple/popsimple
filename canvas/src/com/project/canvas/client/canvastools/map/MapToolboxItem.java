@@ -3,6 +3,7 @@ package com.project.canvas.client.canvastools.map;
 import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.canvastools.base.CanvasToolFactory;
 import com.project.canvas.client.canvastools.base.ToolboxItem;
+import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.shared.data.ElementData;
 
 public class MapToolboxItem implements ToolboxItem
@@ -13,22 +14,19 @@ public class MapToolboxItem implements ToolboxItem
     @Override
     public String getToolboxIconStyle()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return CanvasResources.INSTANCE.main().toolboxMapIconStyle();
     }
 
     @Override
     public String getDragIconStyle()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return "";
     }
 
     @Override
     public String getCanvasStyleInCreateMode()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return CanvasResources.INSTANCE.main().mapCreateModeCanvasStyle();
     }
 
     @Override

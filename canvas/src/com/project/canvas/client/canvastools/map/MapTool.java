@@ -8,7 +8,6 @@ import com.google.gwt.maps.client.geom.LatLng;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.resources.CanvasResources;
-import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.shared.events.SimpleEvent.Handler;
 import com.project.canvas.shared.ApiKeys;
 import com.project.canvas.shared.data.ElementData;
@@ -17,8 +16,26 @@ import com.project.canvas.shared.data.Point2D;
 
 public class MapTool extends FlowPanel implements CanvasTool<MapData>
 {
-    MapData mapData;
+    public static void prepareApi()
+    {
+        prepareApi(null);
+    }
+    
+    private static void prepareApi(final MapTool instance)
+    {
+        Maps.loadMapsApi(ApiKeys.GOOGLE_MAPS, "2.x", false, new Runnable() {
+            @Override
+            public void run()
+            {
+                if (null != instance) {
+                    instance.onApiReady();
+                }
+            }
+        });
+    }
+    
     private MapWidget mapWidget;
+    private MapData mapData;
 
     public MapTool()
     {
@@ -27,28 +44,41 @@ public class MapTool extends FlowPanel implements CanvasTool<MapData>
         MapTool.prepareApi(this);
     }
 
-    private void onApiReady()
+    @Override
+    public HandlerRegistration addKillRequestEventHandler(Handler<String> handler)
     {
-        this.removeStyleName(CanvasResources.INSTANCE.main().mapToolEmpty());
-        this.mapWidget = new MapWidget();
-        this.add(this.mapWidget);
-        this.applyMapDataToWidget();
-    }
-
-    private void applyMapDataToWidget()
-    {
-        if ((null == this.mapData) || (null == this.mapWidget)) {
-            return;
-        }
-        this.mapWidget.setCenter(LatLng.newInstance(this.mapData.center.latitude, this.mapData.center.longitude));
-        this.mapWidget.setZoomLevel(this.mapData.zoom);
+        return null;
     }
 
     @Override
-    public void setValue(MapData value)
+    public HandlerRegistration addMoveStartEventHandler(Handler<MouseEvent<?>> handler)
     {
-        this.mapData = value;
-        this.applyMapDataToWidget();
+        return null;
+    }
+
+    @Override
+    public HandlerRegistration addSelfMoveRequestEventHandler(Handler<Point2D> handler)
+    {
+        return null;
+    }
+
+    @Override
+    public void bind()
+    {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public boolean canRotate()
+    {
+        return true;
+    }
+
+    @Override
+    public ResizeMode getResizeMode()
+    {
+        return ResizeMode.BOTH;
     }
 
     @Override
@@ -71,10 +101,16 @@ public class MapTool extends FlowPanel implements CanvasTool<MapData>
     }
 
     @Override
-    public void bind()
+    public void setElementData(ElementData data)
     {
-        // TODO Auto-generated method stub
+        this.setValue((MapData) data);
+    }
 
+    @Override
+    public void setValue(MapData value)
+    {
+        this.mapData = value;
+        this.applyMapDataToWidget();
     }
 
     @Override
@@ -84,53 +120,21 @@ public class MapTool extends FlowPanel implements CanvasTool<MapData>
 
     }
 
-    @Override
-    public ResizeMode getResizeMode()
+    private void applyMapDataToWidget()
     {
-        return ResizeMode.BOTH;
+        if ((null == this.mapData) || (null == this.mapWidget)) {
+            return;
+        }
+        this.mapWidget.setCenter(LatLng.newInstance(this.mapData.center.latitude, this.mapData.center.longitude));
+        this.mapWidget.setZoomLevel(this.mapData.zoom);
     }
 
-    @Override
-    public boolean canRotate()
+    private void onApiReady()
     {
-        return true;
-    }
-
-    @Override
-    public SimpleEvent<String> getKillRequestedEvent()
-    {
-        return null;
-    }
-
-    @Override
-    public HandlerRegistration addMoveStartEventHandler(Handler<MouseEvent<?>> handler)
-    {
-        return null;
-    }
-
-    @Override
-    public HandlerRegistration addSelfMoveRequestEventHandler(Handler<Point2D> handler)
-    {
-        return null;
-    }
-
-    @Override
-    public void setElementData(ElementData data)
-    {
-        this.setValue((MapData) data);
-    }
-
-    private static void prepareApi(final MapTool instance)
-    {
-        Maps.loadMapsApi(ApiKeys.GOOGLE_MAPS, "2.x", false, new Runnable() {
-            @Override
-            public void run()
-            {
-                if (null != instance) {
-                    instance.onApiReady();
-                }
-            }
-        });
+        this.removeStyleName(CanvasResources.INSTANCE.main().mapToolEmpty());
+        this.mapWidget = new MapWidget();
+        this.add(this.mapWidget);
+        this.applyMapDataToWidget();
     }
 
 }

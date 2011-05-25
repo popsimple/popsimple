@@ -22,7 +22,7 @@ public class TextEditToolboxItem implements ToolboxItem {
     }
 
     public String getToolboxIconToolTip() {
-        return "Text tool";
+        return "Text";
     }
 
     public CanvasToolFactory<? extends CanvasTool<? extends ElementData>> getToolFactory() {

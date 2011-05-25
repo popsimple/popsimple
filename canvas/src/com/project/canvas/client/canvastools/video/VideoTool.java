@@ -30,10 +30,9 @@ import com.project.canvas.shared.data.ElementData;
 import com.project.canvas.shared.data.MediaData;
 import com.project.canvas.shared.data.Point2D;
 
-public class VideoTool extends FlowPanel implements CanvasTool<MediaData> {
-
+public class VideoTool extends FlowPanel implements CanvasTool<MediaData> 
+{
     private static final Point2D DEFAULT_SIZE = new Point2D(425, 349);
-	private final SimpleEvent<String> killRequestEvent = new SimpleEvent<String>();
     private final SimpleEvent<MouseEvent<?>> moveStartEvent = new SimpleEvent<MouseEvent<?>>();
 
     private MediaData data = null;
@@ -129,10 +128,6 @@ public class VideoTool extends FlowPanel implements CanvasTool<MediaData> {
     @Override
     public void setActive(boolean isFocused) {
         // do nothing.
-    }
-
-    public SimpleEvent<String> getKillRequestedEvent() {
-        return this.killRequestEvent;
     }
 
     protected void setVideoUrl(String url, boolean autoSize) {
@@ -231,5 +226,11 @@ public class VideoTool extends FlowPanel implements CanvasTool<MediaData> {
         else {
             this.reRegisterHandlers();
         }
+    }
+
+    @Override
+    public HandlerRegistration addKillRequestEventHandler(Handler<String> handler)
+    {
+        return null;
     }
 }

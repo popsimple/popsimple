@@ -219,19 +219,6 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         return viewButton.addClickHandler(SimpleEvent.AsClickHandler(handler));
     }
 
-    private void changeButtonStatus(Button button, OperationStatus status, String pendingText, String doneText) {
-        switch (status) {
-        case PENDING:
-            button.setText(pendingText);
-            button.setEnabled(false);
-            break;
-        case SUCCESS:
-        case FAILURE:
-            button.setText(doneText);
-            button.setEnabled(true);
-        }
-    }
-
     @Override
     public void clearActiveToolboxItem() {
         clearFloatingWidget();
@@ -239,17 +226,6 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
             this.worksheetPanel.removeStyleName(this.activeToolboxItem.getCanvasStyleInCreateMode());
             this.activeToolboxItem = null;
         }
-    }
-
-    private void clearFloatingWidget() {
-        if (null != this.floatingWidget) {
-            this.worksheetPanel.remove(floatingWidget);
-        }
-        if (null != this._floatingWidgetTerminator) {
-            this._floatingWidgetTerminator.onFire(null);
-        }
-        this.floatingWidget = null;
-        this._floatingWidgetTerminator = null;
     }
 
     public void load(Handler<String> handler) {
@@ -297,52 +273,13 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
             return;
         }
 
-        final Widget floatingWidget = factory.getFloatingWidget();
-        if (null == floatingWidget) {
-            final HandlerRegistration createInstanceReg = this.worksheetPanel.addDomHandler(
-                    new ClickHandler() {
-                        @Override
-                        public void onClick(ClickEvent event) {
-                            if (overToolFrames.isEmpty()) {
-                                Point2D position = ElementUtils.relativePosition(event,
-                                        worksheetPanel.getElement());
-                                toolCreationRequestEvent.dispatch(new ToolCreationRequest(position,
-                                        toolboxItem.getToolFactory()));
-                            }
-                        }
-                    }, ClickEvent.getType());
-            this._floatingWidgetTerminator = new Handler<Void>() {
-                @Override
-                public void onFire(Void arg) {
-                    createInstanceReg.removeHandler();
-                }
-            };
+        setFloatingWidgetForTool(factory);
+        if (null == this.floatingWidget) {
+            setActiveToolboxItemWithoutFloatingWidget(toolboxItem);
             return;
         }
-        floatingWidget.addStyleName(CanvasResources.INSTANCE.main().floatingToolStyle());
-        this.worksheetPanel.add(floatingWidget);
 
-        Handler<Point2D> floatingWidgetMoveHandler = new Handler<Point2D>() {
-            @Override
-            public void onFire(Point2D arg) {
-                ElementUtils.setElementPosition(arg, floatingWidget.getElement());
-            }
-        };
-        Handler<Point2D> floatingWidgetStop = new Handler<Point2D>() {
-            @Override
-            public void onFire(Point2D position) {
-                toolCreationRequestEvent.dispatch(new ToolCreationRequest(position, toolboxItem
-                        .getToolFactory()));
-            }
-        };
-        this.floatingWidget = floatingWidget;
-        Element floatingElem = floatingWidget.getElement();
-        ElementUtils.setElementPosition(ElementUtils.getElementSize(worksheetPanel.getElement()).mul(0.5)
-                .minus(ElementUtils.getElementSize(floatingElem)), floatingElem);
-        this._floatingWidgetTerminator = this._toolFrameTransformer.getElementDragManager()
-                .startMouseMoveOperation(this.worksheetPanel.getElement(), Point2D.zero,
-                        floatingWidgetMoveHandler, floatingWidgetStop, null,
-                        ElementDragManager.StopCondition.STOP_CONDITION_MOUSE_CLICK);
+        this.startDraggingFloatingWidget(toolboxItem);
     }
 
     @Override
@@ -423,5 +360,87 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
                 }
             }
         });
+    }
+
+    private void changeButtonStatus(Button button, OperationStatus status, String pendingText, String doneText) {
+        switch (status) {
+        case PENDING:
+            button.setText(pendingText);
+            button.setEnabled(false);
+            break;
+        case SUCCESS:
+        case FAILURE:
+            button.setText(doneText);
+            button.setEnabled(true);
+        }
+    }
+
+    private void clearFloatingWidget() {
+        if (null != this.floatingWidget) {
+            this.worksheetPanel.remove(floatingWidget);
+        }
+        if (null != this._floatingWidgetTerminator) {
+            this._floatingWidgetTerminator.onFire(null);
+        }
+        this.floatingWidget = null;
+        this._floatingWidgetTerminator = null;
+    }
+
+    private void setActiveToolboxItemWithoutFloatingWidget(final ToolboxItem toolboxItem)
+    {
+        final HandlerRegistration createInstanceReg = this.worksheetPanel.addDomHandler(
+                new ClickHandler() {
+                    @Override
+                    public void onClick(ClickEvent event) {
+                        if (overToolFrames.isEmpty()) {
+                            Point2D position = ElementUtils.relativePosition(event,
+                                    worksheetPanel.getElement());
+                            toolCreationRequestEvent.dispatch(new ToolCreationRequest(position,
+                                    toolboxItem.getToolFactory()));
+                        }
+                    }
+                }, ClickEvent.getType());
+        this._floatingWidgetTerminator = new Handler<Void>() {
+            @Override
+            public void onFire(Void arg) {
+                createInstanceReg.removeHandler();
+            }
+        };
+    }
+
+    private void setFloatingWidgetForTool(CanvasToolFactory<? extends CanvasTool<? extends ElementData>> factory)
+    {
+        this.floatingWidget = factory.getFloatingWidget();
+        if (null == this.floatingWidget) {
+            return;
+        }
+        this.worksheetPanel.add(floatingWidget);
+        floatingWidget.addStyleName(CanvasResources.INSTANCE.main().floatingToolStyle());
+        Event event = Event.getCurrentEvent();
+        if (null != event) {
+            Point2D relativeToWorksheet = new Point2D(event.getClientX(), event.getClientY());
+            Point2D worksheetPos = ElementUtils.getElementAbsolutePosition(worksheetPanel.getElement());
+            ElementUtils.setElementPosition(Point2D.max(Point2D.zero, relativeToWorksheet.minus(worksheetPos)), floatingWidget.getElement());
+        }
+    }
+
+    private void startDraggingFloatingWidget(final ToolboxItem toolboxItem)
+    {
+        final WorksheetViewImpl that = this;
+        Handler<Point2D> floatingWidgetMoveHandler = new Handler<Point2D>() {
+            @Override
+            public void onFire(Point2D arg) {
+                ElementUtils.setElementPosition(arg, that.floatingWidget.getElement());
+            }
+        };
+        Handler<Point2D> floatingWidgetStop = new Handler<Point2D>() {
+            @Override
+            public void onFire(Point2D position) {
+                toolCreationRequestEvent.dispatch(new ToolCreationRequest(position, toolboxItem.getToolFactory()));
+            }
+        };
+        this._floatingWidgetTerminator = this._toolFrameTransformer.getElementDragManager().startMouseMoveOperation(
+                this.worksheetPanel.getElement(), Point2D.zero, floatingWidgetMoveHandler, floatingWidgetStop, null,
+                ElementDragManager.StopCondition.STOP_CONDITION_MOUSE_CLICK);
     }
 }

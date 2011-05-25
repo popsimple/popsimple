@@ -34,6 +34,12 @@ public interface MainStyles extends CssResource {
 
     String imageToolSet();
 
+    String mapCreateModeCanvasStyle();
+
+    String mapTool();
+
+    String mapToolEmpty();
+
     String monospace();
 
     String outOfBounds();
@@ -86,6 +92,8 @@ public interface MainStyles extends CssResource {
 
     String toolboxImageIconStyle();
 
+    String toolboxInnerIconStyle();
+
     String toolboxMapIconStyle();
 
     String toolboxTaskListIconStyle();
@@ -117,13 +125,13 @@ public interface MainStyles extends CssResource {
     String toolFrameHoverVisibleElement();
 
     String toolFramePanel();
-
+    
     String videoBox();
-
+    
     String videoCreateModeCanvasStyle();
-
+    
     String videoFrame();
-
+    
     String videoToolEmpty();
     
     String videoToolSet();
@@ -133,27 +141,20 @@ public interface MainStyles extends CssResource {
     String worksheetBackground();
     
     String worksheetButtons();
-    
-    String worksheetDragPanel();
-    
-    String worksheetFullView();
-    
+
+	String worksheetDragPanel();
+	
+	String worksheetFullView();
+
     String worksheetHeader();
     
     String worksheetModeEditable();
-
-	String worksheetModeViewOnly();
-	
-	String worksheetOptions();
-
+    
+    String worksheetModeViewOnly();
+    
+    String worksheetOptions();
+    
     String worksheetPanel();
-    
+
     String worksheetRightButton();
-    
-    String mapCreateModeCanvasStyle();
-    
-    String mapTool();
-    
-    String mapToolEmpty();
-    
 }

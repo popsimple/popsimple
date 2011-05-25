@@ -31,9 +31,8 @@ import com.project.canvas.shared.data.ElementData;
 import com.project.canvas.shared.data.MediaData;
 import com.project.canvas.shared.data.Point2D;
 
-public class ImageTool extends FlowPanel implements CanvasTool<MediaData> {
-    
-    private final SimpleEvent<String> killRequestEvent = new SimpleEvent<String>();
+public class ImageTool extends FlowPanel implements CanvasTool<MediaData> 
+{
     private final SimpleEvent<MouseEvent<?>> moveStartEvent = new SimpleEvent<MouseEvent<?>>();
     private final RegistrationsManager registrationsManager = new RegistrationsManager();
 
@@ -130,10 +129,6 @@ public class ImageTool extends FlowPanel implements CanvasTool<MediaData> {
         // do nothing.
     }
 
-    public SimpleEvent<String> getKillRequestedEvent() {
-        return this.killRequestEvent;
-    }
-
     protected void setImageUrl(String url, boolean autoSize) {
         if (null == url || url.trim().isEmpty()) {
             this.getElement().getStyle().setBackgroundImage("");
@@ -219,5 +214,11 @@ public class ImageTool extends FlowPanel implements CanvasTool<MediaData> {
         else {
             reRegisterHandlers();
         }
+    }
+
+    @Override
+    public HandlerRegistration addKillRequestEventHandler(Handler<String> handler)
+    {
+        return null;
     }
 }

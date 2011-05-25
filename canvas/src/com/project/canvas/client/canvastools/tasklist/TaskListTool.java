@@ -16,7 +16,6 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.canvastools.base.CanvasToolCommon;
-import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.shared.events.SimpleEvent.Handler;
 import com.project.canvas.shared.data.ElementData;
 import com.project.canvas.shared.data.Point2D;
@@ -41,7 +40,6 @@ public class TaskListTool extends Composite implements CanvasTool<TaskListData>,
 
     protected int _tabIndex = 0;
     protected char _accessKey = 0;
-    private SimpleEvent<String> killRequestedEvent = new SimpleEvent<String>();
     private ArrayList<TaskTool> taskWidgets = new ArrayList<TaskTool>();
 
     private TaskListData data = null;
@@ -85,10 +83,6 @@ public class TaskListTool extends Composite implements CanvasTool<TaskListData>,
     private void removeTaskWidget(TaskTool taskWidget) {
         panelTaskList.remove(taskWidget);
         taskWidgets.remove(taskWidget);
-
-        if (this.taskWidgets.isEmpty()) {
-            this.killRequestedEvent.dispatch("Empty");
-        }
     }
 
     private TaskTool getFirstTaskWidget() {
@@ -110,10 +104,6 @@ public class TaskListTool extends Composite implements CanvasTool<TaskListData>,
 
     public void setTabIndex(int index) {
         this._tabIndex = index;
-    }
-
-    public SimpleEvent<String> getKillRequestedEvent() {
-        return this.killRequestedEvent;
     }
 
     @Override
@@ -184,5 +174,11 @@ public class TaskListTool extends Composite implements CanvasTool<TaskListData>,
     public void setViewMode(boolean isViewMode)
     {
         // TODO How does a task list behave when in view mode? for now same as edit mode
+    }
+
+    @Override
+    public HandlerRegistration addKillRequestEventHandler(Handler<String> handler)
+    {
+        return null;
     }
 }

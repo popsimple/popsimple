@@ -54,6 +54,7 @@ public class Toolbox extends Composite {
         outerElem.addStyleName(CanvasResources.INSTANCE.main().toolboxCommonIconStyle());
         outerElem.setTitle(toolboxItem.getToolboxIconToolTip());
 
+        elem.addStyleName(CanvasResources.INSTANCE.main().toolboxInnerIconStyle());
         elem.addStyleName(toolboxItem.getToolboxIconStyle());
         elem.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {

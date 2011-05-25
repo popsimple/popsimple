@@ -21,10 +21,10 @@ public class BuiltinTools {
         }
         tools.add(cursorTool);
         tools.add(new TextEditToolboxItem());
-        tools.add(new TaskListToolboxItem());
         tools.add(new ImageToolboxItem());
         tools.add(new VideoToolboxItem());
         tools.add(new MapToolboxItem());
+        tools.add(new TaskListToolboxItem());
     }
 
     public static Iterable<ToolboxItem> getTools() {

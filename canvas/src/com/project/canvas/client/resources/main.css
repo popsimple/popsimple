@@ -133,6 +133,14 @@
 	border-style: solid;
 }
 
+.toolboxInnerIconStyle {
+	background-position: center center;
+}
+
+.toolboxCommonIconStyle:hover .toolboxInnerIconStyle {
+	box-shadow: 0 0 15px #FFFFFF inset;
+}
+
 .toolboxCommonSelectedIconStyle,.toolboxCommonSelectedIconStyle:hover {
 	padding: 4px;
 	border-color: #aaa;
@@ -524,6 +532,9 @@
 
 @sprite .toolboxMapIconStyle {
 	gwt-image: "mapIcon48";
+	height: 48px;
+	width: 48px;
+    background-position: center center;
 }
 
 .mapCreateModeCanvasStyle {
