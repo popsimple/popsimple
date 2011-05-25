@@ -13,8 +13,6 @@ public class YouTubeSearchRequest
     private static final String YOUTUBE_SEARCH_API_HOST = "gdata.youtube.com";
     private static final String YOUTUBE_SEARCH_PATH = "feeds/api/videos";
     
-    private static final int CALLBACK_TIMEOUT_MS = 1000;
-    
     public void search(String query, final AsyncCallback<YouTubeResult> callback)
     {
         this.search(query, callback, new HashMap<String, String>());
@@ -27,7 +25,6 @@ public class YouTubeSearchRequest
         
         JsonpRequestBuilder requestBuilder = new JsonpRequestBuilder();
         requestBuilder.setCallbackParam(SearchParameters.CALLBACK);
-        requestBuilder.setTimeout(CALLBACK_TIMEOUT_MS);
         requestBuilder.requestObject(searchUrl, new AsyncCallback<YouTubeResult>() {
 
             @Override
