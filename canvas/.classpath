@@ -9,5 +9,6 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/guava-r09.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/dolomite"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/gwt-bing"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/gwt-youtube"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import com.google.gwt.core.client.JsArray;
 import com.project.canvas.client.shared.searchProviders.interfaces.MediaResult;
 import com.project.canvas.client.shared.searchProviders.interfaces.MediaSearchResult;
-import com.project.canvas.client.shared.searchProviders.youtube.YouTubeItem;
-import com.project.canvas.client.shared.searchProviders.youtube.YouTubeResult;
+import com.project.gwtyoutube.client.YouTubeItem;
+import com.project.gwtyoutube.client.YouTubeResult;
 
 public class YouTubeResultAdapter implements MediaSearchResult 
 {

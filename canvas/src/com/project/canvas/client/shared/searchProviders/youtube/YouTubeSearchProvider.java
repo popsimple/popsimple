@@ -7,33 +7,26 @@ import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.searchProviders.interfaces.MediaSearchResult;
 import com.project.canvas.client.shared.searchProviders.interfaces.VideoSearchProvider;
 import com.project.canvas.client.shared.searchProviders.youtube.adapters.YouTubeResultAdapter;
+import com.project.gwtyoutube.client.YouTubeResult;
+import com.project.gwtyoutube.client.YouTubeSearchRequest;
 
 public class YouTubeSearchProvider implements VideoSearchProvider 
 {
+    private YouTubeSearchRequest searchRequest = new YouTubeSearchRequest(); 
+    
     @Override
     public void search(String query, final AsyncCallback<MediaSearchResult> callback) {
-        UrlBuilder urlBuilder = new UrlBuilder();
-        urlBuilder.setProtocol("HTTP");
-        urlBuilder.setHost("gdata.youtube.com");
-        urlBuilder.setPath("feeds/api/videos");
-        urlBuilder.setParameter("alt", "jsonc");
-        urlBuilder.setParameter("v", "2");
-        urlBuilder.setParameter("format", "5"); // only embeddable videos.
-        urlBuilder.setParameter("q", query);
-        urlBuilder.setParameter("wmode", "transparent");
-        
-        JsonpRequestBuilder requestBuilder = new JsonpRequestBuilder();
-        requestBuilder.setCallbackParam("callback");
-        requestBuilder.requestObject(urlBuilder.buildString(), new AsyncCallback<YouTubeResult>() {
-
-            @Override
-            public void onFailure(Throwable caught) {
-                callback.onFailure(caught);
-            }
-
+        searchRequest.search(query, new AsyncCallback<YouTubeResult>() {
+            
             @Override
             public void onSuccess(YouTubeResult result) {
                 callback.onSuccess(new YouTubeResultAdapter(result));
+            }
+            
+            @Override
+            public void onFailure(Throwable caught) {
+                callback.onFailure(caught);
+                
             }
         });
     }

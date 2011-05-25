@@ -6,8 +6,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.project.canvas.client.shared.searchProviders.MediaInfoImpl;
 import com.project.canvas.client.shared.searchProviders.interfaces.MediaInfo;
 import com.project.canvas.client.shared.searchProviders.interfaces.MediaResult;
-import com.project.canvas.client.shared.searchProviders.youtube.YouTubeItem;
-import com.project.canvas.client.shared.searchProviders.youtube.YouTubeThumbnail;
+import com.project.gwtyoutube.client.YouTubeItem;
+import com.project.gwtyoutube.client.YouTubeThumbnail;
 
 public class YouTubeItemToMediaResultAdapter implements MediaResult  
 {
