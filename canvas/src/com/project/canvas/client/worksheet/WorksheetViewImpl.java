@@ -100,6 +100,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     private final SimpleEvent<Void> stopOperationEvent = new SimpleEvent<Void>();
     private final SimpleEvent<ToolCreationRequest> toolCreationRequestEvent = new SimpleEvent<ToolCreationRequest>();
     private final SimpleEvent<CanvasToolFrame> toolFrameClickEvent = new SimpleEvent<CanvasToolFrame>();
+    private final SimpleEvent<MouseEvent<?>> mouseDownEvent = new SimpleEvent<MouseEvent<?>>();
 
     private HashSet<CanvasToolFrame> selectedTools = new HashSet<CanvasToolFrame>();
     
@@ -150,6 +151,11 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     public HandlerRegistration addToolFrameClickHandler(Handler<CanvasToolFrame> handler) {
         return this.toolFrameClickEvent.addHandler(handler);
     }
+    
+    public HandlerRegistration attMouseDownHandler(Handler<MouseEvent<?>> handler)
+    {
+        return this.mouseDownEvent.addHandler(handler);
+    }
 
     @Override
     public void addToolInstanceWidget(final CanvasToolFrame toolFrame, final Transform2D transform,
@@ -177,6 +183,10 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         regs.add(toolFrame.addMoveStartRequestHandler(new SimpleEvent.Handler<MouseEvent<?>>() {
             @Override
             public void onFire(MouseEvent<?> arg) {
+                if (false == isToolFrameSelected(toolFrame))
+                {
+                    handleToolFrameSelection(toolFrame);
+                }
                 for (CanvasToolFrame selectedToolFrame : selectedTools){
                     _toolFrameTransformer.startDragCanvasToolFrame(selectedToolFrame, arg);
                 }
@@ -203,7 +213,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         regs.add(toolFrame.addFocusHandler(new FocusHandler() {
             @Override
             public void onFocus(FocusEvent event) {
-                toolFrameClickEvent.dispatch(toolFrame);
+                onToolFrameClick(toolFrame);
             }
         }));
         regs.add(toolFrame.asWidget().addDomHandler(new MouseOverHandler() {
@@ -218,17 +228,23 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
                 overToolFrames.remove(toolFrame);
             }
         }, MouseOutEvent.getType()));
-        regs.add(toolFrame.addSelectRequestHandler(new SimpleEvent.Handler<Void>() {
-            @Override
-            public void onFire(Void arg) {
-                onFrameSelected(toolFrame);
-            }
-        }));
+//        regs.add(toolFrame.addSelectRequestHandler(new SimpleEvent.Handler<Void>() {
+//            @Override
+//            public void onFire(Void arg) {
+//                onFrameSelected(toolFrame);
+//            }
+//        }));
 
         this.worksheetPanel.add(toolFrame);
     }
     
-    private void onFrameSelected(CanvasToolFrame toolFrame)
+    private void onToolFrameClick(CanvasToolFrame toolFrame)
+    {
+        this.handleToolFrameSelection(toolFrame);
+        toolFrameClickEvent.dispatch(toolFrame);
+    }
+    
+    private void handleToolFrameSelection(CanvasToolFrame toolFrame)
     {
         Event event = Event.getCurrentEvent();
         if ((null != event) && (event.getCtrlKey()))
@@ -239,7 +255,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         {
             this.clearFrameSelection();
             this.selectToolFrame(toolFrame);
-        }
+        }        
     }
     
     private void selectToolFrame(CanvasToolFrame toolFrame)
@@ -413,7 +429,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
             public void onMouseDown(MouseDownEvent event)
             {
                 if (overToolFrames.isEmpty()) {
-                    toolFrameClickEvent.dispatch(null);
+                    onClearAreaClicked();
                 }
             }
         }, MouseDownEvent.getType());
@@ -422,12 +438,24 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
             public void onPreviewNativeEvent(NativePreviewEvent event) {
                 String type = event.getNativeEvent().getType();
                 if (type.equals("keydown") && (event.getNativeEvent().getKeyCode() == 27)) {
-                    stopOperationEvent.dispatch(null);
+                    onEscapePressed();
                 }
             }
         });
     }
-
+    
+    private void onClearAreaClicked()
+    {
+        toolFrameClickEvent.dispatch(null);
+        clearFrameSelection();
+    }
+        
+    private void onEscapePressed()
+    {
+        stopOperationEvent.dispatch(null);
+        this.clearFrameSelection();
+    }
+    
     private void changeButtonStatus(Button button, OperationStatus status, String pendingText, String doneText) {
         switch (status) {
         case PENDING:

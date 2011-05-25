@@ -462,7 +462,10 @@
 }
 
 .toolFrameSelected{
-	background-color: #BAE2FF;
+	border-style: dotted !important;
+	border-color: black !important;
+	border-radius: 5px;
+	border-width: 1px;
 }
 	
 /*---------------------------------------------*/

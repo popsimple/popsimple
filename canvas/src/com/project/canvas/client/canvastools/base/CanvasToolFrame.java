@@ -133,14 +133,7 @@ public class CanvasToolFrame extends Composite implements Focusable, HasFocusHan
 		frameRegs.add(this.frameHeader.addDomHandler(new MouseDownHandler() {
             @Override
             public void onMouseDown(final MouseDownEvent event) {
-                selectRequest.dispatch(null);
-            }
-        }, MouseDownEvent.getType()));
-		
-		frameRegs.add(this.frameHeader.addDomHandler(new MouseDownHandler() {
-            @Override
-            public void onMouseDown(final MouseDownEvent event) {
-                moveStartRequest.dispatch(event);
+                onHeaderMouseDown(event);
             }
         }, MouseDownEvent.getType()));
 		frameRegs.add(tool.addSelfMoveRequestEventHandler(new Handler<Point2D>() {
@@ -154,6 +147,12 @@ public class CanvasToolFrame extends Composite implements Focusable, HasFocusHan
 			public void onMouseDown(MouseDownEvent event) {
 				focusPanel.setFocus(true); // take away focus from any others
 			}}, MouseDownEvent.getType()));
+	}
+	
+	private void onHeaderMouseDown(MouseDownEvent event)
+	{
+	    selectRequest.dispatch(null);
+	    moveStartRequest.dispatch(event);
 	}
 
     protected void registerTransformHandlers() {
