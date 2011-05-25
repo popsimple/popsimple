@@ -6,11 +6,14 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.project.canvas.client.shared.searchProviders.MediaInfoImpl;
 import com.project.canvas.client.shared.searchProviders.interfaces.MediaInfo;
 import com.project.canvas.client.shared.searchProviders.interfaces.MediaResult;
+import com.project.canvas.shared.StringUtils;
 import com.project.gwtyoutube.client.YouTubeItem;
 import com.project.gwtyoutube.client.YouTubeThumbnail;
 
 public class YouTubeItemToMediaResultAdapter implements MediaResult  
 {
+    private final static int DEFAULT_VIDEO_WIDTH = 425;
+    private final static int DEFAULT_VIDEO_HEIGHT = 349;
     private YouTubeItem _youTubeItem;
 
     public YouTubeItemToMediaResultAdapter(YouTubeItem youTubeItem)
@@ -34,7 +37,7 @@ public class YouTubeItemToMediaResultAdapter implements MediaResult
     public void getMediaSizes(AsyncCallback<ArrayList<MediaInfo>> callback) {
         ArrayList<MediaInfo> mediaSizes = new ArrayList<MediaInfo>();
         mediaSizes.add(new MediaInfoImpl(this._youTubeItem.getEmbeddedUrl(),
-                "Standard", 400, 400));
+                "Standard", DEFAULT_VIDEO_WIDTH, DEFAULT_VIDEO_HEIGHT));
         callback.onSuccess(mediaSizes);
     }
 
@@ -42,25 +45,8 @@ public class YouTubeItemToMediaResultAdapter implements MediaResult
     public String getThumbnailUrl() {
         YouTubeThumbnail thumbnail = this._youTubeItem.getThumbnail();
         
-        return DefaultIfEmptyOrNull(thumbnail.getDefaultUrl(),
-                DefaultIfEmptyOrNull(thumbnail.getSQDefaultUrl(),
+        return StringUtils.DefaultIfEmptyOrNull(thumbnail.getDefaultUrl(),
+                StringUtils.DefaultIfEmptyOrNull(thumbnail.getSQDefaultUrl(),
                         thumbnail.getHQDefaultUrl()));
     }
-    
-    
-    //TODO: Move
-    public String DefaultIfEmptyOrNull(String str, String defaultStr)
-    {
-        return IsEmptyOrNull(str) ? defaultStr : str;
-    }
-    
-    public boolean IsEmptyOrNull(String str)
-    {
-        if ((null == str) || (str.isEmpty()))
-        {
-            return true;
-        }
-        return false;
-    }
-
 }

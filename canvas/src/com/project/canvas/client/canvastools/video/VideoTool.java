@@ -155,28 +155,13 @@ public class VideoTool extends FlowPanel implements CanvasTool<MediaData> {
             }));
             WidgetUtils.setWidgetSize(this, DEFAULT_SIZE);
         }
-        videoFrame.setUrl(fixEmbeddedUrl(url));
+        videoFrame.setUrl(url);
         videoFrame.setVisible(true);
         
         super.removeStyleName(CanvasResources.INSTANCE.main().videoToolEmpty());
         super.addStyleName(CanvasResources.INSTANCE.main().videoToolSet());
     }
     
-    //TODO: Build the url properly when returning from the media picker.
-    private String fixEmbeddedUrl(String url)
-    {
-        //NOTE: Change the url to the new embed method.
-        String newUrl = url.replaceAll("/v/", "/embed/");
-
-        //NOTE: according to: 
-        //NOTE: http://www.electrictoolbox.com/float-div-youtube-iframe/
-        if (newUrl.indexOf("&wmode=transparent") == -1)
-        {
-            return newUrl.concat("&wmode=transparent");
-        }
-        return newUrl;
-    }
-
     @Override
     public MediaData getValue() {
         // TIP: use this page to check java regex: http://www.regexplanet.com/simple/index.html
