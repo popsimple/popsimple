@@ -368,8 +368,7 @@ public class WorksheetImpl implements Worksheet
                 tool.setElementData(newData);
                 view.setToolFrameTransform(toolInfo.toolFrame, newData.transform, Point2D.zero);
                 newElements.remove(oldData.id);
-            } else if (oldData.id != null) {
-                // new data doesn't exist for this id, and oldData has an id (isn't data newly created on the client) 
+            } else {
                 this.removeToolInstance(toolInfo.toolFrame);
             }
         }
