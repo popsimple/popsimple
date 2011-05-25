@@ -150,6 +150,8 @@ public class WorksheetImpl implements Worksheet
             @Override
             public void onSuccess(CanvasPage result)
             {
+                // TODO: see issue #92
+                load(result);
                 view.onSaveOperationChange(OperationStatus.SUCCESS, null);
                 String newURL = Window.Location.createUrlBuilder().setHash(result.id.toString()).buildString();
                 Window.Location.replace(newURL);
@@ -341,18 +343,20 @@ public class WorksheetImpl implements Worksheet
         defaultToolRequestEvent.dispatch(null);
     }
 
-    private void load(CanvasPage result)
+    private void load(CanvasPage newPage)
     {
+        this.updateOptions(newPage.options);
+        HashMap<Long, ElementData> existingElements = new HashMap<Long, ElementData>();
+        for (ElementData elem : this.page.elements) {
+            existingElements.put(elem.id, elem);
+        }
+
+        this.page = newPage;
+        
         this.removeAllTools();
         // TODO: Currently because it's static.
         ZIndexAllocator.reset();
 
-        this.page = result;
-        this.updateOptions(result.options);
-        HashMap<Long, ElementData> updatedElements = new HashMap<Long, ElementData>();
-        for (ElementData elem : this.page.elements) {
-            updatedElements.put(elem.id, elem);
-        }
 
         // TODO: Support updating already existing items.
         // for (Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo> entry
@@ -370,7 +374,7 @@ public class WorksheetImpl implements Worksheet
         // this.removeToolInstance(toolInfo.toolFrame);
         // }
         // }
-        createToolInstancesFromData(updatedElements);
+        createToolInstancesFromData(existingElements);
     }
 
     private RegistrationsManager registerToolInstanceHandlers(final CanvasToolFrame toolFrame,
