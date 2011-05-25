@@ -21,7 +21,6 @@ import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Event.NativePreviewHandler;
@@ -178,20 +177,26 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         regs.add(toolFrame.addMoveStartRequestHandler(new SimpleEvent.Handler<MouseEvent<?>>() {
             @Override
             public void onFire(MouseEvent<?> arg) {
-                _toolFrameTransformer.startDragCanvasToolFrame(toolFrame, arg);
+                for (CanvasToolFrame selectedToolFrame : selectedTools){
+                    _toolFrameTransformer.startDragCanvasToolFrame(selectedToolFrame, arg);
+                }
             }
         }));
         regs.add(toolFrame.addResizeStartRequestHandler(new SimpleEvent.Handler<MouseEvent<?>>() {
             @Override
             public void onFire(MouseEvent<?> arg) {
-                _toolFrameTransformer.startResizeCanvasToolFrame(toolFrame, arg);
+                for (CanvasToolFrame selectedToolFrame : selectedTools){
+                    _toolFrameTransformer.startResizeCanvasToolFrame(selectedToolFrame, arg);
+                }
             }
         }));
         if (toolFrame.getTool().canRotate()) {
             regs.add(toolFrame.addRotateStartRequestHandler(new SimpleEvent.Handler<MouseEvent<?>>() {
                 @Override
                 public void onFire(MouseEvent<?> arg) {
-                    _toolFrameTransformer.startRotateCanvasToolFrame(toolFrame, arg);
+                    for (CanvasToolFrame selectedToolFrame : selectedTools){
+                        _toolFrameTransformer.startRotateCanvasToolFrame(selectedToolFrame, arg);
+                    }
                 }
             }));
         }
