@@ -14,6 +14,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.FocusHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
@@ -294,6 +295,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     public void removeToolInstanceWidget(CanvasToolFrame toolFrame) {
         this.worksheetPanel.remove(toolFrame);
         this.overToolFrames.remove(toolFrame);
+        this.selectedTools.remove(toolFrame);
         RegistrationsManager regs = toolFrameRegistrations.remove(toolFrame);
         if (null != regs) {
             regs.clear();
@@ -394,7 +396,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
             @Override
             public void onPreviewNativeEvent(NativePreviewEvent event) {
                 String type = event.getNativeEvent().getType();
-                if (type.equals("keydown") && (event.getNativeEvent().getKeyCode() == 27)) {
+                if (type.equals("keydown") && (event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ESCAPE)) {
                     onEscapePressed();
                 }
             }
