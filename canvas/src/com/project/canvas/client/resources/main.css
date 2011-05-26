@@ -621,3 +621,12 @@
 .worksheetModeEditable .toolFramePanel:hover .mapToolMainPanel {
 	margin-bottom: 30px;
 }
+
+.selectionPanelStyle{
+	background-color: transparent;
+	border-style: dotted;
+	border-width: 1px;
+	width: 0px;
+	height: 0px;
+	position: absolute;
+}

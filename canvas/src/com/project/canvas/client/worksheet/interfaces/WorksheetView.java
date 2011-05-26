@@ -1,5 +1,7 @@
 package com.project.canvas.client.worksheet.interfaces;
 
+import java.util.ArrayList;
+
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.project.canvas.client.canvastools.base.CanvasTool;
@@ -94,4 +96,14 @@ public interface WorksheetView extends IsWidget
     void setViewMode(boolean isViewMode);
 
     void setToolFrameTransform(CanvasToolFrame toolFrame, Transform2D transform, Point2D additionalOffset);
+    
+    void selectToolFrame(CanvasToolFrame widget);
+    
+    void unSelectToolFrame(CanvasToolFrame widget);
+    
+    boolean isToolFrameSelected(CanvasToolFrame toolFrame);
+    
+    void clearToolFrameSelection();
+    
+    ArrayList<CanvasToolFrame> getToolFrames();
 }

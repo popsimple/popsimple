@@ -12,15 +12,24 @@ import com.project.canvas.shared.data.Rectangle;
 public abstract class ElementUtils {
     public static boolean areOverlappingElements(Element element1, Element element2) {
         // TODO: fix bugs in Rectangle and use isOverlapping instead of isExternalCircleOverlapping
-        return ElementUtils.getElementRectangle(element1).isExternalCircleOverlapping(
-                ElementUtils.getElementRectangle(element2));
+        return ElementUtils.getElementAbsoluteRectangle(element1).isExternalCircleOverlapping(
+                ElementUtils.getElementAbsoluteRectangle(element2));
     }
 
-    public static Rectangle getElementRectangle(Element element) {
+    public static Rectangle getElementAbsoluteRectangle(Element element) {
         // remember that css coordinates are from top-left of screen
         // and css rotation is clockwise
         return new Rectangle(element.getAbsoluteLeft(),  element.getAbsoluteTop(),
                              element.getAbsoluteRight(), element.getAbsoluteBottom(),
+                             getRotation(element));
+    }
+    
+    public static Rectangle getElementOffsetRectangle(Element element) {
+        // remember that css coordinates are from top-left of screen
+        // and css rotation is clockwise
+        return new Rectangle(element.getOffsetLeft(),  element.getOffsetTop(),
+                element.getOffsetLeft() + element.getOffsetWidth(), 
+                element.getOffsetTop() + element.getOffsetHeight(),
                              getRotation(element));
     }
 
@@ -130,5 +139,11 @@ public abstract class ElementUtils {
 	
     public static Point2D getElementClientSize(Element element) {
         return new Point2D(element.getClientWidth(), element.getClientHeight());
+    }
+    
+    public static void setElementSize(Element element, Point2D size)
+    {
+        element.getStyle().setWidth(size.getX(), Unit.PX);
+        element.getStyle().setHeight(size.getY(), Unit.PX);
     }
 }

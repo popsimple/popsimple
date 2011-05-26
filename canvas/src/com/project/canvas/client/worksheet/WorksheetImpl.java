@@ -375,7 +375,7 @@ public class WorksheetImpl implements Worksheet
         
         // Create the new tool instances
         for (ElementData newElement : this.sortByZIndex(newElements.values())) {
-            CanvasToolFrame toolFrame = createToolInstanceFromData(newElement);
+            this.createToolInstanceFromData(newElement);
         }
     }
 

@@ -81,4 +81,20 @@ public class Rectangle {
 //        }
 //        return false;
 //    }
+    
+    public boolean isOverlapping(Rectangle rect) {
+        if (this.right < rect.left) {
+            return false;
+        }
+        if (this.left > rect.right) {
+            return false;
+        }
+        if (this.bottom < rect.top) {
+            return false;
+        }
+        if (this.top > rect.bottom) {
+            return false;
+        }
+        return true;
+    }
 }
