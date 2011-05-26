@@ -4,3 +4,6 @@
 [submodule "Dolomite"]
 	path = Dolomite
 	url = git@github.com:sinelaw/Dolomite.git
+[submodule "mapstraction"]
+	path = mapstraction
+	url = https://github.com/mapstraction/mxn.git
