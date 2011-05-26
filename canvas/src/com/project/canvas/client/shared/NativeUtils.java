@@ -1,6 +1,7 @@
 package com.project.canvas.client.shared;
 
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 
 public class NativeUtils
@@ -23,6 +24,6 @@ public class NativeUtils
 
     public static boolean keyIsEnter(KeyPressEvent event)
     {
-        return event.getNativeEvent().getKeyCode() == 13;
+        return event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ENTER;
     }
 }

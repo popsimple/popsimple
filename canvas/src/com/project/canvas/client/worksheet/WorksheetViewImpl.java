@@ -10,6 +10,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.FocusHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
@@ -33,6 +34,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.project.canvas.client.canvastools.CursorToolboxItem;
 import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.canvastools.base.CanvasToolFactory;
 import com.project.canvas.client.canvastools.base.CanvasToolFrame;
@@ -82,6 +84,9 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
     @UiField
     FlowPanel worksheetPanel;
+    
+    @UiField
+    HTMLPanel selectionPanel;
 
     private Handler<Void> _floatingWidgetTerminator;
     private ToolboxItem activeToolboxItem;
@@ -89,6 +94,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     private CanvasPageOptions pageOptions;
 
     private final ToolFrameTransformer _toolFrameTransformer;
+    private final ToolFrameSelectionManager _toolFrameSelectionManager;
 
     private final DialogBox optionsDialog = new DialogWithZIndex(false, true);
     private final WorksheetOptionsView optionsWidget = new WorksheetOptionsViewImpl();
@@ -102,16 +108,23 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     private final SimpleEvent<CanvasToolFrame> toolFrameClickEvent = new SimpleEvent<CanvasToolFrame>();
 
     private HashSet<CanvasToolFrame> selectedTools = new HashSet<CanvasToolFrame>();
-    
-	private boolean viewMode;
-	private boolean viewModeSet = false;
+
+    private boolean viewMode;
+    private boolean viewModeSet = false;
 
     public WorksheetViewImpl() {
         initWidget(uiBinder.createAndBindUi(this));
-        _toolFrameTransformer = new ToolFrameTransformerImpl(worksheetPanel, dragPanel, stopOperationEvent);
+        this._toolFrameTransformer = new ToolFrameTransformerImpl(
+                worksheetPanel, dragPanel, stopOperationEvent);
+        this.dragPanel.setVisible(false);
+        
+        this._toolFrameSelectionManager = new ToolFrameSelectionManager(
+                this, worksheetPanel, dragPanel, selectionPanel, stopOperationEvent);
+        this.selectionPanel.setVisible(false);
+        
         optionsDialog.setText("Worksheet options");
         optionsDialog.add(this.optionsWidget);
-        this.dragPanel.setVisible(false);
+        
         this.addRegistrations();
         this.setViewMode(false);
     }
@@ -150,11 +163,10 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     public HandlerRegistration addToolFrameClickHandler(Handler<CanvasToolFrame> handler) {
         return this.toolFrameClickEvent.addHandler(handler);
     }
-    
+
     @Override
     public void addToolInstanceWidget(final CanvasToolFrame toolFrame, final Transform2D transform,
-            final Point2D additionalOffset)
-    {
+            final Point2D additionalOffset) {
         RegistrationsManager regs = new RegistrationsManager();
         toolFrameRegistrations.put(toolFrame, regs);
 
@@ -208,62 +220,31 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         regs.add(toolFrame.addSelectRequestHandler(new SimpleEvent.Handler<Void>() {
             @Override
             public void onFire(Void arg) {
-                handleToolFrameSelection(toolFrame);
+                _toolFrameSelectionManager.handleToolFrameSelection(toolFrame);
             }
         }));
 
         this.worksheetPanel.add(toolFrame);
     }
-    
-    private void handleToolFrameSelection(CanvasToolFrame toolFrame)
-    {
-        Event event = Event.getCurrentEvent();
-        if ((null != event) && (event.getCtrlKey()))
-        {
-            this.toggleToolFrameSelection(toolFrame);
-        }
-        else
-        {
-            this.clearFrameSelection();
-            this.selectToolFrame(toolFrame);
-        }        
-    }
-    
-    private void selectToolFrame(CanvasToolFrame toolFrame)
-    {
+
+    public void selectToolFrame(CanvasToolFrame toolFrame) {
         this.selectedTools.add(toolFrame);
         toolFrame.addStyleName(CanvasResources.INSTANCE.main().toolFrameSelected());
     }
-    
-    private void unSelectToolFrame(CanvasToolFrame toolFrame)
-    {
+
+    public void unSelectToolFrame(CanvasToolFrame toolFrame) {
         this.selectedTools.remove(toolFrame);
         toolFrame.removeStyleName(CanvasResources.INSTANCE.main().toolFrameSelected());
     }
-    
-    private boolean isToolFrameSelected(CanvasToolFrame toolFrame)
-    {
+
+    public boolean isToolFrameSelected(CanvasToolFrame toolFrame) {
         return this.selectedTools.contains(toolFrame);
     }
-    
-    private void clearFrameSelection()
-    {
+
+    public void clearToolFrameSelection() {
         ArrayList<CanvasToolFrame> framesToClear = new ArrayList<CanvasToolFrame>(this.selectedTools);
-        for (CanvasToolFrame toolFrame : framesToClear)
-        {
+        for (CanvasToolFrame toolFrame : framesToClear) {
             this.unSelectToolFrame(toolFrame);
-        }
-    }
-    
-    private void toggleToolFrameSelection(CanvasToolFrame toolFrame)
-    {
-        if (this.isToolFrameSelected(toolFrame))
-        {
-            this.unSelectToolFrame(toolFrame);
-        }
-        else
-        {
-            this.selectToolFrame(toolFrame);
         }
     }
 
@@ -306,6 +287,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     public void removeToolInstanceWidget(CanvasToolFrame toolFrame) {
         this.worksheetPanel.remove(toolFrame);
         this.overToolFrames.remove(toolFrame);
+        this.selectedTools.remove(toolFrame);
         RegistrationsManager regs = toolFrameRegistrations.remove(toolFrame);
         if (null != regs) {
             regs.clear();
@@ -352,14 +334,14 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
     @Override
     public void setViewMode(boolean isViewMode) {
-    	if (this.viewModeSet && (this.viewMode == isViewMode)) {
-    		return;
-    	}
-    	this.viewMode = isViewMode;
-    	this.viewModeSet = true;
-    	for (CanvasToolFrame frame : toolFrameRegistrations.keySet()) {
-    		frame.setViewMode(isViewMode);
-    	}
+        if (this.viewModeSet && (this.viewMode == isViewMode)) {
+            return;
+        }
+        this.viewMode = isViewMode;
+        this.viewModeSet = true;
+        for (CanvasToolFrame frame : toolFrameRegistrations.keySet()) {
+            frame.setViewMode(isViewMode);
+        }
         if (isViewMode) {
             worksheetHeader.addStyleName(CanvasResources.INSTANCE.main().displayNone());
             addStyleName(CanvasResources.INSTANCE.main().worksheetFullView());
@@ -394,13 +376,11 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
                 optionsUpdatedEvent.dispatch(optionsWidget.getValue());
             }
         });
-        this.worksheetPanel.addDomHandler(new MouseDownHandler() 
-        {
+        this.worksheetPanel.addDomHandler(new MouseDownHandler() {
             @Override
-            public void onMouseDown(MouseDownEvent event)
-            {
+            public void onMouseDown(MouseDownEvent event) {
                 if (overToolFrames.isEmpty()) {
-                    onClearAreaClicked();
+                    onClearAreaClicked(event);
                 }
             }
         }, MouseDownEvent.getType());
@@ -408,25 +388,30 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
             @Override
             public void onPreviewNativeEvent(NativePreviewEvent event) {
                 String type = event.getNativeEvent().getType();
-                if (type.equals("keydown") && (event.getNativeEvent().getKeyCode() == 27)) {
+                if (type.equals("keydown") && (event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ESCAPE)) {
                     onEscapePressed();
                 }
             }
         });
     }
-    
-    private void onClearAreaClicked()
-    {
+
+    private void onClearAreaClicked(MouseDownEvent event) {
         toolFrameClickEvent.dispatch(null);
-        clearFrameSelection();
+
+        if (null == this.activeToolboxItem)
+        {
+            return;
+        }
+        //TODO: should be handled by the CursorTool.
+        if (this.activeToolboxItem.getClass() == CursorToolboxItem.class) {
+            this._toolFrameSelectionManager.startSelectionDrag(event);
+        }
     }
-        
-    private void onEscapePressed()
-    {
+
+    private void onEscapePressed() {
         stopOperationEvent.dispatch(null);
-        this.clearFrameSelection();
     }
-    
+
     private void changeButtonStatus(Button button, OperationStatus status, String pendingText, String doneText) {
         switch (status) {
         case PENDING:
@@ -451,20 +436,17 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         this._floatingWidgetTerminator = null;
     }
 
-    private void setActiveToolboxItemWithoutFloatingWidget(final ToolboxItem toolboxItem)
-    {
-        final HandlerRegistration createInstanceReg = this.worksheetPanel.addDomHandler(
-                new ClickHandler() {
-                    @Override
-                    public void onClick(ClickEvent event) {
-                        if (overToolFrames.isEmpty()) {
-                            Point2D position = ElementUtils.relativePosition(event,
-                                    worksheetPanel.getElement());
-                            toolCreationRequestEvent.dispatch(new ToolCreationRequest(position,
-                                    toolboxItem.getToolFactory()));
-                        }
-                    }
-                }, ClickEvent.getType());
+    private void setActiveToolboxItemWithoutFloatingWidget(final ToolboxItem toolboxItem) {
+        final HandlerRegistration createInstanceReg = this.worksheetPanel.addDomHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                if (overToolFrames.isEmpty()) {
+                    Point2D position = ElementUtils.relativePosition(event, worksheetPanel.getElement());
+                    toolCreationRequestEvent.dispatch(new ToolCreationRequest(position, toolboxItem
+                            .getToolFactory()));
+                }
+            }
+        }, ClickEvent.getType());
         this._floatingWidgetTerminator = new Handler<Void>() {
             @Override
             public void onFire(Void arg) {
@@ -473,8 +455,8 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         };
     }
 
-    private void setFloatingWidgetForTool(CanvasToolFactory<? extends CanvasTool<? extends ElementData>> factory)
-    {
+    private void setFloatingWidgetForTool(
+            CanvasToolFactory<? extends CanvasTool<? extends ElementData>> factory) {
         this.floatingWidget = factory.getFloatingWidget();
         if (null == this.floatingWidget) {
             return;
@@ -485,12 +467,13 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         if (null != event) {
             Point2D relativeToWorksheet = new Point2D(event.getClientX(), event.getClientY());
             Point2D worksheetPos = ElementUtils.getElementAbsolutePosition(worksheetPanel.getElement());
-            ElementUtils.setElementPosition(Point2D.max(Point2D.zero, relativeToWorksheet.minus(worksheetPos)), floatingWidget.getElement());
+            ElementUtils.setElementPosition(
+                    Point2D.max(Point2D.zero, relativeToWorksheet.minus(worksheetPos)),
+                    floatingWidget.getElement());
         }
     }
 
-    private void startDraggingFloatingWidget(final ToolboxItem toolboxItem)
-    {
+    private void startDraggingFloatingWidget(final ToolboxItem toolboxItem) {
         final WorksheetViewImpl that = this;
         Handler<Point2D> floatingWidgetMoveHandler = new Handler<Point2D>() {
             @Override
@@ -501,18 +484,19 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         Handler<Point2D> floatingWidgetStop = new Handler<Point2D>() {
             @Override
             public void onFire(Point2D position) {
-                toolCreationRequestEvent.dispatch(new ToolCreationRequest(position, toolboxItem.getToolFactory()));
+                toolCreationRequestEvent.dispatch(new ToolCreationRequest(position, toolboxItem
+                        .getToolFactory()));
             }
         };
-        this._floatingWidgetTerminator = this._toolFrameTransformer.getElementDragManager().startMouseMoveOperation(
-                this.worksheetPanel.getElement(), Point2D.zero, floatingWidgetMoveHandler, floatingWidgetStop, null,
-                ElementDragManager.StopCondition.STOP_CONDITION_MOUSE_CLICK);
+        this._floatingWidgetTerminator = this._toolFrameTransformer.getElementDragManager()
+                .startMouseMoveOperation(this.worksheetPanel.getElement(), Point2D.zero,
+                        floatingWidgetMoveHandler, floatingWidgetStop, null,
+                        ElementDragManager.StopCondition.STOP_CONDITION_MOUSE_CLICK);
     }
 
     @Override
     public void setToolFrameTransform(final CanvasToolFrame toolFrame, final Transform2D transform,
-            final Point2D additionalOffset)
-    {
+            final Point2D additionalOffset) {
         if (toolFrame.getTool().canRotate()) {
             ElementUtils.setRotation(toolFrame.getElement(), transform.rotation);
         }
@@ -520,5 +504,10 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
             toolFrame.setToolSize(transform.size);
         }
         _toolFrameTransformer.setToolFramePosition(toolFrame, transform.translation.plus(additionalOffset));
+    }
+
+    @Override
+    public ArrayList<CanvasToolFrame> getToolFrames() {
+        return new ArrayList<CanvasToolFrame>(this.toolFrameRegistrations.keySet());
     }
 }
