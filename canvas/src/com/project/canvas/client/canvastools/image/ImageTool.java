@@ -5,7 +5,6 @@ import java.util.Collection;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.LoadEvent;
@@ -27,6 +26,8 @@ import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.shared.events.SimpleEvent.Handler;
 import com.project.canvas.client.shared.searchProviders.interfaces.ImageSearchProvider;
 import com.project.canvas.client.shared.widgets.DialogWithZIndex;
+import com.project.canvas.shared.StringUtils;
+import com.project.canvas.shared.UrlUtils;
 import com.project.canvas.shared.data.ElementData;
 import com.project.canvas.shared.data.MediaData;
 import com.project.canvas.shared.data.Point2D;
@@ -42,7 +43,8 @@ public class ImageTool extends FlowPanel implements CanvasTool<MediaData>
     private DialogBox imageSelectionDialog;
 	private boolean optionsWidgetInited = false;
 	private ArrayList<ImageSearchProvider> searchProviders = new ArrayList<ImageSearchProvider>();
-    private boolean viewMode;  
+    private boolean viewMode;
+    private String imageUrl;
 
 	public ImageTool(Collection<ImageSearchProvider> imageSearchProviders) 
     {
@@ -83,7 +85,7 @@ public class ImageTool extends FlowPanel implements CanvasTool<MediaData>
         }, MouseDownEvent.getType()));
     }
 
-    protected void uploadImage() {
+    private void uploadImage() {
     	initOptionsWidget();
         mediaToolOptionsWidget.setValue(data);
 
@@ -129,34 +131,47 @@ public class ImageTool extends FlowPanel implements CanvasTool<MediaData>
         // do nothing.
     }
 
-    protected void setImageUrl(String url, boolean autoSize) {
-        if (null == url || url.trim().isEmpty()) {
+    private void setImageUrl(String url, boolean autoSize) {
+        if (StringUtils.isWhitespaceOrNull(url)) {
             this.getElement().getStyle().setBackgroundImage("");
             super.addStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
             super.removeStyleName(CanvasResources.INSTANCE.main().imageToolSet());
             return;
         }
+        // Make sure we don't set arbitrary html or invalid urls
+        url = UrlUtils.encodeOnce(url);
         if (autoSize) {
-            final RegistrationsManager regs = new RegistrationsManager();
-            regs.add(this.image.addLoadHandler(new LoadHandler() {
-                @Override
-                public void onLoad(LoadEvent event) {
-                    getElement().getStyle().setWidth(image.getWidth(), Unit.PX);
-                    getElement().getStyle().setHeight(image.getHeight(), Unit.PX);
-                    image.setUrl(""); // don't display the image in the <img>,
-                                      // only as background
-                    image.setVisible(false);
-                    regs.clear();
-                }
-            }));
-            Image.prefetch(url);
-            //Set the image url in order for the image element to auto size. 
-            image.setUrl(url);
-            image.setVisible(true);
+            prepareAutoSizeHandler(url);
         }
-        getElement().getStyle().setBackgroundImage("url(\"" + url + "\")");
+        if (autoSize || (false == UrlUtils.areEquivalent(url, imageUrl))) {
+            imageUrl = url;
+            getElement().getStyle().setBackgroundImage("url(\"" + url + "\")");
+        }
         super.removeStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
         super.addStyleName(CanvasResources.INSTANCE.main().imageToolSet());
+    }
+
+    private void prepareAutoSizeHandler(String url) {
+        final RegistrationsManager regs = new RegistrationsManager();
+        final ImageTool that = this;
+        regs.add(this.image.addLoadHandler(new LoadHandler() {
+            @Override
+            public void onLoad(LoadEvent event) {
+                Point2D imageSize = new Point2D(image.getWidth(), image.getHeight());
+                // getWidth/getHeight return zero if the image size is not known. So don't set it. 
+                if (false == imageSize.equals(Point2D.zero)) {
+                    WidgetUtils.setWidgetSize(that, imageSize);
+                }
+                image.setUrl(""); // don't display the image in the <img>,
+                                  // only as background
+                image.setVisible(false);
+                regs.clear();
+            }
+        }));
+        Image.prefetch(url);
+        image.setVisible(true);
+        // Set the image url in order for the image element to auto size. 
+        image.setUrl(url); // will be set to "" after autosize
     }
 
     @Override

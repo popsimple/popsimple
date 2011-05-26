@@ -461,13 +461,13 @@
 	visibility: visible;
 }
 
-.toolFrameSelected{
+.toolFrameSelected {
 	border-style: dotted !important;
 	border-color: black !important;
 	border-radius: 5px;
 	border-width: 1px;
 }
-	
+
 /*---------------------------------------------*/
 .imagePickerResultImage {
 	background-color: #FFFFFF;
@@ -484,8 +484,8 @@
 	width: 100px;
 }
 
-.worksheetModeEditable .imagePickerResultImage:hover, .worksheetModeEditable .imagePickerResultImage.hover
-{
+.worksheetModeEditable .imagePickerResultImage:hover,.worksheetModeEditable .imagePickerResultImage.hover
+	{
 	border-color: #ccc;
 }
 
@@ -520,14 +520,14 @@
 	display: block;
 	border-radius: 2px;
 	/* Margin is required because: */
-	/* The video IFrame takes 100% of our height, we need more space for the other stuff */ 
+	/* The video IFrame takes 100% of our height, we need more space for the other stuff */
 	/* This should be enough to expand and enclose also the options label */
-	margin-bottom:8px;
+	margin-bottom: 8px;
 }
 
-.worksheetModeEditable .toolFramePanel:hover .videoBox, .worksheetModeEditable .toolFramePanel.hover .videoBox
-{
-	margin-bottom:42px;
+.worksheetModeEditable .toolFramePanel:hover .videoBox,.worksheetModeEditable .toolFramePanel.hover .videoBox
+	{
+	margin-bottom: 42px;
 }
 
 .videoToolEmpty {
@@ -546,25 +546,26 @@
 	height: 100%;
 }
 
-.videoOptionsLabel  {
-	display:none;
-    padding:10px;
-    text-align:center;
-    margin:0 auto;
-    text-decoration:underline;
-    color:#00a;
-    cursor:pointer;
+.videoOptionsLabel {
+	display: none;
+	padding: 5px;
+	text-align: center;
+	margin: 0 auto;
+	text-decoration: underline;
+	color: #00a;
+	cursor: pointer;
 }
 
-.worksheetModeEditable .toolFramePanel:hover .videoOptionsLabel, .worksheetModeEditable .toolFramePanel.hover .videoOptionsLabel {
-	display:block;
+.worksheetModeEditable .toolFramePanel:hover .videoOptionsLabel,.worksheetModeEditable .toolFramePanel.hover .videoOptionsLabel
+	{
+	display: block;
 }
 
 @sprite .toolboxMapIconStyle {
 	gwt-image: "mapIcon48";
 	height: 48px;
 	width: 48px;
-    background-position: center center;
+	background-position: center center;
 }
 
 .mapCreateModeCanvasStyle {
@@ -572,6 +573,7 @@
 }
 
 .mapTool {
+	
 }
 
 .mapToolEmpty {
@@ -579,4 +581,3 @@
 	height: 300px;
 	background-color: #aaa;
 }
-

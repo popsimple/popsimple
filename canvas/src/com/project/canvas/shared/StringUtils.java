@@ -9,10 +9,11 @@ public class StringUtils
     
     public static boolean isEmptyOrNull(String str)
     {
-        if ((null == str) || (str.isEmpty()))
-        {
-            return true;
-        }
-        return false;
+        return (str == null) || str.isEmpty();
+    }
+    
+    public static boolean isWhitespaceOrNull(String str) 
+    {
+        return (str == null) || str.trim().isEmpty();
     }
 }
