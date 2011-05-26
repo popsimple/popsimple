@@ -1,6 +1,5 @@
 package com.project.canvas.client.canvastools.textedit;
 
-import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.MouseEvent;

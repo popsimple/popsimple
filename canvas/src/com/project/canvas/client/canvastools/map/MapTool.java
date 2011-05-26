@@ -138,7 +138,7 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
     }
 
     private void applyMapDataToWidget() {
-        if ((null == this.mapData) || (null == this.mapWidget)) {
+        if ((null == this.mapWidget) || (null == this.mapData.center)) {
             this.addStyleName(CanvasResources.INSTANCE.main().mapToolEmpty());
             return;
         }

@@ -4,15 +4,13 @@ import java.util.HashSet;
 
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.canvastools.base.CanvasToolFrame;
-import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.ElementUtils;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.shared.events.SimpleEvent.Handler;
-import com.project.canvas.client.worksheet.interfaces.WorksheetView;
 import com.project.canvas.client.worksheet.interfaces.ElementDragManager.StopCondition;
+import com.project.canvas.client.worksheet.interfaces.WorksheetView;
 import com.project.canvas.shared.data.Point2D;
 import com.project.canvas.shared.data.Rectangle;
 

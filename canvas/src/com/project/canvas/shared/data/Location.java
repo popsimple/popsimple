@@ -10,6 +10,6 @@ public class Location implements Serializable, IsSerializable
 
     public double longitude;
     public double latitude;
-    
-    public String address;
+
+    public String name;
 }

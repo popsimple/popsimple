@@ -9,11 +9,11 @@ import com.project.canvas.client.shared.searchProviders.interfaces.ImageSearchPr
 import com.project.canvas.shared.ApiKeys;
 import com.project.canvas.shared.data.MediaData;
 
-public class ImageToolFactory extends CanvasToolFactoryBase<ImageTool> 
+public class ImageToolFactory extends CanvasToolFactoryBase<ImageTool>
 {
     public static final String UNIQUE_ID = "ImageToolFactory";
-    
-    public ImageTool create() 
+
+    public ImageTool create()
     {
         ImageTool imageTool = new ImageTool(searchProvides);
         imageTool.setValue(new MediaData(UNIQUE_ID));
