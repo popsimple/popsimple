@@ -61,7 +61,7 @@ public class ImageTool extends FlowPanel implements CanvasTool<MediaData>
     
     @Override
     public void bind() {
-        super.setTitle("Click for image options; Shift-click to drag");
+        super.setTitle("Click for image options; Control-click to drag");
         this.setViewMode(viewMode); // do whatever bindings necessary for our mode
     }
 
@@ -78,7 +78,7 @@ public class ImageTool extends FlowPanel implements CanvasTool<MediaData>
         registrationsManager.add(this.addDomHandler(new MouseDownHandler() {
             @Override
             public void onMouseDown(MouseDownEvent event) {
-                if (event.isShiftKeyDown()) {
+                if (event.isControlKeyDown()) {
                     moveStartEvent.dispatch(event);
                 }
             }

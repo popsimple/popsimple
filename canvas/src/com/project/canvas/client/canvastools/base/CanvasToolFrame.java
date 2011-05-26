@@ -93,8 +93,13 @@ public class CanvasToolFrame extends Composite implements Focusable, HasFocusHan
         WidgetUtils.stopClickPropagation(this.closeLink.asWidget());
         WidgetUtils.stopClickPropagation(this.moveBackLink.asWidget());
         WidgetUtils.stopClickPropagation(this.moveFrontLink.asWidget());
+        WidgetUtils.stopClickPropagation(this.rotatePanel.asWidget());
+        WidgetUtils.stopClickPropagation(this.resizePanel.asWidget());
         
         NativeUtils.disableTextSelectInternal(this.buttonsPanel.getElement(), true);
+        
+        this.rotatePanel.setVisible(tool.canRotate());
+        this.resizePanel.setVisible(tool.getResizeMode() != ResizeMode.NONE);
     }
 
 	private void reRegisterFrameHandlers() {

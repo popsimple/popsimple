@@ -13,7 +13,6 @@ import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Frame;
@@ -73,7 +72,7 @@ public class VideoTool extends FlowPanel implements CanvasTool<MediaData>
     
     @Override
     public void bind() {
-        super.setTitle("Click for video options; Shift-click to drag");
+        super.setTitle("Click for video options; Control-click to drag");
         this.setViewMode(viewMode); // do whatever bindings necessary for our mode
     }
 
@@ -88,7 +87,7 @@ public class VideoTool extends FlowPanel implements CanvasTool<MediaData>
         registrationsManager.add(this.addDomHandler(new MouseDownHandler() {
             @Override
             public void onMouseDown(MouseDownEvent event) {
-                if (event.isShiftKeyDown()) {
+                if (event.isControlKeyDown()) {
                     moveStartEvent.dispatch(event);
                 }
             }
