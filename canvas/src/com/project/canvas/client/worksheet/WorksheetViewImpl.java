@@ -4,12 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.dom.client.Style.BorderStyle;
-import com.google.gwt.dom.client.Style.Position;
-import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.FocusEvent;
@@ -18,8 +14,6 @@ import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
-import com.google.gwt.event.dom.client.MouseMoveEvent;
-import com.google.gwt.event.dom.client.MouseMoveHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
@@ -52,14 +46,12 @@ import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.shared.events.SimpleEvent.Handler;
 import com.project.canvas.client.shared.widgets.DialogWithZIndex;
 import com.project.canvas.client.worksheet.interfaces.ElementDragManager;
-import com.project.canvas.client.worksheet.interfaces.ElementDragManager.StopCondition;
 import com.project.canvas.client.worksheet.interfaces.ToolFrameTransformer;
 import com.project.canvas.client.worksheet.interfaces.WorksheetOptionsView;
 import com.project.canvas.client.worksheet.interfaces.WorksheetView;
 import com.project.canvas.shared.data.CanvasPageOptions;
 import com.project.canvas.shared.data.ElementData;
 import com.project.canvas.shared.data.Point2D;
-import com.project.canvas.shared.data.Rectangle;
 import com.project.canvas.shared.data.Transform2D;
 
 public class WorksheetViewImpl extends Composite implements WorksheetView {

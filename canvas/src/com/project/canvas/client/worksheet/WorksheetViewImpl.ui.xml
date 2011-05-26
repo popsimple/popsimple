@@ -17,8 +17,8 @@
 		</g:HTMLPanel>
 		<g:FlowPanel ui:field="worksheetPanel" addStyleNames="{res.main.worksheetPanel}">
 			<g:FlowPanel ui:field="worksheetBackground"  addStyleNames="{res.main.worksheetBackground}"/>
+			<g:HTMLPanel ui:field="selectionPanel" addStyleNames="{res.main.selectionPanelStyle}"></g:HTMLPanel>
 		</g:FlowPanel>
-        <g:HTMLPanel ui:field="selectionPanel" addStyleNames="{res.main.selectionPanelStyle}"></g:HTMLPanel>
         <g:HTMLPanel ui:field="dragPanel" addStyleNames="{res.main.worksheetDragPanel}"></g:HTMLPanel>
 	</g:HTMLPanel>
 </ui:UiBinder> 
