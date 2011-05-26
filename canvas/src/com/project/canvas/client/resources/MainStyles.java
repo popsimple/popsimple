@@ -40,6 +40,14 @@ public interface MainStyles extends CssResource {
 
     String mapToolEmpty();
 
+    String mapToolMainPanel();
+
+    String mapToolMapHolder();
+
+    String mapToolMapWidget();
+
+    String mapToolShowHideBarLabel();
+
     String monospace();
 
     String outOfBounds();
@@ -125,40 +133,41 @@ public interface MainStyles extends CssResource {
     String toolFrameHoverVisibleElement();
 
     String toolFramePanel();
-    
+
+    String toolFrameSelected();
+
     String videoBox();
-    
+
     String videoCreateModeCanvasStyle();
-    
+
     String videoFrame();
-    
-    String videoToolEmpty();
-    
+
+	String videoOptionsLabel();
+
+	String videoToolEmpty();
+
     String videoToolSet();
-    
+
     String worksheet();
-    
+
     String worksheetBackground();
-    
+
     String worksheetButtons();
 
-	String worksheetDragPanel();
-	
-	String worksheetFullView();
+    String worksheetDragPanel();
+
+    String worksheetFullView();
 
     String worksheetHeader();
-    
+
     String worksheetModeEditable();
-    
+
     String worksheetModeViewOnly();
-    
+
     String worksheetOptions();
-    
+
     String worksheetPanel();
 
     String worksheetRightButton();
-    
-    String toolFrameSelected();
 
-    String videoOptionsLabel();
 }
