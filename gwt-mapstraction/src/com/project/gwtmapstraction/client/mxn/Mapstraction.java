@@ -12,7 +12,8 @@ public class Mapstraction {
 
     private final static native JavaScriptObject nativeConstructor(
             Element element, String apiString, boolean debug) /*-{
-		return $wnd.mxn.Mapstraction(element, apiString, debug);
+        var c = $wnd.mxn.Mapstraction;
+		return new c(element, apiString, debug);
     }-*/;
 
     /*
@@ -49,7 +50,12 @@ public class Mapstraction {
      *
      * addSmallControls() Adds a small map panning control and zoom buttons to
      * the map
-     *
+     */
+    public native final void addSmallControls() /*-{
+        this.mapstraction.addSmallControls();
+    }-*/;
+
+     /*
      * addTileLayer(template, opacity, copyright, Minimum, Maximum, Should) Adds
      * a Tile Layer to the map Requires providing a parameterized tile url.
      *

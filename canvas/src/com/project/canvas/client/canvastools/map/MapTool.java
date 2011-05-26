@@ -18,8 +18,10 @@ import com.project.canvas.client.shared.RegistrationsManager;
 import com.project.canvas.client.shared.events.SimpleEvent.Handler;
 import com.project.canvas.shared.ApiKeys;
 import com.project.canvas.shared.data.ElementData;
+import com.project.canvas.shared.data.Location;
 import com.project.canvas.shared.data.MapData;
 import com.project.canvas.shared.data.Point2D;
+import com.project.gwtmapstraction.client.mxn.LatLonPoint;
 import com.project.gwtmapstraction.client.mxn.MapProvider;
 import com.project.gwtmapstraction.client.mxn.Mapstraction;
 
@@ -139,11 +141,14 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
     }
 
     private void applyMapDataToWidget() {
-        if ((null == this.mapWidget) || (null == this.mapData.center)) {
+        if ((null == this.mapWidget)) {// || (null == this.mapData.center)) {
             this.addStyleName(CanvasResources.INSTANCE.main().mapToolEmpty());
             return;
         }
         this.removeStyleName(CanvasResources.INSTANCE.main().mapToolEmpty());
+        this.mapstraction.setCenterAndZoom(
+                LatLonPoint.create(20, 20),//this.mapData.center.latitude, this.mapData.center.longitude),
+                this.mapData.zoom);
 //        this.mapWidget.setCenter(LatLng.newInstance(
 //                this.mapData.center.latitude, this.mapData.center.longitude));
 //        this.mapWidget.setZoomLevel(this.mapData.zoom);
@@ -156,6 +161,8 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
         //this.mapWidget.setDraggable(true);
         this.mapWidget = new FlowPanel();
         this.mapstraction = new Mapstraction(this.mapWidget.getElement(), MapProvider.GOOGLE, false);
+        this.mapstraction.addSmallControls();
+
         this.mapWidget.addStyleName(CanvasResources.INSTANCE.main().mapToolMapWidget());
         this.mapPanel.add(this.mapWidget);
         this.applyMapDataToWidget();
