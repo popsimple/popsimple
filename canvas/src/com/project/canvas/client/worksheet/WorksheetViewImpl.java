@@ -13,6 +13,8 @@ import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
+import com.google.gwt.event.dom.client.MouseMoveEvent;
+import com.google.gwt.event.dom.client.MouseMoveHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
@@ -102,7 +104,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     private final SimpleEvent<CanvasToolFrame> toolFrameClickEvent = new SimpleEvent<CanvasToolFrame>();
 
     private HashSet<CanvasToolFrame> selectedTools = new HashSet<CanvasToolFrame>();
-    
+
 	private boolean viewMode;
 	private boolean viewModeSet = false;
 
@@ -150,7 +152,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     public HandlerRegistration addToolFrameClickHandler(Handler<CanvasToolFrame> handler) {
         return this.toolFrameClickEvent.addHandler(handler);
     }
-    
+
     @Override
     public void addToolInstanceWidget(final CanvasToolFrame toolFrame, final Transform2D transform,
             final Point2D additionalOffset)
@@ -214,7 +216,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
         this.worksheetPanel.add(toolFrame);
     }
-    
+
     private void handleToolFrameSelection(CanvasToolFrame toolFrame)
     {
         Event event = Event.getCurrentEvent();
@@ -226,26 +228,26 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         {
             this.clearFrameSelection();
             this.selectToolFrame(toolFrame);
-        }        
+        }
     }
-    
+
     private void selectToolFrame(CanvasToolFrame toolFrame)
     {
         this.selectedTools.add(toolFrame);
         toolFrame.addStyleName(CanvasResources.INSTANCE.main().toolFrameSelected());
     }
-    
+
     private void unSelectToolFrame(CanvasToolFrame toolFrame)
     {
         this.selectedTools.remove(toolFrame);
         toolFrame.removeStyleName(CanvasResources.INSTANCE.main().toolFrameSelected());
     }
-    
+
     private boolean isToolFrameSelected(CanvasToolFrame toolFrame)
     {
         return this.selectedTools.contains(toolFrame);
     }
-    
+
     private void clearFrameSelection()
     {
         ArrayList<CanvasToolFrame> framesToClear = new ArrayList<CanvasToolFrame>(this.selectedTools);
@@ -254,7 +256,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
             this.unSelectToolFrame(toolFrame);
         }
     }
-    
+
     private void toggleToolFrameSelection(CanvasToolFrame toolFrame)
     {
         if (this.isToolFrameSelected(toolFrame))
@@ -394,7 +396,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
                 optionsUpdatedEvent.dispatch(optionsWidget.getValue());
             }
         });
-        this.worksheetPanel.addDomHandler(new MouseDownHandler() 
+        this.worksheetPanel.addDomHandler(new MouseDownHandler()
         {
             @Override
             public void onMouseDown(MouseDownEvent event)
@@ -414,19 +416,27 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
             }
         });
     }
-    
+
     private void onClearAreaClicked()
     {
-        toolFrameClickEvent.dispatch(null);
-        clearFrameSelection();
+        //toolFrameClickEvent.dispatch(null);
+        //clearFrameSelection();
+        dragPanel.setVisible(true);
+        dragPanel.addDomHandler(new MouseMoveHandler() {
+
+            @Override
+            public void onMouseMove(MouseMoveEvent event) {
+                GWT.log("drekmaker");
+            }
+        }, MouseMoveEvent.getType());
     }
-        
+
     private void onEscapePressed()
     {
         stopOperationEvent.dispatch(null);
         this.clearFrameSelection();
     }
-    
+
     private void changeButtonStatus(Button button, OperationStatus status, String pendingText, String doneText) {
         switch (status) {
         case PENDING:
