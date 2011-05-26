@@ -151,6 +151,7 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
     private void onApiReady() {
         this.mapWidget = new MapWidget();
         this.setEnableOptionsBar(true);
+        this.mapWidget.setScrollWheelZoomEnabled(true);
         //this.mapWidget.setDraggable(true);
         this.mapWidget.addStyleName(CanvasResources.INSTANCE.main().mapToolMapWidget());
         this.mapPanel.add(this.mapWidget);

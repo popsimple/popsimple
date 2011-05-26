@@ -1,5 +1,6 @@
 package com.project.canvas.client.canvastools.textedit;
 
+import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
@@ -19,7 +20,7 @@ import com.project.canvas.shared.data.ElementData;
 import com.project.canvas.shared.data.Point2D;
 import com.project.canvas.shared.data.TextData;
 
-public class TextEditTool extends FlowPanel implements CanvasTool<TextData> 
+public class TextEditTool extends FlowPanel implements CanvasTool<TextData>
 {
     protected AsyncCallback<Void> editorReady = new AsyncCallback<Void>() {
         @Override
@@ -38,9 +39,10 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData>
 
         }
     };
-    
-    private final TextArea editBox = new TextArea();
+
+    private final TextArea editTextArea = new TextArea();
     private final HTML viewBox = new HTML();
+    private final FlowPanel editorPanel = new FlowPanel();
     private final SimpleEvent<String> killRequestEvent = new SimpleEvent<String>();
     private final SimpleEvent<Point2D> moveRequestEvent = new SimpleEvent<Point2D>();
 
@@ -55,8 +57,9 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData>
         CanvasToolCommon.initCanvasToolWidget(this);
         this.addStyleName(CanvasResources.INSTANCE.main().textEdit());
         this.add(viewBox);
-        this.add(editBox);
-        this.editBox.addStyleName(CanvasResources.INSTANCE.main().textEditBox());
+        this.add(editorPanel);
+        this.editorPanel.add(editTextArea);
+        this.editTextArea.addStyleName(CanvasResources.INSTANCE.main().textEditBox());
         this.viewBox.addStyleName(CanvasResources.INSTANCE.main().textEditViewBox());
     }
 
@@ -73,7 +76,7 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData>
     @Override
     public void bind() {
         if (null == nicEditor) {
-            nicEditor = new NicEditor(editBox, editorReady);
+            nicEditor = new NicEditor(editTextArea, editorReady);
         }
     }
 
@@ -90,7 +93,7 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData>
 
 
     public void setAccessKey(char key) {
-        this.editBox.setAccessKey(key);
+        this.editTextArea.setAccessKey(key);
     }
 
     @Override
@@ -146,7 +149,7 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData>
             this.addStyleName(CanvasResources.INSTANCE.main().textEditFocused());
             this.removeStyleName(CanvasResources.INSTANCE.main().textEditNotFocused());
             nicEditor.getEditorElement().focus();
-        } 
+        }
         else {
             this.editSize = ElementUtils.getElementOffsetSize(this.getElement());
 
@@ -173,7 +176,16 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData>
     {
         if (isViewMode) {
             this.viewBox.setHTML(this.nicEditor.getContent());
+            // Completely detach the editor from us (and the document)
+            this.remove(this.editorPanel);
         }
+        else {
+            if (false == this.getChildren().contains(this.editorPanel)) {
+                this.add(this.editorPanel);
+            }
+        }
+        this.viewBox.setVisible(isViewMode);
+        this.editorPanel.setVisible(false == isViewMode);
     }
 
     @Override
