@@ -7,13 +7,12 @@ public class Mapstraction {
     private JavaScriptObject mapstraction;
 
     public Mapstraction(Element element, MapProvider api, boolean debug) {
-        this.mapstraction = nativeConstructor(element, api.getApiString(),
-                debug);
+        this.mapstraction = nativeConstructor(element, api.getApiString(), debug);
     }
 
     private final static native JavaScriptObject nativeConstructor(
             Element element, String apiString, boolean debug) /*-{
-		$wnd.mxn.Mapstraction(element, apiString, debug);
+		return $wnd.mxn.Mapstraction(element, apiString, debug);
     }-*/;
 
     /*
