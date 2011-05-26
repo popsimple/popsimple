@@ -5,9 +5,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.maps.client.MapWidget;
 import com.google.gwt.maps.client.Maps;
-import com.google.gwt.maps.client.geom.LatLng;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
@@ -22,6 +20,8 @@ import com.project.canvas.shared.ApiKeys;
 import com.project.canvas.shared.data.ElementData;
 import com.project.canvas.shared.data.MapData;
 import com.project.canvas.shared.data.Point2D;
+import com.project.gwtmapstraction.client.mxn.MapProvider;
+import com.project.gwtmapstraction.client.mxn.Mapstraction;
 
 public class MapTool extends Composite implements CanvasTool<MapData> {
 
@@ -55,7 +55,8 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
     Label showHideBarLabel;
 
     private final RegistrationsManager registrationsManager = new RegistrationsManager();
-    private MapWidget mapWidget;
+    private Widget mapWidget;
+    private Mapstraction mapstraction;
     private MapData mapData;
     private boolean barEnabled;
 
@@ -107,10 +108,10 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
     @Override
     public MapData getValue() {
         if (null != this.mapWidget) {
-            LatLng center = this.mapWidget.getCenter();
-            this.mapData.center.latitude = center.getLatitude();
-            this.mapData.center.longitude = center.getLongitude();
-            this.mapData.zoom = this.mapWidget.getZoomLevel();
+            //LatLng center = this.mapWidget.getCenter();
+//            this.mapData.center.latitude = center.getLatitude();
+//            this.mapData.center.longitude = center.getLongitude();
+//            this.mapData.zoom = this.mapWidget.getZoomLevel();
         }
         return this.mapData;
     }
@@ -143,16 +144,18 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
             return;
         }
         this.removeStyleName(CanvasResources.INSTANCE.main().mapToolEmpty());
-        this.mapWidget.setCenter(LatLng.newInstance(
-                this.mapData.center.latitude, this.mapData.center.longitude));
-        this.mapWidget.setZoomLevel(this.mapData.zoom);
+//        this.mapWidget.setCenter(LatLng.newInstance(
+//                this.mapData.center.latitude, this.mapData.center.longitude));
+//        this.mapWidget.setZoomLevel(this.mapData.zoom);
     }
 
     private void onApiReady() {
-        this.mapWidget = new MapWidget();
-        this.setEnableOptionsBar(true);
-        this.mapWidget.setScrollWheelZoomEnabled(true);
+        //this.mapWidget = new MapWidget();
+        //this.setEnableOptionsBar(true);
+        //this.mapWidget.setScrollWheelZoomEnabled(true);
         //this.mapWidget.setDraggable(true);
+        this.mapWidget = new FlowPanel();
+        this.mapstraction = new Mapstraction(this.mapWidget.getElement(), MapProvider.GOOGLE, false);
         this.mapWidget.addStyleName(CanvasResources.INSTANCE.main().mapToolMapWidget());
         this.mapPanel.add(this.mapWidget);
         this.applyMapDataToWidget();
@@ -160,7 +163,7 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
 
     private void setEnableOptionsBar(boolean enabled) {
         this.barEnabled = enabled;
-        this.mapWidget.setGoogleBarEnabled(enabled);
+//        this.mapWidget.setGoogleBarEnabled(enabled);
         String labelText = this.barEnabled ? SHOWHIDE_LABEL_HIDE : SHOWHIDE_LABEL_SHOW;
         showHideBarLabel.setText(labelText);
     }
