@@ -3,15 +3,16 @@ package com.project.gwtmapstraction.client.mxn;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Element;
 
-public class Mapstraction {
-    private JavaScriptObject mapstraction;
-
-    public Mapstraction(Element element, MapProvider api, boolean debug) {
-        this.mapstraction = nativeConstructor(element, api.getApiString(), debug);
-    }
-
-    private final static native JavaScriptObject nativeConstructor(
-            Element element, String apiString, boolean debug) /*-{
+public class Mapstraction extends JavaScriptObject {
+	protected Mapstraction() {}
+	
+	public static Mapstraction createInstance(Element element, MapProvider provider, boolean debug)
+	{
+		return Mapstraction.createInstance(element, provider.getApiString(), debug);
+	}
+	
+	private final static native Mapstraction createInstance(Element element, String apiString, boolean debug) 
+	/*-{
         var c = $wnd.mxn.Mapstraction;
 		return new c(element, apiString, debug);
     }-*/;
@@ -31,10 +32,18 @@ public class Mapstraction {
      * addLargeControls() Adds a large map panning control and zoom buttons to
      * the map
      *
-     * addMapTypeControls() Adds a map type control to the map (streets, aerial
+     * addMapTypeControls() 
+     */
+	
+	/**
+	 * Adds a map type control to the map (streets, aerial
      * imagery etc)
-     *
-     * addMarker(marker, old) Adds a marker pin to the map
+	 */
+	public final native void addMapTypeControls() /*-{
+		this.addMapTypeControls();
+	}-*/;
+	
+     /* addMarker(marker, old) Adds a marker pin to the map
      *
      * addMarkerWithData(marker, data) addMarkerWithData will addData to the
      * marker, then add it to the map
@@ -51,10 +60,11 @@ public class Mapstraction {
      * addSmallControls() Adds a small map panning control and zoom buttons to
      * the map
      */
-    public native final void addSmallControls() /*-{
-        this.mapstraction.addSmallControls();
+    
+	public final native void addSmallControls() /*-{
+        this.addSmallControls();
     }-*/;
-
+	
      /*
      * addTileLayer(template, opacity, copyright, Minimum, Maximum, Should) Adds
      * a Tile Layer to the map Requires providing a parameterized tile url.
@@ -111,20 +121,18 @@ public class Mapstraction {
     /**
      * Returns the loaded state of a Map Provider
      */
-    private final native boolean isLoaded(String api)
+    public final native boolean isLoaded(String api)
     /*-{
-        return this.mapstraction.isLoaded(api);
+        return this.isLoaded(api);
     }-*/;
-
-    public boolean isLoaded(MapProvider api)
-    {
-        return this.isLoaded(api.getApiString());
-    }
-
+    
     public final native boolean isLoaded()
     /*-{
-        return this.mapstraction.isLoaded();
+        return this.isLoaded();
     }-*/;
+
+
+
 
      /*
      * mousePosition(element) Displays the coordinates of the cursor in the HTML
@@ -163,9 +171,9 @@ public class Mapstraction {
 
     public final native void setCenterAndZoom(LatLonPoint point, int zoom)
     /*-{
-        this.mapstraction.setCenterAndZoom(point, zoom);
+        this.setCenterAndZoom(point, zoom);
     }-*/;
-
+	
      /* setCenterAndZoom(point, zoom) Centers the map to some place and zoom
      * level
      *

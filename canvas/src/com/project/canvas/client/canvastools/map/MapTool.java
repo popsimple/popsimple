@@ -141,27 +141,21 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
     }
 
     private void applyMapDataToWidget() {
-        if ((null == this.mapWidget)) {// || (null == this.mapData.center)) {
+        if ((null == this.mapWidget) || (null == this.mapData.center)) {
             this.addStyleName(CanvasResources.INSTANCE.main().mapToolEmpty());
             return;
         }
         this.removeStyleName(CanvasResources.INSTANCE.main().mapToolEmpty());
         this.mapstraction.setCenterAndZoom(
-                LatLonPoint.create(20, 20),//this.mapData.center.latitude, this.mapData.center.longitude),
+                LatLonPoint.create(this.mapData.center.latitude, this.mapData.center.longitude),
                 this.mapData.zoom);
-//        this.mapWidget.setCenter(LatLng.newInstance(
-//                this.mapData.center.latitude, this.mapData.center.longitude));
-//        this.mapWidget.setZoomLevel(this.mapData.zoom);
     }
 
     private void onApiReady() {
-        //this.mapWidget = new MapWidget();
-        //this.setEnableOptionsBar(true);
-        //this.mapWidget.setScrollWheelZoomEnabled(true);
-        //this.mapWidget.setDraggable(true);
         this.mapWidget = new FlowPanel();
-        this.mapstraction = new Mapstraction(this.mapWidget.getElement(), MapProvider.GOOGLE, false);
+        this.mapstraction = Mapstraction.createInstance(this.mapWidget.getElement(), MapProvider.GOOGLE, false);
         this.mapstraction.addSmallControls();
+        //this.mapWidget.setScrollWheelZoomEnabled(true);
 
         this.mapWidget.addStyleName(CanvasResources.INSTANCE.main().mapToolMapWidget());
         this.mapPanel.add(this.mapWidget);
