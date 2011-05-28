@@ -5,13 +5,13 @@ import com.google.gwt.dom.client.Element;
 
 public class Mapstraction extends JavaScriptObject {
 	protected Mapstraction() {}
-	
+
 	public static Mapstraction createInstance(Element element, MapProvider provider, boolean debug)
 	{
 		return Mapstraction.createInstance(element, provider.getApiString(), debug);
 	}
-	
-	private final static native Mapstraction createInstance(Element element, String apiString, boolean debug) 
+
+	private final static native Mapstraction createInstance(Element element, String apiString, boolean debug)
 	/*-{
         var c = $wnd.mxn.Mapstraction;
 		return new c(element, apiString, debug);
@@ -32,9 +32,9 @@ public class Mapstraction extends JavaScriptObject {
      * addLargeControls() Adds a large map panning control and zoom buttons to
      * the map
      *
-     * addMapTypeControls() 
+     * addMapTypeControls()
      */
-	
+
 	/**
 	 * Adds a map type control to the map (streets, aerial
      * imagery etc)
@@ -42,7 +42,7 @@ public class Mapstraction extends JavaScriptObject {
 	public final native void addMapTypeControls() /*-{
 		this.addMapTypeControls();
 	}-*/;
-	
+
      /* addMarker(marker, old) Adds a marker pin to the map
      *
      * addMarkerWithData(marker, data) addMarkerWithData will addData to the
@@ -60,11 +60,11 @@ public class Mapstraction extends JavaScriptObject {
      * addSmallControls() Adds a small map panning control and zoom buttons to
      * the map
      */
-    
+
 	public final native void addSmallControls() /*-{
         this.addSmallControls();
     }-*/;
-	
+
      /*
      * addTileLayer(template, opacity, copyright, Minimum, Maximum, Should) Adds
      * a Tile Layer to the map Requires providing a parameterized tile url.
@@ -93,27 +93,43 @@ public class Mapstraction extends JavaScriptObject {
      * shown or hidden
      *
      * dragging(on) Enable/disable dragging of the map
-     *
-     * enableScrollWheelZoom() Enable scroll wheel zooming
-     *
+     */
+
+     /** Enable scroll wheel zooming
+      */
+	public native final void enableScrollWheelZoom() /*-{
+	    this.enableScrollWheelZoom();
+	}-*/;
+
+     /*
      * getAttributeExtremes(name) getAttributeExtremes returns the
      * minimum/maximum of "field" from all markers
      *
      * getBounds() Gets the BoundingBox of the map
-     *
-     * getCenter() Gets the central point of the map
-     *
-     * getMap() getMap returns the native map object that mapstraction is
+     */
+
+	/** Gets the central point of the map
+     */
+	public native final LatLonPoint getCenter() /*-{
+	    return this.getCenter();
+	}-*/;
+
+     /* getMap() getMap returns the native map object that mapstraction is
      * talking to
      *
      * getMapType() Gets the imagery type for the map.
      *
      * getPixelRatio() Returns a ratio to turn distance into pixels based on
      * current projection
-     *
-     * getZoom() Returns the zoom level of the map
-     *
-     * getZoomLevelForBoundingBox(bbox) Returns the best zoom level for bounds
+     */
+
+     /** Returns the zoom level of the map
+     */
+	public final native int  getZoom() /*-{
+	    return this.getZoom();
+	}-*/;
+
+     /* getZoomLevelForBoundingBox(bbox) Returns the best zoom level for bounds
      * given
      *
      */
@@ -125,7 +141,7 @@ public class Mapstraction extends JavaScriptObject {
     /*-{
         return this.isLoaded(api);
     }-*/;
-    
+
     public final native boolean isLoaded()
     /*-{
         return this.isLoaded();
@@ -165,22 +181,35 @@ public class Mapstraction extends JavaScriptObject {
      *
      * setBounds(bounds) Sets the map to the appropriate location and zoom for a
      * given BoundingBox
-     *
-     * setCenter(point, options) setCenter sets the central point of the map
      */
+
+     /** sets the central point of the map
+     */
+    public final native void setCenter(LatLonPoint point) /*-{
+        this.setCenter(point);
+    }-*/;
+    //public final native void setCenter(LatLonPoint point, options)
+
 
     public final native void setCenterAndZoom(LatLonPoint point, int zoom)
     /*-{
+        $wnd.console.log(this);
+        debugger;
         this.setCenterAndZoom(point, zoom);
     }-*/;
-	
+
      /* setCenterAndZoom(point, zoom) Centers the map to some place and zoom
      * level
-     *
-     * setDebug(debug) Set the debugging on or off - shows alert panels for
+     */
+     /** Set the debugging on or off - shows alert panels for
      * functions that don't exist in Mapstraction
-     *
-     * setDefer(set) Set the api call deferment on or off - When it's on,
+     */
+    public final native void setDebug(boolean debug) /*-{
+        this.setDebug(debug);
+    }-*/;
+
+
+     /* setDefer(set) Set the api call deferment on or off - When it's on,
      * mxn.invoke will queue up provider API calls until runDeferred is called,
      * at which time everything in the queue will be run in the order it was
      * added.
@@ -197,12 +226,17 @@ public class Mapstraction extends JavaScriptObject {
      *
      * setOptions(oOpts) Sets the current options to those specified in oOpts
      * and applies them
-     *
-     * setZoom(zoom) Sets the zoom level for the map MS doesn't seem to do
+     */
+
+     /** Sets the zoom level for the map. MS doesn't seem to do
      * zoom=0, and Gg's sat goes closer than it's maps, and MS's sat goes closer
      * than Y!'s TODO: Mapstraction.prototype.getZoomLevels or something.
-     *
-     * swap(api, element) Change the current api on the fly
+     */
+    public final native void setZoom(int zoom) /*-{
+        this.setZoom(zoom);
+    }-*/;
+
+     /* swap(api, element) Change the current api on the fly
      *
      * toggleFilter(field, operator, value) Delete the current filter if
      * present; otherwise add it

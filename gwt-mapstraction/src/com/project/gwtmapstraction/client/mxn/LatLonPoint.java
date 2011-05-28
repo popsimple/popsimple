@@ -11,4 +11,21 @@ public class LatLonPoint extends JavaScriptObject {
         return new c(lat, lon);
     }-*/;
 
+    /** Returns latitude conversion based on current projection  */
+    public final native double latConv() /*-{
+        return this.latConv();
+    }-*/;
+
+    /** Returns longitude conversion based on current projection  */
+    public final native double lonConv() /*-{
+        return this.lonConv();
+    }-*/;
+
+    public final native double getLat() /*-{
+        return this.lat;
+    }-*/;
+
+    public final native double getLon() /*-{
+        return this.lon;
+    }-*/;
 }

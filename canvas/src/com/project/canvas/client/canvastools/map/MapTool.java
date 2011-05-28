@@ -4,6 +4,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
+import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.maps.client.Maps;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -110,10 +111,11 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
     @Override
     public MapData getValue() {
         if (null != this.mapWidget) {
-            //LatLng center = this.mapWidget.getCenter();
-//            this.mapData.center.latitude = center.getLatitude();
-//            this.mapData.center.longitude = center.getLongitude();
-//            this.mapData.zoom = this.mapWidget.getZoomLevel();
+            LatLonPoint center = this.mapstraction.getCenter();
+            this.mapData.center = new Location();
+            this.mapData.center.latitude = center.getLat();
+            this.mapData.center.longitude = center.getLon();
+            this.mapData.zoom = this.mapstraction.getZoom();
         }
         return this.mapData;
     }
@@ -141,25 +143,40 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
     }
 
     private void applyMapDataToWidget() {
+        if (false == this.isAttached()) {
+            return;
+        }
         if ((null == this.mapWidget) || (null == this.mapData.center)) {
             this.addStyleName(CanvasResources.INSTANCE.main().mapToolEmpty());
+            this.mapstraction.setCenter(LatLonPoint.create(75.67219739055291,-130.078125));
+            this.mapstraction.setZoom(1);
             return;
         }
         this.removeStyleName(CanvasResources.INSTANCE.main().mapToolEmpty());
-        this.mapstraction.setCenterAndZoom(
-                LatLonPoint.create(this.mapData.center.latitude, this.mapData.center.longitude),
-                this.mapData.zoom);
+        this.mapstraction.setCenter(
+                LatLonPoint.create(this.mapData.center.latitude, this.mapData.center.longitude));
+        this.mapstraction.setZoom(this.mapData.zoom);
     }
 
     private void onApiReady() {
         this.mapWidget = new FlowPanel();
-        this.mapstraction = Mapstraction.createInstance(this.mapWidget.getElement(), MapProvider.GOOGLE, false);
-        this.mapstraction.addSmallControls();
-        //this.mapWidget.setScrollWheelZoomEnabled(true);
+        final MapTool that = this;
+        this.mapWidget.addAttachHandler(new AttachEvent.Handler() {
+            @Override
+            public void onAttachOrDetach(AttachEvent event) {
+                if (false == event.isAttached()) {
+                    return;
+                }
+                that.mapstraction = Mapstraction.createInstance(that.mapWidget.getElement(), MapProvider.GOOGLE, false);
+                that.mapstraction.setDebug(true);
+                that.mapstraction.addSmallControls();
+                that.mapstraction.enableScrollWheelZoom();
 
-        this.mapWidget.addStyleName(CanvasResources.INSTANCE.main().mapToolMapWidget());
-        this.mapPanel.add(this.mapWidget);
-        this.applyMapDataToWidget();
+                that.mapWidget.addStyleName(CanvasResources.INSTANCE.main().mapToolMapWidget());
+                that.applyMapDataToWidget();
+            }
+        });
+        that.mapPanel.add(that.mapWidget);
     }
 
     private void setEnableOptionsBar(boolean enabled) {

@@ -72,8 +72,6 @@ public class WorksheetImpl implements Worksheet
     {
         CanvasServiceAsync service = (CanvasServiceAsync) GWT.create(CanvasService.class);
 
-        view.onLoadOperationChange(OperationStatus.PENDING, null);
-        
         if (null == id) {
             if (null != this.page.id) {
                 id = this.page.id;
@@ -83,6 +81,8 @@ public class WorksheetImpl implements Worksheet
                 return;
             }
         }
+
+        view.onLoadOperationChange(OperationStatus.PENDING, null);
 
         service.getPage(id, new AsyncCallback<CanvasPage>() {
             @Override
@@ -147,7 +147,7 @@ public class WorksheetImpl implements Worksheet
             @Override
             public void onFailure(Throwable caught)
             {
-                view.onSaveOperationChange(OperationStatus.FAILURE, 
+                view.onSaveOperationChange(OperationStatus.FAILURE,
                         ThrowableUtils.joinStackTrace(caught));
             }
 
@@ -218,19 +218,19 @@ public class WorksheetImpl implements Worksheet
     private CanvasToolFrame createToolInstanceFromData(ElementData newElement)
     {
         CanvasToolFactory<? extends CanvasTool<? extends ElementData>> factory = null;
-        if (newElement.factoryUniqueId.equals(TextEditToolFactory.UNIQUE_ID)) 
+        if (newElement.factoryUniqueId.equals(TextEditToolFactory.UNIQUE_ID))
         {
             factory = new TextEditToolFactory();
-        } 
-        else if (newElement.factoryUniqueId.equals(TaskListToolFactory.UNIQUE_ID)) 
-        { 
+        }
+        else if (newElement.factoryUniqueId.equals(TaskListToolFactory.UNIQUE_ID))
+        {
             factory = new TaskListToolFactory();
-        } 
-        else if (newElement.factoryUniqueId.equals(ImageToolFactory.UNIQUE_ID)) 
+        }
+        else if (newElement.factoryUniqueId.equals(ImageToolFactory.UNIQUE_ID))
         {
             factory = new ImageToolFactory();
         }
-        else if (newElement.factoryUniqueId.equals(VideoToolFactory.UNIQUE_ID)) 
+        else if (newElement.factoryUniqueId.equals(VideoToolFactory.UNIQUE_ID))
         {
             factory = new VideoToolFactory();
         }
@@ -317,7 +317,7 @@ public class WorksheetImpl implements Worksheet
 		});
     }
 
-	private void setActiveToolInstance(CanvasTool<?> tool) 
+	private void setActiveToolInstance(CanvasTool<?> tool)
 	{
 		if (tool == this.activeToolInstance) {
 			return;
@@ -349,15 +349,15 @@ public class WorksheetImpl implements Worksheet
     {
         this.page = newPage;
         this.updateOptions(this.page.options);
-        
+
         HashMap<Long, ElementData> newElements = new HashMap<Long, ElementData>();
         for (ElementData elem : this.page.elements) {
             newElements.put(elem.id, elem);
         }
-        
-        HashSet<Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo>> entries = 
+
+        HashSet<Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo>> entries =
             new HashSet<Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo>>(toolInfoMap.entrySet());
-        
+
         // Update existing and remove deleted tools
         for (Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo> entry : entries) {
             CanvasTool<? extends ElementData> tool = entry.getKey();
@@ -372,7 +372,7 @@ public class WorksheetImpl implements Worksheet
                 this.removeToolInstance(toolInfo.toolFrame);
             }
         }
-        
+
         // Create the new tool instances
         for (ElementData newElement : this.sortByZIndex(newElements.values())) {
             this.createToolInstanceFromData(newElement);
