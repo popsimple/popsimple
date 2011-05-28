@@ -6,6 +6,8 @@ public class MapData extends ElementData
 {
     private static final long serialVersionUID = 1L;
 
+    protected MapData() {}
+
     public MapData(String factoryId) {
         super(factoryId);
     }

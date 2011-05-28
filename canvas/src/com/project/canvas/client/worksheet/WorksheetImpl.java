@@ -13,14 +13,11 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.project.canvas.client.ToolFactories;
 import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.canvastools.base.CanvasToolFactory;
 import com.project.canvas.client.canvastools.base.CanvasToolFrame;
 import com.project.canvas.client.canvastools.base.ToolboxItem;
-import com.project.canvas.client.canvastools.image.ImageToolFactory;
-import com.project.canvas.client.canvastools.tasklist.TaskListToolFactory;
-import com.project.canvas.client.canvastools.textedit.TextEditToolFactory;
-import com.project.canvas.client.canvastools.video.VideoToolFactory;
 import com.project.canvas.client.shared.ElementUtils;
 import com.project.canvas.client.shared.RegistrationsManager;
 import com.project.canvas.client.shared.ZIndexAllocator;
@@ -217,27 +214,7 @@ public class WorksheetImpl implements Worksheet
 
     private CanvasToolFrame createToolInstanceFromData(ElementData newElement)
     {
-        CanvasToolFactory<? extends CanvasTool<? extends ElementData>> factory = null;
-        if (newElement.factoryUniqueId.equals(TextEditToolFactory.UNIQUE_ID))
-        {
-            factory = new TextEditToolFactory();
-        }
-        else if (newElement.factoryUniqueId.equals(TaskListToolFactory.UNIQUE_ID))
-        {
-            factory = new TaskListToolFactory();
-        }
-        else if (newElement.factoryUniqueId.equals(ImageToolFactory.UNIQUE_ID))
-        {
-            factory = new ImageToolFactory();
-        }
-        else if (newElement.factoryUniqueId.equals(VideoToolFactory.UNIQUE_ID))
-        {
-            factory = new VideoToolFactory();
-        }
-        if (null == factory) {
-            return null;
-        }
-        // TODO: Refactor
+        CanvasToolFactory<? extends CanvasTool<? extends ElementData>> factory = ToolFactories.INSTANCE.get(newElement.factoryUniqueId);
         CanvasToolFrame toolFrame = this.createToolInstance(newElement.transform, factory, false);
         toolFrame.getTool().setElementData(newElement);
         toolFrame.getTool().setActive(false);

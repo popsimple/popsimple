@@ -9,7 +9,7 @@ import com.project.canvas.shared.data.ElementData;
 public class MapToolboxItem implements ToolboxItem
 {
 
-    private final MapToolFactory mapToolFactory = new MapToolFactory(); 
+    private final MapToolFactory mapToolFactory = new MapToolFactory();
 
     @Override
     public String getToolboxIconStyle()
