@@ -10,6 +10,7 @@ import com.google.gwt.maps.client.Maps;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
@@ -17,6 +18,7 @@ import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.RegistrationsManager;
 import com.project.canvas.client.shared.events.SimpleEvent.Handler;
+import com.project.canvas.client.shared.widgets.DialogWithZIndex;
 import com.project.canvas.shared.ApiKeys;
 import com.project.canvas.shared.data.ElementData;
 import com.project.canvas.shared.data.Location;
@@ -26,14 +28,12 @@ import com.project.gwtmapstraction.client.mxn.LatLonPoint;
 import com.project.gwtmapstraction.client.mxn.MapProvider;
 import com.project.gwtmapstraction.client.mxn.Mapstraction;
 
-public class MapTool extends Composite implements CanvasTool<MapData> {
-
-    private static final String SHOWHIDE_LABEL_HIDE = "Hide search bar";
-    private static final String SHOWHIDE_LABEL_SHOW = "Show search bar";
-
-    private static MapToolUiBinder uiBinder = GWT.create(MapToolUiBinder.class);
+public class MapTool extends Composite implements CanvasTool<MapData> 
+{
 
     interface MapToolUiBinder extends UiBinder<Widget, MapTool> {}
+
+    private static MapToolUiBinder uiBinder = GWT.create(MapToolUiBinder.class);
 
     public static void prepareApi() {
         prepareApi(null);
@@ -55,13 +55,14 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
     @UiField
     FlowPanel mapPanel;
     @UiField
-    Label showHideBarLabel;
+    Label optionsLabel;
 
     private final RegistrationsManager registrationsManager = new RegistrationsManager();
+    private DialogBox optionsDialog;
+    private MapToolOptions mapToolOptionsWidget;
     private Widget mapWidget;
     private Mapstraction mapstraction;
     private MapData mapData;
-    private boolean barEnabled;
 
     public MapTool() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -90,10 +91,10 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
 
     @Override
     public void bind() {
-        this.registrationsManager.add(this.showHideBarLabel.addClickHandler(new ClickHandler() {
+        this.registrationsManager.add(this.optionsLabel.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                toggleBarVisible();
+                showOptions();
             }
         }));
     }
@@ -179,15 +180,24 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
         that.mapPanel.add(that.mapWidget);
     }
 
-    private void setEnableOptionsBar(boolean enabled) {
-        this.barEnabled = enabled;
-//        this.mapWidget.setGoogleBarEnabled(enabled);
-        String labelText = this.barEnabled ? SHOWHIDE_LABEL_HIDE : SHOWHIDE_LABEL_SHOW;
-        showHideBarLabel.setText(labelText);
+    protected void showOptions()
+    {
+        if (null == this.optionsDialog) {
+            this.optionsDialog = new DialogWithZIndex(false, true);
+        }
+        if (null == this.mapToolOptionsWidget) {
+            this.mapToolOptionsWidget = new MapToolOptions();
+            this.mapToolOptionsWidget.addDoneHandler(new Handler<Void>() {
+                @Override
+                public void onFire(Void arg)
+                {
+                    optionsDialog.hide();
+                    setValue(mapToolOptionsWidget.getValue());
+                }
+            });
+            this.optionsDialog.add(this.mapToolOptionsWidget);
+        }
+        this.mapToolOptionsWidget.setValue(this.getValue());
+        this.optionsDialog.center();
     }
-
-    private void toggleBarVisible() {
-        this.setEnableOptionsBar(false == this.barEnabled);
-    }
-
 }

@@ -7,7 +7,7 @@
 	</ui:style>
 	<g:FlowPanel ui:field="mainPanel" addStyleNames="{res.main.mapToolMainPanel}">
 		<g:FlowPanel ui:field="mapPanel" addStyleNames="{res.main.mapToolMapHolder}"></g:FlowPanel>
-		<g:InlineLabel ui:field="showHideBarLabel"
-			addStyleNames="{res.main.mapToolShowHideBarLabel}" />
+		<g:InlineLabel ui:field="optionsLabel"
+			addStyleNames="{res.main.mapToolShowHideBarLabel}">Map options...</g:InlineLabel>
 	</g:FlowPanel>
 </ui:UiBinder>
