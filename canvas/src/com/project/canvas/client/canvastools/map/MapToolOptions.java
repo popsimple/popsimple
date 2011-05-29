@@ -9,7 +9,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.shared.events.SimpleEvent;
@@ -29,10 +29,10 @@ public class MapToolOptions extends Composite implements TakesValue<MapData>
 
     
     @UiField
-    HTMLPanel providersPanel;
+    FlowPanel providersPanel;
 
     @UiField
-    HTMLPanel mapTypesPanel;
+    FlowPanel mapTypesPanel;
     
     @UiField
     Button doneButton;
@@ -85,10 +85,14 @@ public class MapToolOptions extends Composite implements TakesValue<MapData>
             throw new RuntimeException("Must set value first!");
         }
         for (RadioButton button : this.providerButtons.values()) {
-            this.mapData.provider = this.providerButtons.getByKey2(button);
+            if (button.getValue()) {
+                this.mapData.provider = this.providerButtons.getByKey2(button);
+            }
         }
         for (RadioButton button : this.mapTypeButtons.values()) {
-            this.mapData.mapType = this.mapTypeButtons.getByKey2(button);
+            if (button.getValue()) {
+                this.mapData.mapType = this.mapTypeButtons.getByKey2(button);
+            }
         }
         return this.mapData;
     }

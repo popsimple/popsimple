@@ -24,6 +24,9 @@ public class UrlUtils {
      */
     public static boolean areEquivalent(String url1, String url2)
     {
+        if ((null == url1) || (null == url2)) {
+            return url1 == url2;
+        }
         return URL.decode(url1).trim().equals(URL.decode(url2).trim());
     }
 

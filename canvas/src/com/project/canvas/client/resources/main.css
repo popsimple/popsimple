@@ -3,7 +3,7 @@
 }
 
 .selected {
-
+	
 }
 
 .drag {
@@ -86,7 +86,7 @@
 }
 
 .worksheetRightButton {
-
+	
 }
 
 .worksheetDragPanel {
@@ -150,7 +150,7 @@
 }
 
 .textEdit {
-
+	
 }
 
 @external nicEdit-main, nicEdit-panel, .nicEdit-panelContain;
@@ -207,15 +207,15 @@
 }
 
 .textEditNotFocused {
-
+	
 }
 
 .textEditNoToolbars {
-
+	
 }
 
 .textEditToolbar { /*margin-top:-80px;*/
-
+	
 }
 
 .textBoxCreateModeCanvasStyle {
@@ -249,7 +249,7 @@
 }
 
 .taskListCreateModeCanvasStyle {
-
+	
 }
 
 .taskList {
@@ -293,7 +293,7 @@
 }
 
 .taskListFooter {
-
+	
 }
 
 @sprite .toolboxTaskListIconStyle {
@@ -307,7 +307,7 @@
 }
 
 .hoverTextBoxEdit {
-
+	
 }
 
 .imageBox {
@@ -366,7 +366,7 @@
 }
 
 .worksheetModeViewOnly {
-
+	
 }
 
 .toolFrameBodyPanel {
@@ -404,7 +404,7 @@
 }
 
 .worksheetModeEditable .toolFrameCloseLink:hover {
-
+	
 }
 
 .toolFrameHeader {
@@ -558,7 +558,7 @@
 }
 
 .worksheetModeEditable .toolFramePanel:hover .videoOptionsLabel,.worksheetModeEditable .toolFramePanel.hover .videoOptionsLabel
-{
+	{
 	display: block;
 }
 
@@ -574,12 +574,11 @@
 }
 
 .mapTool {
-
+	width: 300px;
+	height: 300px;
 }
 
 .mapToolEmpty {
-	width: 300px;
-	height: 300px;
 	background-color: #aaa;
 }
 
@@ -597,7 +596,7 @@
 
 .mapToolMainPanel {
 	position: relative;
-	margin-bottom: 0;
+	margin-bottom: 30px;
 }
 
 .mapToolShowHideBarLabel {
@@ -610,19 +609,10 @@
 	height: 26px;
 	line-height: 26px;
 	cursor: pointer;
-	visibility: hidden;
-}
-
-.worksheetModeEditable .toolFramePanel:hover  .mapToolShowHideBarLabel {
-	visibility: visible;
 	top: 100%;
 }
 
-.worksheetModeEditable .toolFramePanel:hover .mapToolMainPanel {
-	margin-bottom: 30px;
-}
-
-.selectionPanelStyle{
+.selectionPanelStyle {
 	background-color: transparent;
 	border-style: dotted;
 	border-width: 1px;

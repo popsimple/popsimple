@@ -17,6 +17,12 @@ app: canvasapp
 user: janitormasters@live.com
 Key: 68910216D550D46A50E65B86A92F0FC245EFE6B7
 
+Bing Maps:
+----------
+account id: 1069402
+account name: janitormasters@live.com
+key 1: AvTPpl4GnTXQjRMw37ErwGjCustOiDUknAHD3h8obXyPGPZfTM3hmdQSvHs_zOr_
+
 
 Google Maps
 -----------

@@ -5,7 +5,7 @@ import com.google.gwt.dom.client.Element;
 
 public class Mapstraction extends JavaScriptObject {
 	protected Mapstraction() {}
-
+	
 	public static Mapstraction createInstance(Element element, MapProvider provider, boolean debug)
 	{
 		return Mapstraction.createInstance(element, provider.getApiString(), debug);
@@ -17,6 +17,11 @@ public class Mapstraction extends JavaScriptObject {
 		return new c(element, apiString, debug);
     }-*/;
 
+    public final native Element getCurrentElement()
+    /*-{
+        return this.currentElement;
+    }-*/;
+    
     /*
      * addControls(args) addControls adds controls to the map.
      *
@@ -193,8 +198,6 @@ public class Mapstraction extends JavaScriptObject {
 
     public final native void setCenterAndZoom(LatLonPoint point, int zoom)
     /*-{
-        $wnd.console.log(this);
-        debugger;
         this.setCenterAndZoom(point, zoom);
     }-*/;
 
@@ -236,9 +239,18 @@ public class Mapstraction extends JavaScriptObject {
         this.setZoom(zoom);
     }-*/;
 
-     /* swap(api, element) Change the current api on the fly
-     *
-     * toggleFilter(field, operator, value) Delete the current filter if
+
+    private final native void swap(Element element, String api) /*-{
+        this.swap(element, api);
+    }-*/;
+    
+    /** Change the current api on the fly
+     */
+    public final void swap(MapProvider provider, Element element) {
+        this.swap(element, provider.getApiString());
+    }
+
+     /* toggleFilter(field, operator, value) Delete the current filter if
      * present; otherwise add it
      *
      * toggleTileLayer(url) Turns a Tile Layer on or off

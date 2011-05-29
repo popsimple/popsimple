@@ -157,6 +157,9 @@ public class MapTool extends Composite implements CanvasTool<MapData>
         this.mapstraction.setCenter(
                 LatLonPoint.create(this.mapData.center.latitude, this.mapData.center.longitude));
         this.mapstraction.setZoom(this.mapData.zoom);
+        Widget newMapWidget = new FlowPanel();
+        
+        this.mapstraction.swap(this.mapData.provider, this.mapWidget.getElement());
     }
 
     private void onApiReady() {
