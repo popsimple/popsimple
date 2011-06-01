@@ -292,6 +292,12 @@ public class WorksheetImpl implements Worksheet
 		    	setActiveToolInstance(tool);
 			}
 		});
+        view.addRemoveToolsRequest(new Handler<ArrayList<CanvasToolFrame>>() {
+			@Override
+			public void onFire(ArrayList<CanvasToolFrame> arg) {
+				removeToolInstances(arg);
+			}
+		});
     }
 
 	private void setActiveToolInstance(CanvasTool<?> tool)
@@ -386,13 +392,14 @@ public class WorksheetImpl implements Worksheet
         return regs;
     }
 
-    private void removeAllTools()
+    private void removeToolInstances(ArrayList<CanvasToolFrame> toolFrames)
     {
-        for (ToolInstanceInfo toolInfo : new ArrayList<ToolInstanceInfo>(this.toolInfoMap.values())) {
-            this.removeToolInstance(toolInfo.toolFrame);
-        }
+    	for (CanvasToolFrame toolFrame : toolFrames)
+    	{
+    		this.removeToolInstance(toolFrame);
+    	}
     }
-
+    
     private void removeToolInstance(CanvasToolFrame toolFrame)
     {
         ZIndexAllocator.deallocateZIndex(toolFrame.getElement());

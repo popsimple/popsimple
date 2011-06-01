@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -104,6 +105,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
     private final SimpleEvent<CanvasPageOptions> optionsUpdatedEvent = new SimpleEvent<CanvasPageOptions>();
     private final SimpleEvent<Void> stopOperationEvent = new SimpleEvent<Void>();
+    private final SimpleEvent<ArrayList<CanvasToolFrame>> removeToolsRequest = new SimpleEvent<ArrayList<CanvasToolFrame>>();
     private final SimpleEvent<ToolCreationRequest> toolCreationRequestEvent = new SimpleEvent<ToolCreationRequest>();
     private final SimpleEvent<CanvasToolFrame> toolFrameClickEvent = new SimpleEvent<CanvasToolFrame>();
 
@@ -153,7 +155,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     public HandlerRegistration addStopOperationHandler(Handler<Void> handler) {
         return stopOperationEvent.addHandler(handler);
     }
-
+    
     @Override
     public HandlerRegistration addToolCreationRequestHandler(Handler<ToolCreationRequest> handler) {
         return toolCreationRequestEvent.addHandler(handler);
@@ -163,6 +165,11 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     public HandlerRegistration addToolFrameClickHandler(Handler<CanvasToolFrame> handler) {
         return this.toolFrameClickEvent.addHandler(handler);
     }
+    
+    @Override
+	public HandlerRegistration addRemoveToolsRequest(Handler<ArrayList<CanvasToolFrame>> handler) {
+		return this.removeToolsRequest.addHandler(handler);
+	}
 
     @Override
     public void addToolInstanceWidget(final CanvasToolFrame toolFrame, final Transform2D transform,
@@ -387,12 +394,28 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         Event.addNativePreviewHandler(new NativePreviewHandler() {
             @Override
             public void onPreviewNativeEvent(NativePreviewEvent event) {
-                String type = event.getNativeEvent().getType();
-                if (type.equals("keydown") && (event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ESCAPE)) {
-                    onEscapePressed();
+                NativeEvent nativeEvent = event.getNativeEvent();
+            	String type = nativeEvent.getType();
+                if (type.equals("keydown"))
+                {
+                	onKeyDown(nativeEvent);
                 }
             }
         });
+    }
+    
+    private void onKeyDown(NativeEvent event)
+    {
+    	//TODO: Use some sort of KeyMapper.
+    	switch (event.getKeyCode())
+    	{
+    		case KeyCodes.KEY_ESCAPE:
+    			this.stopOperationEvent.dispatch(null);
+    			break;
+    		case KeyCodes.KEY_DELETE:
+    			this.removeToolsRequest.dispatch(new ArrayList<CanvasToolFrame>(this.selectedTools));
+    			break;
+    	}
     }
 
     private void onClearAreaClicked(MouseDownEvent event) {
@@ -406,10 +429,6 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         if (this.activeToolboxItem.getClass() == CursorToolboxItem.class) {
             this._toolFrameSelectionManager.startSelectionDrag(event);
         }
-    }
-
-    private void onEscapePressed() {
-        stopOperationEvent.dispatch(null);
     }
 
     private void changeButtonStatus(Button button, OperationStatus status, String pendingText, String doneText) {
