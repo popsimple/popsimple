@@ -1,5 +1,7 @@
 package com.project.canvas.client.worksheet;
 
+import java.util.Collection;
+
 import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
@@ -45,7 +47,15 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
         ElementUtils.setElementPosition(limitPosToContainer(pos, toolFrame), toolFrame.getElement());
     }
 
-
+    @Override
+    public void startDragCanvasToolFrames(final Collection<CanvasToolFrame> toolFrames, final MouseEvent<?> startEvent)
+    {
+    	for (CanvasToolFrame toolFrame : toolFrames)
+    	{
+    		startDragCanvasToolFrame(toolFrame, startEvent);
+    	}
+    }
+    
     @Override
     public void startDragCanvasToolFrame(final CanvasToolFrame toolFrame, final MouseEvent<?> startEvent)
     {

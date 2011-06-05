@@ -11,6 +11,8 @@ import com.google.gwt.event.dom.client.HasFocusHandlers;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
+import com.google.gwt.event.dom.client.MouseUpEvent;
+import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -214,9 +216,14 @@ public class CanvasToolFrame extends Composite implements Focusable, HasFocusHan
         return this.rotateStartRequest.addHandler(handler);
     }
     
-    public HandlerRegistration addSelectRequestHandler(SimpleEvent.Handler<Void> handler) 
+    public HandlerRegistration addMouseDownHandler(MouseDownHandler handler) 
     {
-        return this.selectRequest.addHandler(handler);
+        return this.addDomHandler(handler, MouseDownEvent.getType());
+    }
+    
+    public HandlerRegistration addMouseUpHandler(MouseUpHandler handler) 
+    {
+        return this.addDomHandler(handler, MouseUpEvent.getType());
     }
 
     public Point2D getToolSize() {

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -15,10 +16,14 @@ import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
+import com.google.gwt.event.dom.client.MouseMoveEvent;
+import com.google.gwt.event.dom.client.MouseMoveHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.event.dom.client.MouseUpEvent;
+import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -189,20 +194,23 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         regs.add(toolFrame.addMoveStartRequestHandler(new SimpleEvent.Handler<MouseEvent<?>>() {
             @Override
             public void onFire(MouseEvent<?> arg) {
-                _toolFrameTransformer.startDragCanvasToolFrame(toolFrame, arg);
+            	ensureToolFrameSelected(toolFrame);
+        		_toolFrameTransformer.startDragCanvasToolFrames(selectedTools, arg);
             }
         }));
         regs.add(toolFrame.addResizeStartRequestHandler(new SimpleEvent.Handler<MouseEvent<?>>() {
             @Override
             public void onFire(MouseEvent<?> arg) {
-                _toolFrameTransformer.startResizeCanvasToolFrame(toolFrame, arg);
+            	ensureToolFrameSelected(toolFrame);
+            	_toolFrameTransformer.startResizeCanvasToolFrame(toolFrame, arg);
             }
         }));
         if (toolFrame.getTool().canRotate()) {
             regs.add(toolFrame.addRotateStartRequestHandler(new SimpleEvent.Handler<MouseEvent<?>>() {
                 @Override
                 public void onFire(MouseEvent<?> arg) {
-                    _toolFrameTransformer.startRotateCanvasToolFrame(toolFrame, arg);
+                	ensureToolFrameSelected(toolFrame);
+                	_toolFrameTransformer.startRotateCanvasToolFrame(toolFrame, arg);
                 }
             }));
         }
@@ -224,14 +232,24 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
                 overToolFrames.remove(toolFrame);
             }
         }, MouseOutEvent.getType()));
-        regs.add(toolFrame.addSelectRequestHandler(new SimpleEvent.Handler<Void>() {
-            @Override
-            public void onFire(Void arg) {
-                _toolFrameSelectionManager.handleToolFrameSelection(toolFrame);
-            }
-        }));
-
+        regs.add(toolFrame.addMouseUpHandler(new MouseUpHandler() {
+			@Override
+			public void onMouseUp(MouseUpEvent event) {
+				// TODO Auto-generated method stub
+				_toolFrameSelectionManager.handleToolFrameSelection(toolFrame);
+			}
+		}));
+			
         this.worksheetPanel.add(toolFrame);
+    }
+    
+    public void ensureToolFrameSelected(CanvasToolFrame toolFrame)
+    {
+    	if (this.isToolFrameSelected(toolFrame))
+    	{
+    		return;
+    	}
+    	this._toolFrameSelectionManager.handleToolFrameSelection(toolFrame);
     }
 
     public void selectToolFrame(CanvasToolFrame toolFrame) {
