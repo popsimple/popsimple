@@ -9,26 +9,34 @@ public class Point2D implements Serializable, IsSerializable {
 
     public static final Point2D zero = new Point2D(0, 0);
 
-    private int x;
-    private int y;
+    private int _x;
+    private int _y;
 
     public Point2D() {}
 
     public Point2D(int x, int y) {
-        this.x = x;
-        this.y = y;
+        this._x = x;
+        this._y = y;
     }
 
     public Point2D abs() {
-    	return new Point2D(Math.abs(this.x), Math.abs(this.y));
+    	return new Point2D(Math.abs(this._x), Math.abs(this._y));
     }
 
     public int getX() {
-        return x;
+        return this._x;
     }
 
     public int getY() {
-        return y;
+        return this._y;
+    }
+    
+    public void setX(int x) {
+        this._x = x;
+    }
+
+    public void setY(int y) {
+        this._y = y;
     }
 
     @Override
@@ -40,36 +48,36 @@ public class Point2D implements Serializable, IsSerializable {
     		return false;
     	}
     	Point2D otherPoint = (Point2D) other;
-    	return ((this.x == otherPoint.x) && (this.y == otherPoint.y));
+    	return ((this._x == otherPoint._x) && (this._y == otherPoint._y));
     }
 
     @Override
     public int hashCode() {
-    	return (this.x + this.y + 37) * 13;
+    	return (this._x + this._y + 37) * 13;
     }
     
     public Point2D minus(Point2D other) {
-        return new Point2D(this.x - other.x, this.y - other.y);
+        return new Point2D(this._x - other._x, this._y - other._y);
     }
 
     public Point2D mul(double scalar) {
-        return new Point2D((int) (this.x * scalar), (int) (this.y * scalar));
+        return new Point2D((int) (this._x * scalar), (int) (this._y * scalar));
     }
     public Point2D mul(int scalar) {
-        return new Point2D(this.x * scalar, this.y * scalar);
+        return new Point2D(this._x * scalar, this._y * scalar);
     }
     
     public Point2D plus(Point2D other) {
-        return new Point2D(this.x + other.x, this.y + other.y);
+        return new Point2D(this._x + other._x, this._y + other._y);
     }
 
     public double radians() {
-        return Math.atan2(y, x);
+        return Math.atan2(this._y, this._x);
     }
     
     
     public double radius() {
-        return Math.sqrt(x * x + y * y);
+        return Math.sqrt(this._x * this._x + this._y * this._y);
     }
     
     public Point2D rotate(double radians)
@@ -97,11 +105,11 @@ public class Point2D implements Serializable, IsSerializable {
     }
     
     public static Point2D max(Point2D first, Point2D other) {
-        return new Point2D(Math.max(first.x, other.x), Math.max(first.y, other.y));
+        return new Point2D(Math.max(first._x, other._x), Math.max(first._y, other._y));
     }
 
     public static Point2D min(Point2D first, Point2D other) {
-        return new Point2D(Math.min(first.x, other.x), Math.min(first.y, other.y));
+        return new Point2D(Math.min(first._x, other._x), Math.min(first._y, other._y));
     }
 
 }
