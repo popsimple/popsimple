@@ -8,12 +8,18 @@ public class Rectangle {
     private int bottom = 0;
     /* Rotation axis is center */
     private int rotation = 0;
-    
 
+    public Rectangle() {
+    	this(0, 0, 0, 0);
+    }
+    
     public Rectangle(int left, int top, int right, int bottom) {
         this(left, top, right, bottom, 0);
     }
     
+    public Rectangle(int left, int top, int size) {
+        this(left, top, left + size, top + size);
+    }
     
     public Rectangle(int left, int top, int right, int bottom, int rotation) {
         this.left = left;
@@ -48,6 +54,53 @@ public class Rectangle {
             corners[i] = corners[i].rotate(Math.toRadians(rotation), getCenter(), true);
         }
         return corners;
+    }
+    
+    public int getLeft()
+    {
+    	return this.left;
+    }
+    
+    public int getTop()
+    {
+    	return this.top;
+    }
+    
+    public int getRight()
+    {
+    	return this.right;
+    }
+    
+    public int getBottom()
+    {
+    	return this.bottom;
+    }
+    
+    public void setLeft(int left)
+    {
+    	this.left = left;
+    }
+    
+    public void setTop(int top)
+    {
+    	this.top = top;
+    }
+    
+    public void setRight(int right)
+    {
+    	this.right = right;
+    }
+    
+    public void setBottom(int bottom)
+    {
+    	this.bottom = bottom;
+    }
+    
+    public Point2D getSize()
+    {
+    	return new Point2D(
+    			Math.abs((this.right - this.left)),
+    			Math.abs((this.bottom - this.top)));
     }
     
     /**
