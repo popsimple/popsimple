@@ -44,7 +44,7 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
     @Override
     public void setToolFramePosition(final CanvasToolFrame toolFrame, Point2D pos)
     {
-        ElementUtils.setElementPosition(limitPosToContainer(pos, toolFrame), toolFrame.getElement());
+        ElementUtils.setElementPosition(toolFrame.getElement(), limitPosToContainer(pos, toolFrame));
     }
 
     @Override

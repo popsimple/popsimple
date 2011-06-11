@@ -286,8 +286,7 @@ public class CanvasToolFrame extends Composite implements Focusable, HasFocusHan
 		if (this.viewMode) {
 			return;
 		}
-		Point2D newPos = ElementUtils.getElementOffsetPosition(getElement())
-									 .plus(offset);
-		ElementUtils.setElementPosition(newPos, getElement());
+		Point2D newPos = ElementUtils.getElementOffsetPosition(getElement()).plus(offset);
+		ElementUtils.setElementPosition(getElement(), newPos);
 	}
 }

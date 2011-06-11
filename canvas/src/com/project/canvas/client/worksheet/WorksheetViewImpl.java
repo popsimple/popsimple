@@ -504,9 +504,8 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         if (null != event) {
             Point2D relativeToWorksheet = new Point2D(event.getClientX(), event.getClientY());
             Point2D worksheetPos = ElementUtils.getElementAbsolutePosition(worksheetPanel.getElement());
-            ElementUtils.setElementPosition(
-                    Point2D.max(Point2D.zero, relativeToWorksheet.minus(worksheetPos)),
-                    floatingWidget.getElement());
+            ElementUtils.setElementPosition(floatingWidget.getElement(),
+                    Point2D.max(Point2D.zero, relativeToWorksheet.minus(worksheetPos)));
         }
     }
 
@@ -515,7 +514,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         Handler<Point2D> floatingWidgetMoveHandler = new Handler<Point2D>() {
             @Override
             public void onFire(Point2D arg) {
-                ElementUtils.setElementPosition(arg, that.floatingWidget.getElement());
+                ElementUtils.setElementPosition(that.floatingWidget.getElement(), arg);
             }
         };
         Handler<Point2D> floatingWidgetStop = new Handler<Point2D>() {
