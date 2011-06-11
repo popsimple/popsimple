@@ -101,26 +101,21 @@ public abstract class ElementUtils {
         protected void onUpdate(double progress)
         {
             Point2D curPos = pos.minus(oldPos).mul(progress).plus(oldPos);
-            _setElementPosition(curPos, element);
+            setElementPosition(element, curPos);
         }
     };
     
-    public static void setElementPosition(final Point2D pos, final Element element, int animationDuration) {
+    public static void setElementPosition(final Element element, final Point2D pos, int animationDuration) {
         final Point2D oldPos = getElementOffsetPosition(element);
         PositionAnimation anim = new PositionAnimation(oldPos, pos, element);
         anim.run(animationDuration);
     }
 
-	public static void setElementPosition(Point2D pos, Element element) {
-		_setElementPosition(pos, element);
-    }
-
-    private static void _setElementPosition(Point2D pos, Element element)
-    {
-        element.getStyle().setLeft(pos.getX(), Unit.PX);
+	public static void setElementPosition(Element element, Point2D pos) {
+		element.getStyle().setLeft(pos.getX(), Unit.PX);
 		element.getStyle().setTop(pos.getY(), Unit.PX);
     }
-	
+
 	public static Point2D getElementOffsetPosition(Element element) {
     	return new Point2D(element.getOffsetLeft(), element.getOffsetTop());
     }
@@ -145,5 +140,10 @@ public abstract class ElementUtils {
     {
         element.getStyle().setWidth(size.getX(), Unit.PX);
         element.getStyle().setHeight(size.getY(), Unit.PX);
+    }
+    
+    public static void setElementRectangle(Element element, Rectangle rectangle) {
+		setElementPosition(element, new Point2D(rectangle.getLeft(), rectangle.getTop()));
+		setElementSize(element, rectangle.getSize());
     }
 }
