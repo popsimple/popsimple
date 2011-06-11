@@ -2,6 +2,7 @@ package com.project.canvas.client.worksheet;
 
 import java.util.HashSet;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
@@ -11,6 +12,7 @@ import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.shared.events.SimpleEvent.Handler;
 import com.project.canvas.client.worksheet.interfaces.ElementDragManager.StopCondition;
 import com.project.canvas.client.worksheet.interfaces.WorksheetView;
+import com.project.canvas.shared.RectangleUtils;
 import com.project.canvas.shared.data.Point2D;
 import com.project.canvas.shared.data.Rectangle;
 
@@ -45,12 +47,10 @@ public class ToolFrameSelectionManager {
 		if (false == event.isControlKeyDown()) {
 			this._worksheetView.clearToolFrameSelection();
 		}
-		final Point2D initialPosition = ElementUtils.relativePosition(event,
-				this._container.getElement());
-		ElementUtils.setElementSize(this._selectionPanel.getElement(),
-				new Point2D(0, 0));
-		ElementUtils.setElementPosition(initialPosition,
-				this._selectionPanel.getElement());
+		final Point2D initialPosition = 
+			ElementUtils.relativePosition(event, this._container.getElement());
+		ElementUtils.setElementRectangle(this._selectionPanel.getElement(),
+				new Rectangle(initialPosition.getX(), initialPosition.getY(), 0));
 
 		final HashSet<CanvasToolFrame> newlySelectedFrames = new HashSet<CanvasToolFrame>();
 		this._selectionPanel.setVisible(true);
@@ -58,26 +58,12 @@ public class ToolFrameSelectionManager {
 		Handler<Point2D> mouseMoveHandler = new Handler<Point2D>() {
 			@Override
 			public void onFire(Point2D arg) {
-				Point2D pos = new Point2D(initialPosition.getX(),
-						initialPosition.getY());
-				Point2D size = arg.minus(initialPosition); 
+				Element selectionElement = _selectionPanel.getElement();
+				ElementUtils.setElementRectangle(selectionElement,
+						RectangleUtils.Build(initialPosition, arg));
 
-				if (arg.getX() < initialPosition.getX()) {
-					pos.setX(arg.getX());
-					size.setX(initialPosition.getX() - arg.getX());
-				}
-				if (arg.getY() < initialPosition.getY()) {
-					pos.setY(arg.getY());
-					size.setY(initialPosition.getY() - arg.getY());
-				}
-
-				ElementUtils.setElementPosition(pos,
-						_selectionPanel.getElement());
-				ElementUtils.setElementSize(_selectionPanel.getElement(), size);
-
-				selectFramesByRectangle(
-						ElementUtils.getElementOffsetRectangle(_selectionPanel
-								.getElement()), newlySelectedFrames);
+				selectFramesByRectangle(ElementUtils.getElementOffsetRectangle(
+						selectionElement), newlySelectedFrames);
 			}
 		};
 		Handler<Point2D> stopHandler = new Handler<Point2D>() {
@@ -104,8 +90,7 @@ public class ToolFrameSelectionManager {
 
 	private void hideSelectionPanel() {
 		this._selectionPanel.setVisible(false);
-		ElementUtils.setElementSize(this._selectionPanel.getElement(),
-				Point2D.zero);
+		ElementUtils.setElementSize(this._selectionPanel.getElement(), Point2D.zero);
 	}
 
 	private void selectFramesByRectangle(Rectangle selectionRectangle,
