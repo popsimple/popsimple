@@ -46,6 +46,7 @@ import com.project.canvas.client.canvastools.base.CanvasToolFactory;
 import com.project.canvas.client.canvastools.base.CanvasToolFrame;
 import com.project.canvas.client.canvastools.base.ToolboxItem;
 import com.project.canvas.client.resources.CanvasResources;
+import com.project.canvas.client.shared.BackgroundImageSetter;
 import com.project.canvas.client.shared.ElementUtils;
 import com.project.canvas.client.shared.RegistrationsManager;
 import com.project.canvas.client.shared.events.SimpleEvent;
@@ -350,8 +351,10 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         if (value.backgroundImageURL == null || value.backgroundImageURL.trim().isEmpty()) {
             style.setBackgroundImage("");
         } else {
-            ElementUtils.SetBackroundImage(this.worksheetBackground.getElement(),
-                    value.backgroundImageURL, CanvasResources.INSTANCE.imageUnavailable().getURL());
+            BackgroundImageSetter imageSetter =
+                new BackgroundImageSetter(this.worksheetBackground.getElement());
+            imageSetter.SetBackroundImage(value.backgroundImageURL,
+                    CanvasResources.INSTANCE.imageUnavailable().getURL());
         }
         style.setProperty("backgroundRepeat", value.backgroundRepeat);
         style.setProperty("backgroundSize", value.backgroundSize);

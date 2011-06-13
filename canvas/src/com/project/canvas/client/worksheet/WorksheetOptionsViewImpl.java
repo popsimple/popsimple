@@ -16,6 +16,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.resources.CanvasResources;
+import com.project.canvas.client.shared.BackgroundImageSetter;
 import com.project.canvas.client.shared.ElementUtils;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.worksheet.interfaces.WorksheetOptionsView;
@@ -94,7 +95,8 @@ public class WorksheetOptionsViewImpl extends Composite implements WorksheetOpti
     }
 
     protected void previewImage() {
-        ElementUtils.SetBackroundImage(imagePreview.getElement(), this.urlTextBox.getText().trim(),
+        BackgroundImageSetter imageSetter = new BackgroundImageSetter(imagePreview.getElement());
+        imageSetter.SetBackroundImage(this.urlTextBox.getText().trim(),
                 CanvasResources.INSTANCE.imageUnavailable().getURL(), false);
     }
 

@@ -150,47 +150,17 @@ public abstract class ElementUtils {
 		setElementSize(element, rectangle.getSize());
     }
 
-    public static final void SetBackroundImage(final Element element, String imageUrl, boolean autoSize)
+    public static void SetBackgroundImage(Element element, Image image, boolean autoSize)
     {
-        SetBackroundImage(element, imageUrl, "", autoSize);
-    }
-
-    public static final void SetBackroundImage(final Element element, final String imageUrl,
-            final String errorImageUrl)
-    {
-        SetBackroundImage(element, imageUrl, errorImageUrl, false);
-    }
-
-    public static final void SetBackroundImage(final Element element, final String imageUrl,
-            final String errorImageUrl, final boolean autoSize)
-    {
-        ImageLoader imageLoader = new ImageLoader();
-        final RegistrationsManager regsManager = new RegistrationsManager();
-        if (false == StringUtils.isEmptyOrNull(errorImageUrl))
+        if (autoSize)
         {
-            regsManager.add(imageLoader.addErrorHandler(new SimpleEvent.Handler<Void>() {
-                @Override
-                public void onFire(Void arg) {
-                    regsManager.clear();
-                    SetBackroundImage(element, errorImageUrl, autoSize);
-                }}));
-        }
-        regsManager.add(imageLoader.addLoadHandler(new SimpleEvent.Handler<Image>(){
-            @Override
-            public void onFire(Image arg) {
-                if (autoSize)
-                {
-                    Point2D imageSize = new Point2D(arg.getWidth(), arg.getHeight());
-                    // getWidth/getHeight return zero if the image size is not known. So don't set it.
-                    if (false == imageSize.equals(Point2D.zero)) {
-                        ElementUtils.setElementSize(element, imageSize);
-                    }
-                }
-                regsManager.clear();
-                element.getStyle().setBackgroundImage(
-                        StyleUtils.BuildBackgroundUrl(imageUrl));
+            Point2D imageSize = new Point2D(image.getWidth(), image.getHeight());
+            // getWidth/getHeight return zero if the image size is not known. So don't set it.
+            if (false == imageSize.equals(Point2D.zero)) {
+                ElementUtils.setElementSize(element, imageSize);
             }
-        }));
-        imageLoader.Load(imageUrl);
+        }
+        element.getStyle().setBackgroundImage(
+                StyleUtils.BuildBackgroundUrl(image.getUrl()));
     }
 }
