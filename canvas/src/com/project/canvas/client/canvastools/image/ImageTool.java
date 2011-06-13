@@ -7,19 +7,17 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.LoadEvent;
-import com.google.gwt.event.dom.client.LoadHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Image;
 import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.canvastools.base.CanvasToolCommon;
 import com.project.canvas.client.canvastools.media.MediaToolOptions;
 import com.project.canvas.client.resources.CanvasResources;
+import com.project.canvas.client.shared.ElementUtils;
 import com.project.canvas.client.shared.RegistrationsManager;
 import com.project.canvas.client.shared.WidgetUtils;
 import com.project.canvas.client.shared.events.SimpleEvent;
@@ -32,33 +30,30 @@ import com.project.canvas.shared.data.ElementData;
 import com.project.canvas.shared.data.MediaData;
 import com.project.canvas.shared.data.Point2D;
 
-public class ImageTool extends FlowPanel implements CanvasTool<MediaData> 
+public class ImageTool extends FlowPanel implements CanvasTool<MediaData>
 {
     private final SimpleEvent<MouseEvent<?>> moveStartEvent = new SimpleEvent<MouseEvent<?>>();
     private final RegistrationsManager registrationsManager = new RegistrationsManager();
 
     private MediaData data = null;
-    private final Image image = new Image();
     private MediaToolOptions mediaToolOptionsWidget;
     private DialogBox imageSelectionDialog;
 	private boolean optionsWidgetInited = false;
 	private ArrayList<ImageSearchProvider> searchProviders = new ArrayList<ImageSearchProvider>();
     private boolean viewMode;
-    private String imageUrl;
+    private String _imageUrl;
 
-	public ImageTool(Collection<ImageSearchProvider> imageSearchProviders) 
+	public ImageTool(Collection<ImageSearchProvider> imageSearchProviders)
     {
         CanvasToolCommon.initCanvasToolWidget(this);
-        
+
         searchProviders.addAll(imageSearchProviders);
 
         WidgetUtils.disableDrag(this);
         super.addStyleName(CanvasResources.INSTANCE.main().imageBox());
         super.addStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
-        this.add(this.image);
-        this.image.setVisible(false);
     }
-    
+
     @Override
     public void bind() {
         super.setTitle("Click for image options; Control-click to drag");
@@ -67,7 +62,7 @@ public class ImageTool extends FlowPanel implements CanvasTool<MediaData>
 
     private void reRegisterHandlers() {
         registrationsManager.clear();
-        
+
         registrationsManager.add(this.addDomHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -106,7 +101,7 @@ public class ImageTool extends FlowPanel implements CanvasTool<MediaData>
 		this.imageSelectionDialog = new DialogWithZIndex(false, true);
         imageSelectionDialog.setGlassEnabled(true);
         imageSelectionDialog.setText("Image options");
-        
+
 		this.mediaToolOptionsWidget = new MediaToolOptions();
         imageSelectionDialog.add(mediaToolOptionsWidget);
 
@@ -140,45 +135,21 @@ public class ImageTool extends FlowPanel implements CanvasTool<MediaData>
         }
         // Make sure we don't set arbitrary html or invalid urls
         url = UrlUtils.encodeOnce(url);
-        if (autoSize) {
-            prepareAutoSizeHandler(url);
-        }
-        if (autoSize || (false == UrlUtils.areEquivalent(url, imageUrl))) {
-            imageUrl = url;
-            getElement().getStyle().setBackgroundImage("url(\"" + url + "\")");
+        if (autoSize || (false == UrlUtils.areEquivalent(url, _imageUrl))) {
+            _imageUrl = url;
+            ElementUtils.SetBackroundImage(this.getElement(), _imageUrl,
+                    CanvasResources.INSTANCE.imageUnavailable().getURL(), autoSize);
         }
         super.removeStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
         super.addStyleName(CanvasResources.INSTANCE.main().imageToolSet());
     }
 
-    private void prepareAutoSizeHandler(String url) {
-        final RegistrationsManager regs = new RegistrationsManager();
-        final ImageTool that = this;
-        regs.add(this.image.addLoadHandler(new LoadHandler() {
-            @Override
-            public void onLoad(LoadEvent event) {
-                Point2D imageSize = new Point2D(image.getWidth(), image.getHeight());
-                // getWidth/getHeight return zero if the image size is not known. So don't set it. 
-                if (false == imageSize.equals(Point2D.zero)) {
-                    WidgetUtils.setWidgetSize(that, imageSize);
-                }
-                image.setUrl(""); // don't display the image in the <img>,
-                                  // only as background
-                image.setVisible(false);
-                regs.clear();
-            }
-        }));
-        Image.prefetch(url);
-        image.setVisible(true);
-        // Set the image url in order for the image element to auto size. 
-        image.setUrl(url); // will be set to "" after autosize
-    }
-
     @Override
     public MediaData getValue() {
-        String imageCss = this.getElement().getStyle().getBackgroundImage();
-        // TIP: use this page to check java regex: http://www.regexplanet.com/simple/index.html
-        this.data.url = imageCss.trim().replaceAll("^(url\\(\\\"?)(.*?)(\\\"?\\))$", "$2");
+//        String imageCss = this.getElement().getStyle().getBackgroundImage();
+//        // TIP: use this page to check java regex: http://www.regexplanet.com/simple/index.html
+//        this.data.url = imageCss.trim().replaceAll("^(url\\(\\\"?)(.*?)(\\\"?\\))$", "$2");
+        this.data.url = this._imageUrl;
         return this.data;
     }
 

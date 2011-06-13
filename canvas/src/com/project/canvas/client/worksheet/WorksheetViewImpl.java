@@ -90,7 +90,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
     @UiField
     FlowPanel worksheetPanel;
-    
+
     @UiField
     HTMLPanel selectionPanel;
 
@@ -124,14 +124,14 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         this._toolFrameTransformer = new ToolFrameTransformerImpl(
                 worksheetPanel, dragPanel, stopOperationEvent);
         this.dragPanel.setVisible(false);
-        
+
         this._toolFrameSelectionManager = new ToolFrameSelectionManager(
                 this, worksheetPanel, dragPanel, selectionPanel, stopOperationEvent);
         this.selectionPanel.setVisible(false);
-        
+
         optionsDialog.setText("Worksheet options");
         optionsDialog.add(this.optionsWidget);
-        
+
         this.addRegistrations();
         this.setViewMode(false);
     }
@@ -160,7 +160,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     public HandlerRegistration addStopOperationHandler(Handler<Void> handler) {
         return stopOperationEvent.addHandler(handler);
     }
-    
+
     @Override
     public HandlerRegistration addToolCreationRequestHandler(Handler<ToolCreationRequest> handler) {
         return toolCreationRequestEvent.addHandler(handler);
@@ -170,7 +170,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     public HandlerRegistration addToolFrameClickHandler(Handler<CanvasToolFrame> handler) {
         return this.toolFrameClickEvent.addHandler(handler);
     }
-    
+
     @Override
 	public HandlerRegistration addRemoveToolsRequest(Handler<ArrayList<CanvasToolFrame>> handler) {
 		return this.removeToolsRequest.addHandler(handler);
@@ -239,10 +239,10 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 				_toolFrameSelectionManager.handleToolFrameSelection(toolFrame);
 			}
 		}));
-			
+
         this.worksheetPanel.add(toolFrame);
     }
-    
+
     public void ensureToolFrameSelected(CanvasToolFrame toolFrame)
     {
     	if (this.isToolFrameSelected(toolFrame))
@@ -350,7 +350,8 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         if (value.backgroundImageURL == null || value.backgroundImageURL.trim().isEmpty()) {
             style.setBackgroundImage("");
         } else {
-            style.setBackgroundImage("url(" + value.backgroundImageURL + ")");
+            ElementUtils.SetBackroundImage(this.worksheetBackground.getElement(),
+                    value.backgroundImageURL, CanvasResources.INSTANCE.imageUnavailable().getURL());
         }
         style.setProperty("backgroundRepeat", value.backgroundRepeat);
         style.setProperty("backgroundSize", value.backgroundSize);
@@ -421,7 +422,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
             }
         });
     }
-    
+
     private void onKeyDown(NativeEvent event)
     {
     	//TODO: Use some sort of KeyMapper.

@@ -27,7 +27,7 @@ public interface CanvasResources extends ClientBundle {
 
     @Source("com/project/canvas/client/resources/images/bitmaps/resize.png")
     ImageResource resizeIcon();
-    
+
     @Source("com/project/canvas/client/resources/images/bitmaps/rotate.png")
     ImageResource rotateIcon();
 
@@ -60,19 +60,22 @@ public interface CanvasResources extends ClientBundle {
 
     @Source("com/project/canvas/client/resources/images/bitmaps/robot_32.png")
     ImageResource robotIcon32();
-    
+
     @Source("com/project/canvas/client/resources/images/bitmaps/bingLogo_32.png")
     ImageResource bingLogo32();
-    
+
     @Source("com/project/canvas/client/resources/images/bitmaps/flickrLogo_32.png")
     ImageResource flickrLogo32();
-    
+
     @Source("com/project/canvas/client/resources/images/bitmaps/youtubeLogo_32.png")
     ImageResource youtubeLogo32();
-    
+
     @Source("com/project/canvas/client/resources/images/bitmaps/videoIcon_48.png")
     ImageResource toolboxVideoIcon();
 
     @Source("com/project/canvas/client/resources/images/bitmaps/map_48.png")
     ImageResource mapIcon48();
+
+    @Source("com/project/canvas/client/resources/images/bitmaps/image_unavailable.png")
+    ImageResource imageUnavailable();
 }
