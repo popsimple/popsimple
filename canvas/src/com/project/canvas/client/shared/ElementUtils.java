@@ -6,6 +6,9 @@ import com.google.gwt.animation.client.Animation;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.MouseEvent;
+import com.google.gwt.user.client.ui.Image;
+import com.project.canvas.client.shared.events.SimpleEvent;
+import com.project.canvas.shared.StringUtils;
 import com.project.canvas.shared.data.Point2D;
 import com.project.canvas.shared.data.Rectangle;
 
@@ -23,12 +26,12 @@ public abstract class ElementUtils {
                              element.getAbsoluteRight(), element.getAbsoluteBottom(),
                              getRotation(element));
     }
-    
+
     public static Rectangle getElementOffsetRectangle(Element element) {
         // remember that css coordinates are from top-left of screen
         // and css rotation is clockwise
         return new Rectangle(element.getOffsetLeft(),  element.getOffsetTop(),
-                element.getOffsetLeft() + element.getOffsetWidth(), 
+                element.getOffsetLeft() + element.getOffsetWidth(),
                 element.getOffsetTop() + element.getOffsetHeight(),
                              getRotation(element));
     }
@@ -44,7 +47,7 @@ public abstract class ElementUtils {
         }
         rotations.put(element, degrees);
     }
-    
+
     public static void setTransformOriginTopLeft(Element element) {
     	String originValue = "0 0";
         setTransformOrigin(element, originValue);
@@ -57,11 +60,11 @@ public abstract class ElementUtils {
         element.getStyle().setProperty("MsTransformOrigin", originValue);
         cssSetMSProperty(element, "transform-origin", originValue);
 	}
-    
-    public static void resetTransformOrigin(Element element) { 
+
+    public static void resetTransformOrigin(Element element) {
         setTransformOrigin(element, "");
     }
-    
+
 
     public static int getRotation(Element element) {
         Integer rotation = rotations.get(element);
@@ -76,14 +79,14 @@ public abstract class ElementUtils {
 	   element.getStyle().setProperty("MsTransform", transformValue);
 	   cssSetMSProperty(element, "transform", transformValue);
    	}
-    
+
     private static final native void cssSetMSProperty(Element element, String name, String value) /*-{
         element.style['-ms-' + name] = value;
     }-*/;
 
 	public static Point2D relativePosition(MouseEvent<?> event, Element elem) {
 	    return new Point2D(event.getRelativeX(elem), event.getRelativeY(elem));
-	} 
+	}
 
     private static class PositionAnimation extends Animation {
         private Point2D pos;
@@ -104,7 +107,7 @@ public abstract class ElementUtils {
             setElementPosition(element, curPos);
         }
     };
-    
+
     public static void setElementPosition(final Element element, final Point2D pos, int animationDuration) {
         final Point2D oldPos = getElementOffsetPosition(element);
         PositionAnimation anim = new PositionAnimation(oldPos, pos, element);
@@ -119,31 +122,75 @@ public abstract class ElementUtils {
 	public static Point2D getElementOffsetPosition(Element element) {
     	return new Point2D(element.getOffsetLeft(), element.getOffsetTop());
     }
-	
+
     public static Point2D getElementAbsolutePosition(Element element) {
     	return new Point2D(element.getAbsoluteLeft(), element.getAbsoluteTop());
     }
-    
+
     /**
-     * Note: this size includes padding, scroll bars (and margin?) of the element. 
+     * Note: this size includes padding, scroll bars (and margin?) of the element.
      * See https://developer.mozilla.org/en/Determining_the_dimensions_of_elements
      */
 	public static Point2D getElementOffsetSize(Element element) {
 		return new Point2D(element.getOffsetWidth(), element.getOffsetHeight());
 	}
-	
+
     public static Point2D getElementClientSize(Element element) {
         return new Point2D(element.getClientWidth(), element.getClientHeight());
     }
-    
+
     public static void setElementSize(Element element, Point2D size)
     {
         element.getStyle().setWidth(size.getX(), Unit.PX);
         element.getStyle().setHeight(size.getY(), Unit.PX);
     }
-    
+
     public static void setElementRectangle(Element element, Rectangle rectangle) {
 		setElementPosition(element, new Point2D(rectangle.getLeft(), rectangle.getTop()));
 		setElementSize(element, rectangle.getSize());
+    }
+
+    public static final void SetBackroundImage(final Element element, String imageUrl, boolean autoSize)
+    {
+        SetBackroundImage(element, imageUrl, "", autoSize);
+    }
+
+    public static final void SetBackroundImage(final Element element, final String imageUrl,
+            final String errorImageUrl)
+    {
+        SetBackroundImage(element, imageUrl, errorImageUrl, false);
+    }
+
+    public static final void SetBackroundImage(final Element element, final String imageUrl,
+            final String errorImageUrl, final boolean autoSize)
+    {
+        ImageLoader imageLoader = new ImageLoader();
+        final RegistrationsManager regsManager = new RegistrationsManager();
+        if (false == StringUtils.isEmptyOrNull(errorImageUrl))
+        {
+            regsManager.add(imageLoader.addErrorHandler(new SimpleEvent.Handler<Void>() {
+                @Override
+                public void onFire(Void arg) {
+                    regsManager.clear();
+                    SetBackroundImage(element, errorImageUrl, autoSize);
+                }}));
+        }
+        regsManager.add(imageLoader.addLoadHandler(new SimpleEvent.Handler<Image>(){
+            @Override
+            public void onFire(Image arg) {
+                if (autoSize)
+                {
+                    Point2D imageSize = new Point2D(arg.getWidth(), arg.getHeight());
+                    // getWidth/getHeight return zero if the image size is not known. So don't set it.
+                    if (false == imageSize.equals(Point2D.zero)) {
+                        ElementUtils.setElementSize(element, imageSize);
+                    }
+                }
+                regsManager.clear();
+                element.getStyle().setBackgroundImage(
+                        StyleUtils.BuildBackgroundUrl(imageUrl));
+            }
+        }));
+        imageLoader.Load(imageUrl);
     }
 }
