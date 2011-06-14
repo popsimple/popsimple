@@ -12,6 +12,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
@@ -427,7 +428,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
             public void onPreviewNativeEvent(NativePreviewEvent event) {
                 NativeEvent nativeEvent = event.getNativeEvent();
                 String type = nativeEvent.getType();
-                if (type.equals("keydown")) {
+                if (type.equals(KeyDownEvent.getType().getName())){
                     onKeyDown(nativeEvent);
                 }
             }
@@ -435,28 +436,53 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         this.copyButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                copyToolsRequest.dispatch(new ArrayList<CanvasToolFrame>(selectedTools));
+                onCopyToolsRequest();
 
             }
         });
         this.pasteButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                pasteToolsRequest.dispatch(null);
+                onPasteToolsRequest();
 
             }
         });
     }
+    
+    private void onCopyToolsRequest()
+    {
+    	this.copyToolsRequest.dispatch(new ArrayList<CanvasToolFrame>(selectedTools));
+    }
+    
+    private void onPasteToolsRequest()
+    {
+    	this.pasteToolsRequest.dispatch(null);
+    }
 
     private void onKeyDown(NativeEvent event) {
         // TODO: Use some sort of KeyMapper.
-        switch (event.getKeyCode()) {
+    	switch (event.getKeyCode()) {
         case KeyCodes.KEY_ESCAPE:
             this.stopOperationEvent.dispatch(null);
             break;
         case KeyCodes.KEY_DELETE:
             this.removeToolsRequest.dispatch(new ArrayList<CanvasToolFrame>(this.selectedTools));
             break;
+//TODO: Can't just use Ctrl-c and Ctrl-v since it captures all the keydown events on the page
+//TODO: also those that are pressed inside a tool (such as TextEdit). we need to find a way
+//TODO: to distinct the key presses. (Save for Delete by the way).
+//        case (int)'C':
+//        	if (event.getCtrlKey())
+//        	{
+//        		this.onCopyToolsRequest();
+//        	}
+//        	break;
+//        case (int)'V':
+//        	if (event.getCtrlKey())
+//        	{
+//        		this.onPasteToolsRequest();
+//        	}
+//        	break;
         }
     }
 
