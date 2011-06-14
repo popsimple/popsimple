@@ -2,6 +2,7 @@ package com.project.canvas.client.resources;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.DataResource;
 import com.google.gwt.resources.client.ImageResource;
 
 public interface CanvasResources extends ClientBundle {
@@ -78,4 +79,7 @@ public interface CanvasResources extends ClientBundle {
 
     @Source("com/project/canvas/client/resources/images/bitmaps/image_unavailable.png")
     ImageResource imageUnavailable();
+
+    @Source("com/project/canvas/client/resources/images/bitmaps/loadCircle.gif")
+    DataResource  imageLoadIcon();
 }

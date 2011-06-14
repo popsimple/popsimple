@@ -17,7 +17,6 @@ import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.canvastools.base.CanvasToolCommon;
 import com.project.canvas.client.canvastools.media.MediaToolOptions;
 import com.project.canvas.client.resources.CanvasResources;
-import com.project.canvas.client.shared.BackgroundImageSetter;
 import com.project.canvas.client.shared.ElementUtils;
 import com.project.canvas.client.shared.RegistrationsManager;
 import com.project.canvas.client.shared.WidgetUtils;
@@ -138,12 +137,17 @@ public class ImageTool extends FlowPanel implements CanvasTool<MediaData>
         url = UrlUtils.encodeOnce(url);
         if (autoSize || (false == UrlUtils.areEquivalent(url, _imageUrl))) {
             _imageUrl = url;
-            BackgroundImageSetter imageSetter = new BackgroundImageSetter(this.getElement());
-            imageSetter.SetBackroundImage(_imageUrl,
-                    CanvasResources.INSTANCE.imageUnavailable().getURL(), autoSize);
+            final ImageTool that = this;
+            WidgetUtils.SetBackgroundImageAsync(this, _imageUrl,
+                    CanvasResources.INSTANCE.imageUnavailable().getURL(), autoSize,
+                    CanvasResources.INSTANCE.main().imageLoadingStyle(),
+                    new SimpleEvent.Handler<Void>() {
+                        @Override
+                        public void onFire(Void arg) {
+                            that.removeStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
+                            that.addStyleName(CanvasResources.INSTANCE.main().imageToolSet());
+                        }}, new SimpleEvent.EmptyHandler<Void>());
         }
-        super.removeStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
-        super.addStyleName(CanvasResources.INSTANCE.main().imageToolSet());
     }
 
     @Override

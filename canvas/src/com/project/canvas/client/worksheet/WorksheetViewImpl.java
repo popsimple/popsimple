@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -16,8 +15,6 @@ import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
-import com.google.gwt.event.dom.client.MouseMoveEvent;
-import com.google.gwt.event.dom.client.MouseMoveHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
@@ -46,9 +43,9 @@ import com.project.canvas.client.canvastools.base.CanvasToolFactory;
 import com.project.canvas.client.canvastools.base.CanvasToolFrame;
 import com.project.canvas.client.canvastools.base.ToolboxItem;
 import com.project.canvas.client.resources.CanvasResources;
-import com.project.canvas.client.shared.BackgroundImageSetter;
 import com.project.canvas.client.shared.ElementUtils;
 import com.project.canvas.client.shared.RegistrationsManager;
+import com.project.canvas.client.shared.WidgetUtils;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.shared.events.SimpleEvent.Handler;
 import com.project.canvas.client.shared.widgets.DialogWithZIndex;
@@ -344,21 +341,30 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     }
 
     @Override
-    public void setOptions(CanvasPageOptions value) {
+    public void setOptions(final CanvasPageOptions value) {
         this.pageOptions = value;
         optionsWidget.setValue(this.pageOptions);
-        Style style = this.worksheetBackground.getElement().getStyle();
+        final Style style = this.worksheetBackground.getElement().getStyle();
+        style.clearProperty("backgroundRepeat");
+        style.clearProperty("backgroundSize");
+        style.clearProperty("backgroundPosition");
+
         if (value.backgroundImageURL == null || value.backgroundImageURL.trim().isEmpty()) {
             style.setBackgroundImage("");
         } else {
-            BackgroundImageSetter imageSetter =
-                new BackgroundImageSetter(this.worksheetBackground.getElement());
-            imageSetter.SetBackroundImage(value.backgroundImageURL,
-                    CanvasResources.INSTANCE.imageUnavailable().getURL());
+            WidgetUtils.SetBackgroundImageAsync(this.worksheetBackground,
+                    value.backgroundImageURL,
+                    CanvasResources.INSTANCE.imageUnavailable().getURL(), false,
+                    CanvasResources.INSTANCE.main().imageLoadingStyle(),
+                    new SimpleEvent.Handler<Void>() {
+                        @Override
+                        public void onFire(Void arg) {
+                            style.setProperty("backgroundRepeat", value.backgroundRepeat);
+                            style.setProperty("backgroundSize", value.backgroundSize);
+                            style.setProperty("backgroundPosition", value.backgroundPosition);
+                        }
+                    }, new SimpleEvent.EmptyHandler<Void>());
         }
-        style.setProperty("backgroundRepeat", value.backgroundRepeat);
-        style.setProperty("backgroundSize", value.backgroundSize);
-        style.setProperty("backgroundPosition", value.backgroundPosition);
     }
 
     @Override
