@@ -30,6 +30,7 @@ import com.project.canvas.client.shared.RegistrationsManager;
 import com.project.canvas.client.shared.WidgetUtils;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.shared.events.SimpleEvent.Handler;
+import com.project.canvas.shared.data.ElementData;
 import com.project.canvas.shared.data.Point2D;
 
 public class CanvasToolFrame extends Composite implements Focusable, HasFocusHandlers, HasBlurHandlers {
@@ -41,10 +42,10 @@ public class CanvasToolFrame extends Composite implements Focusable, HasFocusHan
 
     @UiField
     FocusPanel focusPanel;
-    
+
     @UiField
     HTMLPanel frameHeader;
-    
+
     @UiField
     HTMLPanel toolPanel;
 
@@ -80,10 +81,10 @@ public class CanvasToolFrame extends Composite implements Focusable, HasFocusHan
     protected final SimpleEvent<Void> selectRequest = new SimpleEvent<Void>();
 
     protected final RegistrationsManager frameRegs = new RegistrationsManager();
-    
+
 	protected Integer rotation;
 	private boolean viewMode = false;
-	
+
     public CanvasToolFrame(CanvasTool<?> canvasTool) {
         initWidget(uiBinder.createAndBindUi(this));
         //WidgetUtils.stopClickPropagation(this);
@@ -95,9 +96,9 @@ public class CanvasToolFrame extends Composite implements Focusable, HasFocusHan
         WidgetUtils.stopClickPropagation(this.closeLink.asWidget());
         WidgetUtils.stopClickPropagation(this.moveBackLink.asWidget());
         WidgetUtils.stopClickPropagation(this.moveFrontLink.asWidget());
-        
+
         NativeUtils.disableTextSelectInternal(this.buttonsPanel.getElement(), true);
-        
+
         this.rotatePanel.setVisible(tool.canRotate());
         this.resizePanel.setVisible(tool.getResizeMode() != ResizeMode.NONE);
     }
@@ -153,13 +154,13 @@ public class CanvasToolFrame extends Composite implements Focusable, HasFocusHan
 			    onToolFrameSelected(event);
 			}}, MouseDownEvent.getType()));
 	}
-	
+
 	private void onToolFrameSelected(MouseDownEvent event)
 	{
 	    this.selectRequest.dispatch(null);
 	    focusPanel.setFocus(true); // take away focus from any others
 	}
-	
+
 	private void onHeaderMouseDown(MouseDownEvent event)
 	{
 	    moveStartRequest.dispatch(event);
@@ -187,8 +188,8 @@ public class CanvasToolFrame extends Composite implements Focusable, HasFocusHan
     	}
     	this.tool.setViewMode(this.viewMode);
     }
-    
-    public CanvasTool<?> getTool() {
+
+    public CanvasTool<? extends ElementData> getTool() {
         return this.tool;
     }
 
@@ -215,13 +216,13 @@ public class CanvasToolFrame extends Composite implements Focusable, HasFocusHan
     public HandlerRegistration addRotateStartRequestHandler(SimpleEvent.Handler<MouseEvent<?>> handler) {
         return this.rotateStartRequest.addHandler(handler);
     }
-    
-    public HandlerRegistration addMouseDownHandler(MouseDownHandler handler) 
+
+    public HandlerRegistration addMouseDownHandler(MouseDownHandler handler)
     {
         return this.addDomHandler(handler, MouseDownEvent.getType());
     }
-    
-    public HandlerRegistration addMouseUpHandler(MouseUpHandler handler) 
+
+    public HandlerRegistration addMouseUpHandler(MouseUpHandler handler)
     {
         return this.addDomHandler(handler, MouseUpEvent.getType());
     }

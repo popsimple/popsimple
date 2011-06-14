@@ -9,6 +9,8 @@
 	            <g:Button  ui:field="loadButton" addStyleNames="{res.main.worksheetRightButton}">Load</g:Button>
 		        <g:Button  ui:field="saveButton" addStyleNames="{res.main.worksheetRightButton}">Save</g:Button>
 	            <g:Button  ui:field="viewButton" addStyleNames="{res.main.worksheetRightButton}">Preview</g:Button>
+	            <g:Button  ui:field="copyButton" addStyleNames="{res.main.worksheetRightButton}">Copy</g:Button>
+	            <g:Button  ui:field="pasteButton" addStyleNames="{res.main.worksheetRightButton}">Paste</g:Button>
             </g:HTMLPanel>
 			Worksheet
             <g:HTMLPanel addStyleNames="{res.main.worksheetOptions}">
@@ -21,4 +23,4 @@
 		</g:FlowPanel>
         <g:HTMLPanel ui:field="dragPanel" addStyleNames="{res.main.worksheetDragPanel}"></g:HTMLPanel>
 	</g:HTMLPanel>
-</ui:UiBinder> 
+</ui:UiBinder>

@@ -47,7 +47,7 @@ public interface WorksheetView extends IsWidget
     /**
      * Fired when the user requests to load a new page or reload the existing
      * page
-     * 
+     *
      * @param handler
      *            - the Long (id) argument will be null if the user wants to
      *            reload existing page.
@@ -65,16 +65,20 @@ public interface WorksheetView extends IsWidget
 
     /**
      * The handler will be fired when the user clicks the worksheet, and gives the tool frame
-     * clicked or no tool frame (null) if none are in the region of the click. 
+     * clicked or no tool frame (null) if none are in the region of the click.
      * @param handler
      * @return
      */
     HandlerRegistration addToolFrameClickHandler(SimpleEvent.Handler<CanvasToolFrame> handler);
-    
+
     HandlerRegistration addRemoveToolsRequest(SimpleEvent.Handler<ArrayList<CanvasToolFrame>> handler);
-    
+
+    HandlerRegistration addCopyToolHandler(SimpleEvent.Handler<ArrayList<CanvasToolFrame>> handler);
+
+    HandlerRegistration addPasteToolHandler(SimpleEvent.Handler<Void> handler);
+
     /**
-     * Adds a new toolFrame to the view. The view will call setToolFrameTransform by itself then the frame is attached and ready to transform. 
+     * Adds a new toolFrame to the view. The view will call setToolFrameTransform by itself then the frame is attached and ready to transform.
      * @param toolFrame
      * @param transform
      * @param additionalOffset
@@ -98,15 +102,15 @@ public interface WorksheetView extends IsWidget
     void setViewMode(boolean isViewMode);
 
     void setToolFrameTransform(CanvasToolFrame toolFrame, Transform2D transform, Point2D additionalOffset);
-    
+
     void selectToolFrame(CanvasToolFrame widget);
-    
+
     void unSelectToolFrame(CanvasToolFrame widget);
-    
+
     boolean isToolFrameSelected(CanvasToolFrame toolFrame);
-    
+
     void clearToolFrameSelection();
-    
+
     ArrayList<CanvasToolFrame> getToolFrames();
-    
+
 }

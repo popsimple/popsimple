@@ -7,9 +7,9 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class Transform2D implements Serializable, IsSerializable {
     private static final long serialVersionUID = 1L;
-    
+
     @Embedded
-    public Point2D translation;
+    public Point2D translation = new Point2D();
     @Embedded
 	public Point2D size; // could be "null" which means no specific size is set.
     public int rotation; // degrees, around the center of the object

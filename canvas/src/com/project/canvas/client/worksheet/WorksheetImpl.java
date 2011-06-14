@@ -45,6 +45,7 @@ public class WorksheetImpl implements Worksheet
     private final HashMap<CanvasTool<?>, ToolInstanceInfo> toolInfoMap = new HashMap<CanvasTool<?>, ToolInstanceInfo>();
 	private CanvasTool<?> activeToolInstance;
     private ToolboxItem activeToolboxItem;
+    private ArrayList<ElementData> _toolClipboard = new ArrayList<ElementData>();
 
     public WorksheetImpl(WorksheetView view)
     {
@@ -271,6 +272,25 @@ public class WorksheetImpl implements Worksheet
                 }));
             }
         });
+        view.addCopyToolHandler(new Handler<ArrayList<CanvasToolFrame>>() {
+            @Override
+            public void onFire(ArrayList<CanvasToolFrame> arg) {
+                _toolClipboard.clear();
+                for (CanvasToolFrame toolFrame : arg)
+                {
+                    _toolClipboard.add(toolFrame.getTool().getValue());
+                }
+            }
+        });
+        view.addPasteToolHandler(new Handler<Void>() {
+            @Override
+            public void onFire(Void arg) {
+                for (ElementData data : _toolClipboard)
+                {
+                    createToolInstanceFromData(data);
+                }
+            }
+        });
         view.addOptionsUpdatedHandler(new Handler<CanvasPageOptions>() {
             @Override
             public void onFire(CanvasPageOptions arg)
@@ -399,7 +419,7 @@ public class WorksheetImpl implements Worksheet
     		this.removeToolInstance(toolFrame);
     	}
     }
-    
+
     private void removeToolInstance(CanvasToolFrame toolFrame)
     {
         ZIndexAllocator.deallocateZIndex(toolFrame.getElement());
