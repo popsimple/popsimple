@@ -4,8 +4,9 @@ import java.io.Serializable;
 
 import com.google.code.twig.annotation.Embedded;
 import com.google.gwt.user.client.rpc.IsSerializable;
+import com.project.canvas.shared.contracts.ICloneable;
 
-public class Transform2D implements Serializable, IsSerializable {
+public class Transform2D implements Serializable, IsSerializable, ICloneable {
     private static final long serialVersionUID = 1L;
 
     @Embedded
@@ -20,4 +21,19 @@ public class Transform2D implements Serializable, IsSerializable {
 		this.rotation = rotation;
 	}
     public Transform2D() {}
+	
+    @Override
+	public Object createInstance() {
+		return new Transform2D();
+	}
+    
+    @Override
+	public void copyTo(Object object) {
+    	Transform2D copy = (Transform2D)object;
+    	copy.translation = new Point2D(this.translation.getX(), this.translation.getY());
+		if (null != this.size)
+		{
+			copy.size = new Point2D(this.size.getX(), this.size.getY());
+		}
+	}
 }

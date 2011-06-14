@@ -13,4 +13,17 @@ public class MediaData extends ElementData {
     private static final long serialVersionUID = 1L;
 
     public String url;
+    
+    @Override
+    public ElementData createInstance() {
+    	return new MediaData();
+    }
+    
+    @Override
+    public void copyTo(Object object) {
+    	super.copyTo(object);
+    	
+    	MediaData copy = (MediaData)object;
+    	copy.url = this.url;
+    }
 }

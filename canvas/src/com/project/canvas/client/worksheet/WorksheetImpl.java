@@ -27,6 +27,7 @@ import com.project.canvas.client.worksheet.interfaces.Worksheet;
 import com.project.canvas.client.worksheet.interfaces.WorksheetView;
 import com.project.canvas.client.worksheet.interfaces.WorksheetView.OperationStatus;
 import com.project.canvas.client.worksheet.interfaces.WorksheetView.ToolCreationRequest;
+import com.project.canvas.shared.CloneableUtils;
 import com.project.canvas.shared.ThrowableUtils;
 import com.project.canvas.shared.contracts.CanvasService;
 import com.project.canvas.shared.contracts.CanvasServiceAsync;
@@ -278,7 +279,8 @@ public class WorksheetImpl implements Worksheet
                 _toolClipboard.clear();
                 for (CanvasToolFrame toolFrame : arg)
                 {
-                    _toolClipboard.add(toolFrame.getTool().getValue());
+                	_toolClipboard.add(
+                			(ElementData)CloneableUtils.clone(toolFrame.getTool().getValue()));
                 }
             }
         });

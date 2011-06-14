@@ -111,5 +111,4 @@ public class Point2D implements Serializable, IsSerializable {
     public static Point2D min(Point2D first, Point2D other) {
         return new Point2D(Math.min(first._x, other._x), Math.min(first._y, other._y));
     }
-
 }
