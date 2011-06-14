@@ -7,8 +7,9 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.user.client.ui.Image;
+import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.events.SimpleEvent;
-import com.project.canvas.shared.StringUtils;
+import com.project.canvas.shared.data.KeyValue;
 import com.project.canvas.shared.data.Point2D;
 import com.project.canvas.shared.data.Rectangle;
 
@@ -162,5 +163,26 @@ public abstract class ElementUtils {
         }
         element.getStyle().setBackgroundImage(
                 StyleUtils.BuildBackgroundUrl(image.getUrl()));
+    }
+
+    public static void SetBackgroundImageAsync(final Element element,
+            String imageUrl, String errorImageUrl, final boolean autoSize,
+            final SimpleEvent.Handler<Void> loadHandler, final SimpleEvent.Handler<Void> errorHandler)
+    {
+        ImageLoader imageLoader = new ImageLoader();
+        imageLoader.addLoadHandler(new SimpleEvent.Handler<KeyValue<Integer,Image>>() {
+            @Override
+            public void onFire(KeyValue<Integer, Image> arg) {
+                ElementUtils.SetBackgroundImage(element, arg.getValue(), autoSize);
+                loadHandler.onFire(null);
+            };
+        });
+        imageLoader.addErrorHandler(new SimpleEvent.Handler<Void>() {
+            @Override
+            public void onFire(Void arg) {
+                errorHandler.onFire(null);
+            };
+        });
+        imageLoader.load(new String[]{imageUrl, errorImageUrl});
     }
 }

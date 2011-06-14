@@ -11,6 +11,7 @@ import com.google.gwt.event.dom.client.MouseMoveHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.Widget;
+import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.shared.data.Point2D;
 
 public class WidgetUtils {
@@ -62,4 +63,31 @@ public class WidgetUtils {
 		widget.setHeight(editSize.getY() + "px");
 	}
 
+	public static void SetBackgroundImageAsync(final Widget widget,
+            String imageUrl, String errorImageUrl, final boolean autoSize, final String loadingStyleName)
+    {
+        WidgetUtils.SetBackgroundImageAsync(widget, imageUrl, errorImageUrl, autoSize, loadingStyleName,
+                new SimpleEvent.EmptyHandler<Void>(), new SimpleEvent.EmptyHandler<Void>());
+    }
+
+	public static void SetBackgroundImageAsync(final Widget widget, String imageUrl, String errorImageUrl,
+	        final boolean autoSize, final String loadingStyleName,
+	        final SimpleEvent.Handler<Void> loadHandler, final SimpleEvent.Handler<Void> errorHandler)
+    {
+	    widget.getElement().getStyle().clearBackgroundImage();
+	    widget.addStyleName(loadingStyleName);
+	    ElementUtils.SetBackgroundImageAsync(widget.getElement(), imageUrl, errorImageUrl, autoSize,
+            new SimpleEvent.Handler<Void>() {
+                @Override
+                public void onFire(Void arg) {
+                    widget.removeStyleName(loadingStyleName);
+                    loadHandler.onFire(null);
+                }},
+            new SimpleEvent.Handler<Void>() {
+                @Override
+                public void onFire(Void arg) {
+                    widget.removeStyleName(loadingStyleName);
+                    errorHandler.onFire(null);
+                }});
+    }
 }
