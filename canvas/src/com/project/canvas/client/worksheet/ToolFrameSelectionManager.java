@@ -8,6 +8,7 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.canvastools.base.CanvasToolFrame;
 import com.project.canvas.client.shared.ElementUtils;
+import com.project.canvas.client.shared.NativeUtils;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.shared.events.SimpleEvent.Handler;
 import com.project.canvas.client.worksheet.interfaces.ElementDragManager.StopCondition;
@@ -42,12 +43,12 @@ public class ToolFrameSelectionManager {
 	}
 
 	public void startSelectionDrag(MouseDownEvent event) {
-		event.preventDefault();
+	    NativeUtils.disableTextSelectInternal(_container.getElement(), true);
 
 		if (false == event.isControlKeyDown()) {
 			this._worksheetView.clearToolFrameSelection();
 		}
-		final Point2D initialPosition = 
+		final Point2D initialPosition =
 			ElementUtils.relativePosition(event, this._container.getElement());
 		ElementUtils.setElementRectangle(this._selectionPanel.getElement(),
 				new Rectangle(initialPosition.getX(), initialPosition.getY(), 0));
