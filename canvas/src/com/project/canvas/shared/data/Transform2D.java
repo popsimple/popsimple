@@ -21,12 +21,12 @@ public class Transform2D implements Serializable, IsSerializable, ICloneable {
 		this.rotation = rotation;
 	}
     public Transform2D() {}
-	
+
     @Override
 	public Object createInstance() {
 		return new Transform2D();
 	}
-    
+
     @Override
 	public void copyTo(Object object) {
     	Transform2D copy = (Transform2D)object;
@@ -35,5 +35,6 @@ public class Transform2D implements Serializable, IsSerializable, ICloneable {
 		{
 			copy.size = new Point2D(this.size.getX(), this.size.getY());
 		}
+		copy.rotation = this.rotation;
 	}
 }
