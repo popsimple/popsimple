@@ -24,10 +24,10 @@ public class CanvasContainer extends Composite {
     Toolbox toolbox;
     @UiField
     WorksheetViewImpl worksheetWidget;
-    
+
     private Worksheet worksheet;
     private final ToolboxItem defaultTool = BuiltinTools.cursorTool;
-    
+
     public Worksheet getWorksheet() {
         return worksheet;
     }
@@ -35,7 +35,7 @@ public class CanvasContainer extends Composite {
     public CanvasContainer() {
         initWidget(uiBinder.createAndBindUi(this));
         this.worksheet = new WorksheetImpl(worksheetWidget);
-        
+
         this.toolbox.getToolChosenEvent().addHandler(new SimpleEvent.Handler<ToolboxItem>() {
             public void onFire(ToolboxItem arg) {
                 worksheet.setActiveToolboxItem(arg);
@@ -58,5 +58,6 @@ public class CanvasContainer extends Composite {
                 }
             }
         });
+        toolbox.setActiveTool(defaultTool);
     }
 }
