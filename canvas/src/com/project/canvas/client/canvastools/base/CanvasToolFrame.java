@@ -8,6 +8,8 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.HasBlurHandlers;
 import com.google.gwt.event.dom.client.HasFocusHandlers;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
@@ -105,6 +107,13 @@ public class CanvasToolFrame extends Composite implements Focusable, HasFocusHan
 
 	private void reRegisterFrameHandlers() {
 		frameRegs.clear();
+		frameRegs.add(this.toolPanel. addDomHandler(new KeyDownHandler(){
+            @Override
+            public void onKeyDown(KeyDownEvent event) {
+                //Stop propogation of KeyDown events from the toolframe so that the worksheet
+                //won't get any keydown that was already handled by the tool.
+                event.stopPropagation();
+            }}, KeyDownEvent.getType()));
 		frameRegs.add(this.closeLink.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {

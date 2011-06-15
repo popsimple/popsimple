@@ -5,14 +5,19 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
@@ -35,6 +40,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -91,6 +97,9 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
     @UiField
     HTMLPanel worksheetHeader;
+
+    @UiField
+    FocusPanel focusPanel;
 
     @UiField
     FlowPanel worksheetPanel;
@@ -423,13 +432,20 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
                 }
             }
         }, MouseDownEvent.getType());
+        final WorksheetViewImpl that = this;
+        this.focusPanel.addKeyDownHandler(new KeyDownHandler(){
+            @Override
+            public void onKeyDown(KeyDownEvent event) {
+                that.onKeyDown(event);
+            }});
+
         Event.addNativePreviewHandler(new NativePreviewHandler() {
             @Override
             public void onPreviewNativeEvent(NativePreviewEvent event) {
                 NativeEvent nativeEvent = event.getNativeEvent();
                 String type = nativeEvent.getType();
                 if (type.equals(KeyDownEvent.getType().getName())){
-                    onKeyDown(nativeEvent);
+                    onPreviewKeyDown(nativeEvent);
                 }
             }
         });
@@ -448,18 +464,37 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
             }
         });
     }
-    
+
     private void onCopyToolsRequest()
     {
     	this.copyToolsRequest.dispatch(new ArrayList<CanvasToolFrame>(selectedTools));
     }
-    
+
     private void onPasteToolsRequest()
     {
     	this.pasteToolsRequest.dispatch(null);
     }
 
-    private void onKeyDown(NativeEvent event) {
+    private void onKeyDown(KeyDownEvent event){
+        switch (event.getNativeKeyCode())
+        {
+            case (int)'C':
+                if (event.isControlKeyDown())
+                {
+
+                    this.onCopyToolsRequest();
+                }
+                break;
+            case (int)'V':
+                if (event.isControlKeyDown())
+                {
+                    this.onPasteToolsRequest();
+                }
+                break;
+        }
+    }
+
+    private void onPreviewKeyDown(NativeEvent event) {
         // TODO: Use some sort of KeyMapper.
     	switch (event.getKeyCode()) {
         case KeyCodes.KEY_ESCAPE:
@@ -468,18 +503,34 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         case KeyCodes.KEY_DELETE:
             this.removeToolsRequest.dispatch(new ArrayList<CanvasToolFrame>(this.selectedTools));
             break;
-//TODO: Can't just use Ctrl-c and Ctrl-v since it captures all the keydown events on the page
-//TODO: also those that are pressed inside a tool (such as TextEdit). we need to find a way
-//TODO: to distinct the key presses. (Save for Delete by the way).
 //        case (int)'C':
 //        	if (event.getCtrlKey())
 //        	{
+//        	    EventTarget target = event.getCurrentEventTarget();
+//                if (false == Element.is(target))
+//                {
+//                    return;
+//                }
+//                Element element = Element.as(target);
+//                if (false == (this.worksheetPanel.getElement() == Element.as(target)))
+//                {
+//                    return;
+//                }
 //        		this.onCopyToolsRequest();
 //        	}
 //        	break;
 //        case (int)'V':
 //        	if (event.getCtrlKey())
 //        	{
+//        	    EventTarget target = event.getEventTarget();
+//                if (false == Element.is(target))
+//                {
+//                    return;
+//                }
+//                if (false == (this.worksheetPanel.getElement() == Element.as(target)))
+//                {
+//                    return;
+//                }
 //        		this.onPasteToolsRequest();
 //        	}
 //        	break;
