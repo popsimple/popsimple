@@ -32,7 +32,7 @@
 	display: none;
 }
 
-.worksheetFullView .worksheetPanel {
+.worksheetFullView .worksheetFocusPanel {
 	top: 0;
 }
 
@@ -64,10 +64,17 @@
 	text-decoration: underline;
 }
 
-@eval baseZIndex com.project.canvas.client.shared.ZIndexProvider.baseZIndex;
-.worksheetPanel {
+.worksheetFocusPanel {
 	top: 35px;
 	bottom: 0px;
+	width: 100%;
+	position: absolute;
+	overflow: hidden;
+	outline: 0;
+}
+
+.worksheetPanel {
+	height: 100%;
 	width: 100%;
 	position: absolute;
 	overflow: hidden;

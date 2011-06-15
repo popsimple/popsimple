@@ -15,7 +15,7 @@
             	<g:Anchor ui:field="optionsBackground">Change background</g:Anchor>
             </g:HTMLPanel>
 		</g:HTMLPanel>
-		<g:FocusPanel ui:field="focusPanel">
+		<g:FocusPanel ui:field="focusPanel" addStyleNames="{res.main.worksheetFocusPanel}">
 			<g:FlowPanel ui:field="worksheetPanel" addStyleNames="{res.main.worksheetPanel}" >
 				<g:FlowPanel ui:field="worksheetBackground"  addStyleNames="{res.main.worksheetBackground}"/>
 				<g:HTMLPanel ui:field="selectionPanel" addStyleNames="{res.main.selectionPanelStyle}"></g:HTMLPanel>

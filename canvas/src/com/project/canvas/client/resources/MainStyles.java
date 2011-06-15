@@ -166,6 +166,8 @@ public interface MainStyles extends CssResource {
 
     String worksheetOptions();
 
+    String worksheetFocusPanel();
+
     String worksheetPanel();
 
     String worksheetRightButton();

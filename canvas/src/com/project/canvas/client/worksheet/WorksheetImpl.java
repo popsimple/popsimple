@@ -119,20 +119,23 @@ public class WorksheetImpl implements Worksheet
         load(id);
     }
 
+    protected ElementData updateToolData(CanvasToolFrame toolFrame){
+        ElementData toolData = toolFrame.getTool().getValue();
+        Element frameElement = toolFrame.getElement();
+        toolData.zIndex = ZIndexAllocator.getElementZIndex(frameElement);
+        toolData.transform = new Transform2D(ElementUtils.getElementOffsetPosition(frameElement),
+                toolFrame.getToolSize(), ElementUtils.getRotation(frameElement));
+        return toolData;
+    }
+
     @Override
     public void save()
     {
         // TODO: Defrag zIndex of all tools before saving.
         ArrayList<ElementData> activeElems = new ArrayList<ElementData>();
         for (Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo> entry : toolInfoMap.entrySet()) {
-            CanvasTool<? extends ElementData> tool = entry.getKey();
             ToolInstanceInfo toolInfo = entry.getValue();
-            ElementData toolData = tool.getValue();
-            Element frameElement = toolInfo.toolFrame.getElement();
-            toolData.zIndex = ZIndexAllocator.getElementZIndex(toolInfo.toolFrame.getElement());
-			toolData.transform = new Transform2D(ElementUtils.getElementOffsetPosition(frameElement),
- 												 toolInfo.toolFrame.getToolSize(),
- 												 ElementUtils.getRotation(frameElement));
+            ElementData toolData = this.updateToolData(toolInfo.toolFrame);
             activeElems.add(toolData);
         }
         this.page.elements.clear();
@@ -276,21 +279,13 @@ public class WorksheetImpl implements Worksheet
         view.addCopyToolHandler(new Handler<ArrayList<CanvasToolFrame>>() {
             @Override
             public void onFire(ArrayList<CanvasToolFrame> arg) {
-                _toolClipboard.clear();
-                for (CanvasToolFrame toolFrame : arg)
-                {
-                	_toolClipboard.add(
-                			(ElementData)CloneableUtils.clone(toolFrame.getTool().getValue()));
-                }
+                copyToolsToClipboard(arg);
             }
         });
         view.addPasteToolHandler(new Handler<Void>() {
             @Override
             public void onFire(Void arg) {
-                for (ElementData data : _toolClipboard)
-                {
-                    createToolInstanceFromData(data);
-                }
+                pasteToolsFromClipboard();
             }
         });
         view.addOptionsUpdatedHandler(new Handler<CanvasPageOptions>() {
@@ -320,6 +315,33 @@ public class WorksheetImpl implements Worksheet
 				removeToolInstances(arg);
 			}
 		});
+    }
+
+    private void copyToolsToClipboard(Collection<CanvasToolFrame> toolFrames)
+    {
+        this._toolClipboard.clear();
+        for (CanvasToolFrame toolFrame : toolFrames)
+        {
+            this._toolClipboard.add((ElementData)CloneableUtils.clone(
+                    updateToolData(toolFrame)));
+        }
+    }
+
+    private void pasteToolsFromClipboard()
+    {
+        if (this._toolClipboard.isEmpty())
+        {
+            return;
+        }
+        view.clearToolFrameSelection();
+        for (ElementData data : _toolClipboard)
+        {
+            ElementData offsetData = (ElementData)CloneableUtils.clone(data);
+            //TODO: does it make sense that the Worksheet will add the offset?
+            offsetData.transform.translation =
+                offsetData.transform.translation.plus(new Point2D(10, 10));
+            view.selectToolFrame(createToolInstanceFromData(offsetData));
+        }
     }
 
 	private void setActiveToolInstance(CanvasTool<?> tool)
