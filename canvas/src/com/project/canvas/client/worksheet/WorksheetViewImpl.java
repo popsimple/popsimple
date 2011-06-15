@@ -86,11 +86,6 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     Button viewButton;
 
     @UiField
-    Button copyButton;
-    @UiField
-    Button pasteButton;
-
-    @UiField
     FlowPanel worksheetBackground;
     @UiField
     HTMLPanel worksheetContainer;
@@ -447,20 +442,6 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
                 if (type.equals(KeyDownEvent.getType().getName())){
                     onPreviewKeyDown(nativeEvent);
                 }
-            }
-        });
-        this.copyButton.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                onCopyToolsRequest();
-
-            }
-        });
-        this.pasteButton.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                onPasteToolsRequest();
-
             }
         });
     }
