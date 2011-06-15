@@ -48,14 +48,14 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
     }
 
     @Override
-    public void startDragCanvasToolFrames(final Collection<CanvasToolFrame> toolFrames, final MouseEvent<?> startEvent)
+    public void startDragCanvasToolFrames(Collection<CanvasToolFrame> toolFrames, MouseEvent<?> startEvent)
     {
     	for (CanvasToolFrame toolFrame : toolFrames)
     	{
     		startDragCanvasToolFrame(toolFrame, startEvent);
     	}
     }
-    
+
     @Override
     public void startDragCanvasToolFrame(final CanvasToolFrame toolFrame, final MouseEvent<?> startEvent)
     {
@@ -92,7 +92,7 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.project.canvas.client.worksheet.ToolFrameTransformer#
      * startResizeCanvasToolFrame
      * (com.project.canvas.client.canvastools.base.CanvasToolFrame,
@@ -149,7 +149,7 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.project.canvas.client.worksheet.ToolFrameTransformer#
      * startRotateCanvasToolFrame
      * (com.project.canvas.client.canvastools.base.CanvasToolFrame,

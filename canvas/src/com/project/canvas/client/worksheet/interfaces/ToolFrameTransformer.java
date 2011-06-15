@@ -14,7 +14,7 @@ public interface ToolFrameTransformer
      void setToolFramePosition(final CanvasToolFrame toolFrame, Point2D pos);
 
      void startDragCanvasToolFrame(final CanvasToolFrame toolFrame, final MouseEvent<?> startEvent);
-     void startDragCanvasToolFrames(final Collection<CanvasToolFrame> toolFrames, final MouseEvent<?> startEvent);
+     void startDragCanvasToolFrames(Collection<CanvasToolFrame> toolFrames, MouseEvent<?> startEvent);
 
      void startResizeCanvasToolFrame(final CanvasToolFrame toolFrame, final MouseEvent<?> startEvent);
 
