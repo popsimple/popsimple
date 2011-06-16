@@ -97,8 +97,8 @@
 
 .worksheetDragPanel {
 	z-index: 1000;
-	background-color: transparent;
-	opacity: 0;
+	background-color: blue;
+	opacity: 0.4;
 	position: absolute;
 	top: 0;
 	left: 0;

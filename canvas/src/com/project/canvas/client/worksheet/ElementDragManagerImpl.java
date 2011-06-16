@@ -8,6 +8,7 @@ import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseMoveHandler;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.shared.ElementUtils;
 import com.project.canvas.client.shared.NativeUtils;
@@ -23,15 +24,29 @@ public class ElementDragManagerImpl implements ElementDragManager
     private Widget _dragPanel;
     private String _targetDragStyleName = "";
     private SimpleEvent<Void> _stopOperationEvent;
+    private int _startDragPixelOffset = 5;
+    private boolean _moveStarted = false;
 
     public ElementDragManagerImpl(Widget container, Widget dragPanel,
             SimpleEvent<Void> stopOperationEvent)
     {
-        this(container, dragPanel, "", stopOperationEvent);
+        this(container, dragPanel, 5, stopOperationEvent);
+    }
+
+    public ElementDragManagerImpl(Widget container, Widget dragPanel,
+            int startDragPixelOffset, SimpleEvent<Void> stopOperationEvent)
+    {
+        this(container, dragPanel, "", startDragPixelOffset, stopOperationEvent);
     }
 
     public ElementDragManagerImpl(Widget container, Widget dragPanel,
             String targetDragStyleName, SimpleEvent<Void> stopOperationEvent)
+    {
+        this(container, dragPanel, targetDragStyleName, 5, stopOperationEvent);
+    }
+
+    public ElementDragManagerImpl(Widget container, Widget dragPanel,
+            String targetDragStyleName, int startDragPixelOffet, SimpleEvent<Void> stopOperationEvent)
     {
         this._container = container;
         this._dragPanel = dragPanel;
@@ -40,18 +55,18 @@ public class ElementDragManagerImpl implements ElementDragManager
     }
 
     @Override
-    public SimpleEvent.Handler<Void> startMouseMoveOperation(
+    public SimpleEvent.Handler<Void> startMouseMoveOperation(MouseEvent<?> startEvent,
             final Element targetElement, final Point2D referenceOffset,
             final SimpleEvent.Handler<Point2D> moveHandler, final Handler<Point2D> stopHandler,
             final SimpleEvent.Handler<Void> cancelHandler, int stopConditions)
     {
-        return this.startMouseMoveOperation(targetElement, targetElement,
+        return this.startMouseMoveOperation(startEvent, targetElement, targetElement,
                 referenceOffset, moveHandler, stopHandler, cancelHandler, stopConditions);
     }
 
     @Override
-    public SimpleEvent.Handler<Void> startMouseMoveOperation(final Element targetElement,
-            final Element referenceElem, final Point2D referenceOffset,
+    public SimpleEvent.Handler<Void> startMouseMoveOperation(MouseEvent<?> startEvent,
+            final Element targetElement, final Element referenceElem, final Point2D referenceOffset,
             final SimpleEvent.Handler<Point2D> moveHandler, final Handler<Point2D> stopHandler,
             final SimpleEvent.Handler<Void> cancelHandler, int stopConditions)
     {
@@ -60,18 +75,39 @@ public class ElementDragManagerImpl implements ElementDragManager
             throw new RuntimeException("Must specify at least one stop condition. The bitfield was: " + stopConditions);
         }
 
-        ElementUtils.addStyleName(targetElement, this._targetDragStyleName);
+        final Point2D initialPosition;
+        if (null != startEvent)
+        {
+            initialPosition = new Point2D(startEvent.getClientX(), startEvent.getClientY());
+        }
+        else
+        {
+            initialPosition = new Point2D(0, 0);
+        }
 
         NativeUtils.disableTextSelectInternal(_container.getElement(), true);
+
         regs.add(_dragPanel.addDomHandler(new MouseMoveHandler() {
             @Override
             public void onMouseMove(MouseMoveEvent event)
             {
+                if (false == _moveStarted)
+                {
+                    Point2D currentPosition = new Point2D(event.getClientX(), event.getClientY());
+                    if (currentPosition.minus(initialPosition).radius() < _startDragPixelOffset)
+                    {
+                        return;
+                    }
+                    DOM.releaseCapture(_dragPanel.getElement());
+                    ElementUtils.addStyleName(targetElement, _targetDragStyleName);
+                    _moveStarted = true;
+                    _dragPanel.setVisible(true);
+                    return;
+                }
                 Point2D pos = ElementUtils.relativePosition(event, referenceElem);
                 handleMouseMove(referenceElem, referenceOffset, moveHandler, pos);
                 event.stopPropagation();
-            }
-        }, MouseMoveEvent.getType()));
+            }}, MouseMoveEvent.getType()));
 
         if (null != _stopOperationEvent) {
             regs.add(_stopOperationEvent.addHandler(new SimpleEvent.Handler<Void>() {
@@ -86,7 +122,7 @@ public class ElementDragManagerImpl implements ElementDragManager
             }));
         }
 
-        _dragPanel.setVisible(true);
+        DOM.setCapture(this._dragPanel.getElement());
 
         return new Handler<Void>() {
             @Override
@@ -99,7 +135,7 @@ public class ElementDragManagerImpl implements ElementDragManager
     }
 
     private void operationEnded(final Element targetElement, final Element referenceElem,
-        final Handler<Point2D> floatingWidgetStop, final RegistrationsManager regs, MouseEvent<?> event)
+        final Handler<Point2D> floatingWidgetStop, RegistrationsManager regs, MouseEvent<?> event)
     {
         stopMouseMoveOperation(targetElement, regs);
         if (null != floatingWidgetStop) {
@@ -140,7 +176,9 @@ public class ElementDragManagerImpl implements ElementDragManager
     {
         ElementUtils.removeStyleName(targetElement, this._targetDragStyleName);
         NativeUtils.disableTextSelectInternal(_container.getElement(), false);
+        DOM.releaseCapture(_dragPanel.getElement());
         _dragPanel.setVisible(false);
+        this._moveStarted = false;
         regs.clear();
     }
 

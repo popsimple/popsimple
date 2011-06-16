@@ -76,7 +76,8 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
             }
         };
 
-        _elementDragManager.startMouseMoveOperation(toolFrame.getElement(), _container.getElement(),
+        _elementDragManager.startMouseMoveOperation(startEvent,
+                toolFrame.getElement(), _container.getElement(),
                 ElementUtils.relativePosition(startEvent, toolFrame.getElement()), dragHandler, null,
                 cancelMoveHandler, ElementDragManager.StopCondition.STOP_CONDITION_MOUSE_UP);
     }
@@ -134,7 +135,7 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
                 setToolFramePosition(toolFrame, startPos);
             }
         };
-        _elementDragManager.startMouseMoveOperation(toolFrame.getElement(),
+        _elementDragManager.startMouseMoveOperation(startEvent, toolFrame.getElement(),
                 _container.getElement(), Point2D.zero, resizeHandler, stopHandler,
                 cancelHandler, ElementDragManager.StopCondition.STOP_CONDITION_MOUSE_UP);
     }
@@ -170,7 +171,7 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
                 ElementUtils.setRotation(toolFrame.getElement(), startAngle);
             }
         };
-        _elementDragManager.startMouseMoveOperation(toolFrame.getElement(),
+        _elementDragManager.startMouseMoveOperation(startEvent, toolFrame.getElement(),
                 toolCenterPos, rotateHandler, null,
                 cancelHandler, ElementDragManager.StopCondition.STOP_CONDITION_MOUSE_UP);
     }

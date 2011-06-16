@@ -109,6 +109,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
     private final ToolFrameTransformer _toolFrameTransformer;
     private final ToolFrameSelectionManager _toolFrameSelectionManager;
+    private final ElementDragManagerImpl _floatingWidgetDragManager;
 
     private final DialogBox optionsDialog = new DialogWithZIndex(false, true);
     private final WorksheetOptionsView optionsWidget = new WorksheetOptionsViewImpl();
@@ -138,6 +139,9 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         this._toolFrameSelectionManager = new ToolFrameSelectionManager(this, worksheetPanel, dragPanel,
                 selectionPanel, stopOperationEvent);
         this.selectionPanel.setVisible(false);
+
+        this._floatingWidgetDragManager = new ElementDragManagerImpl(
+                this, this.dragPanel, 0, stopOperationEvent);
 
         optionsDialog.setText("Worksheet options");
         optionsDialog.add(this.optionsWidget);
@@ -605,10 +609,10 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
                         .getToolFactory()));
             }
         };
-        this._floatingWidgetTerminator = this._toolFrameTransformer.getElementDragManager()
-                .startMouseMoveOperation(this.worksheetPanel.getElement(), Point2D.zero,
-                        floatingWidgetMoveHandler, floatingWidgetStop, null,
-                        ElementDragManager.StopCondition.STOP_CONDITION_MOUSE_CLICK);
+        this._floatingWidgetTerminator = this._floatingWidgetDragManager.startMouseMoveOperation(
+                null, this.worksheetPanel.getElement(), Point2D.zero,
+                floatingWidgetMoveHandler, floatingWidgetStop, null,
+                ElementDragManager.StopCondition.STOP_CONDITION_MOUSE_CLICK);
     }
 
     @Override

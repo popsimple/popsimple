@@ -1,6 +1,7 @@
 package com.project.canvas.client.worksheet.interfaces;
 
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.dom.client.MouseEvent;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.shared.events.SimpleEvent.Handler;
 import com.project.canvas.shared.data.Point2D;
@@ -25,7 +26,7 @@ public interface ElementDragManager
      * @param dragStyleName the style name to apply to the target element while dragging
      * @return a handler which the caller must doFire when it wants to force a stop on the operation
      */
-    SimpleEvent.Handler<Void> startMouseMoveOperation(
+    SimpleEvent.Handler<Void> startMouseMoveOperation(MouseEvent<?> startEvent,
             final Element targetElement, final Element referenceElem,
             final Point2D referenceOffset, final SimpleEvent.Handler<Point2D> moveHandler,
             final Handler<Point2D> stopHandler, final SimpleEvent.Handler<Void> cancelHandler,
@@ -42,7 +43,7 @@ public interface ElementDragManager
      * @param dragStyleName the style name to apply to the target element while dragging
      * @return a handler which the caller must doFire when it wants to force a stop on the operation
      */
-    SimpleEvent.Handler<Void> startMouseMoveOperation(final Element targetElement,
+    SimpleEvent.Handler<Void> startMouseMoveOperation(MouseEvent<?> startEvent, final Element targetElement,
             final Point2D referenceOffset, final SimpleEvent.Handler<Point2D> moveHandler,
             final Handler<Point2D> stopHandler, final SimpleEvent.Handler<Void> cancelHandler,
             int stopConditions);
