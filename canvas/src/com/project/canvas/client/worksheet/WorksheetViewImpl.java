@@ -262,12 +262,12 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
     public void selectToolFrame(CanvasToolFrame toolFrame) {
         this.selectedTools.add(toolFrame);
-        toolFrame.addStyleName(CanvasResources.INSTANCE.main().toolFrameSelected());
+        toolFrame.addStyleName(CanvasResources.INSTANCE.main().selected());
     }
 
     public void unSelectToolFrame(CanvasToolFrame toolFrame) {
         this.selectedTools.remove(toolFrame);
-        toolFrame.removeStyleName(CanvasResources.INSTANCE.main().toolFrameSelected());
+        toolFrame.removeStyleName(CanvasResources.INSTANCE.main().selected());
     }
 
     public boolean isToolFrameSelected(CanvasToolFrame toolFrame) {

@@ -28,7 +28,8 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
 
     public ToolFrameTransformerImpl(Widget container, Widget dragPanel, SimpleEvent<Void> stopOperationEvent)
     {
-        _elementDragManager = new ElementDragManagerImpl(container, dragPanel, stopOperationEvent);
+        _elementDragManager = new ElementDragManagerImpl(container, dragPanel,
+                CanvasResources.INSTANCE.main().drag(), stopOperationEvent);
         dragPanel.getElement();
         _container = container;
     }
@@ -67,26 +68,16 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
                 setToolFramePosition(toolFrame, transformMovement(pos, initialPos, false));
             }
         };
-        SimpleEvent.Handler<Point2D> stopMoveHandler = new SimpleEvent.Handler<Point2D>() {
-            @Override
-            public void onFire(Point2D arg)
-            {
-                setToolFrameDragStyles(toolFrame, false);
-            }
-        };
         Handler<Void> cancelMoveHandler = new Handler<Void>() {
             @Override
             public void onFire(Void arg)
             {
                 setToolFramePosition(toolFrame, initialPos);
-                setToolFrameDragStyles(toolFrame, false);
             }
         };
 
-        setToolFrameDragStyles(toolFrame, true);
-
-        _elementDragManager.startMouseMoveOperation(_container.getElement(),
-                ElementUtils.relativePosition(startEvent, toolFrame.getElement()), dragHandler, stopMoveHandler,
+        _elementDragManager.startMouseMoveOperation(toolFrame.getElement(), _container.getElement(),
+                ElementUtils.relativePosition(startEvent, toolFrame.getElement()), dragHandler, null,
                 cancelMoveHandler, ElementDragManager.StopCondition.STOP_CONDITION_MOUSE_UP);
     }
 
@@ -143,7 +134,8 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
                 setToolFramePosition(toolFrame, startPos);
             }
         };
-        _elementDragManager.startMouseMoveOperation(_container.getElement(), Point2D.zero, resizeHandler, stopHandler,
+        _elementDragManager.startMouseMoveOperation(toolFrame.getElement(),
+                _container.getElement(), Point2D.zero, resizeHandler, stopHandler,
                 cancelHandler, ElementDragManager.StopCondition.STOP_CONDITION_MOUSE_UP);
     }
 
@@ -178,7 +170,8 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
                 ElementUtils.setRotation(toolFrame.getElement(), startAngle);
             }
         };
-        _elementDragManager.startMouseMoveOperation(toolFrame.getElement(), toolCenterPos, rotateHandler, null,
+        _elementDragManager.startMouseMoveOperation(toolFrame.getElement(),
+                toolCenterPos, rotateHandler, null,
                 cancelHandler, ElementDragManager.StopCondition.STOP_CONDITION_MOUSE_UP);
     }
 
@@ -210,18 +203,6 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
     {
         return ROTATION_ROUND_RESOLUTION * (rotation / ROTATION_ROUND_RESOLUTION);
     }
-
-    private void setToolFrameDragStyles(final CanvasToolFrame toolFrame, boolean dragging)
-    {
-        if (dragging) {
-            toolFrame.addStyleName(CanvasResources.INSTANCE.main().hover());
-            toolFrame.addStyleName(CanvasResources.INSTANCE.main().drag());
-        } else {
-            toolFrame.removeStyleName(CanvasResources.INSTANCE.main().hover());
-            toolFrame.removeStyleName(CanvasResources.INSTANCE.main().drag());
-        }
-    }
-
 
     private Point2D transformMovement(Point2D size, Point2D initialCoords)
     {

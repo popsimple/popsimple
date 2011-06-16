@@ -83,9 +83,8 @@ public class ToolFrameSelectionManager {
 			}
 		};
 
-		this._selectionDragManager.startMouseMoveOperation(
-				this._container.getElement(), Point2D.zero,
-				mouseMoveHandler, stopHandler, cancelHandler,
+		this._selectionDragManager.startMouseMoveOperation(this._container.getElement(),
+		        Point2D.zero, mouseMoveHandler, stopHandler, cancelHandler,
 				StopCondition.STOP_CONDITION_MOUSE_UP);
 	}
 

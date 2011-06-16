@@ -3,7 +3,6 @@
 }
 
 .selected {
-
 }
 
 .drag {
@@ -360,7 +359,9 @@
 	padding: 1px;
 }
 
-.worksheetModeEditable .toolFramePanel:hover,.worksheetModeEditable .toolFramePanel.hover
+.worksheetModeEditable .toolFramePanel:hover,
+.worksheetModeEditable .toolFramePanel.drag,
+.worksheetModeEditable .toolFramePanel.selected
 	{
 	padding: 0px;
 	border-style: solid;
@@ -423,7 +424,9 @@
 	text-align: right;
 }
 
-.worksheetModeEditable .toolFramePanel:hover .toolFrameHeader,.worksheetModeEditable .toolFramePanel.hover .toolFrameHeader
+.worksheetModeEditable .toolFramePanel:hover .toolFrameHeader,
+.worksheetModeEditable .toolFramePanel.drag .toolFrameHeader,
+.worksheetModeEditable .toolFramePanel.selected .toolFrameHeader
 	{
 	visibility: visible;
 }
@@ -463,12 +466,14 @@
 	visibility: hidden;
 }
 
-.worksheetModeEditable .toolFramePanel:hover .toolFrameHoverVisibleElement,.worksheetModeEditable .toolFramePanel.hover .toolFrameHoverVisibleElement
+.worksheetModeEditable .toolFramePanel:hover .toolFrameHoverVisibleElement,
+.worksheetModeEditable .toolFramePanel.drag .toolFrameHoverVisibleElement,
+.worksheetModeEditable .toolFramePanel.selected .toolFrameHoverVisibleElement
 	{
 	visibility: visible;
 }
 
-.toolFrameSelected {
+.toolFramePanel.selected {
 	border-style: dotted !important;
 	border-color: black !important;
 	border-radius: 5px;
@@ -533,7 +538,9 @@
 	margin-bottom: 8px;
 }
 
-.worksheetModeEditable .toolFramePanel:hover .videoBox,.worksheetModeEditable .toolFramePanel.hover .videoBox
+.worksheetModeEditable .toolFramePanel:hover .videoBox,
+.worksheetModeEditable .toolFramePanel.drag .videoBox,
+.worksheetModeEditable .toolFramePanel.selected .videoBox
 	{
 	margin-bottom: 42px;
 }
@@ -564,7 +571,9 @@
 	cursor: pointer;
 }
 
-.worksheetModeEditable .toolFramePanel:hover .videoOptionsLabel,.worksheetModeEditable .toolFramePanel.hover .videoOptionsLabel
+.worksheetModeEditable .toolFramePanel:hover .videoOptionsLabel,
+.worksheetModeEditable .toolFramePanel.drag .videoOptionsLabel,
+.worksheetModeEditable .toolFramePanel.selected .videoOptionsLabel
 	{
 	display: block;
 }

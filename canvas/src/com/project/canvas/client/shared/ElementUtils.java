@@ -9,6 +9,7 @@ import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.user.client.ui.Image;
 import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.events.SimpleEvent;
+import com.project.canvas.shared.StringUtils;
 import com.project.canvas.shared.data.KeyValue;
 import com.project.canvas.shared.data.Point2D;
 import com.project.canvas.shared.data.Rectangle;
@@ -184,5 +185,23 @@ public abstract class ElementUtils {
             };
         });
         imageLoader.load(new String[]{imageUrl, errorImageUrl});
+    }
+
+    public static void addStyleName(Element element, String styleName)
+    {
+        if (StringUtils.isEmptyOrNull(styleName))
+        {
+            return;
+        }
+        element.addClassName(styleName);
+    }
+
+    public static void removeStyleName(Element element, String styleName)
+    {
+        if (StringUtils.isEmptyOrNull(styleName))
+        {
+            return;
+        }
+        element.removeClassName(styleName);
     }
 }
