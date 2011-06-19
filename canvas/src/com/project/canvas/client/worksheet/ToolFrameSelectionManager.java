@@ -22,6 +22,7 @@ public class ToolFrameSelectionManager {
 	private Widget _selectionPanel = null;
 	private WorksheetView _worksheetView = null;
 	private Widget _container = null;
+	private HashSet<CanvasToolFrame> _ignoreSet = new HashSet<CanvasToolFrame>();
 
 	public ToolFrameSelectionManager(WorksheetView worksheetView,
 			Widget container, Widget dragPanel, Widget selectionPanel,
@@ -34,12 +35,43 @@ public class ToolFrameSelectionManager {
 	}
 
 	public void handleToolFrameSelection(CanvasToolFrame toolFrame) {
-		if (isMultiSelect()) {
-			this.toggleToolFrameSelection(toolFrame);
-		} else {
-			this._worksheetView.clearToolFrameSelection();
-			this._worksheetView.selectToolFrame(toolFrame);
+		if (this._ignoreSet.remove(toolFrame))
+        {
+		    return;
 		}
+		if (isMultiSelect()) {
+            this.toggleToolFrameSelection(toolFrame);
+        } else {
+            this._worksheetView.clearToolFrameSelection();
+            this._worksheetView.selectToolFrame(toolFrame);
+        }
+	}
+
+	/**
+     * Forces a selection of a specific tool frame.
+     * Should be called in case a selection is required prior to the usual flow of the
+     * selection manager handling (MouseUp). this method makes sure that when the regular
+     * handler will be fired, this tool frame will be ignored.
+     *
+     * @param toolFrame the toolframe to select.
+     */
+	public void forceToolFrameSelection(CanvasToolFrame toolFrame)
+	{
+	    this._ignoreSet.remove(toolFrame);
+	    if (false == this.ensureToolFrameSelection(toolFrame))
+	    {
+	        return;
+	    }
+	    this._ignoreSet.add(toolFrame);
+	}
+
+	public boolean ensureToolFrameSelection(CanvasToolFrame toolFrame)
+	{
+	    if (this._worksheetView.isToolFrameSelected(toolFrame)) {
+            return false;
+        }
+	    this.handleToolFrameSelection(toolFrame);
+	    return true;
 	}
 
 	public void startSelectionDrag(MouseDownEvent event) {
@@ -83,7 +115,7 @@ public class ToolFrameSelectionManager {
 			}
 		};
 
-		this._selectionDragManager.startMouseMoveOperation(event, this._container.getElement(),
+		this._selectionDragManager.startMouseMoveOperation(this._container.getElement(),
 		        Point2D.zero, mouseMoveHandler, stopHandler, cancelHandler,
 				StopCondition.STOP_CONDITION_MOUSE_UP);
 	}
