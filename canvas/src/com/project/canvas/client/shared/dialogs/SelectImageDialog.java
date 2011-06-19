@@ -1,4 +1,4 @@
-package com.project.canvas.client.canvastools.media;
+package com.project.canvas.client.shared.dialogs;
 
 import java.util.List;
 
@@ -7,6 +7,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.TakesValue;
@@ -23,16 +24,15 @@ import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.shared.searchProviders.interfaces.MediaInfo;
 import com.project.canvas.client.shared.searchProviders.interfaces.MediaSearchProvider;
 import com.project.canvas.client.shared.widgets.media.IMediaSearchPanel;
-import com.project.canvas.client.shared.widgets.media.MediaSearchPanel;
 import com.project.canvas.client.shared.widgets.media.images.ImageSearchPanel;
 import com.project.canvas.shared.UrlUtils;
-import com.project.canvas.shared.data.MediaData;
+import com.project.canvas.shared.data.ImageInformation;
 
-public class MediaToolOptions extends Composite implements TakesValue<MediaData>, Focusable {
+public class SelectImageDialog extends Composite implements TakesValue<ImageInformation>, Focusable {
 
     private static MediaToolOptionsUiBinder uiBinder = GWT.create(MediaToolOptionsUiBinder.class);
 
-    interface MediaToolOptionsUiBinder extends UiBinder<Widget, MediaToolOptions> {
+    interface MediaToolOptionsUiBinder extends UiBinder<Widget, SelectImageDialog> {
     }
 
     @UiField
@@ -50,13 +50,12 @@ public class MediaToolOptions extends Composite implements TakesValue<MediaData>
     @UiField
     HTMLPanel searchPanelContainer;
 
-    private MediaData data;
-    private IMediaSearchPanel _searchPanel = new ImageSearchPanel();
+    private IMediaSearchPanel<ImageInformation> _searchPanel = new ImageSearchPanel();
 
-    private SimpleEvent<Void> doneEvent = new SimpleEvent<Void>();
+    private SimpleEvent<ImageInformation> doneEvent = new SimpleEvent<ImageInformation>();
     private SimpleEvent<Void> cancelEvent = new SimpleEvent<Void>();
 
-    public MediaToolOptions() {
+    public SelectImageDialog() {
         initWidget(uiBinder.createAndBindUi(this));
         this.doneButton.addClickHandler(new ClickHandler() {
             @Override
@@ -88,12 +87,14 @@ public class MediaToolOptions extends Composite implements TakesValue<MediaData>
         });
     }
 
-    public SimpleEvent<Void> getDoneEvent() {
-        return this.doneEvent;
+    public HandlerRegistration addDoneEvent(SimpleEvent.Handler<ImageInformation> handler)
+    {
+        return this.doneEvent.addHandler(handler);
     }
 
-    public SimpleEvent<Void> getCancelEvent() {
-        return this.cancelEvent;
+    public HandlerRegistration addCancelEvent(SimpleEvent.Handler<Void> handler)
+    {
+        return this.cancelEvent.addHandler(handler);
     }
 
     public void setSearchProviders(List<? extends MediaSearchProvider> searchProviders)
@@ -102,15 +103,14 @@ public class MediaToolOptions extends Composite implements TakesValue<MediaData>
     }
 
     @Override
-    public void setValue(MediaData value) {
-        this.data = value;
+    public void setValue(ImageInformation value) {
         this.urlTextBox.setText(value.url);
+        this._searchPanel.setValue(value);
     }
 
     @Override
-    public MediaData getValue() {
-        this.data.url = this.urlTextBox.getText();
-        return this.data;
+    public ImageInformation getValue() {
+        return this._searchPanel.getValue();
     }
 
     @Override
@@ -138,7 +138,7 @@ public class MediaToolOptions extends Composite implements TakesValue<MediaData>
         boolean empty = urlTextBox.getText().trim().isEmpty();
         boolean valid = UrlUtils.isValidUrl(urlTextBox.getText(), false);
         if (empty || valid) {
-            doneEvent.dispatch(null);
+            doneEvent.dispatch(this._searchPanel.getValue());
         } else {
             Window.alert("Invalid url.");
         }

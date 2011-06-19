@@ -1,8 +1,9 @@
-package com.project.canvas.client.shared.dialogs;
+package com.project.canvas.client.shared.widgets.media;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -35,11 +36,11 @@ import com.project.canvas.client.shared.searchProviders.interfaces.MediaSearchPr
 import com.project.canvas.client.shared.searchProviders.interfaces.MediaSearchResult;
 import com.project.canvas.client.shared.widgets.RadioButtonPanel;
 
-public class MediaPicker extends Composite {
+public class MediaSearchPanel extends Composite {
 
     private static MediaPickerUiBinder uiBinder = GWT.create(MediaPickerUiBinder.class);
 
-    interface MediaPickerUiBinder extends UiBinder<Widget, MediaPicker> {
+    interface MediaPickerUiBinder extends UiBinder<Widget, MediaSearchPanel> {
     }
 
     @UiField
@@ -50,7 +51,7 @@ public class MediaPicker extends Composite {
 
     @UiField
     FlowPanel resultsPanel;
-    
+
     @UiField
     ScrollPanel resultsPanelContainer;
 
@@ -59,19 +60,20 @@ public class MediaPicker extends Composite {
 
     @UiField
     FlowPanel photoSizesPanel;
-    
+
     @UiField
     FlowPanel providersPanel;
-    
+
     protected final SimpleEvent<MediaInfo> mediaPicked = new SimpleEvent<MediaInfo>();
 
     protected final RegistrationsManager registrationsManager = new RegistrationsManager();
-    private MediaSearchProvider _selectedSearchProvider = null; 
+    private MediaSearchProvider _selectedSearchProvider = null;
 
     private InlineLabel selectedThumbnail;
     private HashMap<MediaSearchProvider, RadioButtonPanel> _searchProviderMap = new HashMap<MediaSearchProvider, RadioButtonPanel>();
+    private HashMap<RadioButton, MediaInfo> _sizeSelectionMap = new HashMap<RadioButton, MediaInfo>();
 
-    public MediaPicker() 
+    public MediaSearchPanel()
     {
         initWidget(uiBinder.createAndBindUi(this));
         this.searchText.addKeyPressHandler(new KeyPressHandler() {
@@ -84,7 +86,7 @@ public class MediaPicker extends Composite {
             }
         });
     }
-    
+
     public void setSearchProviders(List<? extends MediaSearchProvider> searchProviders)
     {
         if (0 == searchProviders.size())
@@ -112,22 +114,22 @@ public class MediaPicker extends Composite {
             .setBackgroundImage("url(" + searchProvider.getIconUrl() + ")");
         radioButtonPanel.add(imagePanel);
         radioButtonPanel.add(new InlineLabel(searchProvider.getTitle()));
-        
+
         radioButtonPanel.getRadioButton().addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-            
+
             @Override
             public void onValueChange(ValueChangeEvent<Boolean> event) {
                 if (false == event.getValue())
                 {
                     return;
                 }
-                _selectedSearchProvider = searchProvider; 
+                _selectedSearchProvider = searchProvider;
             }
         });
         this.providersPanel.add(radioButtonPanel);
         this._searchProviderMap.put(searchProvider, radioButtonPanel);
     }
-    
+
     @UiHandler("searchButton")
     void handleClick(ClickEvent e) {
         searchSubmitted();
@@ -159,13 +161,13 @@ public class MediaPicker extends Composite {
         });
     }
 
-    protected void setSearchResult(MediaSearchResult result) 
+    protected void setSearchResult(MediaSearchResult result)
     {
         registrationsManager.clear();
         resultsPanel.clear();
         resultsPanelContainer.scrollToTop();
 
-        for (MediaResult imageResult : result.getMediaResults()) 
+        for (MediaResult imageResult : result.getMediaResults())
         {
             Widget imageWidget = createPhoto(imageResult);
             if (null != imageWidget) {
@@ -202,7 +204,7 @@ public class MediaPicker extends Composite {
         }
         this.selectedThumbnail = image;
         image.addStyleName(CanvasResources.INSTANCE.main().selected());
-        
+
         photoSizesPanel.clear();
         imageResult.getMediaSizes(new AsyncCallback<ArrayList<MediaInfo>>() {
             @Override
@@ -217,15 +219,15 @@ public class MediaPicker extends Composite {
         });
     }
 
-    protected void setPhotoSizes(ArrayList<MediaInfo> result) 
+    protected void setPhotoSizes(ArrayList<MediaInfo> result)
     {
-        final HashMap<RadioButton, MediaInfo> selectionMap = new HashMap<RadioButton, MediaInfo>();
+        this._sizeSelectionMap.clear();
         photoSizesPanel.clear();
         int defaultSelectionIndex = result.size() / 2;
         int i = 0;
         for (final MediaInfo mediaInfo : result) {
             RadioButton radioButton = new RadioButton("sizes", mediaInfo.getSizeDescription());
-            selectionMap.put(radioButton, mediaInfo);
+            this._sizeSelectionMap.put(radioButton, mediaInfo);
             photoSizesPanel.add(radioButton);
             radioButton.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
                 @Override
@@ -246,5 +248,17 @@ public class MediaPicker extends Composite {
 
     public void imageSizeSelected(final MediaInfo selectedSize) {
         mediaPicked.dispatch(selectedSize);
+    }
+
+    public MediaInfo getSelectedMedia()
+    {
+        for (Entry<RadioButton, MediaInfo> entry : this._sizeSelectionMap.entrySet())
+        {
+            if (entry.getKey().getValue())
+            {
+                return entry.getValue();
+            }
+        }
+        return null;
     }
 }

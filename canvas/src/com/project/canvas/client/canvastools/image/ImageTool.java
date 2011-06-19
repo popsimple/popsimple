@@ -15,11 +15,10 @@ import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.canvastools.base.CanvasToolCommon;
-import com.project.canvas.client.canvastools.media.MediaToolOptions;
 import com.project.canvas.client.resources.CanvasResources;
-import com.project.canvas.client.shared.ElementUtils;
 import com.project.canvas.client.shared.RegistrationsManager;
 import com.project.canvas.client.shared.WidgetUtils;
+import com.project.canvas.client.shared.dialogs.SelectImageDialog;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.shared.events.SimpleEvent.Handler;
 import com.project.canvas.client.shared.searchProviders.interfaces.ImageSearchProvider;
@@ -27,21 +26,21 @@ import com.project.canvas.client.shared.widgets.DialogWithZIndex;
 import com.project.canvas.shared.StringUtils;
 import com.project.canvas.shared.UrlUtils;
 import com.project.canvas.shared.data.ElementData;
-import com.project.canvas.shared.data.MediaData;
+import com.project.canvas.shared.data.ImageData;
+import com.project.canvas.shared.data.ImageInformation;
 import com.project.canvas.shared.data.Point2D;
 
-public class ImageTool extends FlowPanel implements CanvasTool<MediaData>
+public class ImageTool extends FlowPanel implements CanvasTool<ImageData>
 {
     private final SimpleEvent<MouseEvent<?>> moveStartEvent = new SimpleEvent<MouseEvent<?>>();
     private final RegistrationsManager registrationsManager = new RegistrationsManager();
 
-    private MediaData data = null;
-    private MediaToolOptions mediaToolOptionsWidget;
+    private ImageData data = null;
+    private SelectImageDialog selectImageDialog;
     private DialogBox imageSelectionDialog;
 	private boolean optionsWidgetInited = false;
 	private ArrayList<ImageSearchProvider> searchProviders = new ArrayList<ImageSearchProvider>();
     private boolean viewMode;
-    private String _imageUrl;
 
 	public ImageTool(Collection<ImageSearchProvider> imageSearchProviders)
     {
@@ -82,12 +81,12 @@ public class ImageTool extends FlowPanel implements CanvasTool<MediaData>
 
     private void uploadImage() {
     	initOptionsWidget();
-        mediaToolOptionsWidget.setValue(data);
+        selectImageDialog.setValue(data.imageInformation);
 
         Scheduler.get().scheduleDeferred(new ScheduledCommand() {
             @Override
             public void execute() {
-                mediaToolOptionsWidget.setFocus(true);
+                selectImageDialog.setFocus(true);
                 imageSelectionDialog.center();
             }
         });
@@ -102,20 +101,21 @@ public class ImageTool extends FlowPanel implements CanvasTool<MediaData>
         imageSelectionDialog.setGlassEnabled(true);
         imageSelectionDialog.setText("Image options");
 
-		this.mediaToolOptionsWidget = new MediaToolOptions();
-        imageSelectionDialog.add(mediaToolOptionsWidget);
+		this.selectImageDialog = new SelectImageDialog();
+        imageSelectionDialog.add(selectImageDialog);
 
-        this.mediaToolOptionsWidget.setSearchProviders(this.searchProviders);
-        mediaToolOptionsWidget.getCancelEvent().addHandler(new SimpleEvent.Handler<Void>() {
+        this.selectImageDialog.setSearchProviders(this.searchProviders);
+        selectImageDialog.addCancelEvent(new SimpleEvent.Handler<Void>() {
 		    @Override
 		    public void onFire(Void arg) {
 		        imageSelectionDialog.hide();
 		    }
 		});
-		mediaToolOptionsWidget.getDoneEvent().addHandler(new SimpleEvent.Handler<Void>() {
+        selectImageDialog.addDoneEvent(new SimpleEvent.Handler<ImageInformation>() {
 		    @Override
-		    public void onFire(Void arg) {
-		        setValue(mediaToolOptionsWidget.getValue(), true);
+		    public void onFire(ImageInformation arg) {
+		        data.imageInformation = selectImageDialog.getValue();
+		        setValue(data, true);
 		        imageSelectionDialog.hide();
 		    }
 		});
@@ -135,10 +135,10 @@ public class ImageTool extends FlowPanel implements CanvasTool<MediaData>
         }
         // Make sure we don't set arbitrary html or invalid urls
         url = UrlUtils.encodeOnce(url);
-        if (autoSize || (false == UrlUtils.areEquivalent(url, _imageUrl))) {
-            _imageUrl = url;
+        if (autoSize || (false == UrlUtils.areEquivalent(url, data.imageInformation.url))) {
+            data.imageInformation.url = url;
             final ImageTool that = this;
-            WidgetUtils.SetBackgroundImageAsync(this, _imageUrl,
+            WidgetUtils.SetBackgroundImageAsync(this, url,
                     CanvasResources.INSTANCE.imageUnavailable().getURL(), autoSize,
                     CanvasResources.INSTANCE.main().imageLoadingStyle(),
                     new SimpleEvent.Handler<Void>() {
@@ -151,24 +151,23 @@ public class ImageTool extends FlowPanel implements CanvasTool<MediaData>
     }
 
     @Override
-    public MediaData getValue() {
-        this.data.url = this._imageUrl;
+    public ImageData getValue() {
         return this.data;
     }
 
-    public void setValue(MediaData data, boolean autoSize) {
+    public void setValue(ImageData data, boolean autoSize) {
         this.data = data;
-        this.setImageUrl(this.data.url, autoSize);
+        this.setImageUrl(this.data.imageInformation.url, autoSize);
     }
 
     @Override
-    public void setValue(MediaData data) {
+    public void setValue(ImageData data) {
         this.setValue(data, false);
     }
 
     @Override
     public void setElementData(ElementData data) {
-        this.setValue((MediaData) data);
+        this.setValue((ImageData) data);
     }
 
     @Override

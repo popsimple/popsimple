@@ -1,0 +1,19 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui"
+	xmlns:my="urn:import:com.project.canvas.client.shared.widgets.media">
+	<ui:style>
+
+	</ui:style>
+	<g:HTMLPanel>
+		<g:HTMLPanel>
+			<my:MediaSearchPanel ui:field="mediaSearchPanel"/>
+		</g:HTMLPanel>
+		<div>
+			<g:CheckBox ui:field="stretchXOption" name="imageStyle">Stretch width</g:CheckBox>
+			<g:CheckBox ui:field="stretchYOption" name="imageStyle">Stretch height</g:CheckBox>
+			<g:CheckBox ui:field="repeatOption" name="imageStyle">Repeat</g:CheckBox>
+			<g:CheckBox ui:field="centerOption" value="true" name="imageStyle">Center</g:CheckBox>
+		</div>
+	</g:HTMLPanel>
+</ui:UiBinder>

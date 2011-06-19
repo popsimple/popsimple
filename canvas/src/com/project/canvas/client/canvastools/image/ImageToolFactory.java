@@ -7,6 +7,7 @@ import com.project.canvas.client.shared.searchProviders.bing.BingSearchProvider;
 import com.project.canvas.client.shared.searchProviders.flickr.FlickrSearchProvider;
 import com.project.canvas.client.shared.searchProviders.interfaces.ImageSearchProvider;
 import com.project.canvas.shared.ApiKeys;
+import com.project.canvas.shared.data.ImageData;
 import com.project.canvas.shared.data.MediaData;
 
 public class ImageToolFactory extends CanvasToolFactoryBase<ImageTool>
@@ -16,7 +17,7 @@ public class ImageToolFactory extends CanvasToolFactoryBase<ImageTool>
     public ImageTool create()
     {
         ImageTool imageTool = new ImageTool(searchProvides);
-        imageTool.setValue(new MediaData(UNIQUE_ID));
+        imageTool.setValue(new ImageData(UNIQUE_ID));
         return imageTool;
     }
 
