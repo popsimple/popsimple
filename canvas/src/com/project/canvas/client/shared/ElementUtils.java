@@ -163,7 +163,7 @@ public abstract class ElementUtils {
             }
         }
         element.getStyle().setBackgroundImage(
-                StyleUtils.BuildBackgroundUrl(image.getUrl()));
+                StyleUtils.buildBackgroundUrl(image.getUrl()));
     }
 
     public static void SetBackgroundImageAsync(final Element element,

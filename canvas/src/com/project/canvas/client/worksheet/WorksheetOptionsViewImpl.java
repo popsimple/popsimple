@@ -112,48 +112,49 @@ public class WorksheetOptionsViewImpl extends Composite implements WorksheetOpti
 
     @Override
     public void setValue(CanvasPageOptions newValue) {
-        this.value = newValue != null ? newValue : new CanvasPageOptions();
-        this.urlTextBox.setText(GenericUtils.defaultIfNull(this.value.backgroundImageURL, ""));
-        this.repeatOption.setValue(this.value.backgroundRepeat.toLowerCase().trim().equals("repeat"));
-        this.stretchXOption.setValue(false);
-        this.stretchYOption.setValue(false);
-        String[] sizeParts = this.value.backgroundSize.toLowerCase().trim().split(" ");
-        if (sizeParts.length > 0) {
-            this.stretchXOption.setValue(sizeParts[0].equals("100%"));
-        }
-        if (sizeParts.length > 1) {
-            this.stretchYOption.setValue(sizeParts[1].equals("100%"));
-        }
-        this.centerOption
-                .setValue(this.value.backgroundPosition.toLowerCase().trim().equals("center center"));
-        this.previewImage();
+//        this.value = newValue != null ? newValue : new CanvasPageOptions();
+//        this.urlTextBox.setText(GenericUtils.defaultIfNull(this.value.backgroundImageURL, ""));
+//        this.repeatOption.setValue(this.value.backgroundRepeat.toLowerCase().trim().equals("repeat"));
+//        this.stretchXOption.setValue(false);
+//        this.stretchYOption.setValue(false);
+//        String[] sizeParts = this.value.backgroundSize.toLowerCase().trim().split(" ");
+//        if (sizeParts.length > 0) {
+//            this.stretchXOption.setValue(sizeParts[0].equals("100%"));
+//        }
+//        if (sizeParts.length > 1) {
+//            this.stretchYOption.setValue(sizeParts[1].equals("100%"));
+//        }
+//        this.centerOption
+//                .setValue(this.value.backgroundPosition.toLowerCase().trim().equals("center center"));
+//        this.previewImage();
     }
 
     @Override
     public CanvasPageOptions getValue() {
-        this.value.backgroundImageURL = this.urlTextBox.getText().trim();
-        if (this.repeatOption.getValue()) {
-            this.value.backgroundRepeat = "repeat";
-        } else {
-            this.value.backgroundRepeat = "no-repeat";
-        }
-
-        if (this.stretchXOption.getValue()) {
-            this.value.backgroundSize = "100% ";
-        } else {
-            this.value.backgroundSize = "auto ";
-        }
-        if (this.stretchYOption.getValue()) {
-            this.value.backgroundSize += "100%";
-        }
-
-        if (this.centerOption.getValue()) {
-            this.value.backgroundPosition = "center center";
-        } else {
-            this.value.backgroundPosition = "";
-        }
-
-        return this.value;
+//        this.value.backgroundImageURL = this.urlTextBox.getText().trim();
+//        if (this.repeatOption.getValue()) {
+//            this.value.backgroundRepeat = "repeat";
+//        } else {
+//            this.value.backgroundRepeat = "no-repeat";
+//        }
+//
+//        if (this.stretchXOption.getValue()) {
+//            this.value.backgroundSize = "100% ";
+//        } else {
+//            this.value.backgroundSize = "auto ";
+//        }
+//        if (this.stretchYOption.getValue()) {
+//            this.value.backgroundSize += "100%";
+//        }
+//
+//        if (this.centerOption.getValue()) {
+//            this.value.backgroundPosition = "center center";
+//        } else {
+//            this.value.backgroundPosition = "";
+//        }
+//
+//        return this.value;
+        return null;
     }
 
 }

@@ -1,7 +1,7 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui"
-	xmlns:my="urn:import:com.project.canvas.client.shared.widgets.media.images"
+	xmlns:my="urn:import:com.project.canvas.client.shared.widgets.media"
 	>
 	<ui:style>
 		.urlTextBox {
@@ -18,8 +18,15 @@
 				Add an image from the web - enter a URL:
 				<g:TextBox ui:field="urlTextBox" addStyleNames="{style.urlTextBox}"/>
 			</g:HTMLPanel>
-			<g:HTMLPanel ui:field="searchPanelContainer" addStyleNames="{style.padded}">
+			<g:HTMLPanel>
+				<my:MediaSearchPanel ui:field="mediaSearchPanel"/>
 			</g:HTMLPanel>
+			<div>
+				<g:CheckBox ui:field="stretchXOption" name="imageStyle">Stretch width</g:CheckBox>
+				<g:CheckBox ui:field="stretchYOption" name="imageStyle">Stretch height</g:CheckBox>
+				<g:CheckBox ui:field="repeatOption" name="imageStyle">Repeat</g:CheckBox>
+				<g:CheckBox ui:field="centerOption" value="true" name="imageStyle">Center</g:CheckBox>
+			</div>
 			<g:Button ui:field="doneButton" addStyleNames="{style.padded}">Done</g:Button>
 			<g:Button ui:field="cancelButton" addStyleNames="{style.padded}">Cancel</g:Button>
 		</g:HTMLPanel>

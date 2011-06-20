@@ -12,7 +12,7 @@ import com.project.canvas.client.shared.searchProviders.interfaces.MediaSearchPr
 public interface IMediaSearchPanel<TMediaInformation>
 extends IsWidget, TakesValue<TMediaInformation>
 {
-    HandlerRegistration addMediaPickedHandler(SimpleEvent.Handler<MediaInfo> handler);
+    HandlerRegistration addMediaSelectedHandler(SimpleEvent.Handler<TMediaInformation> handler);
 
     void setSearchProviders(List<? extends MediaSearchProvider> searchProviders);
 }

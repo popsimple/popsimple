@@ -48,16 +48,23 @@ import com.project.canvas.client.canvastools.base.ToolboxItem;
 import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.ElementUtils;
 import com.project.canvas.client.shared.RegistrationsManager;
+import com.project.canvas.client.shared.StyleUtils;
 import com.project.canvas.client.shared.WidgetUtils;
+import com.project.canvas.client.shared.dialogs.SelectImageDialog;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.shared.events.SimpleEvent.Handler;
+import com.project.canvas.client.shared.searchProviders.bing.BingSearchProvider;
+import com.project.canvas.client.shared.searchProviders.flickr.FlickrSearchProvider;
+import com.project.canvas.client.shared.searchProviders.interfaces.ImageSearchProvider;
 import com.project.canvas.client.shared.widgets.DialogWithZIndex;
 import com.project.canvas.client.worksheet.interfaces.ElementDragManager;
 import com.project.canvas.client.worksheet.interfaces.ToolFrameTransformer;
 import com.project.canvas.client.worksheet.interfaces.WorksheetOptionsView;
 import com.project.canvas.client.worksheet.interfaces.WorksheetView;
+import com.project.canvas.shared.ApiKeys;
 import com.project.canvas.shared.data.CanvasPageOptions;
 import com.project.canvas.shared.data.ElementData;
+import com.project.canvas.shared.data.ImageInformation;
 import com.project.canvas.shared.data.Point2D;
 import com.project.canvas.shared.data.Transform2D;
 
@@ -101,14 +108,14 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     private Handler<Void> _floatingWidgetTerminator;
     private ToolboxItem activeToolboxItem;
     private Widget floatingWidget;
-    private CanvasPageOptions pageOptions;
+    private CanvasPageOptions pageOptions = new CanvasPageOptions();
 
     private final ToolFrameTransformer _toolFrameTransformer;
     private final ToolFrameSelectionManager _toolFrameSelectionManager;
     private final ElementDragManagerImpl _floatingWidgetDragManager;
 
     private final DialogBox optionsDialog = new DialogWithZIndex(false, true);
-    private final WorksheetOptionsView optionsWidget = new WorksheetOptionsViewImpl();
+    private final SelectImageDialog selectImageDialog = new SelectImageDialog();
     private final HashMap<CanvasToolFrame, RegistrationsManager> toolFrameRegistrations = new HashMap<CanvasToolFrame, RegistrationsManager>();
 
     private final HashSet<CanvasToolFrame> overToolFrames = new HashSet<CanvasToolFrame>();
@@ -125,7 +132,6 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
     private boolean viewMode;
     private boolean viewModeSet = false;
-    private boolean _ignoreNextSelection = false;
 
     public WorksheetViewImpl() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -141,7 +147,11 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
                 this, this.dragPanel, 0, stopOperationEvent);
 
         optionsDialog.setText("Worksheet options");
-        optionsDialog.add(this.optionsWidget);
+        ArrayList<ImageSearchProvider> searchProviders = new ArrayList<ImageSearchProvider>();
+        searchProviders.add(new BingSearchProvider(ApiKeys.BING_SEARCH));
+        searchProviders.add(new FlickrSearchProvider(ApiKeys.FLICKR_SEARCH));
+        this.selectImageDialog.setSearchProviders(searchProviders);
+        optionsDialog.add(this.selectImageDialog);
 
         this.addRegistrations();
         this.setViewMode(false);
@@ -346,23 +356,27 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     @Override
     public void setOptions(final CanvasPageOptions value) {
         this.pageOptions = value;
-        optionsWidget.setValue(this.pageOptions);
+        selectImageDialog.setValue(this.pageOptions.backgroundImage);
         final Style style = this.worksheetBackground.getElement().getStyle();
         style.clearProperty("backgroundRepeat");
         style.clearProperty("backgroundSize");
         style.clearProperty("backgroundPosition");
 
-        if (value.backgroundImageURL == null || value.backgroundImageURL.trim().isEmpty()) {
+        if (value.backgroundImage.url == null || value.backgroundImage.url.trim().isEmpty()) {
             style.setBackgroundImage("");
         } else {
-            WidgetUtils.SetBackgroundImageAsync(this.worksheetBackground, value.backgroundImageURL,
+            WidgetUtils.SetBackgroundImageAsync(this.worksheetBackground, value.backgroundImage.url,
                     CanvasResources.INSTANCE.imageUnavailable().getURL(), false, CanvasResources.INSTANCE
                             .main().imageLoadingStyle(), new SimpleEvent.Handler<Void>() {
                         @Override
                         public void onFire(Void arg) {
-                            style.setProperty("backgroundRepeat", value.backgroundRepeat);
-                            style.setProperty("backgroundSize", value.backgroundSize);
-                            style.setProperty("backgroundPosition", value.backgroundPosition);
+                            StyleUtils.setBackgroundRepeat(style, value.backgroundImage.repeat);
+                            StyleUtils.setBackgroundStretch(style,
+                                    value.backgroundImage.stretchWidth, value.backgroundImage.stretchHeight);
+                            if (value.backgroundImage.center)
+                            {
+                                StyleUtils.setBackgroundCenter(style);
+                            }
                         }
                     }, new SimpleEvent.EmptyHandler<Void>());
         }
@@ -398,18 +412,19 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
                 optionsDialog.center();
             }
         });
-        this.optionsWidget.addCancelHandler(new SimpleEvent.Handler<Void>() {
+        this.selectImageDialog.addCancelHandler(new SimpleEvent.Handler<Void>() {
             @Override
             public void onFire(Void arg) {
                 optionsDialog.hide();
             }
         });
-        this.optionsWidget.addDoneHandler(new SimpleEvent.Handler<Void>() {
+        this.selectImageDialog.addDoneHandler(new SimpleEvent.Handler<ImageInformation>() {
 
             @Override
-            public void onFire(Void arg) {
+            public void onFire(ImageInformation arg) {
                 optionsDialog.hide();
-                optionsUpdatedEvent.dispatch(optionsWidget.getValue());
+                pageOptions.backgroundImage = arg;
+                optionsUpdatedEvent.dispatch(pageOptions);
             }
         });
         this.worksheetPanel.addDomHandler(new MouseDownHandler() {

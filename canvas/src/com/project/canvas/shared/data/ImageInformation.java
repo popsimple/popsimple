@@ -1,7 +1,12 @@
 package com.project.canvas.shared.data;
 
-public class ImageInformation
-{
+import java.io.Serializable;
+
+import com.google.gwt.user.client.rpc.IsSerializable;
+
+public class ImageInformation implements Serializable, IsSerializable {
+    private static final long serialVersionUID = 1L;
+
     public String url;
     public boolean repeat = false;
     public boolean center = false;

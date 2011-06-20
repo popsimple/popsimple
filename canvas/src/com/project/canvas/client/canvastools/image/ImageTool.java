@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
@@ -17,6 +18,7 @@ import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.canvastools.base.CanvasToolCommon;
 import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.RegistrationsManager;
+import com.project.canvas.client.shared.StyleUtils;
 import com.project.canvas.client.shared.WidgetUtils;
 import com.project.canvas.client.shared.dialogs.SelectImageDialog;
 import com.project.canvas.client.shared.events.SimpleEvent;
@@ -105,13 +107,13 @@ public class ImageTool extends FlowPanel implements CanvasTool<ImageData>
         imageSelectionDialog.add(selectImageDialog);
 
         this.selectImageDialog.setSearchProviders(this.searchProviders);
-        selectImageDialog.addCancelEvent(new SimpleEvent.Handler<Void>() {
+        selectImageDialog.addCancelHandler(new SimpleEvent.Handler<Void>() {
 		    @Override
 		    public void onFire(Void arg) {
 		        imageSelectionDialog.hide();
 		    }
 		});
-        selectImageDialog.addDoneEvent(new SimpleEvent.Handler<ImageInformation>() {
+        selectImageDialog.addDoneHandler(new SimpleEvent.Handler<ImageInformation>() {
 		    @Override
 		    public void onFire(ImageInformation arg) {
 		        data.imageInformation = selectImageDialog.getValue();
@@ -146,6 +148,14 @@ public class ImageTool extends FlowPanel implements CanvasTool<ImageData>
                         public void onFire(Void arg) {
                             that.removeStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
                             that.addStyleName(CanvasResources.INSTANCE.main().imageToolSet());
+                            Style style = that.getElement().getStyle();
+                            StyleUtils.setBackgroundRepeat(style, data.imageInformation.repeat);
+                            StyleUtils.setBackgroundStretch(style,
+                                    data.imageInformation.stretchWidth, data.imageInformation.stretchHeight);
+                            if (data.imageInformation.center)
+                            {
+                                StyleUtils.setBackgroundCenter(style);
+                            }
                         }}, new SimpleEvent.EmptyHandler<Void>());
         }
     }

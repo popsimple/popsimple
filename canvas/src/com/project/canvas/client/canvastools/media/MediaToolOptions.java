@@ -20,11 +20,7 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.shared.NativeUtils;
 import com.project.canvas.client.shared.events.SimpleEvent;
-import com.project.canvas.client.shared.searchProviders.interfaces.MediaInfo;
 import com.project.canvas.client.shared.searchProviders.interfaces.MediaSearchProvider;
-import com.project.canvas.client.shared.widgets.media.IMediaSearchPanel;
-import com.project.canvas.client.shared.widgets.media.MediaSearchPanel;
-import com.project.canvas.client.shared.widgets.media.images.ImageSearchPanel;
 import com.project.canvas.shared.UrlUtils;
 import com.project.canvas.shared.data.MediaData;
 
@@ -51,7 +47,7 @@ public class MediaToolOptions extends Composite implements TakesValue<MediaData>
     HTMLPanel searchPanelContainer;
 
     private MediaData data;
-    private IMediaSearchPanel _searchPanel = new ImageSearchPanel();
+//    private IMediaSearchPanel _searchPanel = new ImageSearchPanel();
 
     private SimpleEvent<Void> doneEvent = new SimpleEvent<Void>();
     private SimpleEvent<Void> cancelEvent = new SimpleEvent<Void>();
@@ -70,13 +66,13 @@ public class MediaToolOptions extends Composite implements TakesValue<MediaData>
                 cancelEvent.dispatch(null);
             }
         });
-        this.searchPanelContainer.add(this._searchPanel);
-        this._searchPanel.addMediaPickedHandler(new SimpleEvent.Handler<MediaInfo>() {
-            @Override
-            public void onFire(MediaInfo imageInfo) {
-                urlTextBox.setText(imageInfo.getMediaUrl());
-            }
-        });
+//        this.searchPanelContainer.add(this._searchPanel);
+//        this._searchPanel.addMediaPickedHandler(new SimpleEvent.Handler<MediaInfo>() {
+//            @Override
+//            public void onFire(MediaInfo imageInfo) {
+//                urlTextBox.setText(imageInfo.getMediaUrl());
+//            }
+//        });
         this.urlTextBox.addKeyPressHandler(new KeyPressHandler() {
             @Override
             public void onKeyPress(KeyPressEvent event)
@@ -98,7 +94,7 @@ public class MediaToolOptions extends Composite implements TakesValue<MediaData>
 
     public void setSearchProviders(List<? extends MediaSearchProvider> searchProviders)
     {
-        this._searchPanel.setSearchProviders(searchProviders);
+//        this._searchPanel.setSearchProviders(searchProviders);
     }
 
     @Override
