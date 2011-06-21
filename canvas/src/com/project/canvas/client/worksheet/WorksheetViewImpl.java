@@ -6,7 +6,6 @@ import java.util.HashSet;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.NativeEvent;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.FocusEvent;
@@ -48,8 +47,6 @@ import com.project.canvas.client.canvastools.base.ToolboxItem;
 import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.ElementUtils;
 import com.project.canvas.client.shared.RegistrationsManager;
-import com.project.canvas.client.shared.StyleUtils;
-import com.project.canvas.client.shared.WidgetUtils;
 import com.project.canvas.client.shared.dialogs.SelectImageDialog;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.shared.events.SimpleEvent.Handler;
@@ -59,6 +56,7 @@ import com.project.canvas.client.worksheet.interfaces.ElementDragManager;
 import com.project.canvas.client.worksheet.interfaces.ToolFrameTransformer;
 import com.project.canvas.client.worksheet.interfaces.WorksheetView;
 import com.project.canvas.shared.CloneableUtils;
+import com.project.canvas.shared.ImageInformationUtils;
 import com.project.canvas.shared.data.CanvasPageOptions;
 import com.project.canvas.shared.data.ElementData;
 import com.project.canvas.shared.data.ImageInformation;
@@ -350,29 +348,9 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     @Override
     public void setOptions(final CanvasPageOptions value) {
         this.pageOptions = value;
-        final Style style = this.worksheetBackground.getElement().getStyle();
-        style.clearProperty("backgroundRepeat");
-        style.clearProperty("backgroundSize");
-        style.clearProperty("backgroundPosition");
 
-        if (value.backgroundImage.url == null || value.backgroundImage.url.trim().isEmpty()) {
-            style.setBackgroundImage("");
-        } else {
-            WidgetUtils.SetBackgroundImageAsync(this.worksheetBackground, value.backgroundImage.url,
-                    CanvasResources.INSTANCE.imageUnavailable().getURL(), false, CanvasResources.INSTANCE
-                            .main().imageLoadingStyle(), new SimpleEvent.Handler<Void>() {
-                        @Override
-                        public void onFire(Void arg) {
-                            StyleUtils.setBackgroundRepeat(style, value.backgroundImage.repeat);
-                            StyleUtils.setBackgroundStretch(style,
-                                    value.backgroundImage.stretchWidth, value.backgroundImage.stretchHeight);
-                            if (value.backgroundImage.center)
-                            {
-                                StyleUtils.setBackgroundCenter(style);
-                            }
-                        }
-                    }, new SimpleEvent.EmptyHandler<Void>());
-        }
+        ImageInformationUtils.setWidgetBackgroundAsync(
+                value.backgroundImage, this.worksheetBackground, false);
     }
 
     @Override

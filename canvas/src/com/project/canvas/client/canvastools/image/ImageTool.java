@@ -5,7 +5,6 @@ import java.util.Collection;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
@@ -18,7 +17,6 @@ import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.canvastools.base.CanvasToolCommon;
 import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.RegistrationsManager;
-import com.project.canvas.client.shared.StyleUtils;
 import com.project.canvas.client.shared.WidgetUtils;
 import com.project.canvas.client.shared.dialogs.SelectImageDialog;
 import com.project.canvas.client.shared.events.SimpleEvent;
@@ -26,6 +24,7 @@ import com.project.canvas.client.shared.events.SimpleEvent.Handler;
 import com.project.canvas.client.shared.searchProviders.interfaces.ImageSearchProvider;
 import com.project.canvas.client.shared.widgets.DialogWithZIndex;
 import com.project.canvas.shared.CloneableUtils;
+import com.project.canvas.shared.ImageInformationUtils;
 import com.project.canvas.shared.StringUtils;
 import com.project.canvas.shared.UrlUtils;
 import com.project.canvas.shared.data.ElementData;
@@ -53,7 +52,7 @@ public class ImageTool extends FlowPanel implements CanvasTool<ImageData>
 
         WidgetUtils.disableDrag(this);
         super.addStyleName(CanvasResources.INSTANCE.main().imageBox());
-        super.addStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
+        this.setEmptyStyle();
     }
 
     @Override
@@ -143,29 +142,26 @@ public class ImageTool extends FlowPanel implements CanvasTool<ImageData>
 
     private void setImage(boolean autoSize) {
         if (StringUtils.isWhitespaceOrNull(this.data.imageInformation.url)) {
-            this.getElement().getStyle().setBackgroundImage("");
-            super.addStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
-            super.removeStyleName(CanvasResources.INSTANCE.main().imageToolSet());
-            return;
+            this.setEmptyStyle();
         }
-        final ImageTool that = this;
-        WidgetUtils.SetBackgroundImageAsync(this, this.data.imageInformation.url,
-                CanvasResources.INSTANCE.imageUnavailable().getURL(), autoSize,
-                CanvasResources.INSTANCE.main().imageLoadingStyle(),
+        ImageInformationUtils.setWidgetBackgroundAsync(this.data.imageInformation, this, autoSize,
                 new SimpleEvent.Handler<Void>() {
                     @Override
                     public void onFire(Void arg) {
-                        that.removeStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
-                        that.addStyleName(CanvasResources.INSTANCE.main().imageToolSet());
-                        Style style = that.getElement().getStyle();
-                        StyleUtils.setBackgroundRepeat(style, data.imageInformation.repeat);
-                        StyleUtils.setBackgroundStretch(style,
-                                data.imageInformation.stretchWidth, data.imageInformation.stretchHeight);
-                        if (data.imageInformation.center)
-                        {
-                            StyleUtils.setBackgroundCenter(style);
-                        }
+                        setLoadedStyle();
                     }}, new SimpleEvent.EmptyHandler<Void>());
+    }
+
+    private void setEmptyStyle()
+    {
+        this.addStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
+        this.removeStyleName(CanvasResources.INSTANCE.main().imageToolSet());
+    }
+
+    private void setLoadedStyle()
+    {
+        this.removeStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
+        this.addStyleName(CanvasResources.INSTANCE.main().imageToolSet());
     }
 
     @Override

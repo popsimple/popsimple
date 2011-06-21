@@ -1,6 +1,5 @@
 package com.project.canvas.client.worksheet.interfaces;
 
-import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.user.client.Element;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.shared.events.SimpleEvent.Handler;

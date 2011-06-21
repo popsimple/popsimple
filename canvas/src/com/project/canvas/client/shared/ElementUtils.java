@@ -7,7 +7,6 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.user.client.ui.Image;
-import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.shared.StringUtils;
 import com.project.canvas.shared.data.KeyValue;

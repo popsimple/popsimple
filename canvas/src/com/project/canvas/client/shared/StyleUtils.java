@@ -1,7 +1,6 @@
 package com.project.canvas.client.shared;
 
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.dom.client.Style.Unit;
 
 public class StyleUtils
 {
@@ -10,43 +9,54 @@ public class StyleUtils
         return "url(\"" + imageUrl + "\")";
     }
 
+    public static void clearBackgroundRepeat(Style style)
+    {
+        style.clearProperty(CssProperties.BACKGROUND_REPEAT);
+    }
+
     public static void setBackgroundRepeat(Style style, boolean repeat)
     {
         if (repeat)
         {
-            style.setProperty("backgroundRepeat", "repeat");
+            style.setProperty(CssProperties.BACKGROUND_REPEAT, "repeat");
         }
         else
         {
-            style.setProperty("backgroundRepeat", "no-repeat");
+            style.setProperty(CssProperties.BACKGROUND_REPEAT, "no-repeat");
         }
+    }
+
+    public static void clearBackgroundPosition(Style style)
+    {
+        style.clearProperty(CssProperties.BACKGROUND_POSITION);
     }
 
     public static void setBackgroundCenter(Style style)
     {
-        style.setProperty("backgroundPosition", "center center");
+        style.setProperty(CssProperties.BACKGROUND_POSITION, "center center");
+    }
+
+    public static void clearBackgroundSize(Style style)
+    {
+        style.clearProperty(CssProperties.BACKGROUND_SIZE);
     }
 
     public static void setBackgroundStretch(Style style, boolean stretchWidth, boolean stretchHeight)
     {
         String width = "";
-        if (stretchWidth)
-        {
+        if (stretchWidth){
             width = "100%";
         }
-        else
-        {
+        else{
             width = "auto";
         }
         String height = "";
-        if (stretchHeight)
-        {
+        if (stretchHeight){
             height = "100%";
         }
-        else
-        {
+        else{
             height = "auto";
         }
-        style.setProperty("backgroundSize", width + " " + height);
+        style.setProperty(CssProperties.BACKGROUND_SIZE, width + " " + height);
     }
 }
