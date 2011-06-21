@@ -15,7 +15,6 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Focusable;
@@ -28,14 +27,14 @@ import com.project.canvas.client.shared.searchProviders.interfaces.MediaSearchPr
 import com.project.canvas.client.shared.widgets.media.MediaSearchPanel;
 import com.project.canvas.shared.ObjectUtils;
 import com.project.canvas.shared.UrlUtils;
-import com.project.canvas.shared.data.ImageInformation;
 import com.project.canvas.shared.data.Point2D;
+import com.project.canvas.shared.data.VideoInformation;
 
-public class SelectImageDialog extends Composite implements TakesValue<ImageInformation>, Focusable {
+public class SelectVideoDialog extends Composite implements TakesValue<VideoInformation>, Focusable {
 
     private static MediaToolOptionsUiBinder uiBinder = GWT.create(MediaToolOptionsUiBinder.class);
 
-    interface MediaToolOptionsUiBinder extends UiBinder<Widget, SelectImageDialog> {
+    interface MediaToolOptionsUiBinder extends UiBinder<Widget, SelectVideoDialog> {
     }
 
     @UiField
@@ -53,24 +52,12 @@ public class SelectImageDialog extends Composite implements TakesValue<ImageInfo
     @UiField
     MediaSearchPanel mediaSearchPanel;
 
-    @UiField
-    CheckBox stretchXOption;
-
-    @UiField
-    CheckBox stretchYOption;
-
-    @UiField
-    CheckBox repeatOption;
-
-    @UiField
-    CheckBox centerOption;
-
-    private SimpleEvent<ImageInformation> doneEvent = new SimpleEvent<ImageInformation>();
+    private SimpleEvent<VideoInformation> doneEvent = new SimpleEvent<VideoInformation>();
     private SimpleEvent<Void> cancelEvent = new SimpleEvent<Void>();
 
-    private ImageInformation _imageInformation = new ImageInformation();
+    private VideoInformation _videoInformation = new VideoInformation();
 
-    public SelectImageDialog() {
+    public SelectVideoDialog() {
         initWidget(uiBinder.createAndBindUi(this));
         this.doneButton.addClickHandler(new ClickHandler() {
             @Override
@@ -86,8 +73,8 @@ public class SelectImageDialog extends Composite implements TakesValue<ImageInfo
         });
         this.mediaSearchPanel.addMediaPickedHandler(new SimpleEvent.Handler<MediaInfo>() {
             @Override
-            public void onFire(MediaInfo imageInfo) {
-                setSearchData(imageInfo);
+            public void onFire(MediaInfo mediaInfo) {
+                setSearchData(mediaInfo);
             }
         });
         this.urlTextBox.addChangeHandler(new ChangeHandler() {
@@ -105,7 +92,7 @@ public class SelectImageDialog extends Composite implements TakesValue<ImageInfo
         });
     }
 
-    public HandlerRegistration addDoneHandler(SimpleEvent.Handler<ImageInformation> handler)
+    public HandlerRegistration addDoneHandler(SimpleEvent.Handler<VideoInformation> handler)
     {
         return this.doneEvent.addHandler(handler);
     }
@@ -121,18 +108,14 @@ public class SelectImageDialog extends Composite implements TakesValue<ImageInfo
     }
 
     @Override
-    public void setValue(ImageInformation value) {
-        this._imageInformation = value;
+    public void setValue(VideoInformation value) {
+        this._videoInformation = value;
         this.urlTextBox.setText(value.url);
-        this.repeatOption.setValue(value.repeat);
-        this.centerOption.setValue(value.center);
-        this.stretchXOption.setValue(value.stretchWidth);
-        this.stretchYOption.setValue(value.stretchHeight);
     }
 
     @Override
-    public ImageInformation getValue() {
-        return this._imageInformation;
+    public VideoInformation getValue() {
+        return this._videoInformation;
     }
 
     @Override
@@ -157,28 +140,20 @@ public class SelectImageDialog extends Composite implements TakesValue<ImageInfo
 
     private void setSearchData(MediaInfo mediaInfo)
     {
-        this._imageInformation.url = mediaInfo.getMediaUrl();
-        this._imageInformation.size = new Point2D(mediaInfo.getWidth(), mediaInfo.getHeight());
-        this.urlTextBox.setText(this._imageInformation.url);
-    }
-
-    private void applyImageOptions()
-    {
-        this._imageInformation.repeat = this.repeatOption.getValue();
-        this._imageInformation.center = this.centerOption.getValue();
-        this._imageInformation.stretchWidth = this.stretchXOption.getValue();
-        this._imageInformation.stretchHeight = this.stretchYOption.getValue();
+        this._videoInformation.url = mediaInfo.getMediaUrl();
+        this._videoInformation.size = new Point2D(mediaInfo.getWidth(), mediaInfo.getHeight());
+        this.urlTextBox.setText(this._videoInformation.url);
     }
 
     private void setManualUrl(String url)
     {
-        if (ObjectUtils.equals(this._imageInformation.url, url))
+        if (ObjectUtils.equals(this._videoInformation.url, url))
         {
             return;
         }
         if (url.isEmpty() || UrlUtils.isValidUrl(url, false)) {
-            this._imageInformation.url = url;
-            this._imageInformation.size = new Point2D();
+            this._videoInformation.url = url;
+            this._videoInformation.size = new Point2D();
         } else {
             Window.alert("Invalid url.");
         }
@@ -186,7 +161,6 @@ public class SelectImageDialog extends Composite implements TakesValue<ImageInfo
 
     public void doneClicked()
     {
-        this.applyImageOptions();
-        this.doneEvent.dispatch(this._imageInformation);
+        this.doneEvent.dispatch(this._videoInformation);
     }
 }

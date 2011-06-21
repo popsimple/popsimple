@@ -25,6 +25,7 @@ import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.shared.events.SimpleEvent.Handler;
 import com.project.canvas.client.shared.searchProviders.interfaces.ImageSearchProvider;
 import com.project.canvas.client.shared.widgets.DialogWithZIndex;
+import com.project.canvas.shared.CloneableUtils;
 import com.project.canvas.shared.StringUtils;
 import com.project.canvas.shared.UrlUtils;
 import com.project.canvas.shared.data.ElementData;
@@ -39,7 +40,7 @@ public class ImageTool extends FlowPanel implements CanvasTool<ImageData>
 
     private ImageData data = null;
     private SelectImageDialog selectImageDialog;
-    private DialogBox imageSelectionDialog;
+    private DialogBox dialogContainer;
 	private boolean optionsWidgetInited = false;
 	private ArrayList<ImageSearchProvider> searchProviders = new ArrayList<ImageSearchProvider>();
     private boolean viewMode;
@@ -83,13 +84,14 @@ public class ImageTool extends FlowPanel implements CanvasTool<ImageData>
 
     private void uploadImage() {
     	initOptionsWidget();
-        selectImageDialog.setValue(data.imageInformation);
+        selectImageDialog.setValue(
+                (ImageInformation)CloneableUtils.clone(data.imageInformation));
 
         Scheduler.get().scheduleDeferred(new ScheduledCommand() {
             @Override
             public void execute() {
                 selectImageDialog.setFocus(true);
-                imageSelectionDialog.center();
+                dialogContainer.center();
             }
         });
     }
@@ -99,28 +101,39 @@ public class ImageTool extends FlowPanel implements CanvasTool<ImageData>
 			return;
 		}
 		this.optionsWidgetInited = true;
-		this.imageSelectionDialog = new DialogWithZIndex(false, true);
-        imageSelectionDialog.setGlassEnabled(true);
-        imageSelectionDialog.setText("Image options");
+		this.dialogContainer = new DialogWithZIndex(false, true);
+        dialogContainer.setGlassEnabled(true);
+        dialogContainer.setText("Image options");
 
 		this.selectImageDialog = new SelectImageDialog();
-        imageSelectionDialog.add(selectImageDialog);
+        dialogContainer.add(selectImageDialog);
 
         this.selectImageDialog.setSearchProviders(this.searchProviders);
         selectImageDialog.addCancelHandler(new SimpleEvent.Handler<Void>() {
 		    @Override
 		    public void onFire(Void arg) {
-		        imageSelectionDialog.hide();
+		        dialogContainer.hide();
 		    }
 		});
         selectImageDialog.addDoneHandler(new SimpleEvent.Handler<ImageInformation>() {
 		    @Override
 		    public void onFire(ImageInformation arg) {
-		        data.imageInformation = selectImageDialog.getValue();
-		        setValue(data, true);
-		        imageSelectionDialog.hide();
+		        setImageInformation(arg);
+		        dialogContainer.hide();
 		    }
 		});
+	}
+
+	private void setImageInformation(ImageInformation imageInformation)
+	{
+	    if (data.imageInformation.equals(imageInformation))
+        {
+	        return;
+        }
+	    //Make sure we don't set arbitrary html or invalid urls
+	    imageInformation.url = UrlUtils.encodeOnce(imageInformation.url);
+	    data.imageInformation = imageInformation;
+        setImage(true);
 	}
 
     @Override
@@ -128,36 +141,31 @@ public class ImageTool extends FlowPanel implements CanvasTool<ImageData>
         // do nothing.
     }
 
-    private void setImageUrl(String url, boolean autoSize) {
-        if (StringUtils.isWhitespaceOrNull(url)) {
+    private void setImage(boolean autoSize) {
+        if (StringUtils.isWhitespaceOrNull(this.data.imageInformation.url)) {
             this.getElement().getStyle().setBackgroundImage("");
             super.addStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
             super.removeStyleName(CanvasResources.INSTANCE.main().imageToolSet());
             return;
         }
-        // Make sure we don't set arbitrary html or invalid urls
-        url = UrlUtils.encodeOnce(url);
-        if (autoSize || (false == UrlUtils.areEquivalent(url, data.imageInformation.url))) {
-            data.imageInformation.url = url;
-            final ImageTool that = this;
-            WidgetUtils.SetBackgroundImageAsync(this, url,
-                    CanvasResources.INSTANCE.imageUnavailable().getURL(), autoSize,
-                    CanvasResources.INSTANCE.main().imageLoadingStyle(),
-                    new SimpleEvent.Handler<Void>() {
-                        @Override
-                        public void onFire(Void arg) {
-                            that.removeStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
-                            that.addStyleName(CanvasResources.INSTANCE.main().imageToolSet());
-                            Style style = that.getElement().getStyle();
-                            StyleUtils.setBackgroundRepeat(style, data.imageInformation.repeat);
-                            StyleUtils.setBackgroundStretch(style,
-                                    data.imageInformation.stretchWidth, data.imageInformation.stretchHeight);
-                            if (data.imageInformation.center)
-                            {
-                                StyleUtils.setBackgroundCenter(style);
-                            }
-                        }}, new SimpleEvent.EmptyHandler<Void>());
-        }
+        final ImageTool that = this;
+        WidgetUtils.SetBackgroundImageAsync(this, this.data.imageInformation.url,
+                CanvasResources.INSTANCE.imageUnavailable().getURL(), autoSize,
+                CanvasResources.INSTANCE.main().imageLoadingStyle(),
+                new SimpleEvent.Handler<Void>() {
+                    @Override
+                    public void onFire(Void arg) {
+                        that.removeStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
+                        that.addStyleName(CanvasResources.INSTANCE.main().imageToolSet());
+                        Style style = that.getElement().getStyle();
+                        StyleUtils.setBackgroundRepeat(style, data.imageInformation.repeat);
+                        StyleUtils.setBackgroundStretch(style,
+                                data.imageInformation.stretchWidth, data.imageInformation.stretchHeight);
+                        if (data.imageInformation.center)
+                        {
+                            StyleUtils.setBackgroundCenter(style);
+                        }
+                    }}, new SimpleEvent.EmptyHandler<Void>());
     }
 
     @Override
@@ -167,7 +175,7 @@ public class ImageTool extends FlowPanel implements CanvasTool<ImageData>
 
     public void setValue(ImageData data, boolean autoSize) {
         this.data = data;
-        this.setImageUrl(this.data.imageInformation.url, autoSize);
+        this.setImage(autoSize);
     }
 
     @Override

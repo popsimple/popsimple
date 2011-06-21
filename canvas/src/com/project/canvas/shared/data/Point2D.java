@@ -3,8 +3,9 @@ package com.project.canvas.shared.data;
 import java.io.Serializable;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
+import com.project.canvas.shared.contracts.ICloneable;
 
-public class Point2D implements Serializable, IsSerializable {
+public class Point2D implements Serializable, IsSerializable, ICloneable {
     private static final long serialVersionUID = 1L;
 
     public static final Point2D zero = new Point2D(0, 0);
@@ -30,7 +31,7 @@ public class Point2D implements Serializable, IsSerializable {
     public int getY() {
         return this._y;
     }
-    
+
     public void setX(int x) {
         this._x = x;
     }
@@ -55,7 +56,7 @@ public class Point2D implements Serializable, IsSerializable {
     public int hashCode() {
     	return (this._x + this._y + 37) * 13;
     }
-    
+
     public Point2D minus(Point2D other) {
         return new Point2D(this._x - other._x, this._y - other._y);
     }
@@ -66,7 +67,7 @@ public class Point2D implements Serializable, IsSerializable {
     public Point2D mul(int scalar) {
         return new Point2D(this._x * scalar, this._y * scalar);
     }
-    
+
     public Point2D plus(Point2D other) {
         return new Point2D(this._x + other._x, this._y + other._y);
     }
@@ -74,12 +75,12 @@ public class Point2D implements Serializable, IsSerializable {
     public double radians() {
         return Math.atan2(this._y, this._x);
     }
-    
-    
+
+
     public double radius() {
         return Math.sqrt(this._x * this._x + this._y * this._y);
     }
-    
+
     public Point2D rotate(double radians)
     {
     	double newAngle = this.radians() + radians;
@@ -87,13 +88,13 @@ public class Point2D implements Serializable, IsSerializable {
     }
 
 	/**
-	 * Transforms a given point to and from rotated and unrotated coordinates, relative to the given axis point 
+	 * Transforms a given point to and from rotated and unrotated coordinates, relative to the given axis point
 	 * @param radians rotation angle in radians
-	 * @param axisOffset 
+	 * @param axisOffset
 	 * @param toRotated true = from unrotated to rotated, false = opposite transformation
 	 * @return transformed point
 	 */
-	public Point2D rotate(double radians, Point2D axisOffset, boolean toRotated) 
+	public Point2D rotate(double radians, Point2D axisOffset, boolean toRotated)
 	{
 		int direction = toRotated ? 1 : -1;
 		return this.minus(axisOffset.rotate(radians).minus(axisOffset).mul(direction));
@@ -103,12 +104,24 @@ public class Point2D implements Serializable, IsSerializable {
     {
     	return new Point2D((int)(radius * Math.cos(radians)), (int) (radius * Math.sin(radians)));
     }
-    
+
     public static Point2D max(Point2D first, Point2D other) {
         return new Point2D(Math.max(first._x, other._x), Math.max(first._y, other._y));
     }
 
     public static Point2D min(Point2D first, Point2D other) {
         return new Point2D(Math.min(first._x, other._x), Math.min(first._y, other._y));
+    }
+
+    @Override
+    public Object createInstance() {
+        return new Point2D();
+    }
+
+    @Override
+    public void copyTo(Object object) {
+        Point2D copy = (Point2D)object;
+        copy._x = this._x;
+        copy._y = this._y;
     }
 }

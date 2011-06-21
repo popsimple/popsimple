@@ -640,9 +640,9 @@
 @url imageLoadIconUrl imageLoadIcon;
 
 .imageLoadingStyle {
-	background-color: white;
-	background-image: imageLoadIconUrl;
-	background-repeat: no-repeat;
-	background-position: center center;
-	background-size: 48px;
+	background-color: transparent !important;
+	background-image: imageLoadIconUrl !important;
+	background-repeat: no-repeat !important;
+	background-position: center center !important;
+	background-size: 48px !important;
 }

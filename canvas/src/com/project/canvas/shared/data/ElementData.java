@@ -20,21 +20,20 @@ public class ElementData implements Serializable, IsSerializable, ICloneable {
 
     public int zIndex = 0;
 
-    protected ElementData()
-    {
+    protected ElementData(){
     }
 
     public ElementData(String factoryUniqueId)
     {
         this.factoryUniqueId = factoryUniqueId;
     }
-    
+
     @Override
     public Object createInstance()
     {
     	return new ElementData();
     }
-    
+
     @Override
     public void copyTo(Object object)
     {

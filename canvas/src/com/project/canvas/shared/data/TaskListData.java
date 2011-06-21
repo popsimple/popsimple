@@ -6,11 +6,11 @@ import java.util.List;
 import com.project.canvas.shared.CloneableUtils;
 
 public class TaskListData extends ElementData {
-    
+
     protected TaskListData()
     {
     }
-    
+
     public TaskListData(String factoryUniqueId) {
         super(factoryUniqueId);
     }
@@ -18,12 +18,12 @@ public class TaskListData extends ElementData {
 
     public String title;
     public List<TaskData> tasks = new ArrayList<TaskData>();
-    
+
     @Override
     public Object createInstance() {
     	return new TaskListData();
     }
-    
+
     @Override
     public void copyTo(Object object) {
     	super.copyTo(object);

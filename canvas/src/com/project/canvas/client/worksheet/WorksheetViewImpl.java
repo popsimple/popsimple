@@ -53,15 +53,11 @@ import com.project.canvas.client.shared.WidgetUtils;
 import com.project.canvas.client.shared.dialogs.SelectImageDialog;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.shared.events.SimpleEvent.Handler;
-import com.project.canvas.client.shared.searchProviders.bing.BingSearchProvider;
-import com.project.canvas.client.shared.searchProviders.flickr.FlickrSearchProvider;
-import com.project.canvas.client.shared.searchProviders.interfaces.ImageSearchProvider;
+import com.project.canvas.client.shared.searchProviders.SearchProviders;
 import com.project.canvas.client.shared.widgets.DialogWithZIndex;
 import com.project.canvas.client.worksheet.interfaces.ElementDragManager;
 import com.project.canvas.client.worksheet.interfaces.ToolFrameTransformer;
-import com.project.canvas.client.worksheet.interfaces.WorksheetOptionsView;
 import com.project.canvas.client.worksheet.interfaces.WorksheetView;
-import com.project.canvas.shared.ApiKeys;
 import com.project.canvas.shared.data.CanvasPageOptions;
 import com.project.canvas.shared.data.ElementData;
 import com.project.canvas.shared.data.ImageInformation;
@@ -147,10 +143,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
                 this, this.dragPanel, 0, stopOperationEvent);
 
         optionsDialog.setText("Worksheet options");
-        ArrayList<ImageSearchProvider> searchProviders = new ArrayList<ImageSearchProvider>();
-        searchProviders.add(new BingSearchProvider(ApiKeys.BING_SEARCH));
-        searchProviders.add(new FlickrSearchProvider(ApiKeys.FLICKR_SEARCH));
-        this.selectImageDialog.setSearchProviders(searchProviders);
+        this.selectImageDialog.setSearchProviders(SearchProviders.getDefaultImageSearchProviders());
         optionsDialog.add(this.selectImageDialog);
 
         this.addRegistrations();
@@ -480,6 +473,11 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
                     this.onPasteToolsRequest();
                 }
                 break;
+            case KeyCodes.KEY_DELETE:
+                this.removeToolsRequest.dispatch(new ArrayList<CanvasToolFrame>(this.selectedTools));
+                break;
+            default:
+                break;
         }
     }
 
@@ -489,40 +487,8 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         case KeyCodes.KEY_ESCAPE:
             this.stopOperationEvent.dispatch(null);
             break;
-        case KeyCodes.KEY_DELETE:
-            this.removeToolsRequest.dispatch(new ArrayList<CanvasToolFrame>(this.selectedTools));
+        default:
             break;
-//        case (int)'C':
-//        	if (event.getCtrlKey())
-//        	{
-//        	    EventTarget target = event.getCurrentEventTarget();
-//                if (false == Element.is(target))
-//                {
-//                    return;
-//                }
-//                Element element = Element.as(target);
-//                if (false == (this.worksheetPanel.getElement() == Element.as(target)))
-//                {
-//                    return;
-//                }
-//        		this.onCopyToolsRequest();
-//        	}
-//        	break;
-//        case (int)'V':
-//        	if (event.getCtrlKey())
-//        	{
-//        	    EventTarget target = event.getEventTarget();
-//                if (false == Element.is(target))
-//                {
-//                    return;
-//                }
-//                if (false == (this.worksheetPanel.getElement() == Element.as(target)))
-//                {
-//                    return;
-//                }
-//        		this.onPasteToolsRequest();
-//        	}
-//        	break;
         }
     }
 

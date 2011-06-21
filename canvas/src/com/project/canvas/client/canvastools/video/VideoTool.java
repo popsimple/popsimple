@@ -19,43 +19,45 @@ import com.google.gwt.user.client.ui.Frame;
 import com.google.gwt.user.client.ui.Label;
 import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.canvastools.base.CanvasToolCommon;
-import com.project.canvas.client.canvastools.media.MediaToolOptions;
 import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.ElementUtils;
 import com.project.canvas.client.shared.RegistrationsManager;
 import com.project.canvas.client.shared.WidgetUtils;
+import com.project.canvas.client.shared.dialogs.SelectVideoDialog;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.shared.events.SimpleEvent.Handler;
 import com.project.canvas.client.shared.searchProviders.interfaces.VideoSearchProvider;
 import com.project.canvas.client.shared.widgets.DialogWithZIndex;
+import com.project.canvas.shared.CloneableUtils;
 import com.project.canvas.shared.StringUtils;
 import com.project.canvas.shared.UrlUtils;
 import com.project.canvas.shared.data.ElementData;
-import com.project.canvas.shared.data.MediaData;
 import com.project.canvas.shared.data.Point2D;
+import com.project.canvas.shared.data.VideoData;
+import com.project.canvas.shared.data.VideoInformation;
 
-public class VideoTool extends FlowPanel implements CanvasTool<MediaData> 
+public class VideoTool extends FlowPanel implements CanvasTool<VideoData>
 {
     private static final Point2D DEFAULT_SIZE = new Point2D(425, 349);
     private static final String OPTIONS_LABEL_VIDEO_UNSET = "Choose a video...";
     private static final String OPTIONS_LABEL_VIDEO_SET = "Change video...";
-    
+
     private final SimpleEvent<MouseEvent<?>> moveStartEvent = new SimpleEvent<MouseEvent<?>>();
     private final Frame videoFrame = new Frame();
     private final RegistrationsManager registrationsManager = new RegistrationsManager();
-    private final Label optionsLabel = new Label(OPTIONS_LABEL_VIDEO_UNSET); 
-    
-    private MediaData data = null;
-    private MediaToolOptions mediaToolOptionsWidget;
-    private DialogBox videoSelectionDialog;
+    private final Label optionsLabel = new Label(OPTIONS_LABEL_VIDEO_UNSET);
+
+    private VideoData data = null;
+    private SelectVideoDialog selectVideoDialog;
+    private DialogBox dialogContainer;
 	private boolean optionsWidgetInited = false;
-	private ArrayList<VideoSearchProvider> searchProviders = new ArrayList<VideoSearchProvider>();  
+	private ArrayList<VideoSearchProvider> searchProviders = new ArrayList<VideoSearchProvider>();
     private boolean viewMode;
-	
-	public VideoTool(Collection<VideoSearchProvider> videoSearchProviders) 
+
+	public VideoTool(Collection<VideoSearchProvider> videoSearchProviders)
     {
         CanvasToolCommon.initCanvasToolWidget(this);
-        
+
         searchProviders.addAll(videoSearchProviders);
 
         WidgetUtils.disableDrag(this);
@@ -63,13 +65,13 @@ public class VideoTool extends FlowPanel implements CanvasTool<MediaData>
         super.addStyleName(CanvasResources.INSTANCE.main().videoToolEmpty());
         this.videoFrame.addStyleName(CanvasResources.INSTANCE.main().videoFrame());
         this.videoFrame.setVisible(false);
-        
+
         this.optionsLabel.addStyleName(CanvasResources.INSTANCE.main().videoOptionsLabel());
-        
+
         this.add(videoFrame);
         this.add(optionsLabel);
     }
-    
+
     @Override
     public void bind() {
         super.setTitle("Click for video options; Control-click to drag");
@@ -102,13 +104,14 @@ public class VideoTool extends FlowPanel implements CanvasTool<MediaData>
 
     private void showOptionsDialog() {
     	initOptionsWidget();
-    	mediaToolOptionsWidget.setValue(data);
+    	this.selectVideoDialog.setValue(
+    	        (VideoInformation)CloneableUtils.clone(data.videoInformation));
 
         Scheduler.get().scheduleDeferred(new ScheduledCommand() {
             @Override
             public void execute() {
-                mediaToolOptionsWidget.setFocus(true);
-                videoSelectionDialog.center();
+                selectVideoDialog.setFocus(true);
+                dialogContainer.center();
             }
         });
     }
@@ -118,28 +121,40 @@ public class VideoTool extends FlowPanel implements CanvasTool<MediaData>
 			return;
 		}
 		this.optionsWidgetInited = true;
-		this.videoSelectionDialog = new DialogWithZIndex(false, true);
-        videoSelectionDialog.setGlassEnabled(true);
-        videoSelectionDialog.setText("Video options");
-        
-		this.mediaToolOptionsWidget = new MediaToolOptions();
-        videoSelectionDialog.add(mediaToolOptionsWidget);
+		this.dialogContainer = new DialogWithZIndex(false, true);
+        dialogContainer.setGlassEnabled(true);
+        dialogContainer.setText("Video options");
 
-        this.mediaToolOptionsWidget.setSearchProviders(this.searchProviders);
-        mediaToolOptionsWidget.getCancelEvent().addHandler(new SimpleEvent.Handler<Void>() {
+		this.selectVideoDialog = new SelectVideoDialog();
+        dialogContainer.add(this.selectVideoDialog);
+
+        this.selectVideoDialog.setSearchProviders(this.searchProviders);
+        this.selectVideoDialog.addCancelHandler(new SimpleEvent.Handler<Void>() {
 		    @Override
 		    public void onFire(Void arg) {
-		        videoSelectionDialog.hide();
+		        dialogContainer.hide();
 		    }
 		});
-		mediaToolOptionsWidget.getDoneEvent().addHandler(new SimpleEvent.Handler<Void>() {
+        this.selectVideoDialog.addDoneHandler(new SimpleEvent.Handler<VideoInformation>() {
 		    @Override
-		    public void onFire(Void arg) {
-		        setValue(mediaToolOptionsWidget.getValue(), true);
-		        videoSelectionDialog.hide();
+		    public void onFire(VideoInformation arg) {
+		        setVideoInformation(arg);
+		        dialogContainer.hide();
 		    }
 		});
 	}
+
+	private void setVideoInformation(VideoInformation videoInformation)
+    {
+        if (data.videoInformation.equals(videoInformation))
+        {
+            return;
+        }
+        //Make sure we don't set arbitrary html or invalid urls
+        videoInformation.url = UrlUtils.encodeOnce(videoInformation.url);
+        data.videoInformation = videoInformation;
+        setVideo(true);
+    }
 
     @Override
     public void setActive(boolean isFocused) {
@@ -147,20 +162,18 @@ public class VideoTool extends FlowPanel implements CanvasTool<MediaData>
     }
 
     @Override
-    public MediaData getValue() {
-        // TIP: use this page to check java regex: http://www.regexplanet.com/simple/index.html
-        this.data.url = this.videoFrame.getUrl().trim().replaceAll("^(url\\(\\\"?)(.*?)(\\\"?\\))$", "$2");
+    public VideoData getValue() {
         return this.data;
     }
 
     @Override
-    public void setValue(MediaData data) {
+    public void setValue(VideoData data) {
         this.setValue(data, false);
     }
 
     @Override
     public void setElementData(ElementData data) {
-        this.setValue((MediaData) data);
+        this.setValue((VideoData) data);
     }
 
     @Override
@@ -173,7 +186,7 @@ public class VideoTool extends FlowPanel implements CanvasTool<MediaData>
     public boolean canRotate() {
         return false;
     }
-    
+
     @Override
 	public HandlerRegistration addSelfMoveRequestEventHandler(Handler<Point2D> handler) {
 		// TODO Auto-generated method stub
@@ -203,19 +216,19 @@ public class VideoTool extends FlowPanel implements CanvasTool<MediaData>
         return null;
     }
 
-    private void setValue(MediaData data, boolean autoSize) {
+    private void setValue(VideoData data, boolean autoSize) {
         this.data = data;
-        this.setVideoUrl(this.data.url, autoSize);
+        this.setVideo(autoSize);
     }
 
-    private void setVideoUrl(String url, boolean autoSize) {
-        if (StringUtils.isWhitespaceOrNull(url)) {
+    private void setVideo(boolean autoSize) {
+        if (StringUtils.isWhitespaceOrNull(this.data.videoInformation.url)) {
             super.addStyleName(CanvasResources.INSTANCE.main().videoToolEmpty());
             super.removeStyleName(CanvasResources.INSTANCE.main().videoToolSet());
             return;
         }
         // Make sure we don't set arbitrary html or invalid urls
-        url = UrlUtils.encodeOnce(url);
+        String url = UrlUtils.encodeOnce(this.data.videoInformation.url);
         if (autoSize) {
             prepareAutoSizeHandler();
         }
@@ -225,7 +238,7 @@ public class VideoTool extends FlowPanel implements CanvasTool<MediaData>
         }
         videoFrame.setVisible(true);
         optionsLabel.setText(OPTIONS_LABEL_VIDEO_SET);
-        
+
         super.removeStyleName(CanvasResources.INSTANCE.main().videoToolEmpty());
         super.addStyleName(CanvasResources.INSTANCE.main().videoToolSet());
     }
@@ -251,5 +264,5 @@ public class VideoTool extends FlowPanel implements CanvasTool<MediaData>
             WidgetUtils.setWidgetSize(this, ElementUtils.getElementOffsetSize(videoFrame.getElement()));
         }
     }
-    
+
 }

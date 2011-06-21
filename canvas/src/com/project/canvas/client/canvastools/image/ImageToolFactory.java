@@ -1,14 +1,8 @@
 package com.project.canvas.client.canvastools.image;
 
-import java.util.ArrayList;
-
 import com.project.canvas.client.canvastools.base.CanvasToolFactoryBase;
-import com.project.canvas.client.shared.searchProviders.bing.BingSearchProvider;
-import com.project.canvas.client.shared.searchProviders.flickr.FlickrSearchProvider;
-import com.project.canvas.client.shared.searchProviders.interfaces.ImageSearchProvider;
-import com.project.canvas.shared.ApiKeys;
+import com.project.canvas.client.shared.searchProviders.SearchProviders;
 import com.project.canvas.shared.data.ImageData;
-import com.project.canvas.shared.data.MediaData;
 
 public class ImageToolFactory extends CanvasToolFactoryBase<ImageTool>
 {
@@ -16,20 +10,16 @@ public class ImageToolFactory extends CanvasToolFactoryBase<ImageTool>
 
     public ImageTool create()
     {
-        ImageTool imageTool = new ImageTool(searchProvides);
-        imageTool.setValue(new ImageData(UNIQUE_ID));
+        ImageTool imageTool = new ImageTool(SearchProviders.getDefaultImageSearchProviders());
+        imageTool.setValue(this.createDefaultImageData());
         return imageTool;
     }
 
-    private static final ArrayList<ImageSearchProvider> searchProvides = createBuiltinProviders();
-
-  //TODO: Change to ImageSearchProvider
-    private static ArrayList<ImageSearchProvider> createBuiltinProviders()
+    protected ImageData createDefaultImageData()
     {
-        //TODO: Change to ImageSearchProvider
-        ArrayList<ImageSearchProvider> searchProvides = new ArrayList<ImageSearchProvider>();
-        searchProvides.add(new BingSearchProvider(ApiKeys.BING_SEARCH));
-        searchProvides.add(new FlickrSearchProvider(ApiKeys.FLICKR_SEARCH));
-        return searchProvides;
+        ImageData imageData = new ImageData(UNIQUE_ID);
+        imageData.imageInformation.stretchHeight = true;
+        imageData.imageInformation.stretchWidth = true;
+        return imageData;
     }
 }
