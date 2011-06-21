@@ -9,4 +9,9 @@ public class CanvasPageOptions implements Serializable, IsSerializable {
 
     public String title = "";
     public ImageInformation backgroundImage = new ImageInformation();
+
+    public CanvasPageOptions()
+    {
+        backgroundImage.center = true;
+    }
 }

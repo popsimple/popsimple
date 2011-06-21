@@ -58,6 +58,7 @@ import com.project.canvas.client.shared.widgets.DialogWithZIndex;
 import com.project.canvas.client.worksheet.interfaces.ElementDragManager;
 import com.project.canvas.client.worksheet.interfaces.ToolFrameTransformer;
 import com.project.canvas.client.worksheet.interfaces.WorksheetView;
+import com.project.canvas.shared.CloneableUtils;
 import com.project.canvas.shared.data.CanvasPageOptions;
 import com.project.canvas.shared.data.ElementData;
 import com.project.canvas.shared.data.ImageInformation;
@@ -349,7 +350,6 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     @Override
     public void setOptions(final CanvasPageOptions value) {
         this.pageOptions = value;
-        selectImageDialog.setValue(this.pageOptions.backgroundImage);
         final Style style = this.worksheetBackground.getElement().getStyle();
         style.clearProperty("backgroundRepeat");
         style.clearProperty("backgroundSize");
@@ -402,6 +402,8 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         this.optionsBackground.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
+                selectImageDialog.setValue(
+                    (ImageInformation)CloneableUtils.clone(pageOptions.backgroundImage));
                 optionsDialog.center();
             }
         });
@@ -416,8 +418,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
             @Override
             public void onFire(ImageInformation arg) {
                 optionsDialog.hide();
-                pageOptions.backgroundImage = arg;
-                optionsUpdatedEvent.dispatch(pageOptions);
+                onBackgroundImageSelected(arg);
             }
         });
         this.worksheetPanel.addDomHandler(new MouseDownHandler() {
@@ -447,6 +448,16 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         });
     }
 
+    private void onBackgroundImageSelected(ImageInformation arg)
+    {
+        if (this.pageOptions.backgroundImage.equals(arg))
+        {
+            return;
+        }
+        pageOptions.backgroundImage = arg;
+        optionsUpdatedEvent.dispatch(pageOptions);
+    }
+
     private void onCopyToolsRequest()
     {
     	this.copyToolsRequest.dispatch(new ArrayList<CanvasToolFrame>(selectedTools));
@@ -463,7 +474,6 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
             case (int)'C':
                 if (event.isControlKeyDown())
                 {
-
                     this.onCopyToolsRequest();
                 }
                 break;
