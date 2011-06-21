@@ -2,7 +2,9 @@ package com.project.canvas.shared.data;
 
 import java.io.Serializable;
 
+import com.google.appengine.api.datastore.Text;
 import com.google.code.twig.annotation.Id;
+import com.google.code.twig.annotation.Type;
 import com.google.gwt.user.client.rpc.IsSerializable;
 import com.project.canvas.shared.contracts.ICloneable;
 
@@ -11,10 +13,14 @@ public class TaskData implements Serializable, IsSerializable, ICloneable {
 
     public @Id
     Long id;
-    public String description;
-    public boolean completed;
-    public String imageUrl;
-	
+    public String description = "";
+    public boolean completed = false;
+
+    //GWT datastore doesn't support String members that are longer than 500 chars.
+    //and TaskData.ImageUrl can be embedded url.
+    @Type(Text.class)
+    public String imageUrl = "";
+
     @Override
 	public Object createInstance() {
 		return new TaskData();
