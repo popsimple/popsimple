@@ -22,10 +22,9 @@
 				<my:MediaSearchPanel ui:field="mediaSearchPanel"/>
 			</g:HTMLPanel>
 			<div>
-				<g:CheckBox ui:field="stretchXOption" name="imageStyle">Stretch width</g:CheckBox>
-				<g:CheckBox ui:field="stretchYOption" name="imageStyle">Stretch height</g:CheckBox>
-				<g:CheckBox ui:field="repeatOption" name="imageStyle">Repeat</g:CheckBox>
-				<g:CheckBox ui:field="centerOption" value="true" name="imageStyle">Center</g:CheckBox>
+				<g:RadioButton ui:field="stretchOption" name="imageStyle">Stretch</g:RadioButton >
+				<g:RadioButton ui:field="repeatOption" name="imageStyle">Repeat</g:RadioButton >
+				<g:RadioButton ui:field="originalSizeOption" name="imageStyle">Use Original Size</g:RadioButton >
 			</div>
 			<g:Button ui:field="doneButton" addStyleNames="{style.padded}">Done</g:Button>
 			<g:Button ui:field="cancelButton" addStyleNames="{style.padded}">Cancel</g:Button>

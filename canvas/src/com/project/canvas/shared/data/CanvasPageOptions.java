@@ -12,6 +12,5 @@ public class CanvasPageOptions implements Serializable, IsSerializable {
 
     public CanvasPageOptions()
     {
-        backgroundImage.center = true;
     }
 }

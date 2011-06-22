@@ -15,12 +15,15 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Focusable;
+import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.project.canvas.client.shared.ImageOptionTypes;
+import com.project.canvas.client.shared.ImageOptionsProvider;
+import com.project.canvas.client.shared.ImageOptionsProviderUtils;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.shared.handlers.SpecificKeyPressHandler;
 import com.project.canvas.client.shared.searchProviders.interfaces.MediaInfo;
@@ -54,19 +57,17 @@ public class SelectImageDialog extends Composite implements TakesValue<ImageInfo
     MediaSearchPanel mediaSearchPanel;
 
     @UiField
-    CheckBox stretchXOption;
+    RadioButton stretchOption;
 
     @UiField
-    CheckBox stretchYOption;
+    RadioButton repeatOption;
 
     @UiField
-    CheckBox repeatOption;
-
-    @UiField
-    CheckBox centerOption;
+    RadioButton originalSizeOption;
 
     private SimpleEvent<ImageInformation> doneEvent = new SimpleEvent<ImageInformation>();
     private SimpleEvent<Void> cancelEvent = new SimpleEvent<Void>();
+    private ImageOptionsProvider _imageOptionsProvider;
 
     private ImageInformation _imageInformation = new ImageInformation();
 
@@ -120,14 +121,54 @@ public class SelectImageDialog extends Composite implements TakesValue<ImageInfo
         this.mediaSearchPanel.setSearchProviders(searchProviders);
     }
 
+    public void setImageOptionsProvider(ImageOptionsProvider imageOptionsProvider)
+    {
+        this._imageOptionsProvider = imageOptionsProvider;
+    }
+
     @Override
     public void setValue(ImageInformation value) {
         this._imageInformation = value;
         this.urlTextBox.setText(value.url);
-        this.repeatOption.setValue(value.repeat);
-        this.centerOption.setValue(value.center);
-        this.stretchXOption.setValue(value.stretchWidth);
-        this.stretchYOption.setValue(value.stretchHeight);
+        this.bindBasicImageOptions(value);
+    }
+
+    private void bindBasicImageOptions(ImageInformation imageInformation)
+    {
+        switch (ImageOptionsProviderUtils.getImageOptionType(
+                this._imageOptionsProvider, imageInformation.options))
+        {
+            case OriginalSize:
+                this.originalSizeOption.setValue(true);
+                break;
+            case Repeat:
+                this.repeatOption.setValue(true);
+                break;
+            case Stretch:
+                this.stretchOption.setValue(true);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void applyBasicImageOptions()
+    {
+        if (this.originalSizeOption.getValue())
+        {
+            ImageOptionsProviderUtils.setImageOptions(this._imageOptionsProvider,
+                    this._imageInformation.options, ImageOptionTypes.OriginalSize);
+        }
+        else if (this.stretchOption.getValue())
+        {
+            ImageOptionsProviderUtils.setImageOptions(this._imageOptionsProvider,
+                    this._imageInformation.options, ImageOptionTypes.Stretch);
+        }
+        else if (this.repeatOption.getValue())
+        {
+            ImageOptionsProviderUtils.setImageOptions(this._imageOptionsProvider,
+                    this._imageInformation.options, ImageOptionTypes.Repeat);
+        }
     }
 
     @Override
@@ -162,14 +203,6 @@ public class SelectImageDialog extends Composite implements TakesValue<ImageInfo
         this.urlTextBox.setText(this._imageInformation.url);
     }
 
-    private void applyImageOptions()
-    {
-        this._imageInformation.repeat = this.repeatOption.getValue();
-        this._imageInformation.center = this.centerOption.getValue();
-        this._imageInformation.stretchWidth = this.stretchXOption.getValue();
-        this._imageInformation.stretchHeight = this.stretchYOption.getValue();
-    }
-
     private void setManualUrl(String url)
     {
         if (ObjectUtils.equals(this._imageInformation.url, url))
@@ -186,7 +219,7 @@ public class SelectImageDialog extends Composite implements TakesValue<ImageInfo
 
     public void doneClicked()
     {
-        this.applyImageOptions();
+        this.applyBasicImageOptions();
         this.doneEvent.dispatch(this._imageInformation);
     }
 }

@@ -319,17 +319,15 @@
 .imageBox {
 	display: block;
 	border-radius: 2px;
+	width: 200px;
+	height: 200px;
 }
 
 .imageToolEmpty {
-	width: 200px;
-	height: 200px;
 	background-color: #aaa;
 }
 
 .imageToolSet {
-	width: auto;
-	height: auto;
 	background-repeat: no-repeat;
 	background-size: 100% 100%;
 }

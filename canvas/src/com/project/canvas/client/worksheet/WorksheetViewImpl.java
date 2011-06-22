@@ -46,6 +46,9 @@ import com.project.canvas.client.canvastools.base.CanvasToolFrame;
 import com.project.canvas.client.canvastools.base.ToolboxItem;
 import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.ElementUtils;
+import com.project.canvas.client.shared.ImageInformationUtils;
+import com.project.canvas.client.shared.ImageOptionTypes;
+import com.project.canvas.client.shared.ImageOptionsProviderUtils;
 import com.project.canvas.client.shared.RegistrationsManager;
 import com.project.canvas.client.shared.dialogs.SelectImageDialog;
 import com.project.canvas.client.shared.events.SimpleEvent;
@@ -56,12 +59,12 @@ import com.project.canvas.client.worksheet.interfaces.ElementDragManager;
 import com.project.canvas.client.worksheet.interfaces.ToolFrameTransformer;
 import com.project.canvas.client.worksheet.interfaces.WorksheetView;
 import com.project.canvas.shared.CloneableUtils;
-import com.project.canvas.shared.ImageInformationUtils;
 import com.project.canvas.shared.data.CanvasPageOptions;
 import com.project.canvas.shared.data.ElementData;
 import com.project.canvas.shared.data.ImageInformation;
 import com.project.canvas.shared.data.Point2D;
 import com.project.canvas.shared.data.Transform2D;
+import com.sun.org.apache.bcel.internal.generic.NEW;
 
 public class WorksheetViewImpl extends Composite implements WorksheetView {
     interface WorksheetViewImplUiBinder extends UiBinder<Widget, WorksheetViewImpl> {
@@ -103,7 +106,8 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     private Handler<Void> _floatingWidgetTerminator;
     private ToolboxItem activeToolboxItem;
     private Widget floatingWidget;
-    private CanvasPageOptions pageOptions = new CanvasPageOptions();
+    private CanvasPageOptions pageOptions;
+    private WorksheetImageOptionsProvider _imageOptionsProvider = new WorksheetImageOptionsProvider();
 
     private final ToolFrameTransformer _toolFrameTransformer;
     private final ToolFrameSelectionManager _toolFrameSelectionManager;
@@ -130,6 +134,9 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
     public WorksheetViewImpl() {
         initWidget(uiBinder.createAndBindUi(this));
+
+        this.createDefaultPageOptions();
+
         this._toolFrameTransformer = new ToolFrameTransformerImpl(worksheetPanel, dragPanel,
                 stopOperationEvent);
         this.dragPanel.setVisible(false);
@@ -142,11 +149,19 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
                 this, this.dragPanel, 0, stopOperationEvent);
 
         optionsDialog.setText("Worksheet options");
+        this.selectImageDialog.setImageOptionsProvider(this._imageOptionsProvider);
         this.selectImageDialog.setSearchProviders(SearchProviders.getDefaultImageSearchProviders());
         optionsDialog.add(this.selectImageDialog);
 
         this.addRegistrations();
         this.setViewMode(false);
+    }
+
+    private void createDefaultPageOptions()
+    {
+        this.pageOptions = new CanvasPageOptions();
+        ImageOptionsProviderUtils.setImageOptions(this._imageOptionsProvider,
+                pageOptions.backgroundImage.options, ImageOptionTypes.OriginalSize);
     }
 
     @Override
@@ -433,6 +448,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
             return;
         }
         pageOptions.backgroundImage = arg;
+
         optionsUpdatedEvent.dispatch(pageOptions);
     }
 

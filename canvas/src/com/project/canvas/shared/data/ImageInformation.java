@@ -13,10 +13,7 @@ public class ImageInformation implements Serializable, IsSerializable, ICloneabl
 
     public String url = "";
     public Point2D size = new Point2D();
-    public boolean repeat = false;
-    public boolean center = false;
-    public boolean stretchWidth = false;
-    public boolean stretchHeight = false;
+    public ImageOptions options = new ImageOptions();
 
     @Override
     public boolean equals(Object obj) {
@@ -33,16 +30,8 @@ public class ImageInformation implements Serializable, IsSerializable, ICloneabl
         if (false == ObjectUtils.equals(this.size, other.size)){
             return false;
         }
-        if (this.repeat != other.repeat){
-            return false;
-        }
-        if (this.center != other.center){
-            return false;
-        }
-        if (this.stretchWidth != other.stretchWidth){
-            return false;
-        }
-        if (this.stretchHeight != other.stretchHeight){
+        if (false == this.options.equals(other.options))
+        {
             return false;
         }
         return true;
@@ -59,9 +48,6 @@ public class ImageInformation implements Serializable, IsSerializable, ICloneabl
 
         copy.url = this.url;
         copy.size = (Point2D)CloneableUtils.clone(this.size);
-        copy.repeat = this.repeat;
-        copy.center = this.center;
-        copy.stretchWidth = this.stretchWidth;
-        copy.stretchHeight = this.stretchHeight;
+        copy.options = (ImageOptions)CloneableUtils.clone(this.options);
     }
 }
