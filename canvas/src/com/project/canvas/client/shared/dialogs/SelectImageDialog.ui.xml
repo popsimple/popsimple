@@ -22,9 +22,9 @@
 				<my:MediaSearchPanel ui:field="mediaSearchPanel"/>
 			</g:HTMLPanel>
 			<div>
-				<g:RadioButton ui:field="stretchOption" name="imageStyle">Stretch</g:RadioButton >
-				<g:RadioButton ui:field="repeatOption" name="imageStyle">Repeat</g:RadioButton >
-				<g:RadioButton ui:field="originalSizeOption" name="imageStyle">Use Original Size</g:RadioButton >
+				<g:RadioButton ui:field="stretchOption" name="imageStyle" formValue="false">Stretch</g:RadioButton >
+				<g:RadioButton ui:field="repeatOption" name="imageStyle" formValue="false">Repeat</g:RadioButton >
+				<g:RadioButton ui:field="originalSizeOption" name="imageStyle" formValue="false">Use Original Size</g:RadioButton >
 			</div>
 			<g:Button ui:field="doneButton" addStyleNames="{style.padded}">Done</g:Button>
 			<g:Button ui:field="cancelButton" addStyleNames="{style.padded}">Cancel</g:Button>

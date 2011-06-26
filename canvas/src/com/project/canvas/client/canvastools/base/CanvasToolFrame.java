@@ -1,6 +1,7 @@
 package com.project.canvas.client.canvastools.base;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -245,20 +246,27 @@ public class CanvasToolFrame extends Composite implements Focusable, HasFocusHan
      * getToolSize and setToolSize will not be compatible (will be using different values.)
      */
     public void setToolSize(Point2D size) {
-    	ResizeMode resizeMode = this.tool.getResizeMode();
-    	if (ResizeMode.NONE == resizeMode) {
-    		return;
+        Element toolEmenet = this.tool.asWidget().getElement();
+        switch (this.tool.getResizeMode())
+    	{
+    	    case BOTH:
+    	        ElementUtils.setElementSize(toolEmenet, size);
+    	        break;
+    	    case WIDTH_ONLY:
+    	        toolEmenet.getStyle().setWidth(size.getX(), Unit.PX);
+    	        break;
+    	    case HEIGHT_ONLY:
+    	        toolEmenet.getStyle().setHeight(size.getY(), Unit.PX);
+                break;
+    	    case RELATIVE:
+    	        int uniformSize = (size.getX() + size.getY()) / 2;
+                ElementUtils.setElementSize(toolEmenet, new Point2D(uniformSize, uniformSize));
+                break;
+    	    case NONE:
+    	    default:
+    	        return;
     	}
-        if (ResizeMode.BOTH  == resizeMode || ResizeMode.WIDTH_ONLY == resizeMode) {
-            this.tool.asWidget().getElement().getStyle().setWidth(size.getX(), Unit.PX);
-        }
-        if (ResizeMode.BOTH  == resizeMode || ResizeMode.HEIGHT_ONLY == resizeMode) {
-            this.tool.asWidget().getElement().getStyle().setHeight(size.getY(), Unit.PX);
-        }
-        if (ResizeMode.RELATIVE == resizeMode) {
-        	int uniformSize = (size.getX() + size.getY()) / 2;
-        	WidgetUtils.setWidgetSize(this.tool.asWidget(), new Point2D(uniformSize, uniformSize));
-        }
+    	tool.onResize();
     }
 
 	@Override

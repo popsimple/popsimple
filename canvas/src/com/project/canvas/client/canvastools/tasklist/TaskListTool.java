@@ -25,7 +25,7 @@ import com.project.canvas.shared.data.TaskListData;
 public class TaskListTool extends Composite implements CanvasTool<TaskListData>, Focusable {
 
     private static TaskListWidgetUiBinder uiBinder = GWT.create(TaskListWidgetUiBinder.class);
-    
+
     interface TaskListWidgetUiBinder extends UiBinder<Widget, TaskListTool> {
     }
 
@@ -180,5 +180,10 @@ public class TaskListTool extends Composite implements CanvasTool<TaskListData>,
     public HandlerRegistration addKillRequestEventHandler(Handler<String> handler)
     {
         return null;
+    }
+
+    @Override
+    public void onResize() {
+        // TODO Auto-generated method stub
     }
 }

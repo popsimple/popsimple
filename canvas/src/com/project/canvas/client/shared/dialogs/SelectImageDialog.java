@@ -129,23 +129,28 @@ public class SelectImageDialog extends Composite implements TakesValue<ImageInfo
     @Override
     public void setValue(ImageInformation value) {
         this._imageInformation = value;
-        this.urlTextBox.setText(value.url);
-        this.bindBasicImageOptions(value);
     }
 
-    private void bindBasicImageOptions(ImageInformation imageInformation)
+    @Override
+    protected void onLoad() {
+        super.onLoad();
+        this.bindData();
+    }
+
+    private void bindData()
     {
+        this.urlTextBox.setText(this._imageInformation.url);
         switch (ImageOptionsProviderUtils.getImageOptionType(
-                this._imageOptionsProvider, imageInformation.options))
+                this._imageOptionsProvider, this._imageInformation.options))
         {
             case OriginalSize:
-                this.originalSizeOption.setValue(true);
+                this.originalSizeOption.setValue(true, true);
                 break;
             case Repeat:
-                this.repeatOption.setValue(true);
+                this.repeatOption.setValue(true, true);
                 break;
             case Stretch:
-                this.stretchOption.setValue(true);
+                this.stretchOption.setValue(true, true);
                 break;
             default:
                 break;

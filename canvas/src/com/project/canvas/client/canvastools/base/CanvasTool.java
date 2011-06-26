@@ -1,6 +1,7 @@
 package com.project.canvas.client.canvastools.base;
 
 import com.google.gwt.event.dom.client.MouseEvent;
+import com.google.gwt.event.logical.shared.HasResizeHandlers;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -10,7 +11,7 @@ import com.project.canvas.shared.data.Point2D;
 
 // TODO change getvalue to updateValue to reflect the fact that it mutates the instance of data that was given in the setValue?
 public interface CanvasTool<T extends ElementData> extends IsWidget, TakesValue<T> {
-	
+
 	public enum ResizeMode {
 		BOTH,
 		RELATIVE,  // keeps aspect ratio
@@ -18,12 +19,12 @@ public interface CanvasTool<T extends ElementData> extends IsWidget, TakesValue<
 		HEIGHT_ONLY,
 		NONE,
 	}
-	
+
     HandlerRegistration addKillRequestEventHandler(SimpleEvent.Handler<String> handler);
 
     // tool wants to be dragged around with the mouse
     HandlerRegistration addMoveStartEventHandler(SimpleEvent.Handler<MouseEvent<?>> handler);
-    
+
     // Tool wants to move an offset
     HandlerRegistration addSelfMoveRequestEventHandler(SimpleEvent.Handler<Point2D> handler);
 
@@ -34,9 +35,12 @@ public interface CanvasTool<T extends ElementData> extends IsWidget, TakesValue<
 
     // Start handling events
     void bind();
-    
+
     ResizeMode getResizeMode();
     boolean canRotate();
-    
+
     void setViewMode(boolean isViewMode);
+
+    //TODO: Replace with a custom Resize event.
+    void onResize();
 }

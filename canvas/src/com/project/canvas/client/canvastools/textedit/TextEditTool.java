@@ -192,4 +192,9 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData>
     {
         return this.killRequestEvent.addHandler(handler);
     }
+
+    @Override
+    public void onResize() {
+        // TODO Auto-generated method stub
+    }
 }

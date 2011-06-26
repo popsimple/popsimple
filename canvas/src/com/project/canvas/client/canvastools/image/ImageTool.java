@@ -222,4 +222,9 @@ public class ImageTool extends FlowPanel implements CanvasTool<ImageData>
     {
         return null;
     }
+
+    @Override
+    public void onResize() {
+        data.imageInformation.options.useOriginalSize = false;
+    }
 }

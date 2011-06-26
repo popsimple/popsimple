@@ -265,4 +265,8 @@ public class VideoTool extends FlowPanel implements CanvasTool<VideoData>
         }
     }
 
+    @Override
+    public void onResize() {
+        // TODO Auto-generated method stub
+    }
 }

@@ -30,7 +30,6 @@ import com.project.gwtmapstraction.client.mxn.Mapstraction;
 
 public class MapTool extends Composite implements CanvasTool<MapData>
 {
-
     interface MapToolUiBinder extends UiBinder<Widget, MapTool> {}
 
     private static MapToolUiBinder uiBinder = GWT.create(MapToolUiBinder.class);
@@ -202,5 +201,10 @@ public class MapTool extends Composite implements CanvasTool<MapData>
         }
         this.mapToolOptionsWidget.setValue(this.getValue());
         this.optionsDialog.center();
+    }
+
+    @Override
+    public void onResize() {
+        // TODO Auto-generated method stub
     }
 }
