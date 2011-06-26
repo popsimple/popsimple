@@ -19,7 +19,7 @@
 			<g:HTMLPanel>
 				<g:FlowPanel ui:field="providersPanel">
 				</g:FlowPanel>
-				<g:TextBox ui:field="searchText">Search...</g:TextBox>
+				<g:TextBox ui:field="searchText"></g:TextBox>
 				<g:Button ui:field="searchButton">Find</g:Button>
 			</g:HTMLPanel>
 		</g:FlowPanel>

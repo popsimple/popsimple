@@ -29,6 +29,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.NativeUtils;
 import com.project.canvas.client.shared.RegistrationsManager;
+import com.project.canvas.client.shared.TextBoxUtils;
 import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.shared.searchProviders.interfaces.MediaInfo;
 import com.project.canvas.client.shared.searchProviders.interfaces.MediaResult;
@@ -76,6 +77,9 @@ public class MediaSearchPanel extends Composite {
     public MediaSearchPanel()
     {
         initWidget(uiBinder.createAndBindUi(this));
+
+        TextBoxUtils.setPlaceHolder(this.searchText, "Search...");
+
         this.searchText.addKeyPressHandler(new KeyPressHandler() {
             @Override
             public void onKeyPress(KeyPressEvent event)
