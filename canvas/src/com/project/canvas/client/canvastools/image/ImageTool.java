@@ -54,7 +54,7 @@ public class ImageTool extends FlowPanel implements CanvasTool<ImageData>
 
         WidgetUtils.disableDrag(this);
         super.addStyleName(CanvasResources.INSTANCE.main().imageBox());
-        this.setEmptyStyle();
+        this.addStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
     }
 
     @Override
@@ -145,7 +145,8 @@ public class ImageTool extends FlowPanel implements CanvasTool<ImageData>
 
     private void setImage(boolean autoSize) {
         if (StringUtils.isWhitespaceOrNull(this.data.imageInformation.url)) {
-            this.setEmptyStyle();
+            this.addStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
+            this.removeStyleName(CanvasResources.INSTANCE.main().imageToolSet());
         }
         ImageInformationUtils.setWidgetBackgroundAsync(this.data.imageInformation, this, autoSize,
                 new SimpleEvent.Handler<Void>() {
@@ -153,12 +154,6 @@ public class ImageTool extends FlowPanel implements CanvasTool<ImageData>
                     public void onFire(Void arg) {
                         setLoadedStyle();
                     }}, new SimpleEvent.EmptyHandler<Void>());
-    }
-
-    private void setEmptyStyle()
-    {
-        this.addStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
-        this.removeStyleName(CanvasResources.INSTANCE.main().imageToolSet());
     }
 
     private void setLoadedStyle()

@@ -223,8 +223,7 @@ public class VideoTool extends FlowPanel implements CanvasTool<VideoData>
 
     private void setVideo(boolean autoSize) {
         if (StringUtils.isWhitespaceOrNull(this.data.videoInformation.url)) {
-            super.addStyleName(CanvasResources.INSTANCE.main().videoToolEmpty());
-            super.removeStyleName(CanvasResources.INSTANCE.main().videoToolSet());
+            this.clearData();
             return;
         }
         // Make sure we don't set arbitrary html or invalid urls
@@ -241,6 +240,14 @@ public class VideoTool extends FlowPanel implements CanvasTool<VideoData>
 
         super.removeStyleName(CanvasResources.INSTANCE.main().videoToolEmpty());
         super.addStyleName(CanvasResources.INSTANCE.main().videoToolSet());
+    }
+
+    private void clearData()
+    {
+        super.addStyleName(CanvasResources.INSTANCE.main().videoToolEmpty());
+        super.removeStyleName(CanvasResources.INSTANCE.main().videoToolSet());
+        this.videoFrame.setVisible(false);
+        this.videoFrame.setUrl("");
     }
 
     private void prepareAutoSizeHandler() {

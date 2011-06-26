@@ -5,7 +5,6 @@
 	>
 	<ui:style>
 		.urlTextBox {
-			display:block;
 			width:30em;
 		}
 		.padded {
@@ -16,9 +15,8 @@
 			float: right;
 			display: inline-block;
 		}
-		.otherButtonsPanel{
-			float: left;
-			display: inline-block;
+		.urlPanel{
+			display: block;
 		}
 
 	</ui:style>
@@ -26,7 +24,10 @@
 		<g:HTMLPanel addStyleNames="{style.padded}">
 			<g:HTMLPanel addStyleNames="{style.padded}">
 				Add an image from the web - enter a URL:
-				<g:TextBox ui:field="urlTextBox" addStyleNames="{style.urlTextBox}"/>
+				<g:HTMLPanel addStyleNames="{style.urlPanel}">
+					<g:TextBox ui:field="urlTextBox" addStyleNames="{style.urlTextBox}"/>
+					<g:Button ui:field="clearButton" addStyleNames="{style.padded}">Clear</g:Button>
+				</g:HTMLPanel>
 			</g:HTMLPanel>
 			<g:HTMLPanel>
 				<my:MediaSearchPanel ui:field="mediaSearchPanel"/>
@@ -36,9 +37,6 @@
 				<g:RadioButton ui:field="repeatOption" name="imageStyle" formValue="false">Repeat</g:RadioButton >
 				<g:RadioButton ui:field="originalSizeOption" name="imageStyle" formValue="false">Use Original Size</g:RadioButton >
 			</div>
-			<g:HTMLPanel addStyleNames="{style.otherButtonsPanel}">
-				<g:Button ui:field="clearButton" addStyleNames="{style.padded}">Clear</g:Button>
-			</g:HTMLPanel>
 			<g:HTMLPanel addStyleNames="{style.dialogButtonsPanel}">
 				<g:Button ui:field="doneButton" addStyleNames="{style.padded}">Done</g:Button>
 				<g:Button ui:field="cancelButton" addStyleNames="{style.padded}">Cancel</g:Button>

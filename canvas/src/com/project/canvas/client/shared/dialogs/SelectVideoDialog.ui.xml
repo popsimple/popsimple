@@ -5,24 +5,36 @@
 	>
 	<ui:style>
 		.urlTextBox {
-			display:block;
 			width:30em;
 		}
 		.padded {
 			padding:5px;
+		}
+		.dialogButtonsPanel{
+			text-align: right;
+			float: right;
+			display: inline-block;
+		}
+		.urlPanel{
+			display: block;
 		}
 	</ui:style>
 	<g:FlowPanel ui:field="formPanel">
 		<g:HTMLPanel addStyleNames="{style.padded}">
 			<g:HTMLPanel addStyleNames="{style.padded}">
 				Add a video from the web - enter a URL:
-				<g:TextBox ui:field="urlTextBox" addStyleNames="{style.urlTextBox}"/>
+				<g:HTMLPanel addStyleNames="{style.urlPanel}">
+					<g:TextBox ui:field="urlTextBox" addStyleNames="{style.urlTextBox}"/>
+					<g:Button ui:field="clearButton" addStyleNames="{style.padded}">Clear</g:Button>
+				</g:HTMLPanel>
 			</g:HTMLPanel>
 			<g:HTMLPanel>
 				<my:MediaSearchPanel ui:field="mediaSearchPanel"/>
 			</g:HTMLPanel>
-			<g:Button ui:field="doneButton" addStyleNames="{style.padded}">Done</g:Button>
-			<g:Button ui:field="cancelButton" addStyleNames="{style.padded}">Cancel</g:Button>
+			<g:HTMLPanel addStyleNames="{style.dialogButtonsPanel}">
+				<g:Button ui:field="doneButton" addStyleNames="{style.padded}">Done</g:Button>
+				<g:Button ui:field="cancelButton" addStyleNames="{style.padded}">Cancel</g:Button>
+			</g:HTMLPanel>
 		</g:HTMLPanel>
 	</g:FlowPanel>
 </ui:UiBinder>

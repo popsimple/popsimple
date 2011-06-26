@@ -25,6 +25,7 @@ import com.project.canvas.client.shared.handlers.SpecificKeyPressHandler;
 import com.project.canvas.client.shared.searchProviders.interfaces.MediaInfo;
 import com.project.canvas.client.shared.searchProviders.interfaces.MediaSearchProvider;
 import com.project.canvas.client.shared.widgets.media.MediaSearchPanel;
+import com.project.canvas.shared.CloneableUtils;
 import com.project.canvas.shared.ObjectUtils;
 import com.project.canvas.shared.UrlUtils;
 import com.project.canvas.shared.data.Point2D;
@@ -44,6 +45,9 @@ public class SelectVideoDialog extends Composite implements TakesValue<VideoInfo
     TextBox urlTextBox;
 
     @UiField
+    Button clearButton;
+
+    @UiField
     Button doneButton;
 
     @UiField
@@ -55,10 +59,19 @@ public class SelectVideoDialog extends Composite implements TakesValue<VideoInfo
     private SimpleEvent<VideoInformation> doneEvent = new SimpleEvent<VideoInformation>();
     private SimpleEvent<Void> cancelEvent = new SimpleEvent<Void>();
 
+    //TODO: maybe allow setting the default information.
+    private VideoInformation _defaultInformation = new VideoInformation();
     private VideoInformation _videoInformation = new VideoInformation();
 
     public SelectVideoDialog() {
         initWidget(uiBinder.createAndBindUi(this));
+
+        this.clearButton.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                clear();
+            }
+        });
         this.doneButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -110,7 +123,21 @@ public class SelectVideoDialog extends Composite implements TakesValue<VideoInfo
     @Override
     public void setValue(VideoInformation value) {
         this._videoInformation = value;
-        this.urlTextBox.setText(value.url);
+        if (this.isAttached())
+        {
+            this.bindData();
+        }
+    }
+
+    @Override
+    protected void onLoad() {
+        super.onLoad();
+        this.bindData();
+    }
+
+    private void bindData()
+    {
+        this.urlTextBox.setText(this._videoInformation.url);
     }
 
     @Override
@@ -162,5 +189,11 @@ public class SelectVideoDialog extends Composite implements TakesValue<VideoInfo
     public void doneClicked()
     {
         this.doneEvent.dispatch(this._videoInformation);
+    }
+
+    public void clear()
+    {
+        this.mediaSearchPanel.clear();
+        this.setValue((VideoInformation)CloneableUtils.clone(this._defaultInformation));
     }
 }
