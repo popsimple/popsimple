@@ -6,4 +6,6 @@ import com.project.canvas.shared.data.ImageOptions;
 
 public interface ImageOptionsProvider {
     HashMap<ImageOptionTypes, ImageOptions> getImageOptionMap();
+
+    ImageOptions getDefaultOptions();
 }

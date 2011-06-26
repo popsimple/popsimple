@@ -57,4 +57,9 @@ public class ImageToolOptionsProvider implements ImageOptionsProvider
     {
         return ImageToolOptionsProvider._optionMap;
     }
+
+    @Override
+    public ImageOptions getDefaultOptions() {
+        return ImageToolOptionsProvider._optionMap.get(ImageOptionTypes.OriginalSize);
+    }
 }

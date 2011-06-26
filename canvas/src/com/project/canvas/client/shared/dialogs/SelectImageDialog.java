@@ -29,6 +29,7 @@ import com.project.canvas.client.shared.handlers.SpecificKeyPressHandler;
 import com.project.canvas.client.shared.searchProviders.interfaces.MediaInfo;
 import com.project.canvas.client.shared.searchProviders.interfaces.MediaSearchProvider;
 import com.project.canvas.client.shared.widgets.media.MediaSearchPanel;
+import com.project.canvas.shared.CloneableUtils;
 import com.project.canvas.shared.ObjectUtils;
 import com.project.canvas.shared.UrlUtils;
 import com.project.canvas.shared.data.ImageInformation;
@@ -46,6 +47,9 @@ public class SelectImageDialog extends Composite implements TakesValue<ImageInfo
 
     @UiField
     TextBox urlTextBox;
+
+    @UiField
+    Button clearButton;
 
     @UiField
     Button doneButton;
@@ -69,10 +73,17 @@ public class SelectImageDialog extends Composite implements TakesValue<ImageInfo
     private SimpleEvent<Void> cancelEvent = new SimpleEvent<Void>();
     private ImageOptionsProvider _imageOptionsProvider;
 
+    private ImageInformation _defaultInformation = new ImageInformation();
     private ImageInformation _imageInformation = new ImageInformation();
 
     public SelectImageDialog() {
         initWidget(uiBinder.createAndBindUi(this));
+        this.clearButton.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                clear();
+            }
+        });
         this.doneButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -124,11 +135,16 @@ public class SelectImageDialog extends Composite implements TakesValue<ImageInfo
     public void setImageOptionsProvider(ImageOptionsProvider imageOptionsProvider)
     {
         this._imageOptionsProvider = imageOptionsProvider;
+        this._defaultInformation.options = imageOptionsProvider.getDefaultOptions();
     }
 
     @Override
     public void setValue(ImageInformation value) {
         this._imageInformation = value;
+        if (this.isAttached())
+        {
+            this.bindData();
+        }
     }
 
     @Override
@@ -226,5 +242,11 @@ public class SelectImageDialog extends Composite implements TakesValue<ImageInfo
     {
         this.applyBasicImageOptions();
         this.doneEvent.dispatch(this._imageInformation);
+    }
+
+    public void clear()
+    {
+        this.mediaSearchPanel.clear();
+        this.setValue((ImageInformation)CloneableUtils.clone(this._defaultInformation));
     }
 }

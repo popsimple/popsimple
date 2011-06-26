@@ -57,4 +57,9 @@ public class WorksheetImageOptionsProvider implements ImageOptionsProvider
     {
         return WorksheetImageOptionsProvider._optionMap;
     }
+
+    @Override
+    public ImageOptions getDefaultOptions() {
+        return WorksheetImageOptionsProvider._optionMap.get(ImageOptionTypes.OriginalSize);
+    }
 }

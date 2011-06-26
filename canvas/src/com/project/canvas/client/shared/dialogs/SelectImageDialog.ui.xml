@@ -11,6 +11,16 @@
 		.padded {
 			padding:5px;
 		}
+		.dialogButtonsPanel{
+			text-align: right;
+			float: right;
+			display: inline-block;
+		}
+		.otherButtonsPanel{
+			float: left;
+			display: inline-block;
+		}
+
 	</ui:style>
 	<g:FlowPanel ui:field="formPanel">
 		<g:HTMLPanel addStyleNames="{style.padded}">
@@ -26,8 +36,13 @@
 				<g:RadioButton ui:field="repeatOption" name="imageStyle" formValue="false">Repeat</g:RadioButton >
 				<g:RadioButton ui:field="originalSizeOption" name="imageStyle" formValue="false">Use Original Size</g:RadioButton >
 			</div>
-			<g:Button ui:field="doneButton" addStyleNames="{style.padded}">Done</g:Button>
-			<g:Button ui:field="cancelButton" addStyleNames="{style.padded}">Cancel</g:Button>
+			<g:HTMLPanel addStyleNames="{style.otherButtonsPanel}">
+				<g:Button ui:field="clearButton" addStyleNames="{style.padded}">Clear</g:Button>
+			</g:HTMLPanel>
+			<g:HTMLPanel addStyleNames="{style.dialogButtonsPanel}">
+				<g:Button ui:field="doneButton" addStyleNames="{style.padded}">Done</g:Button>
+				<g:Button ui:field="cancelButton" addStyleNames="{style.padded}">Cancel</g:Button>
+			</g:HTMLPanel>
 		</g:HTMLPanel>
 	</g:FlowPanel>
 </ui:UiBinder>

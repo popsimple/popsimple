@@ -261,4 +261,13 @@ public class MediaSearchPanel extends Composite {
         }
         return null;
     }
+
+    public void clear()
+    {
+        //TODO: Set the "Search" text as watermark.
+        this.searchText.setText("");
+        resultsPanel.clear();
+        resultsPanelContainer.scrollToTop();
+        photoSizesPanel.clear();
+    }
 }
