@@ -7,12 +7,16 @@ import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import org.apache.tools.ant.taskdefs.LogOutputStream;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.project.authentication.shared.AuthenticationService;
+import com.project.authentication.shared.AuthenticationServiceAsync;
 import com.project.canvas.client.ToolFactories;
 import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.canvastools.base.CanvasToolFactory;
@@ -126,6 +130,21 @@ public class WorksheetImpl implements Worksheet
         toolData.transform = new Transform2D(ElementUtils.getElementOffsetPosition(frameElement),
                 toolFrame.getToolSize(), ElementUtils.getRotation(frameElement));
         return toolData;
+    }
+
+    private void logout()
+    {
+        AuthenticationServiceAsync service =
+            (AuthenticationServiceAsync)GWT.create(AuthenticationService.class);
+        service.logout(new AsyncCallback<Void>() {
+            @Override
+            public void onSuccess(Void result) {
+            }
+
+            @Override
+            public void onFailure(Throwable caught) {
+            }
+        });
     }
 
     @Override
@@ -251,6 +270,13 @@ public class WorksheetImpl implements Worksheet
                 save();
             }
         });
+        view.addLogoutHandler(new Handler<Void>() {
+            @Override
+            public void onFire(Void arg) {
+                logout();
+            }
+        });
+
         view.addLoadHandler(new Handler<String>() {
             @Override
             public void onFire(String idStr)

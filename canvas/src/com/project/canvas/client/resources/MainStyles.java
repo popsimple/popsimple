@@ -173,4 +173,6 @@ public interface MainStyles extends CssResource {
     String selectionPanelStyle();
 
     String imageLoadingStyle();
+
+    String worksheetLogoutLink();
 }

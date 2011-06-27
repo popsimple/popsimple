@@ -33,3 +33,7 @@ YouTube
 --------
 user: janitormasters@gmail.com
 Key: AI39si5jW3xjF_6-_XgYViQNbeoesqsagmMHXs8i3jYZZHvGmX2FOXjFEKSRQW4vadfEU5leXbzQkFZGvuyKAngk3WeEddUNMA
+
+Amazon EC2:
+user: janitormasters@gmail.com
+Password: g734FGQ@Ssdjf

@@ -64,7 +64,6 @@ import com.project.canvas.shared.data.ElementData;
 import com.project.canvas.shared.data.ImageInformation;
 import com.project.canvas.shared.data.Point2D;
 import com.project.canvas.shared.data.Transform2D;
-import com.sun.org.apache.bcel.internal.generic.NEW;
 
 public class WorksheetViewImpl extends Composite implements WorksheetView {
     interface WorksheetViewImplUiBinder extends UiBinder<Widget, WorksheetViewImpl> {
@@ -81,6 +80,10 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
     @UiField
     Anchor optionsBackground;
+
+    @UiField
+    Anchor linkLogout;
+
     @UiField
     Button saveButton;
     @UiField
@@ -182,6 +185,11 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     @Override
     public HandlerRegistration addSaveHandler(Handler<Void> handler) {
         return saveButton.addClickHandler(SimpleEvent.asClickHandler(handler));
+    }
+
+    @Override
+    public HandlerRegistration addLogoutHandler(Handler<Void> handler) {
+        return this.linkLogout.addClickHandler(SimpleEvent.asClickHandler(handler));
     }
 
     @Override

@@ -12,12 +12,15 @@
 
     <include path="**.cache.*" expiration="365d" />
     <exclude path="**.gwt.rpc" />
+    <exclude path="**.html"/>
   </static-files>
 
   <!-- Configure java.util.logging -->
   <system-properties>
     <property name="java.util.logging.config.file" value="WEB-INF/logging.properties"/>
   </system-properties>
+
+  <sessions-enabled>true</sessions-enabled>
 
 
 </appengine-web-app>

@@ -91,6 +91,12 @@
 	float: right;
 }
 
+.worksheetLogoutLink{
+	font-size: 14px;
+	float: right;
+	padding: 5px;
+}
+
 .worksheetRightButton {
 
 }

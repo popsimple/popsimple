@@ -10,6 +10,7 @@
 		        <g:Button  ui:field="saveButton" addStyleNames="{res.main.worksheetRightButton}">Save</g:Button>
 	            <g:Button  ui:field="viewButton" addStyleNames="{res.main.worksheetRightButton}">Preview</g:Button>
             </g:HTMLPanel>
+            <g:Anchor ui:field="linkLogout" href="javascript:;" addStyleNames="{res.main.worksheetLogoutLink}">Logout</g:Anchor>
 			Worksheet
             <g:HTMLPanel addStyleNames="{res.main.worksheetOptions}">
             	<g:Anchor ui:field="optionsBackground">Change background</g:Anchor>

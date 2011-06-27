@@ -9,6 +9,7 @@ import com.project.canvas.client.canvastools.base.CanvasToolFactory;
 import com.project.canvas.client.canvastools.base.CanvasToolFrame;
 import com.project.canvas.client.canvastools.base.ToolboxItem;
 import com.project.canvas.client.shared.events.SimpleEvent;
+import com.project.canvas.client.shared.events.SimpleEvent.Handler;
 import com.project.canvas.shared.data.CanvasPageOptions;
 import com.project.canvas.shared.data.ElementData;
 import com.project.canvas.shared.data.Point2D;
@@ -58,6 +59,8 @@ public interface WorksheetView extends IsWidget
     HandlerRegistration addOptionsUpdatedHandler(SimpleEvent.Handler<CanvasPageOptions> handler);
 
     HandlerRegistration addSaveHandler(SimpleEvent.Handler<Void> handler);
+
+    HandlerRegistration addLogoutHandler(Handler<Void> handler);
 
     HandlerRegistration addStopOperationHandler(SimpleEvent.Handler<Void> handler);
 
