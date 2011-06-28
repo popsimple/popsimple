@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import com.google.gwt.event.dom.client.MouseEvent;
 import com.project.canvas.client.canvastools.base.CanvasToolFrame;
-import com.project.canvas.shared.data.Point2D;
+import com.project.shared.data.Point2D;
 
 public interface ToolFrameTransformer
 {

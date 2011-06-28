@@ -7,8 +7,6 @@ import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-import org.apache.tools.ant.taskdefs.LogOutputStream;
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
@@ -22,24 +20,24 @@ import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.canvastools.base.CanvasToolFactory;
 import com.project.canvas.client.canvastools.base.CanvasToolFrame;
 import com.project.canvas.client.canvastools.base.ToolboxItem;
-import com.project.canvas.client.shared.ElementUtils;
-import com.project.canvas.client.shared.RegistrationsManager;
 import com.project.canvas.client.shared.ZIndexAllocator;
-import com.project.canvas.client.shared.events.SimpleEvent;
-import com.project.canvas.client.shared.events.SimpleEvent.Handler;
 import com.project.canvas.client.worksheet.interfaces.Worksheet;
 import com.project.canvas.client.worksheet.interfaces.WorksheetView;
 import com.project.canvas.client.worksheet.interfaces.WorksheetView.OperationStatus;
 import com.project.canvas.client.worksheet.interfaces.WorksheetView.ToolCreationRequest;
-import com.project.canvas.shared.CloneableUtils;
-import com.project.canvas.shared.ThrowableUtils;
 import com.project.canvas.shared.contracts.CanvasService;
 import com.project.canvas.shared.contracts.CanvasServiceAsync;
 import com.project.canvas.shared.data.CanvasPage;
 import com.project.canvas.shared.data.CanvasPageOptions;
 import com.project.canvas.shared.data.ElementData;
-import com.project.canvas.shared.data.Point2D;
 import com.project.canvas.shared.data.Transform2D;
+import com.project.shared.client.events.SimpleEvent;
+import com.project.shared.client.events.SimpleEvent.Handler;
+import com.project.shared.client.handlers.RegistrationsManager;
+import com.project.shared.client.utils.ElementUtils;
+import com.project.shared.data.Point2D;
+import com.project.shared.utils.CloneableUtils;
+import com.project.shared.utils.ThrowableUtils;
 
 public class WorksheetImpl implements Worksheet
 {

@@ -8,12 +8,12 @@ import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.canvastools.base.CanvasToolFactory;
 import com.project.canvas.client.canvastools.base.CanvasToolFrame;
 import com.project.canvas.client.canvastools.base.ToolboxItem;
-import com.project.canvas.client.shared.events.SimpleEvent;
-import com.project.canvas.client.shared.events.SimpleEvent.Handler;
 import com.project.canvas.shared.data.CanvasPageOptions;
 import com.project.canvas.shared.data.ElementData;
-import com.project.canvas.shared.data.Point2D;
 import com.project.canvas.shared.data.Transform2D;
+import com.project.shared.client.events.SimpleEvent;
+import com.project.shared.client.events.SimpleEvent.Handler;
+import com.project.shared.data.Point2D;
 
 public interface WorksheetView extends IsWidget
 {

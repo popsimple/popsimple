@@ -16,17 +16,17 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.resources.CanvasResources;
-import com.project.canvas.client.shared.RegistrationsManager;
-import com.project.canvas.client.shared.events.SimpleEvent.Handler;
 import com.project.canvas.client.shared.widgets.DialogWithZIndex;
 import com.project.canvas.shared.ApiKeys;
 import com.project.canvas.shared.data.ElementData;
-import com.project.canvas.shared.data.Location;
 import com.project.canvas.shared.data.MapData;
-import com.project.canvas.shared.data.Point2D;
 import com.project.gwtmapstraction.client.mxn.LatLonPoint;
 import com.project.gwtmapstraction.client.mxn.MapProvider;
 import com.project.gwtmapstraction.client.mxn.Mapstraction;
+import com.project.shared.client.events.SimpleEvent.Handler;
+import com.project.shared.client.handlers.RegistrationsManager;
+import com.project.shared.data.Location;
+import com.project.shared.data.Point2D;
 
 public class MapTool extends Composite implements CanvasTool<MapData>
 {

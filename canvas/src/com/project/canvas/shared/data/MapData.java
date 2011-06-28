@@ -3,6 +3,7 @@ package com.project.canvas.shared.data;
 import com.google.code.twig.annotation.Embedded;
 import com.project.gwtmapstraction.client.mxn.MapProvider;
 import com.project.gwtmapstraction.client.mxn.MapType;
+import com.project.shared.data.Location;
 
 public class MapData extends ElementData
 {

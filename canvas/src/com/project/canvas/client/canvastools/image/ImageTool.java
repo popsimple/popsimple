@@ -10,8 +10,6 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
-import com.google.gwt.event.logical.shared.ResizeEvent;
-import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -19,20 +17,20 @@ import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.canvastools.base.CanvasToolCommon;
 import com.project.canvas.client.resources.CanvasResources;
 import com.project.canvas.client.shared.ImageInformationUtils;
-import com.project.canvas.client.shared.RegistrationsManager;
-import com.project.canvas.client.shared.WidgetUtils;
 import com.project.canvas.client.shared.dialogs.SelectImageDialog;
-import com.project.canvas.client.shared.events.SimpleEvent;
-import com.project.canvas.client.shared.events.SimpleEvent.Handler;
 import com.project.canvas.client.shared.searchProviders.interfaces.ImageSearchProvider;
 import com.project.canvas.client.shared.widgets.DialogWithZIndex;
-import com.project.canvas.shared.CloneableUtils;
-import com.project.canvas.shared.StringUtils;
-import com.project.canvas.shared.UrlUtils;
 import com.project.canvas.shared.data.ElementData;
 import com.project.canvas.shared.data.ImageData;
 import com.project.canvas.shared.data.ImageInformation;
-import com.project.canvas.shared.data.Point2D;
+import com.project.shared.client.events.SimpleEvent;
+import com.project.shared.client.events.SimpleEvent.Handler;
+import com.project.shared.client.handlers.RegistrationsManager;
+import com.project.shared.client.utils.WidgetUtils;
+import com.project.shared.data.Point2D;
+import com.project.shared.utils.CloneableUtils;
+import com.project.shared.utils.StringUtils;
+import com.project.shared.utils.UrlUtils;
 
 public class ImageTool extends FlowPanel implements CanvasTool<ImageData>
 {

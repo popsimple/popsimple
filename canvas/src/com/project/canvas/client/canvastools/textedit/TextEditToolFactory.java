@@ -2,8 +2,8 @@ package com.project.canvas.client.canvastools.textedit;
 
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.canvastools.base.CanvasToolFactoryBase;
-import com.project.canvas.shared.data.Point2D;
 import com.project.canvas.shared.data.TextData;
+import com.project.shared.data.Point2D;
 
 public class TextEditToolFactory extends CanvasToolFactoryBase<TextEditTool> {
     

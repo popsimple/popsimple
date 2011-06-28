@@ -3,9 +3,10 @@ package com.project.canvas.shared.data;
 import java.io.Serializable;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
-import com.project.canvas.shared.CloneableUtils;
-import com.project.canvas.shared.ObjectUtils;
-import com.project.canvas.shared.contracts.ICloneable;
+import com.project.shared.data.ICloneable;
+import com.project.shared.data.Point2D;
+import com.project.shared.utils.CloneableUtils;
+import com.project.shared.utils.ObjectUtils;
 
 
 public class ImageInformation implements Serializable, IsSerializable, ICloneable {

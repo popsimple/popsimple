@@ -15,8 +15,8 @@ import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
-import com.project.canvas.client.shared.RegistrationsManager;
-import com.project.canvas.client.shared.events.SimpleEvent;
+import com.project.shared.client.events.SimpleEvent;
+import com.project.shared.client.handlers.RegistrationsManager;
 
 public class NicEditor
 {
@@ -153,7 +153,7 @@ public class NicEditor
             });
             return;
         }
-        
+
     	loadRegistrationsManager.add(scriptLoadedEvent.addHandler(handler));
         if (loading) {
         	return;

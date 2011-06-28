@@ -17,8 +17,8 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.resources.CanvasResources;
-import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.shared.data.TaskData;
+import com.project.shared.client.events.SimpleEvent;
 
 public class TaskTool extends Composite implements Focusable, TakesValue<TaskData> {
 

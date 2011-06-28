@@ -20,16 +20,16 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
-import com.project.canvas.client.shared.events.SimpleEvent;
-import com.project.canvas.client.shared.handlers.SpecificKeyPressHandler;
 import com.project.canvas.client.shared.searchProviders.interfaces.MediaInfo;
 import com.project.canvas.client.shared.searchProviders.interfaces.MediaSearchProvider;
 import com.project.canvas.client.shared.widgets.media.MediaSearchPanel;
-import com.project.canvas.shared.CloneableUtils;
-import com.project.canvas.shared.ObjectUtils;
-import com.project.canvas.shared.UrlUtils;
-import com.project.canvas.shared.data.Point2D;
 import com.project.canvas.shared.data.VideoInformation;
+import com.project.shared.client.events.SimpleEvent;
+import com.project.shared.client.handlers.SpecificKeyPressHandler;
+import com.project.shared.data.Point2D;
+import com.project.shared.utils.CloneableUtils;
+import com.project.shared.utils.ObjectUtils;
+import com.project.shared.utils.UrlUtils;
 
 public class SelectVideoDialog extends Composite implements TakesValue<VideoInformation>, Focusable {
 

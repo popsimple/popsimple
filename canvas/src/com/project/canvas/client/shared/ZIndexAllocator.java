@@ -6,7 +6,8 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import com.google.gwt.dom.client.Element;
-import com.project.canvas.shared.MapUtils;
+import com.project.shared.client.utils.ElementUtils;
+import com.project.shared.utils.MapUtils;
 
 //TODO: Think about a better design. 
 public abstract class ZIndexAllocator {

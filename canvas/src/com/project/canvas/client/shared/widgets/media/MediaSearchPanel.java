@@ -27,15 +27,15 @@ import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.resources.CanvasResources;
-import com.project.canvas.client.shared.NativeUtils;
-import com.project.canvas.client.shared.RegistrationsManager;
-import com.project.canvas.client.shared.TextBoxUtils;
-import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.shared.searchProviders.interfaces.MediaInfo;
 import com.project.canvas.client.shared.searchProviders.interfaces.MediaResult;
 import com.project.canvas.client.shared.searchProviders.interfaces.MediaSearchProvider;
 import com.project.canvas.client.shared.searchProviders.interfaces.MediaSearchResult;
 import com.project.canvas.client.shared.widgets.RadioButtonPanel;
+import com.project.shared.client.events.SimpleEvent;
+import com.project.shared.client.handlers.RegistrationsManager;
+import com.project.shared.client.utils.NativeUtils;
+import com.project.shared.client.utils.TextBoxUtils;
 
 public class MediaSearchPanel extends Composite {
 

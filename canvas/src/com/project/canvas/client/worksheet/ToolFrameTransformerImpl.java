@@ -7,14 +7,14 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.canvastools.base.CanvasToolFrame;
 import com.project.canvas.client.resources.CanvasResources;
-import com.project.canvas.client.shared.ElementUtils;
-import com.project.canvas.client.shared.events.SimpleEvent;
-import com.project.canvas.client.shared.events.SimpleEvent.Handler;
 import com.project.canvas.client.worksheet.interfaces.ElementDragManager;
 import com.project.canvas.client.worksheet.interfaces.ToolFrameTransformer;
-import com.project.canvas.shared.PointTransformer;
-import com.project.canvas.shared.PointTransformer.TransformationMode;
-import com.project.canvas.shared.data.Point2D;
+import com.project.shared.client.events.SimpleEvent;
+import com.project.shared.client.events.SimpleEvent.Handler;
+import com.project.shared.client.utils.ElementUtils;
+import com.project.shared.data.Point2D;
+import com.project.shared.data.PointTransformer;
+import com.project.shared.data.PointTransformer.TransformationMode;
 
 public class ToolFrameTransformerImpl implements ToolFrameTransformer
 {

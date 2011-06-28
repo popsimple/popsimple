@@ -8,10 +8,10 @@ import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.canvastools.base.BuiltinTools;
 import com.project.canvas.client.canvastools.base.ToolboxItem;
 import com.project.canvas.client.resources.CanvasResources;
-import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.client.worksheet.WorksheetImpl;
 import com.project.canvas.client.worksheet.WorksheetViewImpl;
 import com.project.canvas.client.worksheet.interfaces.Worksheet;
+import com.project.shared.client.events.SimpleEvent;
 
 public class CanvasContainer extends Composite {
 

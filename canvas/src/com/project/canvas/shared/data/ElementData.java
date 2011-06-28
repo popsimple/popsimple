@@ -4,8 +4,8 @@ import java.io.Serializable;
 import com.google.code.twig.annotation.Embedded;
 import com.google.code.twig.annotation.Id;
 import com.google.gwt.user.client.rpc.IsSerializable;
-import com.project.canvas.shared.CloneableUtils;
-import com.project.canvas.shared.contracts.ICloneable;
+import com.project.shared.data.ICloneable;
+import com.project.shared.utils.CloneableUtils;
 
 public class ElementData implements Serializable, IsSerializable, ICloneable {
     private static final long serialVersionUID = 1L;

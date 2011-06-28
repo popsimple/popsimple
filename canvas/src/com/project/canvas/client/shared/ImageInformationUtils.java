@@ -3,9 +3,11 @@ package com.project.canvas.client.shared;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.resources.CanvasResources;
-import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.shared.data.ImageInformation;
 import com.project.canvas.shared.data.ImageOptions;
+import com.project.shared.client.events.SimpleEvent;
+import com.project.shared.client.utils.StyleUtils;
+import com.project.shared.client.utils.WidgetUtils;
 
 //TODO: Probably needs to be a different class, it doesn't exactly complies with ...Utils convention.
 public class ImageInformationUtils

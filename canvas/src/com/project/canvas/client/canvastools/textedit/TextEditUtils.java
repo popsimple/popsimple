@@ -7,7 +7,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.project.canvas.shared.data.Point2D;
+import com.project.shared.data.Point2D;
 
 public class TextEditUtils {
 

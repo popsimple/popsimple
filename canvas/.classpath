@@ -16,5 +16,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/gwt-youtube"/>
 	<classpathentry kind="con" path="com.google.appengine.eclipse.core.GAE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/gwt-mapstraction"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/shared"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

@@ -27,14 +27,14 @@ import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.canvastools.base.CanvasTool.ResizeMode;
-import com.project.canvas.client.shared.ElementUtils;
-import com.project.canvas.client.shared.NativeUtils;
-import com.project.canvas.client.shared.RegistrationsManager;
-import com.project.canvas.client.shared.WidgetUtils;
-import com.project.canvas.client.shared.events.SimpleEvent;
-import com.project.canvas.client.shared.events.SimpleEvent.Handler;
 import com.project.canvas.shared.data.ElementData;
-import com.project.canvas.shared.data.Point2D;
+import com.project.shared.client.events.SimpleEvent;
+import com.project.shared.client.events.SimpleEvent.Handler;
+import com.project.shared.client.handlers.RegistrationsManager;
+import com.project.shared.client.utils.ElementUtils;
+import com.project.shared.client.utils.NativeUtils;
+import com.project.shared.client.utils.WidgetUtils;
+import com.project.shared.data.Point2D;
 
 public class CanvasToolFrame extends Composite implements Focusable, HasFocusHandlers, HasBlurHandlers {
 

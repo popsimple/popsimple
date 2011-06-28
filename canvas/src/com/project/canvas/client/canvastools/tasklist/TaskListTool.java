@@ -16,11 +16,11 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.canvastools.base.CanvasToolCommon;
-import com.project.canvas.client.shared.events.SimpleEvent.Handler;
 import com.project.canvas.shared.data.ElementData;
-import com.project.canvas.shared.data.Point2D;
 import com.project.canvas.shared.data.TaskData;
 import com.project.canvas.shared.data.TaskListData;
+import com.project.shared.client.events.SimpleEvent.Handler;
+import com.project.shared.data.Point2D;
 
 public class TaskListTool extends Composite implements CanvasTool<TaskListData>, Focusable {
 

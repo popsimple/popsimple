@@ -4,8 +4,8 @@ import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseMoveHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.project.canvas.client.shared.events.SimpleEvent;
-import com.project.canvas.shared.data.Point2D;
+import com.project.shared.client.events.SimpleEvent;
+import com.project.shared.data.Point2D;
 
 public class MouseDragHandler implements MouseMoveHandler
 {

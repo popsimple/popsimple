@@ -45,25 +45,25 @@ import com.project.canvas.client.canvastools.base.CanvasToolFactory;
 import com.project.canvas.client.canvastools.base.CanvasToolFrame;
 import com.project.canvas.client.canvastools.base.ToolboxItem;
 import com.project.canvas.client.resources.CanvasResources;
-import com.project.canvas.client.shared.ElementUtils;
 import com.project.canvas.client.shared.ImageInformationUtils;
 import com.project.canvas.client.shared.ImageOptionTypes;
 import com.project.canvas.client.shared.ImageOptionsProviderUtils;
-import com.project.canvas.client.shared.RegistrationsManager;
 import com.project.canvas.client.shared.dialogs.SelectImageDialog;
-import com.project.canvas.client.shared.events.SimpleEvent;
-import com.project.canvas.client.shared.events.SimpleEvent.Handler;
 import com.project.canvas.client.shared.searchProviders.SearchProviders;
 import com.project.canvas.client.shared.widgets.DialogWithZIndex;
 import com.project.canvas.client.worksheet.interfaces.ElementDragManager;
 import com.project.canvas.client.worksheet.interfaces.ToolFrameTransformer;
 import com.project.canvas.client.worksheet.interfaces.WorksheetView;
-import com.project.canvas.shared.CloneableUtils;
 import com.project.canvas.shared.data.CanvasPageOptions;
 import com.project.canvas.shared.data.ElementData;
 import com.project.canvas.shared.data.ImageInformation;
-import com.project.canvas.shared.data.Point2D;
 import com.project.canvas.shared.data.Transform2D;
+import com.project.shared.client.events.SimpleEvent;
+import com.project.shared.client.events.SimpleEvent.Handler;
+import com.project.shared.client.handlers.RegistrationsManager;
+import com.project.shared.client.utils.ElementUtils;
+import com.project.shared.data.Point2D;
+import com.project.shared.utils.CloneableUtils;
 
 public class WorksheetViewImpl extends Composite implements WorksheetView {
     interface WorksheetViewImplUiBinder extends UiBinder<Widget, WorksheetViewImpl> {

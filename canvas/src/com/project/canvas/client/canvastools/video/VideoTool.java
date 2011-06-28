@@ -20,21 +20,21 @@ import com.google.gwt.user.client.ui.Label;
 import com.project.canvas.client.canvastools.base.CanvasTool;
 import com.project.canvas.client.canvastools.base.CanvasToolCommon;
 import com.project.canvas.client.resources.CanvasResources;
-import com.project.canvas.client.shared.ElementUtils;
-import com.project.canvas.client.shared.RegistrationsManager;
-import com.project.canvas.client.shared.WidgetUtils;
 import com.project.canvas.client.shared.dialogs.SelectVideoDialog;
-import com.project.canvas.client.shared.events.SimpleEvent;
-import com.project.canvas.client.shared.events.SimpleEvent.Handler;
 import com.project.canvas.client.shared.searchProviders.interfaces.VideoSearchProvider;
 import com.project.canvas.client.shared.widgets.DialogWithZIndex;
-import com.project.canvas.shared.CloneableUtils;
-import com.project.canvas.shared.StringUtils;
-import com.project.canvas.shared.UrlUtils;
 import com.project.canvas.shared.data.ElementData;
-import com.project.canvas.shared.data.Point2D;
 import com.project.canvas.shared.data.VideoData;
 import com.project.canvas.shared.data.VideoInformation;
+import com.project.shared.client.events.SimpleEvent;
+import com.project.shared.client.events.SimpleEvent.Handler;
+import com.project.shared.client.handlers.RegistrationsManager;
+import com.project.shared.client.utils.ElementUtils;
+import com.project.shared.client.utils.WidgetUtils;
+import com.project.shared.data.Point2D;
+import com.project.shared.utils.CloneableUtils;
+import com.project.shared.utils.StringUtils;
+import com.project.shared.utils.UrlUtils;
 
 public class VideoTool extends FlowPanel implements CanvasTool<VideoData>
 {

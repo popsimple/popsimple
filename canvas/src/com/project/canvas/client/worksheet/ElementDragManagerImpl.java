@@ -8,15 +8,15 @@ import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Widget;
-import com.project.canvas.client.shared.ElementUtils;
-import com.project.canvas.client.shared.NativeUtils;
-import com.project.canvas.client.shared.RegistrationsManager;
-import com.project.canvas.client.shared.events.SimpleEvent;
-import com.project.canvas.client.shared.events.SimpleEvent.Handler;
 import com.project.canvas.client.worksheet.exceptions.InvalidDragPanelRelationshipException;
 import com.project.canvas.client.worksheet.interfaces.ElementDragManager;
-import com.project.canvas.shared.EventUtils;
-import com.project.canvas.shared.data.Point2D;
+import com.project.shared.client.events.SimpleEvent;
+import com.project.shared.client.events.SimpleEvent.Handler;
+import com.project.shared.client.handlers.RegistrationsManager;
+import com.project.shared.client.utils.ElementUtils;
+import com.project.shared.client.utils.NativeUtils;
+import com.project.shared.data.Point2D;
+import com.project.shared.utils.EventUtils;
 
 public class ElementDragManagerImpl implements ElementDragManager
 {

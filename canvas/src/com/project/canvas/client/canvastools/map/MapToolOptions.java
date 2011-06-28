@@ -12,11 +12,11 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.Widget;
-import com.project.canvas.client.shared.events.SimpleEvent;
-import com.project.canvas.shared.DoubleHashMap;
 import com.project.canvas.shared.data.MapData;
 import com.project.gwtmapstraction.client.mxn.MapProvider;
 import com.project.gwtmapstraction.client.mxn.MapType;
+import com.project.shared.client.events.SimpleEvent;
+import com.project.shared.data.DoubleHashMap;
 
 public class MapToolOptions extends Composite implements TakesValue<MapData>
 {
@@ -27,40 +27,40 @@ public class MapToolOptions extends Composite implements TakesValue<MapData>
     {
     }
 
-    
+
     @UiField
     FlowPanel providersPanel;
 
     @UiField
     FlowPanel mapTypesPanel;
-    
+
     @UiField
     Button doneButton;
-    
+
     SimpleEvent<Void> doneEvent = new SimpleEvent<Void>();
 
     private MapData mapData;
     private DoubleHashMap<MapProvider, RadioButton> providerButtons = new DoubleHashMap<MapProvider, RadioButton>();
     private DoubleHashMap<MapType, RadioButton> mapTypeButtons = new DoubleHashMap<MapType, RadioButton>();
-    
+
     public MapToolOptions()
     {
         initWidget(uiBinder.createAndBindUi(this));
-        
+
         for (MapProvider provider : MapProvider.values()) {
             RadioButton providerButton = new RadioButton("provider", provider.getDescription());
             this.providerButtons.put(provider, providerButton);
             this.providersPanel.add(providerButton);
         }
-        
+
         for (MapType mapType : MapType.values()) {
-            RadioButton mapTypeButton = new RadioButton("mapType", mapType.name());  
+            RadioButton mapTypeButton = new RadioButton("mapType", mapType.name());
             this.mapTypeButtons.put(mapType, mapTypeButton);
             this.mapTypesPanel.add(mapTypeButton);
         }
     }
-    
-    
+
+
     @UiHandler("doneButton")
     void doneButtonClicked(ClickEvent event)
     {
@@ -100,7 +100,7 @@ public class MapToolOptions extends Composite implements TakesValue<MapData>
     public HandlerRegistration addDoneHandler(SimpleEvent.Handler<Void> handler) {
         return this.doneEvent.addHandler(handler);
     }
-    
+
     private void clearButtons()
     {
         for (RadioButton button : this.providerButtons.values()) {

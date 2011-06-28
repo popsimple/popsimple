@@ -1,6 +1,6 @@
 package com.project.canvas.shared.data;
 
-import com.project.canvas.shared.CloneableUtils;
+import com.project.shared.utils.CloneableUtils;
 
 public class ImageData extends ElementData
 {

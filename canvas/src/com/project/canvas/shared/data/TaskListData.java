@@ -3,7 +3,7 @@ package com.project.canvas.shared.data;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.project.canvas.shared.CloneableUtils;
+import com.project.shared.utils.CloneableUtils;
 
 public class TaskListData extends ElementData {
 

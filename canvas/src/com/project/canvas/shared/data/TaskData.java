@@ -6,7 +6,7 @@ import com.google.appengine.api.datastore.Text;
 import com.google.code.twig.annotation.Id;
 import com.google.code.twig.annotation.Type;
 import com.google.gwt.user.client.rpc.IsSerializable;
-import com.project.canvas.shared.contracts.ICloneable;
+import com.project.shared.data.ICloneable;
 
 public class TaskData implements Serializable, IsSerializable, ICloneable {
     private static final long serialVersionUID = 1L;

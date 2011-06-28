@@ -1,13 +1,12 @@
 package com.project.canvas.client.canvastools.base;
 
 import com.google.gwt.event.dom.client.MouseEvent;
-import com.google.gwt.event.logical.shared.HasResizeHandlers;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.IsWidget;
-import com.project.canvas.client.shared.events.SimpleEvent;
 import com.project.canvas.shared.data.ElementData;
-import com.project.canvas.shared.data.Point2D;
+import com.project.shared.client.events.SimpleEvent;
+import com.project.shared.data.Point2D;
 
 // TODO change getvalue to updateValue to reflect the fact that it mutates the instance of data that was given in the setValue?
 public interface CanvasTool<T extends ElementData> extends IsWidget, TakesValue<T> {

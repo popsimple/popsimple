@@ -24,16 +24,16 @@ import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.shared.ImageOptionTypes;
 import com.project.canvas.client.shared.ImageOptionsProvider;
 import com.project.canvas.client.shared.ImageOptionsProviderUtils;
-import com.project.canvas.client.shared.events.SimpleEvent;
-import com.project.canvas.client.shared.handlers.SpecificKeyPressHandler;
 import com.project.canvas.client.shared.searchProviders.interfaces.MediaInfo;
 import com.project.canvas.client.shared.searchProviders.interfaces.MediaSearchProvider;
 import com.project.canvas.client.shared.widgets.media.MediaSearchPanel;
-import com.project.canvas.shared.CloneableUtils;
-import com.project.canvas.shared.ObjectUtils;
-import com.project.canvas.shared.UrlUtils;
 import com.project.canvas.shared.data.ImageInformation;
-import com.project.canvas.shared.data.Point2D;
+import com.project.shared.client.events.SimpleEvent;
+import com.project.shared.client.handlers.SpecificKeyPressHandler;
+import com.project.shared.data.Point2D;
+import com.project.shared.utils.CloneableUtils;
+import com.project.shared.utils.ObjectUtils;
+import com.project.shared.utils.UrlUtils;
 
 public class SelectImageDialog extends Composite implements TakesValue<ImageInformation>, Focusable {
 

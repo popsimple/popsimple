@@ -7,15 +7,15 @@ import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.canvas.client.canvastools.base.CanvasToolFrame;
-import com.project.canvas.client.shared.ElementUtils;
-import com.project.canvas.client.shared.NativeUtils;
-import com.project.canvas.client.shared.events.SimpleEvent;
-import com.project.canvas.client.shared.events.SimpleEvent.Handler;
 import com.project.canvas.client.worksheet.interfaces.ElementDragManager.StopCondition;
 import com.project.canvas.client.worksheet.interfaces.WorksheetView;
-import com.project.canvas.shared.RectangleUtils;
-import com.project.canvas.shared.data.Point2D;
-import com.project.canvas.shared.data.Rectangle;
+import com.project.shared.client.events.SimpleEvent;
+import com.project.shared.client.events.SimpleEvent.Handler;
+import com.project.shared.client.utils.ElementUtils;
+import com.project.shared.client.utils.NativeUtils;
+import com.project.shared.data.Point2D;
+import com.project.shared.data.Rectangle;
+import com.project.shared.utils.RectangleUtils;
 
 public class ToolFrameSelectionManager {
 	private ElementDragManagerImpl _selectionDragManager = null;
