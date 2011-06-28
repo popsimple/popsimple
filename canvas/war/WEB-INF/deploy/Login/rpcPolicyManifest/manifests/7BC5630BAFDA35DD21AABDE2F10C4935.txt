@@ -1,2 +1,0 @@
-serviceClass: com.project.authentication.shared.AuthenticationService
-path: B90F6A57FE2EF76A46E02EF24E450E9D.gwt.rpc

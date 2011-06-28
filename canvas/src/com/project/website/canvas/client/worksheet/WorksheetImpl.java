@@ -20,8 +20,6 @@ import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.data.Point2D;
 import com.project.shared.utils.CloneableUtils;
 import com.project.shared.utils.ThrowableUtils;
-import com.project.website.authentication.shared.AuthenticationService;
-import com.project.website.authentication.shared.AuthenticationServiceAsync;
 import com.project.website.canvas.client.ToolFactories;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
 import com.project.website.canvas.client.canvastools.base.CanvasToolFactory;
@@ -38,6 +36,8 @@ import com.project.website.canvas.shared.data.CanvasPage;
 import com.project.website.canvas.shared.data.CanvasPageOptions;
 import com.project.website.canvas.shared.data.ElementData;
 import com.project.website.canvas.shared.data.Transform2D;
+import com.project.website.shared.contracts.authentication.AuthenticationService;
+import com.project.website.shared.contracts.authentication.AuthenticationServiceAsync;
 
 public class WorksheetImpl implements Worksheet
 {
@@ -137,6 +137,7 @@ public class WorksheetImpl implements Worksheet
         service.logout(new AsyncCallback<Void>() {
             @Override
             public void onSuccess(Void result) {
+                Window.Location.reload();
             }
 
             @Override

@@ -36,4 +36,16 @@
 		<nature>com.google.gwt.eclipse.core.gwtNature</nature>
 		<nature>com.google.appengine.eclipse.core.gaeNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>bin</name>
+			<type>2</type>
+			<location>C:/source/canvas/shared/bin</location>
+		</link>
+		<link>
+			<name>shared_src</name>
+			<type>2</type>
+			<location>C:/source/canvas/shared/src</location>
+		</link>
+	</linkedResources>
 </projectDescription>

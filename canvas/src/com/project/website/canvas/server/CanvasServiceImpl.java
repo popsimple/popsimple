@@ -9,6 +9,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.project.website.canvas.shared.contracts.CanvasService;
 import com.project.website.canvas.shared.data.CanvasPage;
 import com.project.website.canvas.shared.data.ElementData;
+import com.project.website.shared.server.authentication.AuthenticationServiceImpl;
 
 /**
  * The server side implementation of the RPC service.
@@ -18,6 +19,8 @@ public class CanvasServiceImpl extends RemoteServiceServlet implements CanvasSer
 
     @Override
     public CanvasPage savePage(CanvasPage page) {
+        new AuthenticationServiceImpl().isLoggedIn(this.getThreadLocalRequest());
+
         ObjectDatastore datastore = new AnnotationObjectDatastore();
         // String serverInfo = getServletContext().getServerInfo();
         // String userAgent = getThreadLocalRequest().getHeader("User-Agent");
