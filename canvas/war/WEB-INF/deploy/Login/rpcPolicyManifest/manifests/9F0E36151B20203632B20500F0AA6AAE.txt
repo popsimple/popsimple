@@ -1,0 +1,2 @@
+serviceClass: com.project.canvasweb.authentication.shared.AuthenticationService
+path: 35E20B0530839A373D90A80E76EC1041.gwt.rpc

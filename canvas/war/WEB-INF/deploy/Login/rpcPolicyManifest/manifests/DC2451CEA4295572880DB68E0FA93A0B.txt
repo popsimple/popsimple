@@ -1,0 +1,2 @@
+serviceClass: com.project.website.authentication.shared.AuthenticationService
+path: 0BAC4C24C68E29A62A95E53DB17617C3.gwt.rpc
