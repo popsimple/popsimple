@@ -20,7 +20,7 @@ public class UrlUtils {
     /**
      * Compares two urls by first decoding and trimming them. Note that depending on the server
      * the urls may not really be equivalent (for example if the server treats encodings differently).
-     * However for most purposes this is probably a good enough comparison. 
+     * However for most purposes this is probably a good enough comparison.
      */
     public static boolean areEquivalent(String url1, String url2)
     {
@@ -35,5 +35,18 @@ public class UrlUtils {
      */
     public static String encodeOnce(String url) {
         return URL.encode(URL.decode(url));
+    }
+
+    public static String buildUrl(String url, String queryString)
+    {
+        if (queryString == null) {
+            return url;
+        }
+        return url + "?" + queryString;
+    }
+
+    public static String addQueryParameter(String url, String parameterName, String parameterValue)
+    {
+        return url + "&" + parameterName + "=" + parameterValue;
     }
 }

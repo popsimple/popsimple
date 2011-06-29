@@ -6,18 +6,24 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.project.shared.client.handlers.SpecificKeyPressHandler;
 import com.project.website.shared.contracts.authentication.AuthenticationService;
 import com.project.website.shared.contracts.authentication.AuthenticationServiceAsync;
+import com.project.website.shared.data.QueryParameters;
+import com.project.website.shared.server.authentication.AuthenticationFilter;
 
 public class LoginWidget extends Composite {
 
@@ -27,7 +33,7 @@ public class LoginWidget extends Composite {
     }
 
     @UiField
-    FormPanel formPanel;
+    FocusPanel focusPanel;
 
     @UiField
     TextBox textEmail;
@@ -46,24 +52,31 @@ public class LoginWidget extends Composite {
 
         this.errorPanel.setVisible(false);
 
-        this.textEmail.addKeyDownHandler(new KeyDownHandler() {
+        this.focusPanel.addDomHandler(new SpecificKeyPressHandler(KeyCodes.KEY_ENTER) {
             @Override
-            public void onKeyDown(KeyDownEvent event) {
-                if (KeyCodes.KEY_ENTER == event.getNativeKeyCode())
-                {
-                    submitLogin();
-                }
+            public void onSpecificKeyPress(KeyPressEvent event) {
+                submitLogin();
             }
-        });
-        this.textPassword.addKeyDownHandler(new KeyDownHandler() {
-            @Override
-            public void onKeyDown(KeyDownEvent event) {
-                if (KeyCodes.KEY_ENTER == event.getNativeKeyCode())
-                {
-                    submitLogin();
-                }
-            }
-        });
+        }, KeyPressEvent.getType());
+
+//        this.textEmail.addKeyDownHandler(new KeyDownHandler() {
+//            @Override
+//            public void onKeyDown(KeyDownEvent event) {
+//                if (KeyCodes.KEY_ENTER == event.getNativeKeyCode())
+//                {
+//                    submitLogin();
+//                }
+//            }
+//        });
+//        this.textPassword.addKeyDownHandler(new KeyDownHandler() {
+//            @Override
+//            public void onKeyDown(KeyDownEvent event) {
+//                if (KeyCodes.KEY_ENTER == event.getNativeKeyCode())
+//                {
+//                    submitLogin();
+//                }
+//            }
+//        });
         this.buttonLogin.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -79,7 +92,7 @@ public class LoginWidget extends Composite {
         service.login(this.textEmail.getText(), this.textPassword.getText(), new AsyncCallback<Void>() {
             @Override
             public void onSuccess(Void result) {
-                String redirectUrl = Window.Location.getParameter("redirectUrl");
+                String redirectUrl = Window.Location.getParameter(QueryParameters.REDIRECT_URL);
                 if (redirectUrl.isEmpty())
                 {
                     return;

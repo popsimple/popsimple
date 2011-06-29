@@ -53,7 +53,7 @@
 		<div>
 			<g:Label addStyleNames="{style.captionLabel}">Please sign in</g:Label>
 		</div>
-		<g:FormPanel ui:field="formPanel" action="" addStyleNames="{style.containerPanel}">
+		<g:FocusPanel ui:field="focusPanel" addStyleNames="{style.containerPanel}">
 			<g:HTMLPanel>
 				<g:HTMLPanel addStyleNames="{style.loginPanel}">
 					<p>
@@ -73,6 +73,6 @@
 				</g:HTMLPanel>
 				<p><a href="#">Forgot password?</a></p>
 			</g:HTMLPanel>
-		</g:FormPanel>
+		</g:FocusPanel>
 	</g:HTMLPanel>
 </ui:UiBinder>
