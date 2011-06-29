@@ -20,6 +20,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.handlers.SpecificKeyPressHandler;
+import com.project.shared.utils.StringUtils;
 import com.project.website.shared.contracts.authentication.AuthenticationService;
 import com.project.website.shared.contracts.authentication.AuthenticationServiceAsync;
 import com.project.website.shared.data.QueryParameters;
@@ -59,24 +60,6 @@ public class LoginWidget extends Composite {
             }
         }, KeyPressEvent.getType());
 
-//        this.textEmail.addKeyDownHandler(new KeyDownHandler() {
-//            @Override
-//            public void onKeyDown(KeyDownEvent event) {
-//                if (KeyCodes.KEY_ENTER == event.getNativeKeyCode())
-//                {
-//                    submitLogin();
-//                }
-//            }
-//        });
-//        this.textPassword.addKeyDownHandler(new KeyDownHandler() {
-//            @Override
-//            public void onKeyDown(KeyDownEvent event) {
-//                if (KeyCodes.KEY_ENTER == event.getNativeKeyCode())
-//                {
-//                    submitLogin();
-//                }
-//            }
-//        });
         this.buttonLogin.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -93,11 +76,16 @@ public class LoginWidget extends Composite {
             @Override
             public void onSuccess(Void result) {
                 String redirectUrl = Window.Location.getParameter(QueryParameters.REDIRECT_URL);
-                if (redirectUrl.isEmpty())
+                if (StringUtils.isEmptyOrNull(redirectUrl))
                 {
-                    return;
+                    //We need to keep the current query string coz it contains debug information.
+                    Window.Location.assign(
+                            Window.Location.createUrlBuilder().setPath("").buildString());
                 }
-                Window.Location.assign(redirectUrl);
+                else
+                {
+                    Window.Location.assign(redirectUrl);
+                }
             }
             @Override
             public void onFailure(Throwable caught) {
