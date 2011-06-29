@@ -22,6 +22,7 @@ public class AuthenticationServiceImpl extends RemoteServiceServlet implements A
     private static final String AUTHENTICATION_COOKIE_NAME = "authenticationCookie";
     private static final int COOKIE_EXPIRATION_DAYS = 7;
     private static final int COOKIE_MAX_AGE = COOKIE_EXPIRATION_DAYS * 24 * 60 * 60;
+    private static final String STUB_USERNAME = "!StubUser!@StubEmail.com";
 
     @Override
     public void login(String username, String password) throws IOException
@@ -34,6 +35,9 @@ public class AuthenticationServiceImpl extends RemoteServiceServlet implements A
             return;
         }
 
+        //TODO: Remove!
+        this.validateStubUserExists();
+
         ObjectDatastore datastore = new AnnotationObjectDatastore();
         User user = datastore.load(User.class, username);
         if (null == user)
@@ -45,7 +49,7 @@ public class AuthenticationServiceImpl extends RemoteServiceServlet implements A
 //            user.password = password;
 //            datastore.store(user);
         }
-        if (false == user.password.equals(password))
+        if ((false == user.isEnabled) || (false == user.password.equals(password)))
         {
             this.onLoginFailed();
             return;
@@ -54,6 +58,23 @@ public class AuthenticationServiceImpl extends RemoteServiceServlet implements A
         UUID sessionId = UUID.randomUUID();
         HttpServerCookiesUtils.setGlobalCookie(this.getThreadLocalResponse(),
                 AUTHENTICATION_COOKIE_NAME, sessionId.toString(), COOKIE_MAX_AGE);
+    }
+
+    private void validateStubUserExists()
+    {
+        ObjectDatastore datastore = new AnnotationObjectDatastore();
+        User user = datastore.load(User.class, STUB_USERNAME);
+        if (null != user)
+        {
+            return;
+        }
+        //Create a stub user for the datastore to know the object type in order to be able to manually add
+        //users in the appengine admin.
+        user = new User();
+        user.username = STUB_USERNAME;
+        user.password = UUID.randomUUID().toString();
+        user.isEnabled = false;
+        datastore.store(user);
     }
 
     private void onLoginFailed() throws IOException
