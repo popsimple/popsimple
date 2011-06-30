@@ -1,0 +1,4 @@
+# Module Canvas
+# RPC service class, partial path of RPC policy file
+com.project.website.shared.contracts.authentication.AuthenticationService, 18A9CB083DB5F407C8BE58BE410424AF.gwt.rpc
+com.project.website.canvas.shared.contracts.CanvasService, DD11124393F822ADB42AE6AD9D7437B0.gwt.rpc
