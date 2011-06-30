@@ -65,7 +65,7 @@ public class LoginWidget extends Composite {
             @Override
             public void onClick(ClickEvent event) {
                 if (false == anchorForgot.getHref().startsWith("http")) {
-                    anchorForgot.setText("Bummer, eat more Ginkgo Biloba");
+                    anchorForgot.setText("Bummer, eat more Ginkgo biloba");
                     anchorForgot.setHref("http://en.wikipedia.org/wiki/Ginkgo_biloba");
                     anchorForgot.setTarget("_blank");
                     event.preventDefault();
