@@ -1,2 +1,3 @@
 # Module Login
 # RPC service class, partial path of RPC policy file
+com.project.website.shared.contracts.authentication.AuthenticationService, 18A9CB083DB5F407C8BE58BE410424AF.gwt.rpc
