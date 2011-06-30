@@ -15,7 +15,7 @@
 		    border-radius: 5px 5px 5px 5px;
 		    text-align: left;
 		}
-		.loginLabel{
+		.formLabel{
 			display: inline-block;
 			font-weight: normal;
 			font-size: 20px;
@@ -27,13 +27,20 @@
 			font-size: 20px;
 			border-radius: 5px 5px 5px 5px;
 		}
+		.nameTextBox{
+			width: 8em;
+			border:#ccc 1px solid;
+			font-size: 20px;
+			border-radius: 5px 5px 5px 5px;
+			display: block;
+		}
 		.button{
 			display: inline-block;
 			padding:5px 2px 4px;
 			border-radius: 5px 5px 5px 5px;
-			width: 100px;
+			width: 150px;
 		}
-		.loginPanel{
+		.registrationPanel{
 			margin:0 0 4px 0;
 		}
 		.captionLabel{
@@ -49,33 +56,46 @@
 			display: inline-block;
 			padding: 0 0 0 50px;
 		}
+		.inputErrorLabel{
+			color: #FA89A4;
+		}
+
 	</ui:style>
 	<g:HTMLPanel addStyleNames="{style.rootPanel}">
 		<div>
-			<g:Label addStyleNames="{style.captionLabel}">Shhhhhh...</g:Label>
+			<g:Label addStyleNames="{style.captionLabel}">Join the fun :)</g:Label>
 		</div>
 		<g:HTMLPanel ui:field="containerPanel" addStyleNames="{style.containerPanel}">
-			<g:FormPanel ui:field="loginForm">
-				<g:HTMLPanel addStyleNames="{style.loginPanel}">
+			<g:FormPanel ui:field="registrationForm">
+				<g:HTMLPanel addStyleNames="{style.registrationPanel}">
 					<p>
-						<g:Label addStyleNames="{style.loginLabel}">Email: </g:Label>
+						<g:Label addStyleNames="{style.formLabel}">Full name: </g:Label>
+						<g:TextBox ui:field="textName" addStyleNames="{style.textBox}"></g:TextBox>
+						<g:Label ui:field="nameErrorLabel" addStyleNames="{style.inputErrorLabel}"></g:Label>
+					</p>
+					<p>
+						<g:Label addStyleNames="{style.formLabel}">Email: </g:Label>
 						<g:TextBox ui:field="textEmail" addStyleNames="{style.textBox}"></g:TextBox>
+						<g:Label ui:field="emailErrorLabel" addStyleNames="{style.inputErrorLabel}"></g:Label>
 					</p>
 					<p>
-						<g:Label addStyleNames="{style.loginLabel}">Password:</g:Label>
+						<g:Label addStyleNames="{style.formLabel}">Password:</g:Label>
 						<g:PasswordTextBox ui:field="textPassword" addStyleNames="{style.textBox}"></g:PasswordTextBox>
+						<g:Label ui:field="passwordErrorLabel" addStyleNames="{style.inputErrorLabel}"></g:Label>
 					</p>
 					<p>
-						<g:SubmitButton ui:field="buttonLogin" addStyleNames="{style.button}">Login</g:SubmitButton>
+						<g:Label addStyleNames="{style.formLabel}">Confirm Password:</g:Label>
+						<g:PasswordTextBox ui:field="textConfirmPassword" addStyleNames="{style.textBox}"></g:PasswordTextBox>
+						<g:Label ui:field="confirmErrorLabel" addStyleNames="{style.inputErrorLabel}"></g:Label>
+					</p>
+					<p>
+						<g:SubmitButton ui:field="buttonRegister" addStyleNames="{style.button}">Create my account</g:SubmitButton>
 						<g:HTMLPanel ui:field="errorPanel" addStyleNames="{style.errorPanel}">
-							<g:Label ui:field="errorLabel" addStyleNames="{style.errorLabel}"></g:Label>
+							<g:Label addStyleNames="{style.errorLabel}"></g:Label>
 						</g:HTMLPanel>
 					</p>
 				</g:HTMLPanel>
 			</g:FormPanel>
-			<p>
-				<g:Anchor ui:field="anchorForgot" href="javascript:;">Forgot password?</g:Anchor>
-			</p>
 		</g:HTMLPanel>
 	</g:HTMLPanel>
 </ui:UiBinder>
