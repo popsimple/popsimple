@@ -4,3 +4,7 @@ HelloSomeone/war/WEB-INF
 canvas/war/WEB-INF/appengine-generated
 authentication/war/WEB-INF/appengine-generated
 *.orig
+*.class
+website/war/Login
+shared/bin
+website/war/WEB-INF/deploy

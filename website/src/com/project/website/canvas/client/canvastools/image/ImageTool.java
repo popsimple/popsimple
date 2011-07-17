@@ -16,6 +16,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.handlers.RegistrationsManager;
+import com.project.shared.client.utils.HandlerUtils;
 import com.project.shared.client.utils.WidgetUtils;
 import com.project.shared.data.Point2D;
 import com.project.shared.utils.CloneableUtils;
@@ -151,7 +152,7 @@ public class ImageTool extends FlowPanel implements CanvasTool<ImageData>
                     @Override
                     public void onFire(Void arg) {
                         setLoadedStyle();
-                    }}, new SimpleEvent.EmptyHandler<Void>());
+                    }}, HandlerUtils.<Void>emptyHandler());
     }
 
     private void setLoadedStyle()

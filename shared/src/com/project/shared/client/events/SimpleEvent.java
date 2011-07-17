@@ -11,12 +11,6 @@ public class SimpleEvent<T> {
     public interface Handler<T> extends EventHandler {
         void onFire(T arg);
     }
-    public static final class EmptyHandler<T> implements Handler<T>
-    {
-        @Override
-        public void onFire(T arg) {
-        }
-    }
 
     ArrayList<Handler<T>> handlers = new ArrayList<Handler<T>>();
 

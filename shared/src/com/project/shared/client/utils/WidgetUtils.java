@@ -66,8 +66,8 @@ public class WidgetUtils {
 	public static void SetBackgroundImageAsync(final Widget widget,
             String imageUrl, String errorImageUrl, final boolean autoSize, final String loadingStyleName)
     {
-        WidgetUtils.SetBackgroundImageAsync(widget, imageUrl, errorImageUrl, autoSize, loadingStyleName,
-                new SimpleEvent.EmptyHandler<Void>(), new SimpleEvent.EmptyHandler<Void>());
+	    WidgetUtils.SetBackgroundImageAsync(widget, imageUrl, errorImageUrl, autoSize, loadingStyleName,
+	            HandlerUtils.<Void>emptyHandler(), HandlerUtils.<Void>emptyHandler());
     }
 
 	public static void SetBackgroundImageAsync(final Widget widget, String imageUrl, String errorImageUrl,

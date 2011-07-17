@@ -3,6 +3,7 @@ package com.project.website.canvas.client.shared;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent;
+import com.project.shared.client.utils.HandlerUtils;
 import com.project.shared.client.utils.StyleUtils;
 import com.project.shared.client.utils.WidgetUtils;
 import com.project.website.canvas.client.resources.CanvasResources;
@@ -25,7 +26,7 @@ public class ImageInformationUtils
             Widget widget, boolean autoSizeElement)
     {
         ImageInformationUtils.setWidgetBackgroundAsync(imageInformation, widget, autoSizeElement,
-                new SimpleEvent.EmptyHandler<Void>(), new SimpleEvent.EmptyHandler<Void>());
+                HandlerUtils.<Void>emptyHandler(), HandlerUtils.<Void>emptyHandler());
     }
 
     public static void setWidgetBackgroundAsync(final ImageInformation imageInformation,
