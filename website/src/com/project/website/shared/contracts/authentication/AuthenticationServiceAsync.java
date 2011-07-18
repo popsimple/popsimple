@@ -7,4 +7,6 @@ public interface AuthenticationServiceAsync {
     void login(String username, String password, AsyncCallback<Void> callback);
 
     void logout(AsyncCallback<Void> callback);
+
+    void register(String email, String password, AsyncCallback<Void> callback);
 }
