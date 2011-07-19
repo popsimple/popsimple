@@ -11,7 +11,7 @@
 	            <g:Button  ui:field="viewButton" addStyleNames="{res.main.worksheetRightButton}">Preview</g:Button>
             </g:HTMLPanel>
             <g:Anchor ui:field="linkLogout" href="javascript:;" addStyleNames="{res.main.worksheetRightLink}">Logout</g:Anchor>
-            <g:Anchor ui:field="linkInvite" href="javascript:;" addStyleNames="{res.main.worksheetRightLink}">Create user</g:Anchor>
+            <g:Anchor ui:field="linkInvite" href="javascript:;" addStyleNames="{res.main.worksheetRightLink}">Invite a friend</g:Anchor>
 			Worksheet
             <g:HTMLPanel addStyleNames="{res.main.worksheetOptions}">
             	<g:Anchor ui:field="optionsBackground">Change background</g:Anchor>
