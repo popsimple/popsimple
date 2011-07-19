@@ -70,7 +70,7 @@ public class InviteWidget extends Composite {
         {
             return email;
         }
-        public String getPassword()
+        public String getMessage()
         {
             return message;
         }

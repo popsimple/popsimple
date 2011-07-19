@@ -11,4 +11,6 @@ public interface AuthenticationServiceAsync {
     void register(String email, String password, String name, AsyncCallback<Void> callback);
 
     void canRegisterUsers(AsyncCallback<Boolean> callback);
+
+    void invite(String email, String message, String name, AsyncCallback<Void> asyncCallback);
 }

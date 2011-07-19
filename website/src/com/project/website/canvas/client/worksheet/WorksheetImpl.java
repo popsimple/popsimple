@@ -556,7 +556,7 @@ public class WorksheetImpl implements Worksheet
     private void inviteRequest(final DialogWithZIndex dialog, InviteRequestData arg)
     {
         AuthenticationServiceAsync service = getAuthService();
-        service.register(arg.getEmail(), arg.getPassword(), arg.getName(), new AsyncCallback<Void>() {
+        service.invite(arg.getEmail(), arg.getMessage(), arg.getName(), new AsyncCallback<Void>() {
             @Override
             public void onSuccess(Void result)
             {

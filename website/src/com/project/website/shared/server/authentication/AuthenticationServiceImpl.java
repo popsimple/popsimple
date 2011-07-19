@@ -51,25 +51,6 @@ public class AuthenticationServiceImpl extends RemoteServiceServlet implements A
         }
 
         AuthenticationUtils.createUser(email, password, name);
-
-        Properties props = new Properties();
-        Session session = Session.getDefaultInstance(props, null);
-
-        try {
-            Message msg = new MimeMessage(session);
-            msg.setFrom(new InternetAddress("mail@popsimple.com", "PopSimple.com"));
-            msg.addRecipient(Message.RecipientType.TO, new InternetAddress(email));
-            msg.setSubject("Welcome to PopSimple!");
-            msg.setText("Visit us at http://www.PopSimple.com");
-            Transport.send(msg);
-
-        } catch (AddressException e) {
-            // ...
-        } catch (MessagingException e) {
-            // ...
-        } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
-        }
     }
 
 
@@ -142,5 +123,31 @@ public class AuthenticationServiceImpl extends RemoteServiceServlet implements A
     @Override
     public void logout() {
         HttpAuthentication.clearAuthCookies(getThreadLocalRequest(), getThreadLocalResponse());
+    }
+
+
+    @Override
+    public void invite(String email, String message, String name)
+    {
+        // TODO add logic for validating the invited user
+        Properties props = new Properties();
+        Session session = Session.getDefaultInstance(props, null);
+
+        try {
+            Message msg = new MimeMessage(session);
+            msg.setFrom(new InternetAddress("mail@popsimple.com", "PopSimple.com"));
+            msg.addRecipient(Message.RecipientType.TO, new InternetAddress(email));
+            msg.setSubject("Welcome to PopSimple!");
+            msg.setText("Visit us at http://www.PopSimple.com");
+            Transport.send(msg);
+
+        } catch (AddressException e) {
+            // TODO Auto-generated catch block
+            throw new RuntimeException(e);
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

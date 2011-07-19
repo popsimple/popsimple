@@ -10,4 +10,5 @@ public interface AuthenticationService extends RemoteService
     void logout();
     void register(String email, String password, String name);
     boolean canRegisterUsers();
+    void invite(String email, String message, String name);
 }
