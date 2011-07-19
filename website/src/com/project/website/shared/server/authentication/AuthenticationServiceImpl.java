@@ -3,7 +3,6 @@ package com.project.website.shared.server.authentication;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Properties;
-import java.util.UUID;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -12,7 +11,6 @@ import javax.mail.Transport;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.code.twig.ObjectDatastore;
@@ -26,7 +24,8 @@ public class AuthenticationServiceImpl extends RemoteServiceServlet implements A
 {
     private static final long serialVersionUID = 1L;
 
-    private static final String STUB_USERNAME = "!StubUser!@StubEmail.com";
+    private static final String ADMIN_USERNAME = "admin@popsimple.com";
+    private static final String ADMIN_DEFAULT_PASSWORD = "admin";
 
     @Override
     protected void doUnexpectedFailure(Throwable e)
@@ -43,22 +42,19 @@ public class AuthenticationServiceImpl extends RemoteServiceServlet implements A
     @Override
     public void register(String email, String password)
     {
-        User user = HttpAuthentication.loadUser(email);
-        if (null != user) {
+        User registeringUser = HttpAuthentication.getAuthenticatedUser(this.getThreadLocalRequest(), this.getThreadLocalResponse());
+        // TODO implement a permissions system
+        if (false == registeringUser.username.equals(ADMIN_USERNAME)) {
+            this.onAuthenticationFailed();
+            return;
+        }
+
+        if (null != AuthenticationUtils.loadUser(email)) {
             // todo do this normally
             throw new RuntimeException("User already exists.");
         }
 
-        user = new User();
-        user.username = email;
-        user.password = password;
-        user.isEnabled = true;
-        ObjectDatastore datastore = new AnnotationObjectDatastore();
-        datastore.store(user);
-
-        if (null == HttpAuthentication.loadUser(email)) {
-            throw new RuntimeException("Failed to save user");
-        }
+        AuthenticationUtils.createUser(email, password);
 
         Properties props = new Properties();
         Session session = Session.getDefaultInstance(props, null);
@@ -80,29 +76,31 @@ public class AuthenticationServiceImpl extends RemoteServiceServlet implements A
         }
     }
 
+
+
+
     @Override
-    public void login(String username, String password) throws IOException
+    public void login(String username, String password)
     {
         this.logout();
 
         if (StringUtils.isEmptyOrNull(username))
         {
-            this.onLoginFailed();
+            this.onAuthenticationFailed();
             return;
         }
 
-        //TODO: Remove!
-        this.validateStubUserExists();
+        this.validateAdminUserExists();
 
-        User user = HttpAuthentication.loadUser(username);
+        User user = AuthenticationUtils.loadUser(username);
         if (null == user)
         {
-            this.onLoginFailed();
+            this.onAuthenticationFailed();
             return;
         }
-        if ((false == user.isEnabled) || (false == user.password.equals(password)))
+        if ((false == user.isEnabled) || (false == user.password.equals(AuthenticationUtils.hashPassword(password))))
         {
-            this.onLoginFailed();
+            this.onAuthenticationFailed();
             return;
         }
 
@@ -110,40 +108,35 @@ public class AuthenticationServiceImpl extends RemoteServiceServlet implements A
     }
 
 
-    private void validateStubUserExists()
+    private void validateAdminUserExists()
     {
         ObjectDatastore datastore = new AnnotationObjectDatastore();
-        User user = datastore.load(User.class, STUB_USERNAME);
+        User user = datastore.load(User.class, ADMIN_USERNAME);
         if (null != user)
         {
             return;
         }
-        //Create a stub user for the datastore to know the object type in order to be able to manually add
-        //users in the appengine admin.
-        user = new User();
-        user.username = STUB_USERNAME;
-        user.password = UUID.randomUUID().toString();
-        user.isEnabled = false;
-        datastore.store(user);
+        AuthenticationUtils.createUser(ADMIN_USERNAME, ADMIN_DEFAULT_PASSWORD);
     }
 
-    private void onLoginFailed() throws IOException
+    private void onAuthenticationFailed()
     {
         // There's a small GWT bug when using the thread local response:
         // http://code.google.com/p/google-web-toolkit/issues/detail?id=3298
         // it causes an exception (at least in Jetty) because it tries to write into the response after it has closed
         // In any case it will get sent, so leaving it here.
-        this.getThreadLocalResponse().sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        try {
+            // TODO: use SC_FORBIDDEN  instead?
+            this.getThreadLocalResponse().sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            // Mask this.
+        }
         return;
     }
 
     @Override
     public void logout() {
-        HttpServletRequest request = this.getThreadLocalRequest();
-        if (null == request)
-        {
-            return;
-        }
-
+        HttpAuthentication.clearAuthCookies(getThreadLocalRequest(), getThreadLocalResponse());
     }
 }

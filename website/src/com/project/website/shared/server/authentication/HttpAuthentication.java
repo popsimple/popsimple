@@ -1,15 +1,11 @@
 package com.project.website.shared.server.authentication;
 
-import java.math.BigInteger;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.code.twig.ObjectDatastore;
-import com.google.code.twig.annotation.AnnotationObjectDatastore;
 import com.project.shared.server.HttpServerCookiesUtils;
 import com.project.website.shared.data.User;
 
@@ -21,13 +17,6 @@ public class HttpAuthentication
     private static final int COOKIE_MAX_AGE = COOKIE_EXPIRATION_DAYS * 24 * 60 * 60;
     private static final String SESSION_COOKIE_NAME = "sessionCookie";
     private static final String USERNAME_COOKIE_NAME = "userNameCookie";
-
-
-    public static User loadUser(String userName)
-    {
-        ObjectDatastore datastore = new AnnotationObjectDatastore();
-        return datastore.load(User.class, userName);
-    }
 
 
     public static User getAuthenticatedUser(HttpServletRequest httpRequest, HttpServletResponse response)
@@ -42,7 +31,7 @@ public class HttpAuthentication
             return null;
         }
 
-        User user = loadUser(userName);
+        User user = AuthenticationUtils.loadUser(userName);
         boolean valid = getUserHash(user, httpRequest, response).equals(userHash);
         return valid ? user : null;
     }
@@ -58,11 +47,6 @@ public class HttpAuthentication
         String sessionCookie = sessionId.toString();
         HttpServerCookiesUtils.setRootCookie(response, SESSION_COOKIE_NAME, sessionCookie, COOKIE_MAX_AGE);
         return sessionCookie;
-    }
-
-    private static String getDigestString(MessageDigest m)
-    {
-        return new BigInteger(1, m.digest()).toString(16);
     }
 
     private static String getEnsureSessionCookie(HttpServletRequest request, HttpServletResponse response)
@@ -85,12 +69,12 @@ public class HttpAuthentication
 
     private static String getUserHash(User user, HttpServletRequest request, HttpServletResponse response)
     {
-        MessageDigest m = newDigest();
+        MessageDigest m = AuthenticationUtils.newDigest();
         m.update(user.username.getBytes());
         m.update(user.password.getBytes());
         m.update(getEnsureSessionCookie(request, response).getBytes());
         m.update(request.getRemoteAddr().getBytes());
-        return getDigestString(m);
+        return AuthenticationUtils.getDigestString(m);
     }
 
     public static void clearAuthCookies(HttpServletRequest request, HttpServletResponse response)
@@ -98,17 +82,6 @@ public class HttpAuthentication
         HttpServerCookiesUtils.removeRootCookie(request, response, AUTHENTICATION_COOKIE_NAME);
         HttpServerCookiesUtils.removeRootCookie(request, response, USERNAME_COOKIE_NAME);
         assignNewSessionCookie(response);
-    }
-    private static MessageDigest newDigest()
-    {
-        MessageDigest m = null;
-        try {
-            m = MessageDigest.getInstance("SHA-512");
-        }
-        catch (NoSuchAlgorithmException ex) {
-            throw new RuntimeException("Couldn't find algorithm");
-        }
-        return m;
     }
 
 }
