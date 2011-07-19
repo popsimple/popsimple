@@ -21,19 +21,24 @@ public class HttpAuthentication
 
     public static User getAuthenticatedUser(HttpServletRequest httpRequest, HttpServletResponse response)
     {
-        if (null == httpRequest)
-        {
-            return null;
-        }
         String userName = HttpServerCookiesUtils.getCookieValue(httpRequest, USERNAME_COOKIE_NAME);
         String userHash = HttpServerCookiesUtils.getCookieValue(httpRequest, AUTHENTICATION_COOKIE_NAME);
-        if ((null == userName) || (null == userHash)) {
-            return null;
+
+        boolean valid = false;
+        User user = null;
+
+        if ((null != userName) && (null != userHash)) {
+            user = AuthenticationUtils.loadUser(userName);
+            valid = getUserHash(user, httpRequest, response).equals(userHash);
         }
 
-        User user = AuthenticationUtils.loadUser(userName);
-        boolean valid = getUserHash(user, httpRequest, response).equals(userHash);
-        return valid ? user : null;
+        if (valid) {
+            return user;
+        }
+
+        // Don't keep invalid cookies
+        clearAuthCookies(httpRequest, response);
+        return null;
     }
 
     public static boolean isLoggedIn(HttpServletRequest httpRequest, HttpServletResponse response)
@@ -49,19 +54,14 @@ public class HttpAuthentication
         return sessionCookie;
     }
 
-    private static String getEnsureSessionCookie(HttpServletRequest request, HttpServletResponse response)
+    private static String getSessionCookie(HttpServletRequest request)
     {
-        String sessionStr = HttpServerCookiesUtils.getCookieValue(request, SESSION_COOKIE_NAME);
-        if (null != sessionStr)
-        {
-            return sessionStr;
-        }
-        return assignNewSessionCookie(response);
+        return HttpServerCookiesUtils.getCookieValue(request, SESSION_COOKIE_NAME);
     }
 
     public static void setAuthCookies(User user, HttpServletRequest request, HttpServletResponse response)
     {
-        String userHash = getUserHash(user, request, response);
+        String userHash = getUserHash(user, request, assignNewSessionCookie(response));
         HttpServerCookiesUtils.setRootCookie(response, AUTHENTICATION_COOKIE_NAME, userHash, COOKIE_MAX_AGE);
         HttpServerCookiesUtils.setRootCookie(response, USERNAME_COOKIE_NAME, user.username, COOKIE_MAX_AGE);
     }
@@ -69,10 +69,15 @@ public class HttpAuthentication
 
     private static String getUserHash(User user, HttpServletRequest request, HttpServletResponse response)
     {
+        return getUserHash(user, request, getSessionCookie(request));
+    }
+
+    private static String getUserHash(User user, HttpServletRequest request, String sessionStr)
+    {
         MessageDigest m = AuthenticationUtils.newDigest();
         m.update(user.username.getBytes());
         m.update(user.password.getBytes());
-        m.update(getEnsureSessionCookie(request, response).getBytes());
+        m.update(sessionStr.getBytes());
         m.update(request.getRemoteAddr().getBytes());
         return AuthenticationUtils.getDigestString(m);
     }

@@ -10,16 +10,26 @@ public class HttpServerCookiesUtils
 {
     public static final String ROOT_COOKIE_PATH = "/";
 
-    public static String getCookieValue(HttpServletRequest httpRequest, String cookieName)
+    public static String getCookieValue(HttpServletRequest request, String cookieName)
     {
-        Cookie cookie = HttpServerCookiesUtils.getCookie(httpRequest, cookieName);
-        String cookieValue = cookie == null ? null : cookie.getValue();
-        return StringUtils.defaultIfEmptyOrNull(cookieValue, null);
+        return getCookieValue(cookieName, request.getCookies());
     }
 
     public static Cookie getCookie(HttpServletRequest httpRequest, String cookieName)
     {
-        Cookie[] cookies = httpRequest.getCookies();
+        return getCookie(cookieName, httpRequest.getCookies());
+    }
+
+    public static String getCookieValue(String cookieName, Cookie[] cookies)
+    {
+        Cookie cookie = HttpServerCookiesUtils.getCookie(cookieName, cookies);
+        String cookieValue = cookie == null ? null : cookie.getValue();
+        return StringUtils.defaultIfEmptyOrNull(cookieValue, null);
+    }
+
+
+    public static Cookie getCookie(String cookieName, Cookie[] cookies)
+    {
         if (null == cookies)
         {
             return null;
