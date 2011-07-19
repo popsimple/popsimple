@@ -2,33 +2,31 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui">
 	<ui:with field='res' type='com.project.website.shared.client.widgets.authentication.resources.AuthenticationResources'/>
-	<g:HTMLPanel addStyleNames="{res.authentication.rootPanel}">
+	<g:HTMLPanel addStyleNames="{res.main.rootPanel}">
 		<div>
-			<g:Label addStyleNames="{res.authentication.captionLabel}">Shhhhhh...</g:Label>
+			<g:Label addStyleNames="{res.main.captionLabel}">Shhhhhh...</g:Label>
 		</div>
-		<g:HTMLPanel ui:field="containerPanel" addStyleNames="{res.authentication.containerPanel}">
-           <div class="{res.authentication.decorationImage}"/>
+		<g:HTMLPanel ui:field="containerPanel" addStyleNames="{res.main.containerPanel}">
+           <div class="{res.main.decorationImage}"/>
 			<g:FormPanel ui:field="loginForm">
-				<g:HTMLPanel addStyleNames="{res.authentication.loginPanel}">
+				<g:HTMLPanel addStyleNames="{res.main.loginPanel}">
 					<p>
-						<g:Label addStyleNames="{res.authentication.loginLabel}">Email: </g:Label>
-						<g:TextBox ui:field="textEmail" addStyleNames="{res.authentication.textBox}"></g:TextBox>
+						<g:Label addStyleNames="{res.main.loginLabel}">Email: </g:Label>
+						<g:TextBox ui:field="textEmail" addStyleNames="{res.main.textBox}"></g:TextBox>
 					</p>
 					<p>
-						<g:Label addStyleNames="{res.authentication.loginLabel}">Password:</g:Label>
-						<g:PasswordTextBox ui:field="textPassword" addStyleNames="{res.authentication.textBox}"></g:PasswordTextBox>
+						<g:Label addStyleNames="{res.main.loginLabel}">Password:</g:Label>
+						<g:PasswordTextBox ui:field="textPassword" addStyleNames="{res.main.textBox}"></g:PasswordTextBox>
 					</p>
-					<p>
-						<g:SubmitButton ui:field="buttonLogin" addStyleNames="{res.authentication.button}">Login</g:SubmitButton>
-						<g:HTMLPanel ui:field="errorPanel" addStyleNames="{res.authentication.errorPanel}">
-							<g:Label ui:field="errorLabel" addStyleNames="{res.authentication.errorLabel}"></g:Label>
-						</g:HTMLPanel>
+					<p class="{res.main.buttonRow}">
+                        <g:HTMLPanel ui:field="errorPanel" addStyleNames="{res.main.errorPanel}">
+                            <g:Label ui:field="errorLabel" addStyleNames="{res.main.errorLabel}"></g:Label>
+                        </g:HTMLPanel>
+						<g:SubmitButton ui:field="buttonLogin" addStyleNames="{res.main.button}">Login</g:SubmitButton>
+						<g:Anchor ui:field="anchorForgot" addStyleNames="{res.main.forgotPasswordLink}" href="javascript:;">Forgot password?</g:Anchor>
 					</p>
 				</g:HTMLPanel>
 			</g:FormPanel>
-			<p>
-				<g:Anchor ui:field="anchorForgot" href="javascript:;">Forgot password?</g:Anchor>
-			</p>
 		</g:HTMLPanel>
 	</g:HTMLPanel>
 </ui:UiBinder>

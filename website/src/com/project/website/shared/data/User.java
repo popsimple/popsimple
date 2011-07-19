@@ -9,6 +9,9 @@ public class User implements Serializable {
 
     @Id
     public String username = "";
+
     public String password = "";
+    public String publicName = "";
+
     public boolean isEnabled = true;
 }

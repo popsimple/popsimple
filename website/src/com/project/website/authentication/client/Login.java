@@ -10,7 +10,7 @@ public class Login implements EntryPoint {
     @Override
     public void onModuleLoad() {
         RootPanel.get("root").add(new LoginWidget());
-        AuthenticationResources.INSTANCE.authentication().ensureInjected();
+        AuthenticationResources.INSTANCE.main().ensureInjected();
 //        RootPanel.get("root").add(new RegistrationWidget());
     }
 }

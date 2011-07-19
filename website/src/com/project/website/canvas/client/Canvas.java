@@ -8,6 +8,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.project.website.canvas.client.canvastools.base.BuiltinTools;
 import com.project.website.canvas.client.canvastools.map.MapTool;
 import com.project.website.canvas.client.resources.CanvasResources;
+import com.project.website.shared.client.widgets.authentication.resources.AuthenticationResources;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -18,6 +19,8 @@ public class Canvas implements EntryPoint {
 
     public void onModuleLoad() {
         CanvasResources.INSTANCE.main().ensureInjected();
+        AuthenticationResources.INSTANCE.main().ensureInjected();
+
         MapTool.prepareApi(); // start loading the maps api immediately, in case it will be needed later.
         BuiltinTools.init();
 

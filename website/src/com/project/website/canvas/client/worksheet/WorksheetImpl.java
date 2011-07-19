@@ -37,8 +37,8 @@ import com.project.website.canvas.shared.data.CanvasPage;
 import com.project.website.canvas.shared.data.CanvasPageOptions;
 import com.project.website.canvas.shared.data.ElementData;
 import com.project.website.canvas.shared.data.Transform2D;
-import com.project.website.shared.client.widgets.authentication.registration.RegistrationWidget;
-import com.project.website.shared.client.widgets.authentication.registration.RegistrationWidget.RegistrationRequestData;
+import com.project.website.shared.client.widgets.authentication.invite.InviteWidget;
+import com.project.website.shared.client.widgets.authentication.invite.InviteWidget.InviteRequestData;
 import com.project.website.shared.contracts.authentication.AuthenticationService;
 import com.project.website.shared.contracts.authentication.AuthenticationServiceAsync;
 
@@ -138,16 +138,23 @@ public class WorksheetImpl implements Worksheet
     protected void invite()
     {
         final DialogWithZIndex dialog = new DialogWithZIndex(false, true);
-        RegistrationWidget regWidget = new RegistrationWidget();
+        InviteWidget regWidget = new InviteWidget();
         dialog.add(regWidget);
-        regWidget.addRegistrationRequestHandler(new SimpleEvent.Handler<RegistrationRequestData>() {
+        regWidget.addInviteRequestHandler(new SimpleEvent.Handler<InviteRequestData>() {
             @Override
-            public void onFire(RegistrationRequestData arg)
+            public void onFire(InviteRequestData arg)
             {
-                registrationRequest(dialog, arg);
+                inviteRequest(dialog, arg);
             }
         });
-        dialog.setTitle("Invite a friend to PopSimple.com");
+        regWidget.addCancelRequestHandler(new Handler<Void>() {
+            @Override
+            public void onFire(Void arg)
+            {
+                dialog.hide();
+            }
+        });
+        dialog.setText("Invite a friend to PopSimple.com");
         dialog.show();
         Scheduler.get().scheduleDeferred(new ScheduledCommand() {
             @Override
@@ -546,10 +553,10 @@ public class WorksheetImpl implements Worksheet
         }
     }
 
-    private void registrationRequest(final DialogWithZIndex dialog, RegistrationRequestData arg)
+    private void inviteRequest(final DialogWithZIndex dialog, InviteRequestData arg)
     {
         AuthenticationServiceAsync service = getAuthService();
-        service.register(arg.getEmail(), arg.getPassword(), new AsyncCallback<Void>() {
+        service.register(arg.getEmail(), arg.getPassword(), arg.getName(), new AsyncCallback<Void>() {
             @Override
             public void onSuccess(Void result)
             {

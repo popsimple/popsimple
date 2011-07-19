@@ -1,4 +1,4 @@
-package com.project.website.shared.client.widgets.authentication.registration;
+package com.project.website.shared.client.widgets.authentication.invite;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -12,23 +12,24 @@ import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.events.SimpleEvent.Handler;
 
-public class RegistrationWidget extends Composite {
+public class InviteWidget extends Composite {
 
-    private static RegistrationWidgetUiBinder uiBinder = GWT.create(RegistrationWidgetUiBinder.class);
+    private static InviteWidgetUiBinder uiBinder = GWT.create(InviteWidgetUiBinder.class);
 
-    interface RegistrationWidgetUiBinder extends UiBinder<Widget, RegistrationWidget> {
+    interface InviteWidgetUiBinder extends UiBinder<Widget, InviteWidget> {
     }
 
     @UiField
     TextBox textName;
 
     @UiField
-    Label nameErrorLabel;
+    TextArea textMessage;
 
     @UiField
     TextBox textEmail;
@@ -37,35 +38,27 @@ public class RegistrationWidget extends Composite {
     Label emailErrorLabel;
 
     @UiField
-    TextBox textPassword;
+    Button buttonInvite;
 
     @UiField
-    Label passwordErrorLabel;
+    Button buttonCancel;
 
     @UiField
-    TextBox textConfirmPassword;
+    FormPanel inviteForm;
 
-    @UiField
-    Label confirmErrorLabel;
+    private SimpleEvent<InviteRequestData> inviteRequestEvent = new SimpleEvent<InviteRequestData>();
+    private SimpleEvent<Void> cancelRequestEvent = new SimpleEvent<Void>();
 
-    @UiField
-    Button buttonRegister;
-
-    @UiField
-    FormPanel registrationForm;
-
-    private SimpleEvent<RegistrationRequestData> registrationRequestEvent = new SimpleEvent<RegistrationRequestData>();
-
-    public class RegistrationRequestData {
+    public class InviteRequestData {
         private final String email;
-        private final String password;
+        private final String message;
         private final String name;
 
-        public RegistrationRequestData(String name, String email, String password)
+        public InviteRequestData(String email, String name, String message)
         {
             this.email = email;
             this.name = name;
-            this.password = password;
+            this.message = message;
         }
 
         public String getName()
@@ -79,35 +72,24 @@ public class RegistrationWidget extends Composite {
         }
         public String getPassword()
         {
-            return password;
+            return message;
         }
     }
 
-    public RegistrationWidget() {
+    public InviteWidget() {
         initWidget(uiBinder.createAndBindUi(this));
 
         this.registerFormHandlers();
 
-        this.buttonRegister.setStylePrimaryName("gwt-Button");
-
-        this.setAutoComplete(this.textPassword, false);
-        this.setAutoComplete(this.textConfirmPassword, false);
-
+        this.buttonInvite.setStylePrimaryName("gwt-Button");
     }
 
-    public HandlerRegistration addRegistrationRequestHandler(Handler<RegistrationRequestData> handler) {
-        return this.registrationRequestEvent.addHandler(handler);
+    public HandlerRegistration addInviteRequestHandler(Handler<InviteRequestData> handler) {
+        return this.inviteRequestEvent.addHandler(handler);
     }
 
-    //TODO: Move to Utils.
-    private void setAutoComplete(TextBox textBox, boolean autoComplete) {
-        if (autoComplete)
-        {
-            textBox.getElement().setAttribute("autocomplete", "on");
-        }
-        else {
-            textBox.getElement().setAttribute("autocomplete", "off");
-        }
+    public HandlerRegistration addCancelRequestHandler(Handler<Void> handler) {
+        return this.cancelRequestEvent.addHandler(handler);
     }
 
     private void registerFormHandlers() {
@@ -115,29 +97,37 @@ public class RegistrationWidget extends Composite {
         //NOTE: Due to a bug in GWT we need to manually handle the submit click otherwise
         //NOTE: it throws an exception that the gwt module might need to be recompiled.
         //NOTE: refer to http://code.google.com/p/google-web-toolkit/issues/detail?id=5067
-        this.buttonRegister.addClickHandler(new ClickHandler() {
+        this.buttonInvite.addClickHandler(new ClickHandler() {
 
             @Override
             public void onClick(ClickEvent event) {
                 event.preventDefault();
-                registrationForm.submit();
+                inviteForm.submit();
             }
         });
 
-        this.registrationForm.addSubmitHandler(new SubmitHandler() {
+        this.inviteForm.addSubmitHandler(new SubmitHandler() {
             @Override
             public void onSubmit(SubmitEvent event) {
                 event.cancel();
-                submitRegistration(textEmail.getText(), textPassword.getText(), textName.getText());
+                submitInvite(textEmail.getText(), textName.getText(), textMessage.getText());
             }
         });
+
+        this.buttonCancel.addClickHandler(new ClickHandler(){
+            @Override
+            public void onClick(ClickEvent event)
+            {
+                cancelRequestEvent.dispatch(null);
+            }
+         });
     }
 
-    private void submitRegistration(String email, String password, String name) {
+    private void submitInvite(String email, String name, String message) {
         if (false == this.validateFields()) {
             return;
         }
-        registrationRequestEvent.dispatch(new RegistrationRequestData(email, password, name));
+        inviteRequestEvent.dispatch(new InviteRequestData(email, name, message));
     }
 
 
@@ -156,29 +146,11 @@ public class RegistrationWidget extends Composite {
     {
         boolean isValid = true;
 
-        this.clearError(nameErrorLabel);
-        if (false == this.textName.getText().matches(".{2,}"))
-        {
-            isValid = false;
-            this.setError(nameErrorLabel, "Name must be at least two characters long");
-        }
         this.clearError(emailErrorLabel);
         if (false == this.textEmail.getText().matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$"))
         {
             isValid = false;
             this.setError(emailErrorLabel, "Invalid email address");
-        }
-        this.clearError(passwordErrorLabel);
-        if (false == this.textPassword.getText().matches(".{6,}"))
-        {
-            isValid = false;
-            this.setError(passwordErrorLabel, "Password must be at least 6 characters long");
-        }
-        this.clearError(confirmErrorLabel);
-        if (false == this.textConfirmPassword.getText().matches(this.textPassword.getText()))
-        {
-            isValid = false;
-            this.setError(confirmErrorLabel, "Confirm password does not match");
         }
         return isValid;
     }

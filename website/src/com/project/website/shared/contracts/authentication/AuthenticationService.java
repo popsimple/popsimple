@@ -8,6 +8,6 @@ public interface AuthenticationService extends RemoteService
 {
     void login(String username, String password);
     void logout();
-    void register(String email, String password);
+    void register(String email, String password, String name);
     boolean canRegisterUsers();
 }

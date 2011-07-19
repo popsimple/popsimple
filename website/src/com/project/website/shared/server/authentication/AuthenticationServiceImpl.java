@@ -13,8 +13,6 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.code.twig.ObjectDatastore;
-import com.google.code.twig.annotation.AnnotationObjectDatastore;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.project.shared.utils.StringUtils;
 import com.project.website.shared.contracts.authentication.AuthenticationService;
@@ -40,7 +38,7 @@ public class AuthenticationServiceImpl extends RemoteServiceServlet implements A
 
 
     @Override
-    public void register(String email, String password)
+    public void register(String email, String password, String name)
     {
         if (false == canRegisterUsers()) {
             this.onAuthenticationFailed();
@@ -52,7 +50,7 @@ public class AuthenticationServiceImpl extends RemoteServiceServlet implements A
             throw new RuntimeException("User already exists.");
         }
 
-        AuthenticationUtils.createUser(email, password);
+        AuthenticationUtils.createUser(email, password, name);
 
         Properties props = new Properties();
         Session session = Session.getDefaultInstance(props, null);
@@ -118,13 +116,11 @@ public class AuthenticationServiceImpl extends RemoteServiceServlet implements A
 
     private void validateAdminUserExists()
     {
-        ObjectDatastore datastore = new AnnotationObjectDatastore();
-        User user = datastore.load(User.class, ADMIN_USERNAME);
-        if (null != user)
+        if (null != AuthenticationUtils.loadUser(ADMIN_USERNAME))
         {
             return;
         }
-        AuthenticationUtils.createUser(ADMIN_USERNAME, ADMIN_DEFAULT_PASSWORD);
+        AuthenticationUtils.createUser(ADMIN_USERNAME, ADMIN_DEFAULT_PASSWORD, "Admin");
     }
 
     private void onAuthenticationFailed()

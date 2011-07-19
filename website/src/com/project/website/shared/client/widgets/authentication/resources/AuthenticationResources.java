@@ -3,7 +3,6 @@ package com.project.website.shared.client.widgets.authentication.resources;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
-import com.project.website.canvas.client.resources.CanvasResources;
 
 public interface AuthenticationResources extends ClientBundle
 {
@@ -12,8 +11,7 @@ public interface AuthenticationResources extends ClientBundle
     @Source("com/project/website/shared/client/resources/images/bitmaps/icecandy-orange.png")
     ImageResource iceCandyOrange();
 
-    Authentication authentication();
-
-
+    @Source("Authentication.css")
+    Authentication main();
 
 }

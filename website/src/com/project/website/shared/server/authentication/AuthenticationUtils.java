@@ -11,11 +11,12 @@ import com.project.website.shared.data.User;
 public class AuthenticationUtils
 {
 
-    public static User createUser(String userName, String password)
+    public static User createUser(String userName, String password, String name)
     {
         User user = new User();
-        user.username = userName;
+        user.username = userName.toLowerCase();
         user.password = AuthenticationUtils.hashPassword(password);
+        user.publicName = name;
         user.isEnabled = true;
         ObjectDatastore datastore = new AnnotationObjectDatastore();
         datastore.store(user);
@@ -30,7 +31,7 @@ public class AuthenticationUtils
     public static User loadUser(String userName)
     {
         ObjectDatastore datastore = new AnnotationObjectDatastore();
-        return datastore.load(User.class, userName);
+        return datastore.load(User.class, userName.toLowerCase());
     }
 
 

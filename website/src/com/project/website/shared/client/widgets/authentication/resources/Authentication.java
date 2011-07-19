@@ -25,4 +25,17 @@ public interface Authentication extends CssResource
 
     String containerPanel();
 
+    String registrationPanel();
+
+    String formLabel();
+
+    String inputErrorLabel();
+
+    String nameTextBox();
+
+    String messageArea();
+
+    String buttonRow();
+
+    String forgotPasswordLink();
 }

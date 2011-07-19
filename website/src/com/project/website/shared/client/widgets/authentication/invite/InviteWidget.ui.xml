@@ -4,15 +4,15 @@
 	<ui:with field='res' type='com.project.website.shared.client.widgets.authentication.resources.AuthenticationResources'/>
 	<g:HTMLPanel addStyleNames="{res.main.rootPanel}">
 		<div>
-			<g:Label addStyleNames="{res.main.captionLabel}">Join the fun :)</g:Label>
+			<g:Label addStyleNames="{res.main.captionLabel}">Spread the word!</g:Label>
 		</div>
 		<g:HTMLPanel ui:field="containerPanel" addStyleNames="{res.main.containerPanel}">
-			<g:FormPanel ui:field="registrationForm">
+            <g:Label addStyleNames="{res.main.formLabel}">Who would you like to invite?</g:Label>
+			<g:FormPanel ui:field="inviteForm">
 				<g:HTMLPanel addStyleNames="{res.main.registrationPanel}">
 					<p>
 						<g:Label addStyleNames="{res.main.formLabel}">Name: </g:Label>
 						<g:TextBox ui:field="textName" addStyleNames="{res.main.textBox}"></g:TextBox>
-						<g:Label ui:field="nameErrorLabel" addStyleNames="{res.main.inputErrorLabel}"></g:Label>
 					</p>
 					<p>
 						<g:Label addStyleNames="{res.main.formLabel}">Email: </g:Label>
@@ -20,20 +20,15 @@
 						<g:Label ui:field="emailErrorLabel" addStyleNames="{res.main.inputErrorLabel}"></g:Label>
 					</p>
 					<p>
-						<g:Label addStyleNames="{res.main.formLabel}">Password:</g:Label>
-						<g:PasswordTextBox ui:field="textPassword" addStyleNames="{res.main.textBox}"></g:PasswordTextBox>
-						<g:Label ui:field="passwordErrorLabel" addStyleNames="{res.main.inputErrorLabel}"></g:Label>
-					</p>
-					<p>
-						<g:Label addStyleNames="{res.main.formLabel}">Confirm Password:</g:Label>
-						<g:PasswordTextBox ui:field="textConfirmPassword" addStyleNames="{res.main.textBox}"></g:PasswordTextBox>
-						<g:Label ui:field="confirmErrorLabel" addStyleNames="{res.main.inputErrorLabel}"></g:Label>
+						<g:Label addStyleNames="{res.main.formLabel}">Additional message (optional):</g:Label>
+						<g:TextArea ui:field="textMessage" addStyleNames="{res.main.messageArea}"></g:TextArea>
 					</p>
 					<p class="{res.main.buttonRow}">
                         <g:HTMLPanel ui:field="errorPanel" addStyleNames="{res.main.errorPanel}">
                             <g:Label addStyleNames="{res.main.errorLabel}"></g:Label>
                         </g:HTMLPanel>
-						<g:SubmitButton ui:field="buttonRegister" addStyleNames="{res.main.button}">Create my account</g:SubmitButton>
+						<g:SubmitButton ui:field="buttonInvite" addStyleNames="{res.main.button}">Send invitation</g:SubmitButton>
+                        <g:Button ui:field="buttonCancel" addStyleNames="{res.main.button} ">Cancel</g:Button>
 					</p>
 				</g:HTMLPanel>
 			</g:FormPanel>
