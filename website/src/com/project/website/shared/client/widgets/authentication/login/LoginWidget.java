@@ -1,4 +1,4 @@
-package com.project.website.shared.client.widgets.authentication;
+package com.project.website.shared.client.widgets.authentication.login;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;

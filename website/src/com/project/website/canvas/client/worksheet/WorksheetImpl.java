@@ -37,8 +37,8 @@ import com.project.website.canvas.shared.data.CanvasPage;
 import com.project.website.canvas.shared.data.CanvasPageOptions;
 import com.project.website.canvas.shared.data.ElementData;
 import com.project.website.canvas.shared.data.Transform2D;
-import com.project.website.shared.client.widgets.registration.RegistrationWidget;
-import com.project.website.shared.client.widgets.registration.RegistrationWidget.RegistrationRequestData;
+import com.project.website.shared.client.widgets.authentication.registration.RegistrationWidget;
+import com.project.website.shared.client.widgets.authentication.registration.RegistrationWidget.RegistrationRequestData;
 import com.project.website.shared.contracts.authentication.AuthenticationService;
 import com.project.website.shared.contracts.authentication.AuthenticationServiceAsync;
 
@@ -148,7 +148,14 @@ public class WorksheetImpl implements Worksheet
             }
         });
         dialog.setTitle("Invite a friend to PopSimple.com");
-        dialog.center();
+        dialog.show();
+        Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+            @Override
+            public void execute()
+            {
+                dialog.center();
+            }
+        });
     }
 
     private void logout()

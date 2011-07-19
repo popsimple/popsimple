@@ -1,0 +1,58 @@
+.rootPanel {
+    text-align: center;
+    padding: 80px;
+}
+@sprite .decorationImage {
+    gwt-image: "iceCandyOrange";
+    position: absolute;
+    top: -100px;
+    left: -120px;
+    z-index: -1;
+}
+
+.containerPanel {
+    background-color: rgba(255, 255, 255, 0.7);
+    border: 1px solid #CCCCCC;
+    border-radius: 5px 5px 5px 5px;
+    box-shadow: 0 0 5px #AAAAAA;
+    margin: auto;
+    padding: 20px 20px 12px;
+    position: relative;
+    text-align: left;
+    width: 350px;
+}
+.loginLabel{
+    display: inline-block;
+    font-weight: normal;
+    font-size: 20px;
+    color: #aaaaaa;
+}
+.textBox{
+    width: 17em;
+    border:#ccc 1px solid;
+    font-size: 20px;
+    border-radius: 5px 5px 5px 5px;
+}
+.button{
+    display: inline-block;
+    padding:5px 2px 4px;
+    border-radius: 5px 5px 5px 5px;
+    width: 100px;
+}
+.loginPanel{
+    margin:0 0 4px 0;
+}
+.captionLabel{
+    color: #B05BAA;
+    display: inline-block;
+    font-size: 40px;
+    padding: 20px;
+}
+.errorLabel{
+    color: red;
+}
+.errorPanel{
+    text-align: center;
+    display: inline-block;
+    padding: 0 0 0 50px;
+}
