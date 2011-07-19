@@ -42,9 +42,7 @@ public class AuthenticationServiceImpl extends RemoteServiceServlet implements A
     @Override
     public void register(String email, String password)
     {
-        User registeringUser = HttpAuthentication.getAuthenticatedUser(this.getThreadLocalRequest(), this.getThreadLocalResponse());
-        // TODO implement a permissions system
-        if (false == registeringUser.username.equals(ADMIN_USERNAME)) {
+        if (false == canRegisterUsers()) {
             this.onAuthenticationFailed();
             return;
         }
@@ -74,6 +72,16 @@ public class AuthenticationServiceImpl extends RemoteServiceServlet implements A
         } catch (UnsupportedEncodingException e) {
             // TODO Auto-generated catch block
         }
+    }
+
+
+    @Override
+    public boolean canRegisterUsers()
+    {
+        // TODO implement a permissions system
+        User registeringUser = HttpAuthentication.getAuthenticatedUser(this.getThreadLocalRequest(), this.getThreadLocalResponse());
+        boolean canRegisterUsers = registeringUser.username.equals(ADMIN_USERNAME);
+        return canRegisterUsers;
     }
 
 

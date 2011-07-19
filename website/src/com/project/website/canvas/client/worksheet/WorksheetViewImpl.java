@@ -85,6 +85,9 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     Anchor linkLogout;
 
     @UiField
+    Anchor linkInvite;
+
+    @UiField
     Button saveButton;
     @UiField
     Button viewButton;
@@ -190,6 +193,12 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     @Override
     public HandlerRegistration addLogoutHandler(Handler<Void> handler) {
         return this.linkLogout.addClickHandler(SimpleEvent.asClickHandler(handler));
+    }
+
+    @Override
+    public HandlerRegistration addInviteHandler(Handler<Void> handler)
+    {
+        return this.linkInvite.addClickHandler(SimpleEvent.asClickHandler(handler));
     }
 
     @Override
@@ -622,5 +631,11 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     @Override
     public HandlerRegistration addPasteToolHandler(Handler<Void> handler) {
         return this.pasteToolsRequest.addHandler(handler);
+    }
+
+    @Override
+    public void setInviteLinkVisible(boolean isVisible)
+    {
+        this.linkInvite.setVisible(isVisible);
     }
 }

@@ -3,6 +3,7 @@ package com.project.website.shared.client.widgets.registration;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Button;
@@ -13,6 +14,8 @@ import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.project.shared.client.events.SimpleEvent;
+import com.project.shared.client.events.SimpleEvent.Handler;
 
 public class RegistrationWidget extends Composite {
 
@@ -21,11 +24,11 @@ public class RegistrationWidget extends Composite {
     interface RegistrationWidgetUiBinder extends UiBinder<Widget, RegistrationWidget> {
     }
 
-    @UiField
-    TextBox textName;
-
-    @UiField
-    Label nameErrorLabel;
+//    @UiField
+//    TextBox textName;
+//
+//    @UiField
+//    Label nameErrorLabel;
 
     @UiField
     TextBox textEmail;
@@ -51,7 +54,27 @@ public class RegistrationWidget extends Composite {
     @UiField
     FormPanel registrationForm;
 
+    private SimpleEvent<RegistrationRequestData> registrationRequestEvent = new SimpleEvent<RegistrationRequestData>();
 
+    public class RegistrationRequestData {
+        private final String email;
+        private final String password;
+
+        public RegistrationRequestData(String email, String password)
+        {
+            this.email = email;
+            this.password = password;
+        }
+
+        public String getEmail()
+        {
+            return email;
+        }
+        public String getPassword()
+        {
+            return password;
+        }
+    }
 
     public RegistrationWidget() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -63,6 +86,10 @@ public class RegistrationWidget extends Composite {
         this.setAutoComplete(this.textPassword, false);
         this.setAutoComplete(this.textConfirmPassword, false);
 
+    }
+
+    public HandlerRegistration addRegistrationRequestHandler(Handler<RegistrationRequestData> handler) {
+        return this.registrationRequestEvent.addHandler(handler);
     }
 
     //TODO: Move to Utils.
@@ -94,13 +121,16 @@ public class RegistrationWidget extends Composite {
             @Override
             public void onSubmit(SubmitEvent event) {
                 event.cancel();
-                submitRegistration();
+                submitRegistration(textEmail.getText(), textPassword.getText());
             }
         });
     }
 
-    private void submitRegistration() {
-        this.validateFields();
+    private void submitRegistration(String email, String password) {
+        if (false == this.validateFields()) {
+            return;
+        }
+        registrationRequestEvent.dispatch(new RegistrationRequestData(email, password));
     }
 
 
@@ -119,12 +149,12 @@ public class RegistrationWidget extends Composite {
     {
         boolean isValid = true;
 
-        this.clearError(nameErrorLabel);
-        if (false == this.textName.getText().matches(".+"))
-        {
-            isValid = false;
-            this.setError(nameErrorLabel, "Name cannot be empty");
-        }
+//        this.clearError(nameErrorLabel);
+//        if (false == this.textName.getText().matches(".+"))
+//        {
+//            isValid = false;
+//            this.setError(nameErrorLabel, "Name cannot be empty");
+//        }
         this.clearError(emailErrorLabel);
         if (false == this.textEmail.getText().matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$"))
         {

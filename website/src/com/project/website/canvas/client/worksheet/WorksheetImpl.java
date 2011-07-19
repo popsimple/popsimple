@@ -26,6 +26,7 @@ import com.project.website.canvas.client.canvastools.base.CanvasToolFactory;
 import com.project.website.canvas.client.canvastools.base.CanvasToolFrame;
 import com.project.website.canvas.client.canvastools.base.ToolboxItem;
 import com.project.website.canvas.client.shared.ZIndexAllocator;
+import com.project.website.canvas.client.shared.widgets.DialogWithZIndex;
 import com.project.website.canvas.client.worksheet.interfaces.Worksheet;
 import com.project.website.canvas.client.worksheet.interfaces.WorksheetView;
 import com.project.website.canvas.client.worksheet.interfaces.WorksheetView.OperationStatus;
@@ -36,6 +37,8 @@ import com.project.website.canvas.shared.data.CanvasPage;
 import com.project.website.canvas.shared.data.CanvasPageOptions;
 import com.project.website.canvas.shared.data.ElementData;
 import com.project.website.canvas.shared.data.Transform2D;
+import com.project.website.shared.client.widgets.registration.RegistrationWidget;
+import com.project.website.shared.client.widgets.registration.RegistrationWidget.RegistrationRequestData;
 import com.project.website.shared.contracts.authentication.AuthenticationService;
 import com.project.website.shared.contracts.authentication.AuthenticationServiceAsync;
 
@@ -54,6 +57,8 @@ public class WorksheetImpl implements Worksheet
     {
         super();
         this.view = view;
+        AuthenticationServiceAsync service = getAuthService();
+        updateUserSpecificInfo(view, service);
         setRegistrations();
     }
 
@@ -130,10 +135,25 @@ public class WorksheetImpl implements Worksheet
         return toolData;
     }
 
+    protected void invite()
+    {
+        final DialogWithZIndex dialog = new DialogWithZIndex(false, true);
+        RegistrationWidget regWidget = new RegistrationWidget();
+        dialog.add(regWidget);
+        regWidget.addRegistrationRequestHandler(new SimpleEvent.Handler<RegistrationRequestData>() {
+            @Override
+            public void onFire(RegistrationRequestData arg)
+            {
+                registrationRequest(dialog, arg);
+            }
+        });
+        dialog.setTitle("Invite a friend to PopSimple.com");
+        dialog.center();
+    }
+
     private void logout()
     {
-        AuthenticationServiceAsync service =
-            (AuthenticationServiceAsync)GWT.create(AuthenticationService.class);
+        AuthenticationServiceAsync service = getAuthService();
         service.logout(new AsyncCallback<Void>() {
             @Override
             public void onSuccess(Void result) {
@@ -144,6 +164,13 @@ public class WorksheetImpl implements Worksheet
             public void onFailure(Throwable caught) {
             }
         });
+    }
+
+    private AuthenticationServiceAsync getAuthService()
+    {
+        AuthenticationServiceAsync service =
+            (AuthenticationServiceAsync)GWT.create(AuthenticationService.class);
+        return service;
     }
 
     @Override
@@ -273,6 +300,12 @@ public class WorksheetImpl implements Worksheet
             @Override
             public void onFire(Void arg) {
                 logout();
+            }
+        });
+        view.addInviteHandler(new Handler<Void>() {
+            @Override
+            public void onFire(Void arg) {
+                invite();
             }
         });
 
@@ -505,4 +538,44 @@ public class WorksheetImpl implements Worksheet
             load(result);
         }
     }
+
+    private void registrationRequest(final DialogWithZIndex dialog, RegistrationRequestData arg)
+    {
+        AuthenticationServiceAsync service = getAuthService();
+        service.register(arg.getEmail(), arg.getPassword(), new AsyncCallback<Void>() {
+            @Override
+            public void onSuccess(Void result)
+            {
+                Window.alert("Invite sent!");
+                dialog.hide();
+            }
+
+            @Override
+            public void onFailure(Throwable caught)
+            {
+                Window.alert("Error: " + caught.toString());
+                dialog.hide();
+            }
+        });
+    }
+
+
+    private void updateUserSpecificInfo(WorksheetView view, AuthenticationServiceAsync service)
+    {
+        this.view.setInviteLinkVisible(false);
+        final WorksheetImpl that = this;
+        service.canRegisterUsers(new AsyncCallback<Boolean>() {
+            @Override
+            public void onSuccess(Boolean result)
+            {
+                that.view.setInviteLinkVisible(result);
+            }
+
+            @Override
+            public void onFailure(Throwable caught)
+            {
+            }
+        });
+    }
 }
+

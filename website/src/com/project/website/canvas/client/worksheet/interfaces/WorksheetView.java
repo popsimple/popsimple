@@ -62,6 +62,8 @@ public interface WorksheetView extends IsWidget
 
     HandlerRegistration addLogoutHandler(Handler<Void> handler);
 
+    HandlerRegistration addInviteHandler(Handler<Void> handler);
+
     HandlerRegistration addStopOperationHandler(SimpleEvent.Handler<Void> handler);
 
     HandlerRegistration addToolCreationRequestHandler(SimpleEvent.Handler<ToolCreationRequest> handler);
@@ -115,5 +117,7 @@ public interface WorksheetView extends IsWidget
     void clearToolFrameSelection();
 
     ArrayList<CanvasToolFrame> getToolFrames();
+
+    void setInviteLinkVisible(boolean isVisible);
 
 }

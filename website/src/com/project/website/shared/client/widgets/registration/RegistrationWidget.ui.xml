@@ -68,11 +68,11 @@
 		<g:HTMLPanel ui:field="containerPanel" addStyleNames="{style.containerPanel}">
 			<g:FormPanel ui:field="registrationForm">
 				<g:HTMLPanel addStyleNames="{style.registrationPanel}">
-					<p>
-						<g:Label addStyleNames="{style.formLabel}">Full name: </g:Label>
-						<g:TextBox ui:field="textName" addStyleNames="{style.textBox}"></g:TextBox>
-						<g:Label ui:field="nameErrorLabel" addStyleNames="{style.inputErrorLabel}"></g:Label>
-					</p>
+<!-- 					<p> -->
+<!-- 						<g:Label addStyleNames="{style.formLabel}">Public name (or nickname): </g:Label> -->
+<!-- 						<g:TextBox ui:field="textName" addStyleNames="{style.textBox}"></g:TextBox> -->
+<!-- 						<g:Label ui:field="nameErrorLabel" addStyleNames="{style.inputErrorLabel}"></g:Label> -->
+<!-- 					</p> -->
 					<p>
 						<g:Label addStyleNames="{style.formLabel}">Email: </g:Label>
 						<g:TextBox ui:field="textEmail" addStyleNames="{style.textBox}"></g:TextBox>

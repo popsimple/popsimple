@@ -9,4 +9,6 @@ public interface AuthenticationServiceAsync {
     void logout(AsyncCallback<Void> callback);
 
     void register(String email, String password, AsyncCallback<Void> callback);
+
+    void canRegisterUsers(AsyncCallback<Boolean> callback);
 }

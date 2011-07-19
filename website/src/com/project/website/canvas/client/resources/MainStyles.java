@@ -174,5 +174,5 @@ public interface MainStyles extends CssResource {
 
     String imageLoadingStyle();
 
-    String worksheetLogoutLink();
+    String worksheetRightLink();
 }
