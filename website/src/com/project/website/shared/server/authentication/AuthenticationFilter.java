@@ -35,6 +35,7 @@ public class AuthenticationFilter implements Filter
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
             ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest)request;
+        HttpServletResponse httpResponse = (HttpServletResponse)response;
 
         if (this.isRequestExcluded(httpRequest))
         {
@@ -42,9 +43,9 @@ public class AuthenticationFilter implements Filter
             return;
         }
 
-        if (false == new AuthenticationServiceImpl().isLoggedIn(httpRequest))
+        if (false == HttpAuthentication.isLoggedIn(httpRequest, httpResponse))
         {
-            this.redirectToLogin(httpRequest, (HttpServletResponse)response);
+            this.redirectToLogin(httpRequest, httpResponse);
             return;
         }
         chain.doFilter(request, response);

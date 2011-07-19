@@ -4,9 +4,18 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.project.shared.utils.StringUtils;
+
 public class HttpServerCookiesUtils
 {
-    public static final String GLOBAL_COOKIE_PATH = "/";
+    public static final String ROOT_COOKIE_PATH = "/";
+
+    public static String getCookieValue(HttpServletRequest httpRequest, String cookieName)
+    {
+        Cookie cookie = HttpServerCookiesUtils.getCookie(httpRequest, cookieName);
+        String cookieValue = cookie == null ? null : cookie.getValue();
+        return StringUtils.defaultIfEmptyOrNull(cookieValue, null);
+    }
 
     public static Cookie getCookie(HttpServletRequest httpRequest, String cookieName)
     {
@@ -25,9 +34,9 @@ public class HttpServerCookiesUtils
         return null;
     }
 
-    public static void removeGlobalCookie(HttpServletRequest request, HttpServletResponse response, String cookieName)
+    public static void removeRootCookie(HttpServletRequest request, HttpServletResponse response, String cookieName)
     {
-        HttpServerCookiesUtils.removeCookie(request, response, cookieName, GLOBAL_COOKIE_PATH);
+        HttpServerCookiesUtils.removeCookie(request, response, cookieName, ROOT_COOKIE_PATH);
     }
 
     public static void removeCookie(HttpServletRequest request, HttpServletResponse response,
@@ -43,10 +52,10 @@ public class HttpServerCookiesUtils
         response.addCookie(cookie);
     }
 
-    public static void setGlobalCookie(HttpServletResponse response, String cookieName,
+    public static void setRootCookie(HttpServletResponse response, String cookieName,
             String cookieValue, int ageInSeconds)
     {
-        HttpServerCookiesUtils.setCookie(response, cookieName, cookieValue, ageInSeconds, GLOBAL_COOKIE_PATH);
+        HttpServerCookiesUtils.setCookie(response, cookieName, cookieValue, ageInSeconds, ROOT_COOKIE_PATH);
     }
 
     public static void setCookie(HttpServletResponse response, String cookieName, String cookieValue,

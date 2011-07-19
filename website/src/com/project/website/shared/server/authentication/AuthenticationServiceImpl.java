@@ -12,14 +12,12 @@ import javax.mail.Transport;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.code.twig.ObjectDatastore;
 import com.google.code.twig.annotation.AnnotationObjectDatastore;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
-import com.project.shared.server.HttpServerCookiesUtils;
 import com.project.shared.utils.StringUtils;
 import com.project.website.shared.contracts.authentication.AuthenticationService;
 import com.project.website.shared.data.User;
@@ -28,9 +26,6 @@ public class AuthenticationServiceImpl extends RemoteServiceServlet implements A
 {
     private static final long serialVersionUID = 1L;
 
-    private static final String AUTHENTICATION_COOKIE_NAME = "authenticationCookie";
-    private static final int COOKIE_EXPIRATION_DAYS = 7;
-    private static final int COOKIE_MAX_AGE = COOKIE_EXPIRATION_DAYS * 24 * 60 * 60;
     private static final String STUB_USERNAME = "!StubUser!@StubEmail.com";
 
     @Override
@@ -48,9 +43,7 @@ public class AuthenticationServiceImpl extends RemoteServiceServlet implements A
     @Override
     public void register(String email, String password)
     {
-        ObjectDatastore datastore = new AnnotationObjectDatastore();
-
-        User user = datastore.load(User.class, email);
+        User user = HttpAuthentication.loadUser(email);
         if (null != user) {
             // todo do this normally
             throw new RuntimeException("User already exists.");
@@ -60,9 +53,10 @@ public class AuthenticationServiceImpl extends RemoteServiceServlet implements A
         user.username = email;
         user.password = password;
         user.isEnabled = true;
+        ObjectDatastore datastore = new AnnotationObjectDatastore();
         datastore.store(user);
 
-        if (null == datastore.load(User.class, email)) {
+        if (null == HttpAuthentication.loadUser(email)) {
             throw new RuntimeException("Failed to save user");
         }
 
@@ -100,16 +94,11 @@ public class AuthenticationServiceImpl extends RemoteServiceServlet implements A
         //TODO: Remove!
         this.validateStubUserExists();
 
-        ObjectDatastore datastore = new AnnotationObjectDatastore();
-        User user = datastore.load(User.class, username);
+        User user = HttpAuthentication.loadUser(username);
         if (null == user)
         {
             this.onLoginFailed();
             return;
-//            user = new User();
-//            user.username = username;
-//            user.password = password;
-//            datastore.store(user);
         }
         if ((false == user.isEnabled) || (false == user.password.equals(password)))
         {
@@ -117,10 +106,9 @@ public class AuthenticationServiceImpl extends RemoteServiceServlet implements A
             return;
         }
 
-        UUID sessionId = UUID.randomUUID();
-        HttpServerCookiesUtils.setGlobalCookie(this.getThreadLocalResponse(),
-                AUTHENTICATION_COOKIE_NAME, sessionId.toString(), COOKIE_MAX_AGE);
+        HttpAuthentication.setAuthCookies(user, this.getThreadLocalRequest(), this.getThreadLocalResponse());
     }
+
 
     private void validateStubUserExists()
     {
@@ -156,20 +144,6 @@ public class AuthenticationServiceImpl extends RemoteServiceServlet implements A
         {
             return;
         }
-        HttpServerCookiesUtils.removeGlobalCookie(this.getThreadLocalRequest(),
-                this.getThreadLocalResponse(), AUTHENTICATION_COOKIE_NAME);
-    }
 
-    public boolean isLoggedIn(HttpServletRequest httpRequest){
-        if (null == httpRequest)
-        {
-            return false;
-        }
-        Cookie cookie = HttpServerCookiesUtils.getCookie(httpRequest, AUTHENTICATION_COOKIE_NAME);
-        if ((null == cookie) || (StringUtils.isEmptyOrNull(cookie.getValue())))
-        {
-            return false;
-        }
-        return true;
     }
 }
