@@ -25,15 +25,16 @@ public class DynamicScriptLoader
         Document.get().getElementsByTagName("head").getItem(0).appendChild(elem);
     }
 
-    private void scriptLoaded()
+    void scriptLoaded()
     {
         this.handler.onFire(null);
     }
 
     private native final void registerLoadedHandler(Element elem)
     /*-{
+        var me = this;
         elem.onload = function() {
-            this.@com.project.shared.client.utils.DynamicScriptLoader::scriptLoaded()();
+            me.@com.project.shared.client.utils.DynamicScriptLoader::scriptLoaded()();
         };
     }-*/;
 
