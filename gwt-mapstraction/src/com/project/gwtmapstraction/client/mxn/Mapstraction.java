@@ -121,10 +121,31 @@ public class Mapstraction extends JavaScriptObject {
 
      /* getMap() getMap returns the native map object that mapstraction is
      * talking to
-     *
-     * getMapType() Gets the imagery type for the map.
-     *
-     * getPixelRatio() Returns a ratio to turn distance into pixels based on
+     */
+     /* getMapType() Gets the imagery type for the map.
+     */
+	private final native int getMapTypeInternal() /*-{
+	    return this.getMapType();
+	}-*/;
+
+	public final MapstractionMapType getMapType() {
+	    int mapType = this.getMapTypeInternal();
+        if (this.mapTypeHybrid() == mapType) {
+            return MapstractionMapType.HYBRID;
+        }
+        if (this.mapTypePhysical() == mapType) {
+            return MapstractionMapType.PHYSICAL;
+        }
+        if (this.mapTypeRoad() == mapType) {
+            return MapstractionMapType.ROAD;
+        }
+        if (this.mapTypeSatellite() == mapType) {
+            return MapstractionMapType.SATELLITE;
+        }
+        throw new RuntimeException("Unsupported map type stored in internal map: " + mapType);
+	}
+
+     /* getPixelRatio() Returns a ratio to turn distance into pixels based on
      * current projection
      */
 
@@ -224,11 +245,45 @@ public class Mapstraction extends JavaScriptObject {
      *
      * setImagePosition(id)
      *
-     * setMapType(type) Sets the imagery type for the map The type can be one
+     */
+
+    /* setMapType(type) Sets the imagery type for the map The type can be one
      * of: mxn.Mapstraction.ROAD mxn.Mapstraction.SATELLITE
      * mxn.Mapstraction.HYBRID mxn.Mapstraction.PHYSICAL
-     *
-     * setOption(sOptName, vVal) Sets an option and applies it.
+     */
+    private final native void setMapType(int  mapType) /*-{
+        this.setMapType(mapType);
+    }-*/;
+
+    // TODO: find a better way to tie the enum values to the javascript constants
+    private final native int mapTypeRoad() /*-{
+        return $wnd.mxn.Mapstraction.ROAD;
+    }-*/;
+    private final native int mapTypePhysical() /*-{
+        return $wnd.mxn.Mapstraction.PHYSICAL;
+    }-*/;
+    private final native int mapTypeSatellite() /*-{
+        return $wnd.mxn.Mapstraction.SATELLITE;
+    }-*/;
+    private final native int mapTypeHybrid() /*-{
+        return $wnd.mxn.Mapstraction.HYBRID;
+    }-*/;
+
+    public final void setMapType(MapstractionMapType mapType) {
+        int  jsMapType;
+        switch (mapType)
+        {
+            case ROAD: jsMapType = this.mapTypeRoad(); break;
+            case HYBRID: jsMapType = this.mapTypeHybrid(); break;
+            case SATELLITE: jsMapType = this.mapTypeSatellite(); break;
+            case PHYSICAL: jsMapType = this.mapTypePhysical(); break;
+            default:
+                throw new RuntimeException("Unsupported map type: " + mapType);
+        }
+        this.setMapType(jsMapType);
+    }
+
+     /* setOption(sOptName, vVal) Sets an option and applies it.
      *
      * setOptions(oOpts) Sets the current options to those specified in oOpts
      * and applies them

@@ -135,7 +135,7 @@ public class AuthenticationServiceImpl extends RemoteServiceServlet implements A
 
         try {
             Message msg = new MimeMessage(session);
-            msg.setFrom(new InternetAddress("mail@popsimple.com", "PopSimple.com"));
+            msg.setFrom(new InternetAddress("no-reply@popsimple.com", "PopSimple.com"));
             msg.addRecipient(Message.RecipientType.TO, new InternetAddress(email));
             msg.setSubject("Welcome to PopSimple!");
             msg.setText("Visit us at http://www.PopSimple.com");

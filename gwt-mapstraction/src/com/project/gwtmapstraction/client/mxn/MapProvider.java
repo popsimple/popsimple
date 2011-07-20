@@ -1,7 +1,9 @@
 package com.project.gwtmapstraction.client.mxn;
 
 public enum MapProvider {
+    @Deprecated
     GOOGLE("google", "Google"),
+
     GOOGLE_V3("googlev3", "Google (alternate)"),
     YAHOO("yahoo", "Yahoo!"),
     MICROSOFT("microsoft", "Microsoft"),

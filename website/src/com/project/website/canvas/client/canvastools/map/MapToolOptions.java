@@ -13,10 +13,10 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.gwtmapstraction.client.mxn.MapProvider;
-import com.project.gwtmapstraction.client.mxn.MapType;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.data.DoubleHashMap;
 import com.project.website.canvas.shared.data.MapData;
+import com.project.website.canvas.shared.data.MapData.MapType;
 
 public class MapToolOptions extends Composite implements TakesValue<MapData>
 {
@@ -73,7 +73,7 @@ public class MapToolOptions extends Composite implements TakesValue<MapData>
     {
         this.mapData = value;
         this.clearButtons();
-        this.providerButtons.getByKey1(value.provider).setValue(true);
+        this.providerButtons.getByKey1(MapProvider.valueOf(value.provider)).setValue(true);
         this.mapTypeButtons.getByKey1(value.mapType).setValue(true);
     }
 
@@ -86,7 +86,7 @@ public class MapToolOptions extends Composite implements TakesValue<MapData>
         }
         for (RadioButton button : this.providerButtons.values()) {
             if (button.getValue()) {
-                this.mapData.provider = this.providerButtons.getByKey2(button);
+                this.mapData.provider = this.providerButtons.getByKey2(button).name();
             }
         }
         for (RadioButton button : this.mapTypeButtons.values()) {

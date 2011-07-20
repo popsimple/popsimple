@@ -1,14 +1,11 @@
 package com.project.website.canvas.client.canvastools.map;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Document;
-import com.google.gwt.dom.client.ScriptElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.maps.client.Maps;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
@@ -19,6 +16,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.project.gwtmapstraction.client.mxn.LatLonPoint;
 import com.project.gwtmapstraction.client.mxn.MapProvider;
 import com.project.gwtmapstraction.client.mxn.Mapstraction;
+import com.project.gwtmapstraction.client.mxn.MapstractionMapType;
 import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.utils.ElementUtils;
@@ -27,9 +25,9 @@ import com.project.shared.data.Point2D;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
 import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.client.shared.widgets.DialogWithZIndex;
-import com.project.website.canvas.shared.ApiKeys;
 import com.project.website.canvas.shared.data.ElementData;
 import com.project.website.canvas.shared.data.MapData;
+import com.project.website.canvas.shared.data.MapData.MapType;
 
 public class MapTool extends Composite implements CanvasTool<MapData>
 {
@@ -114,6 +112,7 @@ public class MapTool extends Composite implements CanvasTool<MapData>
             this.mapData.center.latitude = center.getLat();
             this.mapData.center.longitude = center.getLon();
             this.mapData.zoom = this.mapstraction.getZoom();
+            this.mapData.mapType = MapTool.fromMapstractionMapType(this.mapstraction.getMapType());
         }
         return this.mapData;
     }
@@ -148,17 +147,53 @@ public class MapTool extends Composite implements CanvasTool<MapData>
             this.addStyleName(CanvasResources.INSTANCE.main().mapToolEmpty());
             this.mapstraction.setCenter(LatLonPoint.create(75.67219739055291,-130.078125));
             this.mapstraction.setZoom(1);
-            Point2D widgetSize = ElementUtils.getElementClientSize(this.mapWidget.getElement());
-            this.mapstraction.resizeTo(widgetSize.getX(), widgetSize.getY());
+            updateMapSize();
             return;
         }
         this.removeStyleName(CanvasResources.INSTANCE.main().mapToolEmpty());
         this.mapstraction.setCenter(
                 LatLonPoint.create(this.mapData.center.latitude, this.mapData.center.longitude));
         this.mapstraction.setZoom(this.mapData.zoom);
-        Widget newMapWidget = new FlowPanel();
+        this.mapstraction.setMapType(MapTool.fromMapType(this.mapData.mapType));
+        this.mapstraction.swap(MapProvider.valueOf(this.mapData.provider), this.mapWidget.getElement());
+    }
 
-        this.mapstraction.swap(this.mapData.provider, this.mapWidget.getElement());
+    private static MapstractionMapType fromMapType(MapType mapType)
+    {
+        switch (mapType) {
+            case HYBRID:
+                return MapstractionMapType.HYBRID;
+            case PHYSICAL:
+                return MapstractionMapType.PHYSICAL;
+            case ROAD:
+                return MapstractionMapType.ROAD;
+            case SATELLITE:
+                return MapstractionMapType.SATELLITE;
+            default:
+                throw new RuntimeException("Unsupported map type: " + mapType);
+        }
+    }
+
+    private static MapType fromMapstractionMapType(MapstractionMapType mapstractionMapType)
+    {
+        switch (mapstractionMapType) {
+            case HYBRID:
+                return MapType.HYBRID;
+            case PHYSICAL:
+                return MapType.PHYSICAL;
+            case ROAD:
+                return MapType.ROAD;
+            case SATELLITE:
+                return MapType.SATELLITE;
+            default:
+                throw new RuntimeException("Unsupported mapstraction map type: " + mapstractionMapType);
+        }
+    }
+
+    private void updateMapSize()
+    {
+        Point2D widgetSize = ElementUtils.getElementClientSize(this.mapWidget.getElement());
+        this.mapstraction.resizeTo(widgetSize.getX(), widgetSize.getY());
     }
 
     private void onApiReady() {
@@ -205,6 +240,6 @@ public class MapTool extends Composite implements CanvasTool<MapData>
 
     @Override
     public void onResize() {
-        // TODO Auto-generated method stub
+        this.updateMapSize();
     }
 }

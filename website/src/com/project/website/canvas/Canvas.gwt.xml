@@ -16,7 +16,6 @@
 
 	<inherits name='com.project.website.shared.Shared'/>
 	<inherits name='com.project.shared.Shared'/>
- 	<inherits name='com.google.gwt.maps.GoogleMaps' />
 	<inherits name='com.ghusse.dolomite.Dolomite'/>
 	<inherits name='com.project.gwtbing.GwtBing'/>
 	<inherits name='com.project.gwtyoutube.GwtYouTube'/>

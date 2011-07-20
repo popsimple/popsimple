@@ -2,14 +2,14 @@ q8sHZcxL
 
 flickr
 ------
-app: 	
+app:
 canvasapp
 
 Key:
 023322961d08d84124ba870f1adce55b
 
 Secret:
-ca01f8b684334832 
+ca01f8b684334832
 
 Bing
 ------
@@ -37,3 +37,8 @@ Key: AI39si5jW3xjF_6-_XgYViQNbeoesqsagmMHXs8i3jYZZHvGmX2FOXjFEKSRQW4vadfEU5leXbz
 Amazon EC2:
 user: janitormasters@gmail.com
 Password: g734FGQ@Ssdjf
+
+Apps - Users & Groups
+---------------------
+no-reply: LevnNV13
+

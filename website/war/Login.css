@@ -1,21 +1,11 @@
-/* Magic trickery of vertical alignment taken from http://cranesandskyhooks.com/articles/center-content-vertically-with-css/ */
-* {
-	font-family: georgia, verdana, sans-serif;
-}
+body, html {
+    height:100%;
 
-html,body {
-	height: 100%;
-	margin: 0;
-	padding: 0;
 }
-
-#float {
-	float: left;
-	height: 50%;
-	margin-bottom: -250px;
+*{
+    font-family:georgia,verdana,sans-serif;
 }
-
 .root {
-	clear: both;
-	height: 500px;
+    min-height: 100%;
+    height:100%;
 }
