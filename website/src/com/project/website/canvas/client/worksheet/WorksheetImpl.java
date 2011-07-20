@@ -105,7 +105,7 @@ public class WorksheetImpl implements Worksheet
                     return;
                 }
                 view.onLoadOperationChange(OperationStatus.SUCCESS, null);
-                serverLoadCompleted(result);
+                load(result);
             }
         });
     }
@@ -113,17 +113,21 @@ public class WorksheetImpl implements Worksheet
     @Override
     public void load(String idStr)
     {
+        load(parsePageIdStr(idStr));
+    }
+
+    private Long parsePageIdStr(String idStr)
+    {
         Long id = null;
         if ((null != idStr) && (false == idStr.trim().isEmpty()))
         {
             try {
                 id = Long.valueOf(idStr);
             } catch (NumberFormatException e) {
-                // TODO instead of catching (or in addition) throw an exception? currently quietly ignores...
-                return;
+                return null;
             }
         }
-        load(id);
+        return id;
     }
 
     protected ElementData updateToolData(CanvasToolFrame toolFrame){
@@ -327,9 +331,10 @@ public class WorksheetImpl implements Worksheet
             @Override
             public void onFire(String idStr)
             {
-                load(idStr);
+                updateLoadedPageURL(idStr);
             }
         });
+
         view.addViewHandler(new Handler<Void>() {
             @Override
             public void onFire(Void arg)
@@ -387,6 +392,20 @@ public class WorksheetImpl implements Worksheet
 				removeToolInstances(arg);
 			}
 		});
+    }
+
+    protected void updateLoadedPageURL(String idStr)
+    {
+        Long id = parsePageIdStr(idStr);
+        if ((null != this.page.id) && (false == this.page.id.equals(id))) {
+            // Page id changed.
+            // Change the URL hash and trigger a history load event.
+            String newURL = Window.Location.createUrlBuilder().setHash(id.toString()).buildString();
+            Window.Location.replace(newURL);
+            return;
+        }
+        // Page id not changed, just reload
+        this.load(idStr);
     }
 
     private void copyToolsToClipboard(Collection<CanvasToolFrame> toolFrames)
@@ -540,17 +559,6 @@ public class WorksheetImpl implements Worksheet
         }
         this.page.options = value;
         view.setOptions(value);
-    }
-
-    private void serverLoadCompleted(CanvasPage result)
-    {
-        if ((null != this.page.id) && (false == this.page.id.equals(result.id))) {
-            String newURL = Window.Location.createUrlBuilder().setHash(result.id.toString()).buildString();
-            Window.Location.replace(newURL);
-        }
-        else {
-            load(result);
-        }
     }
 
     private void inviteRequest(final DialogWithZIndex dialog, InviteRequestData arg)
