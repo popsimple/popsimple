@@ -1,6 +1,8 @@
 package com.project.website.canvas.client.canvastools.map;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.ScriptElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
@@ -19,6 +21,7 @@ import com.project.gwtmapstraction.client.mxn.MapProvider;
 import com.project.gwtmapstraction.client.mxn.Mapstraction;
 import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.handlers.RegistrationsManager;
+import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.data.Location;
 import com.project.shared.data.Point2D;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
@@ -39,14 +42,9 @@ public class MapTool extends Composite implements CanvasTool<MapData>
     }
 
     private static void prepareApi(final MapTool instance) {
-        Maps.loadMapsApi(ApiKeys.GOOGLE_MAPS, "2.x", false, new Runnable() {
-            @Override
-            public void run() {
-                if (null != instance) {
-                    instance.onApiReady();
-                }
-            }
-        });
+        if (null != instance) {
+            instance.onApiReady();
+        }
     }
 
     @UiField
@@ -150,6 +148,8 @@ public class MapTool extends Composite implements CanvasTool<MapData>
             this.addStyleName(CanvasResources.INSTANCE.main().mapToolEmpty());
             this.mapstraction.setCenter(LatLonPoint.create(75.67219739055291,-130.078125));
             this.mapstraction.setZoom(1);
+            Point2D widgetSize = ElementUtils.getElementClientSize(this.mapWidget.getElement());
+            this.mapstraction.resizeTo(widgetSize.getX(), widgetSize.getY());
             return;
         }
         this.removeStyleName(CanvasResources.INSTANCE.main().mapToolEmpty());
@@ -170,8 +170,8 @@ public class MapTool extends Composite implements CanvasTool<MapData>
                 if (false == event.isAttached()) {
                     return;
                 }
-                that.mapstraction = Mapstraction.createInstance(that.mapWidget.getElement(), MapProvider.GOOGLE, false);
-                that.mapstraction.setDebug(true);
+                that.mapstraction = Mapstraction.createInstance(that.mapWidget.getElement(), MapProvider.GOOGLE_V3, false);
+                //that.mapstraction.setDebug(true);
                 that.mapstraction.addSmallControls();
                 that.mapstraction.enableScrollWheelZoom();
 

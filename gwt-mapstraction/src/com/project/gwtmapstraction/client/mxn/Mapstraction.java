@@ -5,7 +5,7 @@ import com.google.gwt.dom.client.Element;
 
 public class Mapstraction extends JavaScriptObject {
 	protected Mapstraction() {}
-	
+
 	public static Mapstraction createInstance(Element element, MapProvider provider, boolean debug)
 	{
 		return Mapstraction.createInstance(element, provider.getApiString(), debug);
@@ -21,7 +21,7 @@ public class Mapstraction extends JavaScriptObject {
     /*-{
         return this.currentElement;
     }-*/;
-    
+
     /*
      * addControls(args) addControls adds controls to the map.
      *
@@ -180,8 +180,11 @@ public class Mapstraction extends JavaScriptObject {
      * height (since it is actually on a child div of the mapElement passed as
      * argument to the Mapstraction constructor, the resizing of this mapElement
      * may have no effect on the size of the actual map)
-     *
-     * runDeferred() Run any queued provider API calls for the methods defined
+     */
+    public final native void resizeTo(int width, int height) /*-{
+        this.resizeTo(width, height);
+    }-*/;
+     /* runDeferred() Run any queued provider API calls for the methods defined
      * in the provider's implementation.
      *
      * setBounds(bounds) Sets the map to the appropriate location and zoom for a
@@ -243,7 +246,7 @@ public class Mapstraction extends JavaScriptObject {
     private final native void swap(Element element, String api) /*-{
         this.swap(element, api);
     }-*/;
-    
+
     /** Change the current api on the fly
      */
     public final void swap(MapProvider provider, Element element) {
