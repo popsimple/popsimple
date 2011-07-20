@@ -1,7 +1,6 @@
 package com.project.website.canvas.client.canvastools.map;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Document;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -47,7 +46,7 @@ public class MapToolOptions extends Composite implements TakesValue<MapData>, Ha
     private DoubleHashMap<MapProvider, RadioButton> providerButtons = new DoubleHashMap<MapProvider, RadioButton>();
     private DoubleHashMap<MapType, RadioButton> mapTypeButtons = new DoubleHashMap<MapType, RadioButton>();
 
-    public MapToolOptions()
+    public MapToolOptions(Iterable<MapProvider> availableProviders)
     {
         initWidget(uiBinder.createAndBindUi(this));
 
@@ -58,7 +57,7 @@ public class MapToolOptions extends Composite implements TakesValue<MapData>, Ha
                 valueUpdated();
             }
         };
-        for (MapProvider provider : MapProvider.values()) {
+        for (MapProvider provider : availableProviders) {
             RadioButton providerButton = new RadioButton("provider", provider.getDescription());
             providerButton.addValueChangeHandler(booleanValueChanged);
             this.providerButtons.put(provider, providerButton);

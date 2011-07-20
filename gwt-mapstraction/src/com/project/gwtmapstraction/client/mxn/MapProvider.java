@@ -2,9 +2,9 @@ package com.project.gwtmapstraction.client.mxn;
 
 public enum MapProvider {
     @Deprecated
-    GOOGLE("google", "Google"),
+    GOOGLE_V2("google", "Google Maps (old)"),
 
-    GOOGLE_V3("googlev3", "Google (alternate)"),
+    GOOGLE_V3("googlev3", "Google Maps"),
     YAHOO("yahoo", "Yahoo!"),
     MICROSOFT("microsoft", "Microsoft"),
     OPENSTREETMAP("openstreetmap", "OpenStreeMap"),

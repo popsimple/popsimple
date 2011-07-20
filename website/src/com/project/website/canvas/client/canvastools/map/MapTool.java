@@ -1,5 +1,6 @@
 package com.project.website.canvas.client.canvastools.map;
 
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -18,7 +19,6 @@ import com.google.gwt.user.client.ui.Widget;
 import com.project.gwtmapstraction.client.mxn.LatLonPoint;
 import com.project.gwtmapstraction.client.mxn.MapProvider;
 import com.project.gwtmapstraction.client.mxn.Mapstraction;
-import com.project.gwtmapstraction.client.mxn.MapstractionMapType;
 import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.utils.ElementUtils;
@@ -29,23 +29,12 @@ import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.client.shared.widgets.DialogWithZIndex;
 import com.project.website.canvas.shared.data.ElementData;
 import com.project.website.canvas.shared.data.MapData;
-import com.project.website.canvas.shared.data.MapData.MapType;
 
 public class MapTool extends Composite implements CanvasTool<MapData>
 {
     interface MapToolUiBinder extends UiBinder<Widget, MapTool> {}
 
     private static MapToolUiBinder uiBinder = GWT.create(MapToolUiBinder.class);
-
-    public static void prepareApi() {
-        prepareApi(null);
-    }
-
-    private static void prepareApi(final MapTool instance) {
-        if (null != instance) {
-            instance.onApiReady();
-        }
-    }
 
     @UiField
     FlowPanel mainPanel;
@@ -65,8 +54,18 @@ public class MapTool extends Composite implements CanvasTool<MapData>
         initWidget(uiBinder.createAndBindUi(this));
         this.addStyleName(CanvasResources.INSTANCE.main().mapTool());
         this.addStyleName(CanvasResources.INSTANCE.main().mapToolEmpty());
-        MapTool.prepareApi(this);
+
+        Handler<Void> loadHandler = new Handler<Void>() {
+            @Override
+            public void onFire(Void arg)
+            {
+                initializeMapWidget();
+            }
+        };
+        MapToolStaticUtils.loadMapScripts(loadHandler);
     }
+
+
 
     @Override
     public HandlerRegistration addKillRequestEventHandler(
@@ -108,13 +107,13 @@ public class MapTool extends Composite implements CanvasTool<MapData>
 
     @Override
     public MapData getValue() {
-        if (null != this.mapWidget) {
+        if (this.isReady()) {
             LatLonPoint center = this.mapstraction.getCenter();
             this.mapData.center = new Location();
             this.mapData.center.latitude = center.getLat();
             this.mapData.center.longitude = center.getLon();
             this.mapData.zoom = this.mapstraction.getZoom();
-            this.mapData.mapType = MapTool.fromMapstractionMapType(this.mapstraction.getMapType());
+            this.mapData.mapType = MapToolStaticUtils.fromMapstractionMapType(this.mapstraction.getMapType());
         }
         return this.mapData;
     }
@@ -138,11 +137,11 @@ public class MapTool extends Composite implements CanvasTool<MapData>
 
     @Override
     public void setViewMode(boolean isViewMode) {
-        // TODO Decide how map tool should behave in view mode
+        this.optionsLabel.setVisible(false == isViewMode);
     }
 
     private void applyMapDataToWidget() {
-        if (false == this.isAttached()) {
+        if (false == this.isReady()) {
             return;
         }
         if ((null == this.mapWidget) || (null == this.mapData.center)) {
@@ -156,40 +155,24 @@ public class MapTool extends Composite implements CanvasTool<MapData>
         this.mapstraction.setCenter(
                 LatLonPoint.create(this.mapData.center.latitude, this.mapData.center.longitude));
         this.mapstraction.setZoom(this.mapData.zoom);
-        this.mapstraction.setMapType(MapTool.fromMapType(this.mapData.mapType));
-        this.mapstraction.swap(MapProvider.valueOf(this.mapData.provider), this.mapWidget.getElement());
+        this.mapstraction.setMapType(MapToolStaticUtils.fromMapType(this.mapData.mapType));
+        final MapProvider provider = MapProvider.valueOf(mapData.provider);
+
+        MapToolStaticUtils.loadProvider(provider, new Handler<Void>(){
+            @Override
+            public void onFire(Void arg)
+            {
+                mapstraction.swap(provider, mapWidget.getElement());
+            }
+        });
+
     }
 
-    private static MapstractionMapType fromMapType(MapType mapType)
-    {
-        switch (mapType) {
-            case HYBRID:
-                return MapstractionMapType.HYBRID;
-            case PHYSICAL:
-                return MapstractionMapType.PHYSICAL;
-            case ROAD:
-                return MapstractionMapType.ROAD;
-            case SATELLITE:
-                return MapstractionMapType.SATELLITE;
-            default:
-                throw new RuntimeException("Unsupported map type: " + mapType);
-        }
-    }
 
-    private static MapType fromMapstractionMapType(MapstractionMapType mapstractionMapType)
+
+    private boolean isReady()
     {
-        switch (mapstractionMapType) {
-            case HYBRID:
-                return MapType.HYBRID;
-            case PHYSICAL:
-                return MapType.PHYSICAL;
-            case ROAD:
-                return MapType.ROAD;
-            case SATELLITE:
-                return MapType.SATELLITE;
-            default:
-                throw new RuntimeException("Unsupported mapstraction map type: " + mapstractionMapType);
-        }
+        return (null != this.mapWidget) && this.isAttached();
     }
 
     private void updateMapSize()
@@ -198,25 +181,17 @@ public class MapTool extends Composite implements CanvasTool<MapData>
         this.mapstraction.resizeTo(widgetSize.getX(), widgetSize.getY());
     }
 
-    private void onApiReady() {
+    private void initializeMapWidget() {
         this.mapWidget = new FlowPanel();
         final MapTool that = this;
         this.mapWidget.addAttachHandler(new AttachEvent.Handler() {
             @Override
             public void onAttachOrDetach(AttachEvent event) {
-                if (false == event.isAttached()) {
-                    return;
-                }
-                that.mapstraction = Mapstraction.createInstance(that.mapWidget.getElement(), MapProvider.GOOGLE_V3, false);
-                //that.mapstraction.setDebug(true);
-                that.mapstraction.addSmallControls();
-                that.mapstraction.enableScrollWheelZoom();
-
-                that.mapWidget.addStyleName(CanvasResources.INSTANCE.main().mapToolMapWidget());
-                that.applyMapDataToWidget();
+                onMapWidgetAttached(event);
             }
         });
         that.mapPanel.add(that.mapWidget);
+
     }
 
     protected void showOptions()
@@ -226,7 +201,7 @@ public class MapTool extends Composite implements CanvasTool<MapData>
             this.optionsDialog.setText("Map options");
         }
         if (null == this.mapToolOptionsWidget) {
-            this.mapToolOptionsWidget = new MapToolOptions();
+            this.mapToolOptionsWidget = new MapToolOptions(MapToolStaticUtils.AVAILABLE_PROVIDERS);
             this.mapToolOptionsWidget.addDoneHandler(new Handler<Void>() {
                 @Override
                 public void onFire(Void arg)
@@ -250,6 +225,39 @@ public class MapTool extends Composite implements CanvasTool<MapData>
 
     @Override
     public void onResize() {
-        this.updateMapSize();
+        // widget may be null if api not loaded yet
+        if (this.isReady()) {
+            this.updateMapSize();
+        }
+    }
+
+
+
+    private void initializeMapWidgetActual(final MapProvider provider)
+    {
+        this.mapstraction = Mapstraction.createInstance(this.mapWidget.getElement(), provider, false);
+        //this.mapstraction.setDebug(true);
+        this.mapstraction.addSmallControls();
+        this.mapstraction.enableScrollWheelZoom();
+
+        this.mapWidget.addStyleName(CanvasResources.INSTANCE.main().mapToolMapWidget());
+        this.applyMapDataToWidget();
+    }
+
+
+
+    private void onMapWidgetAttached(AttachEvent event)
+    {
+        if (false == event.isAttached()) {
+            return;
+        }
+        final MapProvider provider = MapProvider.GOOGLE_V3;
+        MapToolStaticUtils.loadProvider(provider, new Handler<Void>(){
+            @Override
+            public void onFire(Void arg)
+            {
+                initializeMapWidgetActual(provider);
+            }
+        });
     }
 }
