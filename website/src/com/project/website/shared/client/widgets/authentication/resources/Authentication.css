@@ -1,5 +1,11 @@
 .rootPanel {
 	text-align: center;
+	padding: 0;
+}
+
+@external gwt-DialogBox;
+
+.gwt-DialogBox .rootPanel {
 	padding: 40px;
 }
 
