@@ -5,6 +5,8 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.logical.shared.AttachEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -221,6 +223,7 @@ public class MapTool extends Composite implements CanvasTool<MapData>
     {
         if (null == this.optionsDialog) {
             this.optionsDialog = new DialogWithZIndex(false, true);
+            this.optionsDialog.setText("Map options");
         }
         if (null == this.mapToolOptionsWidget) {
             this.mapToolOptionsWidget = new MapToolOptions();
@@ -233,6 +236,13 @@ public class MapTool extends Composite implements CanvasTool<MapData>
                 }
             });
             this.optionsDialog.add(this.mapToolOptionsWidget);
+            this.mapToolOptionsWidget.addValueChangeHandler(new ValueChangeHandler<MapData>() {
+                @Override
+                public void onValueChange(ValueChangeEvent<MapData> event)
+                {
+                    setValue(event.getValue());
+                }
+            });
         }
         this.mapToolOptionsWidget.setValue(this.getValue());
         this.optionsDialog.center();

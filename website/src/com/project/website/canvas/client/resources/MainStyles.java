@@ -24,6 +24,8 @@ public interface MainStyles extends CssResource {
 
     String imageCreateModeCanvasStyle();
 
+    String imageLoadingStyle();
+
     String imagePickerResultImage();
 
     String imageToolEmpty();
@@ -35,6 +37,12 @@ public interface MainStyles extends CssResource {
     String imageToolSet();
 
     String mapCreateModeCanvasStyle();
+
+    String mapOptionsMapTypePanel();
+
+    String mapOptionsProvidersPanel();
+
+    String mapOptionsSectionHeader();
 
     String mapTool();
 
@@ -53,6 +61,8 @@ public interface MainStyles extends CssResource {
     String outOfBounds();
 
     String selected();
+
+    String selectionPanelStyle();
 
     String taskImageChecked();
 
@@ -136,13 +146,13 @@ public interface MainStyles extends CssResource {
 
     String videoBox();
 
-    String videoCreateModeCanvasStyle();
+	String videoCreateModeCanvasStyle();
 
-    String videoFrame();
+	String videoFrame();
 
-	String videoOptionsLabel();
+    String videoOptionsLabel();
 
-	String videoToolEmpty();
+    String videoToolEmpty();
 
     String videoToolSet();
 
@@ -154,6 +164,8 @@ public interface MainStyles extends CssResource {
 
     String worksheetDragPanel();
 
+    String worksheetFocusPanel();
+
     String worksheetFullView();
 
     String worksheetHeader();
@@ -164,15 +176,9 @@ public interface MainStyles extends CssResource {
 
     String worksheetOptions();
 
-    String worksheetFocusPanel();
-
     String worksheetPanel();
 
     String worksheetRightButton();
-
-    String selectionPanelStyle();
-
-    String imageLoadingStyle();
 
     String worksheetRightLink();
 }

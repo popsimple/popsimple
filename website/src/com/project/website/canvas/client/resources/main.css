@@ -1,8 +1,10 @@
+@external gwt-RadioButton;
 .monospace {
 	font-family: monospace;
 }
 
 .selected {
+
 }
 
 .drag {
@@ -91,7 +93,7 @@
 	float: right;
 }
 
-.worksheetRightLink{
+.worksheetRightLink {
 	font-size: 14px;
 	float: right;
 	padding: 5px;
@@ -363,9 +365,7 @@
 	padding: 1px;
 }
 
-.worksheetModeEditable .toolFramePanel:hover,
-.worksheetModeEditable .toolFramePanel.drag,
-.worksheetModeEditable .toolFramePanel.selected
+.worksheetModeEditable .toolFramePanel:hover,.worksheetModeEditable .toolFramePanel.drag,.worksheetModeEditable .toolFramePanel.selected
 	{
 	padding: 0px;
 	border-style: solid;
@@ -428,9 +428,7 @@
 	text-align: right;
 }
 
-.worksheetModeEditable .toolFramePanel:hover .toolFrameHeader,
-.worksheetModeEditable .toolFramePanel.drag .toolFrameHeader,
-.worksheetModeEditable .toolFramePanel.selected .toolFrameHeader
+.worksheetModeEditable .toolFramePanel:hover .toolFrameHeader,.worksheetModeEditable .toolFramePanel.drag .toolFrameHeader,.worksheetModeEditable .toolFramePanel.selected .toolFrameHeader
 	{
 	visibility: visible;
 }
@@ -470,9 +468,7 @@
 	visibility: hidden;
 }
 
-.worksheetModeEditable .toolFramePanel:hover .toolFrameHoverVisibleElement,
-.worksheetModeEditable .toolFramePanel.drag .toolFrameHoverVisibleElement,
-.worksheetModeEditable .toolFramePanel.selected .toolFrameHoverVisibleElement
+.worksheetModeEditable .toolFramePanel:hover .toolFrameHoverVisibleElement,.worksheetModeEditable .toolFramePanel.drag .toolFrameHoverVisibleElement,.worksheetModeEditable .toolFramePanel.selected .toolFrameHoverVisibleElement
 	{
 	visibility: visible;
 }
@@ -542,9 +538,7 @@
 	margin-bottom: 8px;
 }
 
-.worksheetModeEditable .toolFramePanel:hover .videoBox,
-.worksheetModeEditable .toolFramePanel.drag .videoBox,
-.worksheetModeEditable .toolFramePanel.selected .videoBox
+.worksheetModeEditable .toolFramePanel:hover .videoBox,.worksheetModeEditable .toolFramePanel.drag .videoBox,.worksheetModeEditable .toolFramePanel.selected .videoBox
 	{
 	margin-bottom: 42px;
 }
@@ -575,9 +569,7 @@
 	cursor: pointer;
 }
 
-.worksheetModeEditable .toolFramePanel:hover .videoOptionsLabel,
-.worksheetModeEditable .toolFramePanel.drag .videoOptionsLabel,
-.worksheetModeEditable .toolFramePanel.selected .videoOptionsLabel
+.worksheetModeEditable .toolFramePanel:hover .videoOptionsLabel,.worksheetModeEditable .toolFramePanel.drag .videoOptionsLabel,.worksheetModeEditable .toolFramePanel.selected .videoOptionsLabel
 	{
 	display: block;
 }
@@ -632,6 +624,24 @@
 	top: 100%;
 }
 
+.mapOptionsMapTypePanel {
+	padding: 10px;
+}
+
+.mapOptionsMapTypePanel .gwt-RadioButton {
+	display: block;
+
+}
+
+.mapOptionsProvidersPanel {
+	padding: 10px;
+}
+
+.mapOptionsSectionHeader {
+	font-size: 1.2em;
+	margin-bottom: 5px;
+}
+
 .selectionPanelStyle {
 	background-color: transparent;
 	border-style: dotted;
@@ -642,7 +652,6 @@
 }
 
 @url imageLoadIconUrl imageLoadIcon;
-
 .imageLoadingStyle {
 	background-color: transparent !important;
 	background-image: imageLoadIconUrl !important;
