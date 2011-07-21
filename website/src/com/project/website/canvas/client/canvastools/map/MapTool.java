@@ -156,16 +156,7 @@ public class MapTool extends Composite implements CanvasTool<MapData>
                 LatLonPoint.create(this.mapData.center.latitude, this.mapData.center.longitude));
         this.mapstraction.setZoom(this.mapData.zoom);
         this.mapstraction.setMapType(MapToolStaticUtils.fromMapType(this.mapData.mapType));
-        final MapProvider provider = MapProvider.valueOf(mapData.provider);
-
-        MapToolStaticUtils.loadProvider(provider, new Handler<Void>(){
-            @Override
-            public void onFire(Void arg)
-            {
-                mapstraction.swap(provider, mapWidget.getElement());
-            }
-        });
-
+        this.mapstraction.swap(MapProvider.valueOf(mapData.provider), mapWidget.getElement());
     }
 
 
@@ -251,13 +242,6 @@ public class MapTool extends Composite implements CanvasTool<MapData>
         if (false == event.isAttached()) {
             return;
         }
-        final MapProvider provider = MapProvider.GOOGLE_V3;
-        MapToolStaticUtils.loadProvider(provider, new Handler<Void>(){
-            @Override
-            public void onFire(Void arg)
-            {
-                initializeMapWidgetActual(provider);
-            }
-        });
+        this.initializeMapWidgetActual(MapProvider.GOOGLE_V3);
     }
 }

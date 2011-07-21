@@ -7,6 +7,8 @@ import com.project.gwtmapstraction.client.mxn.MapstractionMapType;
 import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.utils.DynamicScriptLoader;
 import com.project.shared.client.utils.HandlerUtils;
+import com.project.shared.data.funcs.AsyncFunc;
+import com.project.shared.data.funcs.Func;
 import com.project.shared.utils.IterableUtils;
 import com.project.shared.utils.ListUtils;
 import com.project.shared.utils.StringUtils;
@@ -20,9 +22,9 @@ public class MapToolStaticUtils
 //        MapProvider.OPENSTREETMAP
     );
 
-    private static final ArrayList<String> MAPSTRACTION_AVAILABLE_API_STRINGS = IterableUtils.select(AVAILABLE_PROVIDERS, new IterableUtils.Func<MapProvider, String>(){
+    private static final ArrayList<String> MAPSTRACTION_AVAILABLE_API_STRINGS = IterableUtils.select(AVAILABLE_PROVIDERS, new Func<MapProvider, String>(){
         @Override
-        public String execute(MapProvider arg)
+        public String call(MapProvider arg)
         {
             return arg.getApiString();
         }
@@ -33,8 +35,7 @@ public class MapToolStaticUtils
         = MAPSTRACTION_SCRIPT_FILE_URL + "?(" + MAPSTRACTION_AVAILABLE_APIS + ")";
 
     public static void prepareApi() {
-        Handler<Void> handler = HandlerUtils.emptyHandler();
-        MapToolStaticUtils.loadMapScripts(handler);
+        MapToolStaticUtils.actionLoadMapScripts().run(null);
     }
 
     public static MapType fromMapstractionMapType(MapstractionMapType mapstractionMapType)
@@ -69,23 +70,30 @@ public class MapToolStaticUtils
         }
     }
 
-    public static void loadMapScripts(Handler<Void> loadHandler)
-    {
-        DynamicScriptLoader.Load(MAPSTRACTION_SCRIPT_URL, loadHandler);
+    public static void loadMapScripts(Handler<Void> loadHandler) {
+        actionLoadMapScripts().then(HandlerUtils.toFunc(loadHandler))
+                              .run(null);
     }
 
-    public static void loadProvider(MapProvider provider, Handler<Void> loadHandler)
+    public static AsyncFunc<Void,Void> actionLoadMapScripts()
+    {
+        AsyncFunc<Void, Void> res = AsyncFunc.immediate();
+        for (MapProvider provider : AVAILABLE_PROVIDERS) {
+            res = res.then(actionLoadProvider(provider));
+        }
+        return res.then(DynamicScriptLoader.actionLoad(MAPSTRACTION_SCRIPT_URL));
+    }
+
+    private static AsyncFunc<Void, Void> actionLoadProvider(MapProvider provider)
     {
         if (false == isAvailable(provider)) {
             throw new RuntimeException("Provider is not available: " + provider.name());
         }
-        switch (provider) {
-            case GOOGLE_V3:
-                DynamicScriptLoader.Load("http://maps.googleapis.com/maps/api/js?sensor=false", loadHandler);
-                return;
-            default:
-                throw new RuntimeException("Don't know how to load: " + provider.name());
+        AsyncFunc<Void, Void> res = AsyncFunc.immediate();
+        for (String source : provider.getScriptsToLoad()) {
+            res = res.then(DynamicScriptLoader.actionLoad(source));
         }
+        return res;
     }
 
     private static boolean isAvailable(MapProvider provider)

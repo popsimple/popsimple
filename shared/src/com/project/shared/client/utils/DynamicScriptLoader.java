@@ -9,6 +9,8 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ScriptElement;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.events.SimpleEvent.Handler;
+import com.project.shared.data.funcs.AsyncFunc;
+import com.project.shared.data.funcs.Func;
 
 public class DynamicScriptLoader
 {
@@ -32,48 +34,63 @@ public class DynamicScriptLoader
 
     private native final void registerLoadedHandler(Element elem)
     /*-{
-        var me = this;
-        elem.onload = function() {
-            me.@com.project.shared.client.utils.DynamicScriptLoader::scriptLoaded()();
-        };
+		var me = this;
+		elem.onload = function() {
+			me.@com.project.shared.client.utils.DynamicScriptLoader::scriptLoaded()();
+		};
     }-*/;
 
     private final static HashMap<String, Boolean> scriptLoadStatusMap = new HashMap<String, Boolean>();
     private final static HashMap<String, SimpleEvent<Void>> scriptLoadHandlersMap = new HashMap<String, SimpleEvent<Void>>();
 
-    public static void Load(final String source, final SimpleEvent.Handler<Void> handler)
+    public static void load(final String source, final SimpleEvent.Handler<Void> handler)
     {
-        Boolean status = scriptLoadStatusMap.get(source);
-        if (null == status) {
-            // Do the script-element creation and handling,
-            // but start the process in a deferred command
-            // so it doesn't stop the page from loading if it hasn't finished yet.
-            Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-                @Override
-                public void execute()
-                {
-                    loadSource(source, handler);
-                }
-            });
-            return;
-        }
+        actionLoad(source).then(HandlerUtils.toFunc(handler))
+                          .run(null);
+    }
 
-        if (false == status) {
-            // not the first time someone wants to load this source
-            // but it didn't load yet.
-            scriptLoadHandlersMap.get(source).addHandler(handler);
-            return;
-        }
-
-        // Already loaded. Fire the handler in a deferred scheduler.
-        // (for consistently async behavior)
-        Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+    public static AsyncFunc<Void, Void> actionLoad(final String source)
+    {
+        return new AsyncFunc<Void, Void>() {
             @Override
-            public void execute()
+            protected <S, E> void run(Void arg, final Func<Void, S> successHandler, final Func<Throwable, E> errorHandler)
             {
-                handler.onFire(null);
+                final Handler<Void> innerHandler = HandlerUtils.fromFunc(successHandler);
+
+                Boolean status = scriptLoadStatusMap.get(source);
+                if (null == status) {
+                    // Do the script-element creation and handling,
+                    // but start the process in a deferred command
+                    // so it doesn't stop the page from loading if it hasn't
+                    // finished yet.
+                    Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+                        @Override
+                        public void execute()
+                        {
+                            loadSource(source, innerHandler);
+                        }
+                    });
+                    return;
+                }
+
+                if (false == status) {
+                    // not the first time someone wants to load this source
+                    // but it didn't load yet.
+                    scriptLoadHandlersMap.get(source).addHandler(innerHandler);
+                    return;
+                }
+
+                // Already loaded. Fire the handler in a deferred scheduler.
+                // (for consistently async behavior)
+                Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+                    @Override
+                    public void execute()
+                    {
+                        successHandler.call(null);
+                    }
+                });
             }
-        });
+        };
     }
 
     private static void loadSource(final String source, final SimpleEvent.Handler<Void> handler)
