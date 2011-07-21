@@ -83,4 +83,10 @@ public interface CanvasResources extends ClientBundle {
     @Source("com/project/website/shared/client/resources/images/bitmaps/loadCircle.gif")
     DataResource  imageLoadIcon();
 
+    @Source("com/project/website/shared/client/resources/images/bitmaps/bingLogo_16.png")
+    ImageResource bingLogo16();
+
+    @Source("com/project/website/shared/client/resources/images/bitmaps/flickrLogo_16.png")
+    ImageResource flickrLogo16();
+
 }

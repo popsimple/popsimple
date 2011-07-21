@@ -9,7 +9,7 @@ import com.project.website.canvas.client.shared.searchProviders.bing.adapters.Im
 import com.project.website.canvas.client.shared.searchProviders.interfaces.ImageSearchProvider;
 import com.project.website.canvas.client.shared.searchProviders.interfaces.MediaSearchResult;
 
-public class BingSearchProvider implements ImageSearchProvider 
+public class BingSearchProvider implements ImageSearchProvider
 {
     private BingImageSearchRequest imageSearchRequest = null;
 
@@ -17,28 +17,28 @@ public class BingSearchProvider implements ImageSearchProvider
     {
         this.imageSearchRequest = new BingImageSearchRequest(appId);
     }
-    
+
     @Override
-    public void search(String query, final AsyncCallback<MediaSearchResult> callback) 
+    public void search(String query, final AsyncCallback<MediaSearchResult> callback)
     {
         this.imageSearchRequest.searchImages(query, new AsyncCallback<ImageResponse>() {
-            
+
             @Override
             public void onSuccess(ImageResponse result) {
                 callback.onSuccess(new ImageResponseToToImageSearchAdapter(
                         BingImageSearchRequest.DEFAULT_IMAGE_COUNT, result));
             }
-            
+
             @Override
             public void onFailure(Throwable caught) {
-                callback.onFailure(caught);                
+                callback.onFailure(caught);
             }
         });
     }
 
     @Override
     public void search(String query, ImageSearchOptions searchOptions,
-            AsyncCallback<MediaSearchResult> callback) 
+            AsyncCallback<MediaSearchResult> callback)
     {
         //TODO: Support ImageSearchOptions
         this.search(query, callback);
@@ -51,7 +51,7 @@ public class BingSearchProvider implements ImageSearchProvider
 
     @Override
     public String getIconUrl() {
-        return CanvasResources.INSTANCE.bingLogo32().getURL();
+        return CanvasResources.INSTANCE.bingLogo16().getURL();
     }
 
 }

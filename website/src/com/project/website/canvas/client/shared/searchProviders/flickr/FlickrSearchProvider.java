@@ -10,25 +10,25 @@ import com.project.website.canvas.client.shared.searchProviders.flickr.adapters.
 import com.project.website.canvas.client.shared.searchProviders.interfaces.ImageSearchProvider;
 import com.project.website.canvas.client.shared.searchProviders.interfaces.MediaSearchResult;
 
-public class FlickrSearchProvider implements ImageSearchProvider 
+public class FlickrSearchProvider implements ImageSearchProvider
 {
     protected Search _searcher = null;
     protected Credentials _credentials = null;
-    
+
     public FlickrSearchProvider(String apiKey)
     {
-        this._credentials = new Credentials(apiKey);   
+        this._credentials = new Credentials(apiKey);
         this._searcher = new Search(_credentials);
     }
-    
+
     @Override
-    public void search(String query, final AsyncCallback<MediaSearchResult> callback) 
+    public void search(String query, final AsyncCallback<MediaSearchResult> callback)
     {
         this._searcher.setText(query);
         this._searcher.send(new AsyncCallback<PhotosResponse>() {
-            
+
             @Override
-            public void onSuccess(PhotosResponse result) 
+            public void onSuccess(PhotosResponse result)
             {
                 if (false == result.getStatus())
                 {
@@ -40,9 +40,9 @@ public class FlickrSearchProvider implements ImageSearchProvider
                 callback.onSuccess(new PhotosResponseToImageSearchAdapter(
                         _credentials,  result));
             }
-            
+
             @Override
-            public void onFailure(Throwable caught) 
+            public void onFailure(Throwable caught)
             {
                 callback.onFailure(caught);
             }
@@ -51,7 +51,7 @@ public class FlickrSearchProvider implements ImageSearchProvider
 
     @Override
     public void search(String query, ImageSearchOptions searchOptions,
-            final AsyncCallback<MediaSearchResult> callback) 
+            final AsyncCallback<MediaSearchResult> callback)
     {
         //TODO: Support search options.
         this.search(query, callback);
@@ -64,6 +64,6 @@ public class FlickrSearchProvider implements ImageSearchProvider
 
     @Override
     public String getIconUrl() {
-        return CanvasResources.INSTANCE.flickrLogo32().getURL();
+        return CanvasResources.INSTANCE.flickrLogo16().getURL();
     }
 }

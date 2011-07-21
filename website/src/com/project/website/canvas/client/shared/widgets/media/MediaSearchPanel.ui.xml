@@ -25,10 +25,14 @@
         .providersPanel {
         	display: inline-block;
         }
+        .searchBox {
+	       width: 15em;
+
+	   }
     </ui:style>
     <g:HTMLPanel>
         <g:FlowPanel ui:field="formPanel">
-            <g:TextBox ui:field="searchText"></g:TextBox>
+            <g:TextBox ui:field="searchText" addStyleNames="{style.searchBox}"></g:TextBox>
             <g:Button ui:field="searchButton">Search</g:Button>
             <g:HTMLPanel addStyleNames="{style.providersOuterPanel}">
                 <span class="{style.providersPanelLabel}">Using:</span>
