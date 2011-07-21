@@ -2,6 +2,8 @@ package com.project.website.canvas.client.canvastools.map;
 
 import java.util.ArrayList;
 
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.project.gwtmapstraction.client.mxn.MapProvider;
 import com.project.gwtmapstraction.client.mxn.MapstractionMapType;
 import com.project.shared.client.events.SimpleEvent;
@@ -36,7 +38,13 @@ public class MapToolStaticUtils
         = MAPSTRACTION_SCRIPT_FILE_URL + "?(" + MAPSTRACTION_AVAILABLE_APIS + ")";
 
     public static void prepareApi() {
-        MapToolStaticUtils.actionLoadMapScripts().run(null);
+        Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+            @Override
+            public void execute()
+            {
+                MapToolStaticUtils.actionLoadMapScripts().run(null);
+            }
+        });
     }
 
     public static MapType fromMapstractionMapType(MapstractionMapType mapstractionMapType)
@@ -135,14 +143,11 @@ public class MapToolStaticUtils
         String source = "http://maps.googleapis.com/maps/api/js?sensor=false&callback=" + GoogleV3MapProviderCallbackName;
         defineGoogleV3MapProviderLoadedCallback();
 
-        if (null != googleMapV3ScriptLoadedSuccessHandler) {
-            throw new RuntimeException("We don't support more than one simultaneous load of Google Maps V3 API scripts - perhaps the previous load attempt did not cause the callback to be called?");
-        }
-        googleMapV3ScriptLoadedSuccessHandler = handler;
+        googleMapV3ScriptLoadedSuccessEvent.addHandler(handler);
         DynamicScriptLoader.actionLoad(source).run(null);
     }
 
-    private static Handler<Void> googleMapV3ScriptLoadedSuccessHandler = null;
+    private static SimpleEvent<Void> googleMapV3ScriptLoadedSuccessEvent = new SimpleEvent<Void>();
 
     private static boolean googleV3MapProviderLoaded = false;
     private static final String GoogleV3MapProviderCallbackName = "GoogleV3MapProviderLoadedCallback";
@@ -153,10 +158,8 @@ public class MapToolStaticUtils
     static void GoogleMapV3ProviderLoaded()
     {
         googleV3MapProviderLoaded = true;
-        Handler<Void> handler = googleMapV3ScriptLoadedSuccessHandler;
-        googleMapV3ScriptLoadedSuccessHandler = null;
-        if (null != handler) {
-            handler.onFire(null);
-        }
+        SimpleEvent<Void> event = googleMapV3ScriptLoadedSuccessEvent;
+        googleMapV3ScriptLoadedSuccessEvent = null;
+        event.dispatch(null);
     }
 }

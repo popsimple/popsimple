@@ -32,6 +32,8 @@ import com.project.website.canvas.shared.data.MapData;
 
 public class MapTool extends Composite implements CanvasTool<MapData>
 {
+    private static final MapProvider DEFAULT_MAP_PROVIDER = MapProvider.GOOGLE_V3;
+
     interface MapToolUiBinder extends UiBinder<Widget, MapTool> {}
 
     private static MapToolUiBinder uiBinder = GWT.create(MapToolUiBinder.class);
@@ -178,7 +180,10 @@ public class MapTool extends Composite implements CanvasTool<MapData>
         this.mapWidget.addAttachHandler(new AttachEvent.Handler() {
             @Override
             public void onAttachOrDetach(AttachEvent event) {
-                onMapWidgetAttached(event);
+                if (false == event.isAttached()) {
+                    return;
+                }
+                initializeMapWidgetActual(DEFAULT_MAP_PROVIDER);
             }
         });
         that.mapPanel.add(that.mapWidget);
@@ -235,13 +240,4 @@ public class MapTool extends Composite implements CanvasTool<MapData>
         this.applyMapDataToWidget();
     }
 
-
-
-    private void onMapWidgetAttached(AttachEvent event)
-    {
-        if (false == event.isAttached()) {
-            return;
-        }
-        this.initializeMapWidgetActual(MapProvider.GOOGLE_V3);
-    }
 }
