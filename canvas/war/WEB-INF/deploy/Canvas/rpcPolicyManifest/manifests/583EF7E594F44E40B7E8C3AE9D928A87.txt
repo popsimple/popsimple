@@ -1,2 +1,0 @@
-serviceClass: com.project.website.canvas.shared.contracts.CanvasService
-path: DD11124393F822ADB42AE6AD9D7437B0.gwt.rpc
