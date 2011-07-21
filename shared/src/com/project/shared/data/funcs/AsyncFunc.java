@@ -1,6 +1,7 @@
 package com.project.shared.data.funcs;
 
 import com.project.shared.data.funcs.Func.Action;
+import com.project.shared.utils.loggers.Logger;
 
 
 public abstract class AsyncFunc<A, B>  {
@@ -9,6 +10,7 @@ public abstract class AsyncFunc<A, B>  {
     protected abstract <S, E> void run(A arg, Func<B, S> successHandler, Func<Throwable, E> errorHandler);
 
     public void run(A arg) {
+        Logger.log("Starting AsyncFunc with arg: " + arg);
         this.run(arg, Action.<B>empty(), Action.<Throwable>empty());
     }
 
@@ -33,10 +35,12 @@ public abstract class AsyncFunc<A, B>  {
             @Override
             protected <S, E> void run(A arg, final Func<C, S> successHandler, final Func<Throwable, E> errorHandler)
             {
+                Logger.log("Starting chained ('then') AsyncFunc with arg: " + arg);
                 that.run(arg, new Action<B>() {
                     @Override
                     public void exec(B arg)
                     {
+                        Logger.log("Chained AsyncFunc succeeded, next in chain with arg: " + arg);
                         if (null != success) {
                             success.run(arg, successHandler, errorHandler);
                         }
@@ -46,6 +50,7 @@ public abstract class AsyncFunc<A, B>  {
                     @Override
                     public void exec(Throwable arg)
                     {
+                        Logger.log("Chained AsyncFunc failed, next in chain with arg: " + arg);
                         if (null != recover) {
                             recover.run(arg, successHandler, errorHandler);
                         }
