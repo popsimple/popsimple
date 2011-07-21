@@ -5,8 +5,6 @@ import com.project.shared.utils.loggers.Logger;
 
 
 public abstract class AsyncFunc<A, B>  {
-    private final AsyncFunc<A, B> that = this;
-
     protected abstract <S, E> void run(A arg, Func<B, S> successHandler, Func<Throwable, E> errorHandler);
 
     public void run(A arg) {
@@ -31,12 +29,17 @@ public abstract class AsyncFunc<A, B>  {
 
     public <C> AsyncFunc<A, C> then(final AsyncFunc<B, C> success, final AsyncFunc<Throwable, C> recover)
     {
+        return chain(this, success, recover);
+    }
+
+    private <C> AsyncFunc<A, C> chain(final AsyncFunc<A, B> first, final AsyncFunc<B, C> success, final AsyncFunc<Throwable, C> recover)
+    {
         return new AsyncFunc<A,C>(){
             @Override
             protected <S, E> void run(A arg, final Func<C, S> successHandler, final Func<Throwable, E> errorHandler)
             {
                 Logger.log("Starting chained ('then') AsyncFunc with arg: " + arg);
-                that.run(arg, new Action<B>() {
+                first.run(arg, new Action<B>() {
                     @Override
                     public void exec(B arg)
                     {
