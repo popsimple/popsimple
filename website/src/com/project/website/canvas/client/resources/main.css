@@ -625,7 +625,7 @@
 }
 
 .mapOptionsMapTypePanel {
-	padding: 10px;
+
 }
 
 .mapOptionsMapTypePanel .gwt-RadioButton {
@@ -633,14 +633,6 @@
 
 }
 
-.mapOptionsProvidersPanel {
-	padding: 10px;
-}
-
-.mapOptionsSectionHeader {
-	font-size: 1.2em;
-	margin-bottom: 5px;
-}
 
 .selectionPanelStyle {
 	background-color: transparent;
@@ -658,4 +650,33 @@
 	background-repeat: no-repeat !important;
 	background-position: center center !important;
 	background-size: 48px !important;
+}
+
+/*--------------------------------------------*/
+
+.urlTextBox {
+	width:30em;
+}
+
+.dialogContentPanel {
+    padding: 20px;
+}
+
+.dialogButtonsPanel {
+    margin-top:10px;
+    text-align: right;
+}
+
+.dialogContentPanel button {
+	margin-left: 5px;
+}
+
+.dialogSectionPanelHeader {
+	font-size: 1.2em;
+	margin-bottom: 5px;
+}
+
+
+.dialogSectionPanel {
+	padding-bottom: 10px;
 }

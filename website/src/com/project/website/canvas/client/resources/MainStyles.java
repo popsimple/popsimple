@@ -8,6 +8,14 @@ public interface MainStyles extends CssResource {
 
     String cursorCreateModeCanvasStyle();
 
+    String dialogButtonsPanel();
+
+    String dialogContentPanel();
+
+    String dialogSectionPanel();
+
+    String dialogSectionPanelHeader();
+
     String displayNone();
 
     String drag();
@@ -39,10 +47,6 @@ public interface MainStyles extends CssResource {
     String mapCreateModeCanvasStyle();
 
     String mapOptionsMapTypePanel();
-
-    String mapOptionsProvidersPanel();
-
-    String mapOptionsSectionHeader();
 
     String mapTool();
 
@@ -136,19 +140,21 @@ public interface MainStyles extends CssResource {
 
     String toolFrameCloseLink();
 
-    String toolFrameFrontLink();
+	String toolFrameFrontLink();
 
-    String toolFrameHeader();
+	String toolFrameHeader();
 
     String toolFrameHoverVisibleElement();
 
     String toolFramePanel();
 
+    String urlTextBox();
+
     String videoBox();
 
-	String videoCreateModeCanvasStyle();
+    String videoCreateModeCanvasStyle();
 
-	String videoFrame();
+    String videoFrame();
 
     String videoOptionsLabel();
 

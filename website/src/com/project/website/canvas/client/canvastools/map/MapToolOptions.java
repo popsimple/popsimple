@@ -12,6 +12,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.Widget;
@@ -36,6 +37,9 @@ public class MapToolOptions extends Composite implements TakesValue<MapData>, Ha
 
     @UiField
     FlowPanel mapTypesPanel;
+
+    @UiField
+    DisclosurePanel providersContainerPanel;
 
     @UiField
     Button doneButton;
@@ -63,6 +67,7 @@ public class MapToolOptions extends Composite implements TakesValue<MapData>, Ha
             this.providerButtons.put(provider, providerButton);
             this.providersPanel.add(providerButton);
         }
+        this.providersContainerPanel.setVisible(1 < this.providerButtons.size());
 
         for (MapType mapType : MapType.values()) {
             String description;

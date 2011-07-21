@@ -1,6 +1,8 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:d="urn:import:com.google.gwt.dom.client">
+ 			xmlns:g="urn:import:com.google.gwt.user.client.ui"
+ 			xmlns:d="urn:import:com.google.gwt.dom.client">
+	<ui:with field='res' type='com.project.website.canvas.client.resources.CanvasResources' />
 	<ui:style>
 		.resultsPanel {
 		    border-color: #DDDDDD;

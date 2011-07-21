@@ -102,12 +102,12 @@ public class MediaSearchPanel extends Composite {
             addProvider(searchProvider);
         }
         this._selectedSearchProvider = searchProviders.get(0);
-        this._searchProviderMap.get(this._selectedSearchProvider).getRadioButton().setValue(true);
+        this._searchProviderMap.get(this._selectedSearchProvider).setValue(true);
     }
 
     public void addProvider(final MediaSearchProvider searchProvider)
     {
-        RadioButtonPanel radioButtonPanel = new RadioButtonPanel();
+        final RadioButtonPanel radioButtonPanel = new RadioButtonPanel();
         radioButtonPanel.addStyleName(
                 CanvasResources.INSTANCE.main().imageToolSearchProviderPanelStyle());
         radioButtonPanel.setName("searchProviders");
@@ -119,11 +119,11 @@ public class MediaSearchPanel extends Composite {
         radioButtonPanel.add(imagePanel);
         radioButtonPanel.add(new InlineLabel(searchProvider.getTitle()));
 
-        radioButtonPanel.getRadioButton().addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+        radioButtonPanel.addClickHandler(new ClickHandler() {
 
             @Override
-            public void onValueChange(ValueChangeEvent<Boolean> event) {
-                if (false == event.getValue())
+            public void onClick(ClickEvent event) {
+                if (false == radioButtonPanel.getValue())
                 {
                     return;
                 }
