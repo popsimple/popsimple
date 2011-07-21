@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.project.gwtmapstraction.client.mxn.MapProvider;
 import com.project.gwtmapstraction.client.mxn.MapstractionMapType;
+import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.utils.DynamicScriptLoader;
 import com.project.shared.client.utils.HandlerUtils;
@@ -75,6 +76,11 @@ public class MapToolStaticUtils
                               .run(null);
     }
 
+    private static boolean isAvailable(MapProvider provider)
+    {
+        return AVAILABLE_PROVIDERS.contains(provider);
+    }
+
     public static AsyncFunc<Void,Void> actionLoadMapScripts()
     {
         AsyncFunc<Void, Void> res = AsyncFunc.immediate();
@@ -90,15 +96,65 @@ public class MapToolStaticUtils
             throw new RuntimeException("Provider is not available: " + provider.name());
         }
         AsyncFunc<Void, Void> res = AsyncFunc.immediate();
-        for (String source : provider.getScriptsToLoad()) {
-            res = res.then(DynamicScriptLoader.actionLoad(source));
+        switch (provider) {
+        case GOOGLE_V3:
+            res = res.then(actionLoadGoogleV3MapProvider());
+            break;
+        default:
+            break;
         }
         return res;
     }
 
-    private static boolean isAvailable(MapProvider provider)
+    private static AsyncFunc<Void, Void> actionLoadGoogleV3MapProvider()
     {
-        return AVAILABLE_PROVIDERS.contains(provider);
+        return new AsyncFunc<Void, Void>() {
+            @Override
+            protected <S, E> void run(Void arg, final Func<Void, S> successHandler, Func<Throwable, E> errorHandler)
+            {
+                loadGoogleV3MapProvider(new Handler<Void>(){
+                    @Override
+                    public void onFire(Void arg)
+                    {
+                        successHandler.call(null);
+                    }
+                });
+            }
+        };
     }
 
+    private static void loadGoogleV3MapProvider(SimpleEvent.Handler<Void> handler)
+    {
+        if (googleV3MapProviderLoaded) {
+            HandlerUtils.fireDeferred(handler, null);
+            return;
+        }
+        // see http://code.google.com/apis/maps/documentation/javascript/basics.html#Async
+        String source = "http://maps.googleapis.com/maps/api/js?sensor=false&callback=" + GoogleV3MapProviderCallbackName;
+        defineGoogleV3MapProviderLoadedCallback();
+
+        if (null != googleMapV3ScriptLoadedSuccessHandler) {
+            throw new RuntimeException("We don't support more than one simultaneous load of Google Maps V3 API scripts - perhaps the previous load attempt did not cause the callback to be called?");
+        }
+        googleMapV3ScriptLoadedSuccessHandler = handler;
+        DynamicScriptLoader.actionLoad(source).run(null);
+    }
+
+    private static Handler<Void> googleMapV3ScriptLoadedSuccessHandler = null;
+
+    private static boolean googleV3MapProviderLoaded = false;
+    private static final String GoogleV3MapProviderCallbackName = "GoogleV3MapProviderLoadedCallback";
+    private static final native void defineGoogleV3MapProviderLoadedCallback() /*-{
+        $wnd.GoogleV3MapProviderLoadedCallback = @com.project.website.canvas.client.canvastools.map.MapToolStaticUtils::GoogleMapV3ProviderLoaded();
+    }-*/;
+
+    static void GoogleMapV3ProviderLoaded()
+    {
+        googleV3MapProviderLoaded = true;
+        Handler<Void> handler = googleMapV3ScriptLoadedSuccessHandler;
+        googleMapV3ScriptLoadedSuccessHandler = null;
+        if (null != handler) {
+            handler.onFire(null);
+        }
+    }
 }

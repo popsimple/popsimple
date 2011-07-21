@@ -85,13 +85,7 @@ public class DynamicScriptLoader
 
                 // Already loaded. Fire the handler in a deferred scheduler.
                 // (for consistently async behavior)
-                Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-                    @Override
-                    public void execute()
-                    {
-                        successHandler.call(null);
-                    }
-                });
+                HandlerUtils.fireDeferred(HandlerUtils.fromFunc(successHandler), null);
             }
         };
     }

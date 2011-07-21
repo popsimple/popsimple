@@ -17,7 +17,5 @@ public class FirebugLogger implements ILogger
 
     private final native void firebugLog(String str) /*-{
         $wnd.console.log(str);
-        $wnd.console.trace();
-        $wnd.alert("mo");
     }-*/;
 }

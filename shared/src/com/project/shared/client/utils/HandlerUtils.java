@@ -1,5 +1,7 @@
 package com.project.shared.client.utils;
 
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.data.funcs.Func;
 import com.project.shared.data.funcs.Func.Action;
@@ -45,5 +47,15 @@ public class HandlerUtils {
                 handler.onFire(arg);
             }
         };
+    }
+
+    public static <T> void fireDeferred(final Handler<T> handler, final T arg) {
+        Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+            @Override
+            public void execute()
+            {
+                handler.onFire(arg);
+            }
+        });
     }
 }

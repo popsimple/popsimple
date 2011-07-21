@@ -92,6 +92,11 @@ public abstract class AsyncFunc<A, B>  {
             {
                 successHandler.call(arg);
             }
+
+            @Override
+            public <C> AsyncFunc<A, C> then(final AsyncFunc<A, C> success, final AsyncFunc<Throwable, C> recover) {
+                return success;
+            }
         };
     }
 };
