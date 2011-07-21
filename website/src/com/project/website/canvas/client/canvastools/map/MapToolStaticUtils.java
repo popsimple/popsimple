@@ -42,7 +42,7 @@ public class MapToolStaticUtils
             @Override
             public void execute()
             {
-                MapToolStaticUtils.actionLoadMapScripts().run(null);
+                MapToolStaticUtils.getLoadMapScriptsAsyncFunc().run(null);
             }
         });
     }
@@ -79,9 +79,9 @@ public class MapToolStaticUtils
         }
     }
 
-    public static void loadMapScripts(Handler<Void> loadHandler) {
-        actionLoadMapScripts().then(HandlerUtils.toFunc(loadHandler))
-                              .run(null);
+    public static void loadMapScriptsAsync(Handler<Void> loadHandler) {
+        getLoadMapScriptsAsyncFunc().then(HandlerUtils.toFunc(loadHandler))
+                                    .run(null);
     }
 
     private static boolean isAvailable(MapProvider provider)
@@ -89,16 +89,16 @@ public class MapToolStaticUtils
         return AVAILABLE_PROVIDERS.contains(provider);
     }
 
-    public static AsyncFunc<Void,Void> actionLoadMapScripts()
+    public static AsyncFunc<Void,Void> getLoadMapScriptsAsyncFunc()
     {
         AsyncFunc<Void, Void> res = AsyncFunc.immediate();
         for (MapProvider provider : AVAILABLE_PROVIDERS) {
-            res = res.then(actionLoadProvider(provider));
+            res = res.then(getLoadProviderAsyncFunc(provider));
         }
-        return res.then(DynamicScriptLoader.actionLoad(MAPSTRACTION_SCRIPT_URL));
+        return res.then(DynamicScriptLoader.getLoadAsyncFunc(MAPSTRACTION_SCRIPT_URL));
     }
 
-    private static AsyncFunc<Void, Void> actionLoadProvider(MapProvider provider)
+    private static AsyncFunc<Void, Void> getLoadProviderAsyncFunc(MapProvider provider)
     {
         if (false == isAvailable(provider)) {
             throw new RuntimeException("Provider is not available: " + provider.name());
@@ -106,7 +106,7 @@ public class MapToolStaticUtils
         AsyncFunc<Void, Void> res = AsyncFunc.immediate();
         switch (provider) {
         case GOOGLE_V3:
-            res = res.then(actionLoadGoogleV3MapProvider());
+            res = res.then(getLoadGoogleV3MapProviderAsyncFunc());
             break;
         default:
             break;
@@ -114,7 +114,7 @@ public class MapToolStaticUtils
         return res;
     }
 
-    private static AsyncFunc<Void, Void> actionLoadGoogleV3MapProvider()
+    private static AsyncFunc<Void, Void> getLoadGoogleV3MapProviderAsyncFunc()
     {
         return new AsyncFunc<Void, Void>() {
             @Override
@@ -144,7 +144,7 @@ public class MapToolStaticUtils
         defineGoogleV3MapProviderLoadedCallback();
 
         googleMapV3ScriptLoadedSuccessEvent.addHandler(handler);
-        DynamicScriptLoader.actionLoad(source).run(null);
+        DynamicScriptLoader.getLoadAsyncFunc(source).run(null);
     }
 
     private static SimpleEvent<Void> googleMapV3ScriptLoadedSuccessEvent = new SimpleEvent<Void>();

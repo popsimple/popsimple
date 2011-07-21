@@ -46,11 +46,11 @@ public class DynamicScriptLoader
 
     public static void load(final String source, final SimpleEvent.Handler<Void> handler)
     {
-        actionLoad(source).then(HandlerUtils.toFunc(handler))
-                          .run(null);
+        getLoadAsyncFunc(source).then(HandlerUtils.toFunc(handler))
+                                .run(null);
     }
 
-    public static AsyncFunc<Void, Void> actionLoad(final String source)
+    public static AsyncFunc<Void, Void> getLoadAsyncFunc(final String source)
     {
         return new AsyncFunc<Void, Void>() {
             @Override

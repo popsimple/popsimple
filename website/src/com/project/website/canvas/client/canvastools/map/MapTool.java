@@ -64,7 +64,7 @@ public class MapTool extends Composite implements CanvasTool<MapData>
                 initializeMapWidget();
             }
         };
-        MapToolStaticUtils.loadMapScripts(loadHandler);
+        MapToolStaticUtils.loadMapScriptsAsync(loadHandler);
     }
 
 
