@@ -123,6 +123,8 @@ public class MapToolStaticUtils
         };
     }
 
+    // TODO: refactor this into DynamicScriptLoader
+    // for scripts that have a callback
     private static void loadGoogleV3MapProvider(SimpleEvent.Handler<Void> handler)
     {
         if (googleV3MapProviderLoaded) {

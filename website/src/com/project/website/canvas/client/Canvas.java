@@ -27,8 +27,6 @@ public class Canvas implements EntryPoint {
         CanvasResources.INSTANCE.main().ensureInjected();
         AuthenticationResources.INSTANCE.main().ensureInjected();
 
-        // start loading the maps api immediately, in case it will be needed later.
-        MapToolStaticUtils.prepareApi();
 
         BuiltinTools.init();
 
@@ -41,6 +39,5 @@ public class Canvas implements EntryPoint {
             }
         });
         History.fireCurrentHistoryState();
-
     }
 }
