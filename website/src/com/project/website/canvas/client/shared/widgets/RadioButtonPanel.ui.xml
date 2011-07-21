@@ -1,15 +1,17 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-	xmlns:g="urn:import:com.google.gwt.user.client.ui">
-	<ui:style>
-		.panel
-		{	
-			display: inline-block;
-		}
-			
-	</ui:style>
-	<g:HTMLPanel>
-		<g:RadioButton ui:field="radioButton" name="blank"></g:RadioButton>
-		<g:FlowPanel ui:field="panel" addStyleNames="{style.panel}"></g:FlowPanel>
-	</g:HTMLPanel>
-</ui:UiBinder> 
+    xmlns:g="urn:import:com.google.gwt.user.client.ui">
+    <ui:style>
+        .panel {
+        	display: inline-block;
+        }
+
+        .rootPanel {
+            cursor: default;
+        }
+    </ui:style>
+    <g:HTMLPanel addStyleNames="{style.rootPanel}">
+        <g:RadioButton ui:field="radioButton" name="blank"></g:RadioButton>
+        <g:FlowPanel ui:field="panel" addStyleNames="{style.panel}"></g:FlowPanel>
+    </g:HTMLPanel>
+</ui:UiBinder>

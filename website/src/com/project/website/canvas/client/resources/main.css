@@ -509,6 +509,7 @@
 
 .imageToolSearchProviderPanelStyle {
 	display: inline-block;
+	margin-right: 10px;
 }
 
 .imageToolSearchProviderIconStyle {
@@ -519,6 +520,7 @@
 	vertical-align: middle;
 	padding: 1px;
 	display: inline-block;
+	margin-right:2px;
 }
 
 @sprite .toolboxVideoIconStyle {
