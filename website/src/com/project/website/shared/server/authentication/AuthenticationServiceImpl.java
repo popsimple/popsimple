@@ -2,7 +2,6 @@ package com.project.website.shared.server.authentication;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Properties;
 
@@ -164,8 +163,13 @@ public class AuthenticationServiceImpl extends RemoteServiceServlet implements A
             Message msg = new MimeMessage(session);
             msg.setFrom(new InternetAddress("no-reply@popsimple.com", "PopSimple.com"));
             msg.addRecipient(Message.RecipientType.TO, new InternetAddress(email));
-            msg.setSubject("Welcome to PopSimple!");
-            msg.setText("Your invitation is waiting at http://www.PopSimple.com/login.html?" + UrlParameterConstants.URL_PARAMETER_INVITE_ID + "=" + inviteId);
+            msg.setSubject("You're invited to PopSimple.com!");
+            String messageWrapped = StringUtils.isWhitespaceOrNull(message) ? "" : ("Here's a message from the person who invited you:\r\n"
+                                                                                    + "'" + message + "'\r\n");
+            String text = "Your invitation is waiting at http://www.PopSimple.com/Login.html?" + UrlParameterConstants.URL_PARAMETER_INVITE_ID + "=" + inviteId + "\r\n"
+                        + messageWrapped + "\r\n"
+                        + "Come and try it out!";
+            msg.setText(text);
             Transport.send(msg);
 
         } catch (AddressException e) {

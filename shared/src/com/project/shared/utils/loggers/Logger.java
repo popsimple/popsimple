@@ -2,8 +2,6 @@ package com.project.shared.utils.loggers;
 
 import java.util.ArrayList;
 
-import com.project.shared.utils.loggers.ILogger;
-
 public class Logger
 {
 

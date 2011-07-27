@@ -14,8 +14,8 @@ import com.project.shared.data.Point2D;
 import com.project.shared.data.Rectangle;
 import com.project.shared.utils.RectangleUtils;
 import com.project.website.canvas.client.canvastools.base.CanvasToolFrame;
-import com.project.website.canvas.client.worksheet.interfaces.WorksheetView;
 import com.project.website.canvas.client.worksheet.interfaces.ElementDragManager.StopCondition;
+import com.project.website.canvas.client.worksheet.interfaces.WorksheetView;
 
 public class ToolFrameSelectionManager {
 	private ElementDragManagerImpl _selectionDragManager = null;

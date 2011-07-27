@@ -2,6 +2,7 @@ package com.project.website.shared.server.authentication;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -24,7 +25,8 @@ public class AuthenticationFilter implements Filter
     @SuppressWarnings("unused")
     private FilterConfig _filterConfig = null;
     private String _loginUrl = "";
-    private ArrayList<String> _excludePatterns = new ArrayList<String>();
+    private ArrayList<String> _excludePatternStrings = new ArrayList<String>();
+    private Pattern _excludePattern = null;
 
     @Override
     public void destroy() {
@@ -66,14 +68,7 @@ public class AuthenticationFilter implements Filter
 
     private boolean isRequestExcluded(HttpServletRequest httpRequest)
     {
-        for (String excludePattern : this._excludePatterns)
-        {
-            if (httpRequest.getRequestURI().matches(excludePattern))
-            {
-                return true;
-            }
-        }
-        return false;
+        return this._excludePattern.matcher(httpRequest.getRequestURI()).matches();
     }
 
     @Override
@@ -84,8 +79,9 @@ public class AuthenticationFilter implements Filter
 
         for (String pattern : filterConfig.getInitParameter(PARAMETER_EXCLUDE_PATTERN).split(","))
         {
-            this._excludePatterns.add(pattern.trim());
+            this._excludePatternStrings.add(pattern.trim());
         }
+        this._excludePattern = Pattern.compile(StringUtils.join("|", this._excludePatternStrings), Pattern.CASE_INSENSITIVE);
     }
 
 }

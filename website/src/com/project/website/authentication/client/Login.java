@@ -67,22 +67,7 @@ public class Login implements EntryPoint {
                     @Override
                     public void onSuccess(Void result)
                     {
-                        // TODO do something
-                        service.login(arg.getEmail(), arg.getPassword(), new AsyncCallback<Void>() {
-                            @Override
-                            public void onSuccess(Void result)
-                            {
-                                // TODO Auto-generated method stub
-                                LoginWidget.onLoginSuccess();
-                            }
-
-                            @Override
-                            public void onFailure(Throwable caught)
-                            {
-                                // TODO Auto-generated method stub
-                                Window.alert("Unable to login after registration. Reason: " + caught.toString());
-                            }
-                        });
+                        performPostRegistrationLogin(arg);
                     }
 
                     @Override
@@ -95,5 +80,27 @@ public class Login implements EntryPoint {
         });
         RootPanel.get("root").clear();
         RootPanel.get("root").add(regWidget);
+    }
+
+    private void performPostRegistrationLogin(final RegistrationRequestData arg)
+    {
+        final AuthenticationServiceAsync service =
+                (AuthenticationServiceAsync)GWT.create(AuthenticationService.class);
+
+        service.login(arg.getEmail(), arg.getPassword(), new AsyncCallback<Void>() {
+            @Override
+            public void onSuccess(Void result)
+            {
+                // TODO Auto-generated method stub
+                LoginWidget.onLoginSuccess();
+            }
+
+            @Override
+            public void onFailure(Throwable caught)
+            {
+                // TODO Auto-generated method stub
+                Window.alert("Unable to login after registration. Reason: " + caught.toString());
+            }
+        });
     }
 }
