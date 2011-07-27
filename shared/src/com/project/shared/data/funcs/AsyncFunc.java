@@ -28,10 +28,10 @@ public abstract class AsyncFunc<A, B>  {
 
     public <C> AsyncFunc<A, C> then(final AsyncFunc<B, C> success, final AsyncFunc<Throwable, C> recover)
     {
-        return chain(this, success, recover);
+        return AsyncFunc.<A,B,C>chain(this, success, recover);
     }
 
-    private <C> AsyncFunc<A, C> chain(final AsyncFunc<A, B> first, final AsyncFunc<B, C> success, final AsyncFunc<Throwable, C> recover)
+    private static <A,B,C> AsyncFunc<A, C> chain(final AsyncFunc<A, B> first, final AsyncFunc<B, C> success, final AsyncFunc<Throwable, C> recover)
     {
         return new AsyncFunc<A,C>(){
             @Override

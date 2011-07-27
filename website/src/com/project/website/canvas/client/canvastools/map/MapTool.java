@@ -231,8 +231,8 @@ public class MapTool extends Composite implements CanvasTool<MapData>
 
     private void initializeMapWidgetActual(final MapProvider provider)
     {
-        this.mapstraction = Mapstraction.createInstance(this.mapWidget.getElement(), provider, false);
-        //this.mapstraction.setDebug(true);
+        this.mapstraction = Mapstraction.createInstance(this.mapWidget.getElement(), provider, true);
+        this.mapstraction.setDebug(true);
         this.mapstraction.addSmallControls();
         this.mapstraction.enableScrollWheelZoom();
 

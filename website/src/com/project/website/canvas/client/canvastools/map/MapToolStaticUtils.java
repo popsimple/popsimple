@@ -21,7 +21,7 @@ public class MapToolStaticUtils
 {
     public static final ArrayList<MapProvider> AVAILABLE_PROVIDERS = ListUtils.create(
         MapProvider.GOOGLE_V3
-//        MapProvider.MICROSOFT,
+//        MapProvider.MICROSOFT
 //        MapProvider.OPENSTREETMAP
     );
 
@@ -108,6 +108,8 @@ public class MapToolStaticUtils
         case GOOGLE_V3:
             res = res.then(getLoadGoogleV3MapProviderAsyncFunc());
             break;
+        case MICROSOFT:
+            res = res.then(DynamicScriptLoader.getLoadAsyncFunc("http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.3"));
         default:
             break;
         }

@@ -2,6 +2,8 @@ package com.project.website.shared.server.authentication;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Properties;
 
 import javax.mail.Message;
@@ -16,10 +18,14 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.project.shared.utils.StringUtils;
 import com.project.website.shared.contracts.authentication.AuthenticationService;
+import com.project.website.shared.data.Invitation;
+import com.project.website.shared.data.UrlParameterConstants;
 import com.project.website.shared.data.User;
 
 public class AuthenticationServiceImpl extends RemoteServiceServlet implements AuthenticationService
 {
+    private static final String URL_CHAR_ENCODING = "UTF-8";
+
     private static final long serialVersionUID = 1L;
 
     private static final String ADMIN_USERNAME = "admin@popsimple.com";
@@ -38,10 +44,12 @@ public class AuthenticationServiceImpl extends RemoteServiceServlet implements A
 
 
     @Override
-    public void register(String email, String password, String name)
+    public void register(String email, String password, String name, Invitation invitation)
     {
-        if (false == canRegisterUsers()) {
-            this.onAuthenticationFailed();
+        boolean needsInvitation = false == canRegisterUsers();
+        if (needsInvitation && (false == AuthenticationUtils.invitationIsValid(invitation))) {
+            // User has no invitation and no privileges to register new users.
+            this.onInvalidInvitation();
             return;
         }
 
@@ -51,7 +59,9 @@ public class AuthenticationServiceImpl extends RemoteServiceServlet implements A
         }
 
         AuthenticationUtils.createUser(email, password, name);
+        AuthenticationUtils.invalidateInvitation(invitation);
     }
+
 
 
     @Override
@@ -104,6 +114,13 @@ public class AuthenticationServiceImpl extends RemoteServiceServlet implements A
         AuthenticationUtils.createUser(ADMIN_USERNAME, ADMIN_DEFAULT_PASSWORD, "Admin");
     }
 
+
+    private void onInvalidInvitation()
+    {
+        // TODO respond in a way that the client understands that this was the problem...
+        onAuthenticationFailed();
+    }
+
     private void onAuthenticationFailed()
     {
         // There's a small GWT bug when using the thread local response:
@@ -133,12 +150,19 @@ public class AuthenticationServiceImpl extends RemoteServiceServlet implements A
         Properties props = new Properties();
         Session session = Session.getDefaultInstance(props, null);
 
+        Invitation invitation = AuthenticationUtils.createInvitation();
+        String inviteId;
+        try {
+            inviteId = URLEncoder.encode(invitation.id, URL_CHAR_ENCODING);
+        } catch (UnsupportedEncodingException e1) {
+            throw new RuntimeException(e1);
+        }
         try {
             Message msg = new MimeMessage(session);
             msg.setFrom(new InternetAddress("no-reply@popsimple.com", "PopSimple.com"));
             msg.addRecipient(Message.RecipientType.TO, new InternetAddress(email));
             msg.setSubject("Welcome to PopSimple!");
-            msg.setText("Visit us at http://www.PopSimple.com");
+            msg.setText("Your invitation is waiting at http://www.PopSimple.com/login.html?" + UrlParameterConstants.URL_PARAMETER_INVITE_ID + "=" + inviteId);
             Transport.send(msg);
 
         } catch (AddressException e) {

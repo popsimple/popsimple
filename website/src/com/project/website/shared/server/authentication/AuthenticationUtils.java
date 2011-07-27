@@ -3,9 +3,11 @@ package com.project.website.shared.server.authentication;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.UUID;
 
 import com.google.code.twig.ObjectDatastore;
 import com.google.code.twig.annotation.AnnotationObjectDatastore;
+import com.project.website.shared.data.Invitation;
 import com.project.website.shared.data.User;
 
 public class AuthenticationUtils
@@ -32,6 +34,16 @@ public class AuthenticationUtils
     {
         ObjectDatastore datastore = new AnnotationObjectDatastore();
         return datastore.load(User.class, userName.toLowerCase());
+    }
+
+    public static boolean invitationIsValid(Invitation invitation)
+    {
+        if (null == invitation) {
+            return false;
+        }
+        ObjectDatastore datastore = new AnnotationObjectDatastore();
+        Invitation foundInv = datastore.load(Invitation.class, invitation.id);
+        return (null != foundInv);
     }
 
 
@@ -63,6 +75,18 @@ public class AuthenticationUtils
         return getDigestString(m);
     }
 
+    public static void invalidateInvitation(Invitation invitation)
+    {
+        ObjectDatastore datastore = new AnnotationObjectDatastore();
+        datastore.delete(invitation);
+    }
 
-
+    public static Invitation createInvitation()
+    {
+        Invitation res = new Invitation();
+        res.id = (UUID.randomUUID()).toString();
+        ObjectDatastore datastore = new AnnotationObjectDatastore();
+        datastore.store(res);
+        return res;
+    }
 }
