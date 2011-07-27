@@ -78,7 +78,7 @@ public class AuthenticationUtils
     public static void invalidateInvitation(Invitation invitation)
     {
         ObjectDatastore datastore = new AnnotationObjectDatastore();
-        datastore.delete(invitation);
+        datastore.delete(datastore.load(Invitation.class, invitation.id));
     }
 
     public static Invitation createInvitation()

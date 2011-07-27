@@ -69,8 +69,10 @@ public class AuthenticationServiceImpl extends RemoteServiceServlet implements A
     {
         // TODO implement a permissions system
         User registeringUser = HttpAuthentication.getAuthenticatedUser(this.getThreadLocalRequest(), this.getThreadLocalResponse());
-        boolean canRegisterUsers = registeringUser.username.equals(ADMIN_USERNAME);
-        return canRegisterUsers;
+        if (null == registeringUser) {
+            return false;
+        }
+        return registeringUser.username.equals(ADMIN_USERNAME);
     }
 
 
@@ -118,7 +120,8 @@ public class AuthenticationServiceImpl extends RemoteServiceServlet implements A
     private void onInvalidInvitation()
     {
         // TODO respond in a way that the client understands that this was the problem...
-        onAuthenticationFailed();
+        //onAuthenticationFailed();
+        throw new RuntimeException("Invitation was already used or is invalid.");
     }
 
     private void onAuthenticationFailed()

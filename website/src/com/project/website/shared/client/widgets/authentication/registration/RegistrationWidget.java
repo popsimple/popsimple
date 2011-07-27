@@ -16,6 +16,7 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.events.SimpleEvent.Handler;
+import com.project.website.shared.data.Invitation;
 
 public class RegistrationWidget extends Composite {
 
@@ -56,16 +57,25 @@ public class RegistrationWidget extends Composite {
 
     private SimpleEvent<RegistrationRequestData> registrationRequestEvent = new SimpleEvent<RegistrationRequestData>();
 
+    private String _inviteId;
+
     public class RegistrationRequestData {
         private final String email;
         private final String password;
         private final String name;
+        private final Invitation invitation;
 
-        public RegistrationRequestData(String name, String email, String password)
+        public RegistrationRequestData(String name, String email, String password, Invitation invitation)
         {
             this.email = email;
             this.name = name;
             this.password = password;
+            this.invitation = invitation;
+        }
+
+        public Invitation getInvitation()
+        {
+            return invitation;
         }
 
         public String getName()
@@ -93,6 +103,12 @@ public class RegistrationWidget extends Composite {
         this.setAutoComplete(this.textPassword, false);
         this.setAutoComplete(this.textConfirmPassword, false);
 
+    }
+
+    public RegistrationWidget(String inviteId)
+    {
+        this();
+        this._inviteId = inviteId;
     }
 
     public HandlerRegistration addRegistrationRequestHandler(Handler<RegistrationRequestData> handler) {
@@ -137,7 +153,9 @@ public class RegistrationWidget extends Composite {
         if (false == this.validateFields()) {
             return;
         }
-        registrationRequestEvent.dispatch(new RegistrationRequestData(email, password, name));
+        Invitation invitation = new Invitation();
+        invitation.id = this._inviteId;
+        registrationRequestEvent.dispatch(new RegistrationRequestData(name, email, password, invitation));
     }
 
 

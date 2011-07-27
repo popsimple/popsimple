@@ -112,17 +112,7 @@ public class LoginWidget extends Composite {
         service.login(this.textEmail.getText(), this.textPassword.getText(), new AsyncCallback<Void>() {
             @Override
             public void onSuccess(Void result) {
-                String redirectUrl = Window.Location.getParameter(QueryParameters.REDIRECT_URL);
-                if (StringUtils.isEmptyOrNull(redirectUrl))
-                {
-                    //We need to keep the current query string coz it contains debug information.
-                    Window.Location.assign(
-                            Window.Location.createUrlBuilder().setPath("").buildString());
-                }
-                else
-                {
-                    Window.Location.assign(redirectUrl);
-                }
+                onLoginSuccess();
             }
             @Override
             public void onFailure(Throwable caught) {
@@ -149,5 +139,20 @@ public class LoginWidget extends Composite {
     private void displayError(String error) {
         this.errorLabel.setText(error);
         this.errorPanel.setVisible(true);
+    }
+
+    public static void onLoginSuccess()
+    {
+        String redirectUrl = Window.Location.getParameter(QueryParameters.REDIRECT_URL);
+        if (StringUtils.isEmptyOrNull(redirectUrl))
+        {
+            //We need to keep the current query string because it contains debug information.
+            Window.Location.assign(
+                    Window.Location.createUrlBuilder().setPath("").buildString());
+        }
+        else
+        {
+            Window.Location.assign(redirectUrl);
+        }
     }
 }
