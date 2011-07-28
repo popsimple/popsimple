@@ -20,7 +20,7 @@ import com.project.shared.data.StringKeyValue;
 import com.project.shared.utils.StringUtils;
 import com.project.website.shared.contracts.authentication.AuthenticationService;
 import com.project.website.shared.data.Invitation;
-import com.project.website.shared.data.UrlParameterConstants;
+import com.project.website.shared.data.QueryParameters;
 import com.project.website.shared.data.User;
 
 public class AuthenticationServiceImpl extends RemoteServiceServlet implements AuthenticationService
@@ -159,7 +159,7 @@ public class AuthenticationServiceImpl extends RemoteServiceServlet implements A
         String inviteId = URL.encode(invitation.id);
 
         String inviteUrl = UrlUtils.buildUrl(SITE_BASE_ADDR + INVITE_PATH,
-                new StringKeyValue(UrlParameterConstants.URL_PARAMETER_INVITE_ID, inviteId));
+                new StringKeyValue(QueryParameters.INVITE_ID, inviteId));
 
         try {
             Message msg = new MimeMessage(session);

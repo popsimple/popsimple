@@ -18,7 +18,7 @@ import com.project.website.shared.client.widgets.authentication.registration.Reg
 import com.project.website.shared.client.widgets.authentication.resources.AuthenticationResources;
 import com.project.website.shared.contracts.authentication.AuthenticationService;
 import com.project.website.shared.contracts.authentication.AuthenticationServiceAsync;
-import com.project.website.shared.data.UrlParameterConstants;
+import com.project.website.shared.data.QueryParameters;
 
 public class Login implements EntryPoint {
 
@@ -37,7 +37,7 @@ public class Login implements EntryPoint {
 
     protected void handleLoginHistoryEvent(ValueChangeEvent<String> event)
     {
-        List<String> inviteIds = Window.Location.getParameterMap().get(UrlParameterConstants.URL_PARAMETER_INVITE_ID);
+        List<String> inviteIds = Window.Location.getParameterMap().get(QueryParameters.INVITE_ID);
         if ((null != inviteIds) && (1 == inviteIds.size())) {
             String inviteId = URL.decode(inviteIds.get(0));
             showRegistration(inviteId);
