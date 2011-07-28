@@ -6,11 +6,6 @@
 	</projects>
 	<buildSpec>
 		<buildCommand>
-			<name>org.eclipse.jdt.core.javabuilder</name>
-			<arguments>
-			</arguments>
-		</buildCommand>
-		<buildCommand>
 			<name>com.google.gdt.eclipse.core.webAppProjectValidator</name>
 			<arguments>
 			</arguments>
@@ -30,6 +25,11 @@
 			<arguments>
 			</arguments>
 		</buildCommand>
+		<buildCommand>
+			<name>org.eclipse.jdt.core.javabuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
 	</buildSpec>
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
@@ -38,14 +38,15 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>bin</name>
+			<name>shared-src</name>
 			<type>2</type>
-			<location>C:/source/canvas/shared/bin</location>
-		</link>
-		<link>
-			<name>shared_src</name>
-			<type>2</type>
-			<location>C:/source/canvas/shared/src</location>
+			<locationURI>REPO_BASE/shared/src</locationURI>
 		</link>
 	</linkedResources>
+	<variableList>
+		<variable>
+			<name>REPO_BASE</name>
+			<value>$%7BPARENT-1-PROJECT_LOC%7D</value>
+		</variable>
+	</variableList>
 </projectDescription>
