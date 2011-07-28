@@ -15,9 +15,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
+import com.project.shared.client.utils.UrlUtils;
 import com.project.shared.data.StringKeyValue;
 import com.project.shared.utils.StringUtils;
-import com.project.shared.utils.UrlUtils;
 import com.project.website.shared.contracts.authentication.AuthenticationService;
 import com.project.website.shared.data.Invitation;
 import com.project.website.shared.data.UrlParameterConstants;

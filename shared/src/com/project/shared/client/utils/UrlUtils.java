@@ -1,7 +1,8 @@
-package com.project.shared.utils;
+package com.project.shared.client.utils;
 
 import com.google.gwt.http.client.URL;
 import com.google.gwt.regexp.shared.RegExp;
+import com.project.shared.client.utils.UrlUtils;
 import com.project.shared.data.KeyValue;
 import com.project.shared.data.StringKeyValue;
 

@@ -1,6 +1,8 @@
 package com.project.website.shared.server.authentication;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
@@ -13,8 +15,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.project.shared.server.UrlEncodedQueryString;
 import com.project.shared.utils.StringUtils;
-import com.project.shared.utils.UrlUtils;
 import com.project.website.shared.data.QueryParameters;
 
 public class AuthenticationFilter implements Filter
@@ -34,8 +36,9 @@ public class AuthenticationFilter implements Filter
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
-            ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException
+    {
         HttpServletRequest httpRequest = (HttpServletRequest)request;
         HttpServletResponse httpResponse = (HttpServletResponse)response;
 
@@ -56,14 +59,33 @@ public class AuthenticationFilter implements Filter
     private void redirectToLogin(HttpServletRequest httpRequest, HttpServletResponse httpResponse)
         throws IOException
     {
-        String redirectUrl = UrlUtils.buildUrl(httpRequest.getRequestURI(), httpRequest.getQueryString());
-        StringBuilder query = new StringBuilder(httpRequest.getQueryString());
-        if (query.length() > 0)
-        {
-            UrlUtils.appendQueryParameter(query, QueryParameters.REDIRECT_URL, redirectUrl);
+        StringBuffer redirectUrlBuffer = httpRequest.getRequestURL();
+        String requestQueryString = httpRequest.getQueryString();
+        String fullRequestURL = redirectUrlBuffer.toString();
+
+        UrlEncodedQueryString responseUrlQueryString = UrlEncodedQueryString.create();
+        if (false == StringUtils.isWhitespaceOrNull(requestQueryString)) {
+            fullRequestURL = redirectUrlBuffer.append("?" + requestQueryString).toString();
+
+            UrlEncodedQueryString requestUrlQueryString = UrlEncodedQueryString.parse(requestQueryString);
+
+            if (requestUrlQueryString.contains(QueryParameters.GWT_CODESERVER)) {
+                responseUrlQueryString.append(QueryParameters.GWT_CODESERVER, requestUrlQueryString.get(QueryParameters.GWT_CODESERVER));
+            }
         }
-        httpResponse.sendRedirect(
-                httpResponse.encodeRedirectURL(UrlUtils.buildUrl(this._loginUrl, query.toString())));
+
+        responseUrlQueryString.set(QueryParameters.REDIRECT_URL, fullRequestURL);
+        // TODO there must be a more sane way to build urls...
+        URI loginURI;
+        String localNameAndPath = "//" + httpRequest.getLocalName() + ":" + httpRequest.getLocalPort() + this._loginUrl;
+        try {
+            loginURI = new URI(httpRequest.getScheme(), localNameAndPath, null);
+        } catch (URISyntaxException e) {
+            // TODO WTF to do? for now catching and re-throwing as runtime exception
+            throw new RuntimeException(e);
+        }
+        String redirectUrlWithQuery = responseUrlQueryString.apply(loginURI).toURL().toString();
+        httpResponse.sendRedirect(httpResponse.encodeRedirectURL(redirectUrlWithQuery));
     }
 
     private boolean isRequestExcluded(HttpServletRequest httpRequest)

@@ -1,4 +1,4 @@
-package com.project.shared.utils;
+package com.project.shared.client.utils;
 
 import com.google.gwt.user.client.Event;
 import com.project.shared.data.Point2D;

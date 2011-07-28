@@ -12,9 +12,9 @@ import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.utils.ElementUtils;
+import com.project.shared.client.utils.EventUtils;
 import com.project.shared.client.utils.NativeUtils;
 import com.project.shared.data.Point2D;
-import com.project.shared.utils.EventUtils;
 import com.project.website.canvas.client.worksheet.exceptions.InvalidDragPanelRelationshipException;
 import com.project.website.canvas.client.worksheet.interfaces.ElementDragManager;
 
