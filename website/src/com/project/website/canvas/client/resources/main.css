@@ -11,6 +11,11 @@
 
 }
 
+.disabledLink {
+	cursor: default;
+	color: #777;
+}
+
 .drag {
 	opacity: 0.8;
 }
@@ -616,6 +621,7 @@
 .mapToolMapHolder {
 	bottom: 0;
 	position: absolute;
+	overflow: hidden;
 	top: 0;
 	width: 100%;
 }

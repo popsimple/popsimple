@@ -1,6 +1,8 @@
 package com.project.shared.data.funcs;
 
 import com.project.shared.data.funcs.Func.Action;
+import com.project.shared.utils.ThrowableUtils;
+import com.project.shared.utils.loggers.Logger;
 
 
 public abstract class AsyncFunc<A, B>  {
@@ -74,8 +76,10 @@ public abstract class AsyncFunc<A, B>  {
                     res = func.call(arg);
                 }
                 catch (Throwable e) {
-                    errorHandler.call(e);
-                    return;
+                	// TODO perhaps use the errorHandler here?
+                	Logger.log("Error in AsyncFunc: " + e.toString());
+                	Logger.log(ThrowableUtils.joinStackTrace(e));
+            		throw new RuntimeException(e);
                 }
                 successHandler.call(res);
             }

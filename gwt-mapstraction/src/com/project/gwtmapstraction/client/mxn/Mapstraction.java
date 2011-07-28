@@ -13,6 +13,9 @@ public class Mapstraction extends JavaScriptObject {
 
 	private final static native Mapstraction createInstance(Element element, String apiString, boolean debug)
 	/*-{
+		if ((null == $wnd.mxn) || (null == $wnd.mxn.Mapstraction)) {
+			throw 'Mapstraction is not loaded properly';
+		}
         var c = $wnd.mxn.Mapstraction;
 		return new c(element, apiString, debug);
     }-*/;

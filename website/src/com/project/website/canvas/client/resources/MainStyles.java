@@ -16,6 +16,8 @@ public interface MainStyles extends CssResource {
 
     String dialogSectionPanelHeader();
 
+    String disabledLink();
+
     String displayNone();
 
     String drag();
@@ -138,11 +140,11 @@ public interface MainStyles extends CssResource {
 
     String toolFrameButtonsPanel();
 
-    String toolFrameCloseLink();
+	String toolFrameCloseLink();
 
 	String toolFrameFrontLink();
 
-	String toolFrameHeader();
+    String toolFrameHeader();
 
     String toolFrameHoverVisibleElement();
 
@@ -186,5 +188,5 @@ public interface MainStyles extends CssResource {
 
     String worksheetRightButton();
 
-    String worksheetRightLink();
+	String worksheetRightLink();
 }

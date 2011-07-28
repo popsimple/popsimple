@@ -9,6 +9,7 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ScriptElement;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.events.SimpleEvent.Handler;
+import com.project.shared.client.events.SingleEvent;
 import com.project.shared.data.funcs.AsyncFunc;
 import com.project.shared.data.funcs.Func;
 import com.project.shared.utils.loggers.Logger;
@@ -42,7 +43,7 @@ public class DynamicScriptLoader
     }-*/;
 
     private final static HashMap<String, Boolean> scriptLoadStatusMap = new HashMap<String, Boolean>();
-    private final static HashMap<String, SimpleEvent<Void>> scriptLoadHandlersMap = new HashMap<String, SimpleEvent<Void>>();
+    private final static HashMap<String, SingleEvent<Void>> scriptLoadHandlersMap = new HashMap<String, SingleEvent<Void>>();
 
     public static void load(final String source, final SimpleEvent.Handler<Void> handler)
     {
@@ -62,6 +63,9 @@ public class DynamicScriptLoader
 
                 Boolean status = scriptLoadStatusMap.get(source);
                 if (null == status) {
+                    scriptLoadStatusMap.put(source, false);
+                    scriptLoadHandlersMap.put(source, new SingleEvent<Void>());
+
                     // Do the script-element creation and handling,
                     // but start the process in a deferred command
                     // so it doesn't stop the page from loading if it hasn't
@@ -95,9 +99,7 @@ public class DynamicScriptLoader
         Logger.log("Loading source: " + source);
         // no entry exists for this source -
         // first load request
-        scriptLoadStatusMap.put(source, false);
-        SimpleEvent<Void> event = new SimpleEvent<Void>();
-        scriptLoadHandlersMap.put(source, event);
+        SingleEvent<Void> event = scriptLoadHandlersMap.get(source);
         event.addHandler(handler);
 
         Handler<Void> wrappedHandler = new SimpleEvent.Handler<Void>() {
@@ -114,8 +116,6 @@ public class DynamicScriptLoader
     {
         Logger.log("Finished loading: " + source);
         scriptLoadStatusMap.put(source, true);
-        SimpleEvent<Void> prevEvent = scriptLoadHandlersMap.get(source);
-        scriptLoadHandlersMap.remove(source);
-        prevEvent.dispatch(null);
+        scriptLoadHandlersMap.get(source).dispatch(null);
     }
 }
