@@ -57,8 +57,9 @@ Mapstraction: {
 	
 	applyOptions: function(){
 		var map = this.maps[this.api];
+		if (null == map) { throw new 'Unexpected: map was null'; }
 		if(this.options.enableScrollWheelZoom){
-			map.enableContinuousZoom();
+			// Apparently this is old stuff (no such function): map.enableContinuousZoom();
 			map.enableScrollWheelZoom();
 		}		
 	},

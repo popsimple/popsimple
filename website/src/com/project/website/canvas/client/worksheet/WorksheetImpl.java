@@ -398,6 +398,9 @@ public class WorksheetImpl implements Worksheet
     protected void updateLoadedPageURL(String idStr)
     {
         Long id = parsePageIdStr(idStr);
+        if (null == id) {
+        	return;
+        }
         if ((null != this.page.id) && (false == this.page.id.equals(id))) {
             // Page id changed.
             // Change the URL hash and trigger a history load event.

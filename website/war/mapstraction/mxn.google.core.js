@@ -61,7 +61,7 @@ Mapstraction: {
 		var map = this.maps[this.api];
 		
 		if(this.options.enableScrollWheelZoom){
-			map.enableContinuousZoom();
+			//map.enableContinuousZoom();
 			map.enableScrollWheelZoom();
 		}
 		

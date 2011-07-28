@@ -11,6 +11,7 @@ import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.events.SingleEvent;
 import com.project.shared.client.utils.DynamicScriptLoader;
 import com.project.shared.client.utils.HandlerUtils;
+import com.project.shared.client.utils.SchedulerUtils;
 import com.project.shared.data.funcs.AsyncFunc;
 import com.project.shared.data.funcs.Func;
 import com.project.shared.utils.IterableUtils;
@@ -34,9 +35,11 @@ public class MapToolStaticUtils
         }
     });
     private static final String MAPSTRACTION_AVAILABLE_APIS = StringUtils.join(",", MAPSTRACTION_AVAILABLE_API_STRINGS);
+    private static final String MAPSTRACTION_SCRIPT_PROVIDER_PREFIX_URL = "mapstraction/mxn.";
     private static final String MAPSTRACTION_SCRIPT_FILE_URL = "mapstraction/mxn.js";
-    private static final String MAPSTRACTION_SCRIPT_URL
-        = MAPSTRACTION_SCRIPT_FILE_URL + "?(" + MAPSTRACTION_AVAILABLE_APIS + ")";
+    private static final String MAPSTRACTION_SCRIPT_CORE_FILE_URL = "mapstraction/mxn.core.js";
+//    private static final String MAPSTRACTION_SCRIPT_WITH_PARAMS_URL
+//        = MAPSTRACTION_SCRIPT_FILE_URL + "?(" + MAPSTRACTION_AVAILABLE_APIS + ")";
 
     protected static boolean loaded = false;
     
@@ -105,15 +108,24 @@ public class MapToolStaticUtils
         for (MapProvider provider : AVAILABLE_PROVIDERS) {
             res = res.then(getLoadProviderAsyncFunc(provider));
         }
-        return res.then(DynamicScriptLoader.getLoadAsyncFunc(MAPSTRACTION_SCRIPT_URL))
-                  .then(new Func.VoidAction() {
+        res = res.then(DynamicScriptLoader.getLoadAsyncFunc(MAPSTRACTION_SCRIPT_FILE_URL));
+        res = res.then(DynamicScriptLoader.getLoadAsyncFunc(MAPSTRACTION_SCRIPT_CORE_FILE_URL));
+        for (MapProvider provider : AVAILABLE_PROVIDERS) {
+            res = res.then(DynamicScriptLoader.getLoadAsyncFunc(getProviderCoreMxnScriptUrl(provider, "core")));
+        }
+        res = res.then(SchedulerUtils.getDeferredAsyncFunc());
+        return res.then(new Func.VoidAction() {
                         @Override
                         public void exec()
                         {
                             MapToolStaticUtils.loaded = true;
                         }
-                    });
+        });
     }
+
+	private static String getProviderCoreMxnScriptUrl(MapProvider provider, String module) {
+		return MAPSTRACTION_SCRIPT_PROVIDER_PREFIX_URL + provider.getApiString() + "." + module + ".js";
+	}
 
     public static boolean isApiLoaded() {
         return MapToolStaticUtils.loaded;

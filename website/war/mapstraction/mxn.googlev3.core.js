@@ -102,6 +102,7 @@ Mapstraction: {
 	
 	applyOptions: function(){
 		var map = this.maps[this.api];
+		if (null == map) { throw new 'Unexpected: map was null'; }
 		var myOptions = [];
 		if (this.options.enableDragging) {
 			myOptions.draggable = true;

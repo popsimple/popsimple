@@ -5,6 +5,7 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.project.shared.client.events.SimpleEvent.Handler;
+import com.project.shared.data.funcs.AsyncFunc;
 import com.project.shared.data.funcs.Func;
 import com.project.shared.data.funcs.Func.Action;
 
@@ -41,6 +42,16 @@ public class HandlerUtils {
         };
     }
 
+    public static <A,B> Handler<A> fromAsyncFunc(final AsyncFunc<A, B> func) {
+        return new Handler<A>(){
+            @Override
+            public void onFire(A arg)
+            {
+                func.run(arg);
+            }
+        };
+    }
+
     public static <A> Func<A, Void> toFunc(final Handler<A> handler) {
         return new Action<A>() {
             @Override
@@ -49,6 +60,10 @@ public class HandlerUtils {
                 handler.onFire(arg);
             }
         };
+    }
+
+    public static <A> AsyncFunc<A, Void> toAsyncFunc(final Handler<A> handler) {
+        return AsyncFunc.fromFunc(HandlerUtils.toFunc(handler));
     }
 
     public static <T> void fireDeferred(final Handler<T> handler, final T arg) {

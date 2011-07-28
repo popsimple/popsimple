@@ -21,14 +21,17 @@ import com.project.gwtmapstraction.client.mxn.LatLonPoint;
 import com.project.gwtmapstraction.client.mxn.MapProvider;
 import com.project.gwtmapstraction.client.mxn.Mapstraction;
 import com.project.shared.client.events.SimpleEvent.Handler;
+import com.project.shared.client.events.SingleEvent;
 import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.utils.ElementUtils;
+import com.project.shared.client.utils.HandlerUtils;
 import com.project.shared.client.utils.WidgetUtils;
 import com.project.shared.data.Location;
 import com.project.shared.data.Point2D;
 import com.project.shared.data.funcs.AsyncFunc;
 import com.project.shared.data.funcs.Func;
 import com.project.shared.utils.StringUtils;
+import com.project.shared.utils.loggers.Logger;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
 import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.client.shared.widgets.DialogWithZIndex;
@@ -60,6 +63,7 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
 
 	private Mapstraction mapstraction = null;
 	private MapData mapData = null;
+	private final SingleEvent<Void> asyncInitCompleted = new SingleEvent<Void>();
 
 	public MapTool() {
 		initWidget(uiBinder.createAndBindUi(this));
@@ -69,6 +73,11 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
 		this.optionsLabel.addStyleName(CanvasResources.INSTANCE.main().disabledLink());
 		this.getApiLoadedAndAttachedAsyncFunc()
 			.then(getEnsureSetupProviderAsyncFunc(DEFAULT_MAP_PROVIDER))
+			.then(new Func.VoidAction() {
+				@Override
+				public void exec() {
+					asyncInitCompleted.dispatch(null); 
+				}})
 			.run(null);
 	}
 
@@ -157,14 +166,15 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
 
 	private void applyMapDataToWidget() {
 		final MapProvider provider = this.getCurrentSelectedProvider();
-		this.getApiLoadedAndAttachedAsyncFunc()
-			.then(this.getEnsureSetupProviderAsyncFunc(provider))
-			.then(new Func.VoidAction() {
-				@Override
-				public void exec() {
-					actualApplyMapDataToWidget(provider, getWidgetForProvider(provider));
-				}})
-			.run(null);
+		// apply the data to the widget only after the async init has finished.
+		this.asyncInitCompleted.addHandler(HandlerUtils.fromAsyncFunc(
+				this.getEnsureSetupProviderAsyncFunc(provider)
+					.then(new Func.VoidAction() {
+						@Override
+						public void exec() {
+							actualApplyMapDataToWidget(provider, getWidgetForProvider(provider));
+						}})
+		));
 
 	}
 
@@ -172,6 +182,7 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
 		if (null == this.mapData) {
 			return;
 		}
+		Logger.log("Applying map data to widget: " + provider.getApiString() + " -> " + mapWidget.getElement().getId());
 		if (null == this.mapData.center) {
 			this.mapData.center = new Location();
 			this.mapData.center.latitude = DEFAULT_MAP_LATITUDE;
@@ -185,6 +196,7 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
 		this.mapstraction.setCenter(LatLonPoint.create(this.mapData.center.latitude, this.mapData.center.longitude));
 		this.mapstraction.setZoom(this.mapData.zoom);
 		this.mapstraction.setMapType(MapToolStaticUtils.fromMapType(this.mapData.mapType));
+		mapWidget.setVisible(true);
 		this.updateMapSize();
 	}
 
