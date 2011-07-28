@@ -43,6 +43,7 @@ import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.utils.ElementUtils;
+import com.project.shared.client.utils.EventUtils;
 import com.project.shared.data.Point2D;
 import com.project.shared.utils.CloneableUtils;
 import com.project.website.canvas.client.canvastools.CursorToolboxItem;
@@ -187,18 +188,18 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
     @Override
     public HandlerRegistration addSaveHandler(Handler<Void> handler) {
-        return saveButton.addClickHandler(SimpleEvent.asClickHandler(handler));
+        return saveButton.addClickHandler(EventUtils.asClickHandler(handler));
     }
 
     @Override
     public HandlerRegistration addLogoutHandler(Handler<Void> handler) {
-        return this.linkLogout.addClickHandler(SimpleEvent.asClickHandler(handler));
+        return this.linkLogout.addClickHandler(EventUtils.asClickHandler(handler));
     }
 
     @Override
     public HandlerRegistration addInviteHandler(Handler<Void> handler)
     {
-        return this.linkInvite.addClickHandler(SimpleEvent.asClickHandler(handler));
+        return this.linkInvite.addClickHandler(EventUtils.asClickHandler(handler));
     }
 
     @Override
@@ -310,7 +311,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
     @Override
     public HandlerRegistration addViewHandler(Handler<Void> handler) {
-        return viewButton.addClickHandler(SimpleEvent.asClickHandler(handler));
+        return viewButton.addClickHandler(EventUtils.asClickHandler(handler));
     }
 
     @Override

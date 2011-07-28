@@ -1,7 +1,5 @@
 package com.project.gwtmapstraction.client.mxn;
 
-import java.util.UUID;
-
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Random;

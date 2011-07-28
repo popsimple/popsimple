@@ -95,7 +95,7 @@ public class ElementDragManagerImpl implements ElementDragManager
         NativeUtils.disableTextSelectInternal(_container.getElement(), true);
 
         MouseDragHandler dragHandler = new MouseDragHandler(
-                EventUtils.getCurrentLocation(), this._dragStartSensitivity);
+                EventUtils.getCurrentMousePos(), this._dragStartSensitivity);
         regs.add(dragHandler.addDragStartedHandler(new SimpleEvent.Handler<Void>() {
             @Override
             public void onFire(Void arg) {
