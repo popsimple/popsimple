@@ -79,8 +79,8 @@ public class InviteWidget extends Composite {
     public InviteWidget() {
         initWidget(uiBinder.createAndBindUi(this));
 
+        this.setEnabled(true);
         this.registerFormHandlers();
-
         this.buttonInvite.setStylePrimaryName("gwt-Button");
     }
 
@@ -139,6 +139,15 @@ public class InviteWidget extends Composite {
     private void setError(Label label, String error){
         label.setText(error);
         label.setVisible(true);
+    }
+
+    public void setEnabled(boolean isEnabled)
+    {
+        this.buttonCancel.setEnabled(isEnabled);
+        this.buttonInvite.setEnabled(isEnabled);
+        this.textEmail.setEnabled(isEnabled);
+        this.textMessage.setEnabled(isEnabled);
+        this.textName.setEnabled(isEnabled);
     }
 
     //TODO: use some kind of validator.

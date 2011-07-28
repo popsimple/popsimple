@@ -2,6 +2,9 @@ package com.project.website.shared.server.authentication;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Properties;
 
 import javax.mail.Message;
@@ -13,10 +16,8 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.gwt.http.client.URL;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
-import com.project.shared.client.utils.UrlUtils;
-import com.project.shared.data.StringKeyValue;
+import com.project.shared.server.UrlEncodedQueryString;
 import com.project.shared.utils.StringUtils;
 import com.project.website.shared.contracts.authentication.AuthenticationService;
 import com.project.website.shared.data.Invitation;
@@ -156,10 +157,19 @@ public class AuthenticationServiceImpl extends RemoteServiceServlet implements A
         Session session = Session.getDefaultInstance(props, null);
 
         Invitation invitation = AuthenticationUtils.createInvitation();
-        String inviteId = URL.encode(invitation.id);
+        UrlEncodedQueryString query = UrlEncodedQueryString.create();
+        query.set(QueryParameters.INVITE_ID, invitation.id);
+        String inviteUrl;
 
-        String inviteUrl = UrlUtils.buildUrl(SITE_BASE_ADDR + INVITE_PATH,
-                new StringKeyValue(QueryParameters.INVITE_ID, inviteId));
+        try {
+            URI inviteURI = new URI(SITE_BASE_ADDR + INVITE_PATH);
+            inviteUrl = query.apply(inviteURI).toURL().toString();
+        } catch (MalformedURLException e) {
+            // TODO Auto-generated catch block
+            throw new RuntimeException(e);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
 
         try {
             Message msg = new MimeMessage(session);

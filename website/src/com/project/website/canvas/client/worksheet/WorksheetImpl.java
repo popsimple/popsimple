@@ -142,12 +142,13 @@ public class WorksheetImpl implements Worksheet
     protected void invite()
     {
         final DialogWithZIndex dialog = new DialogWithZIndex(false, true);
-        InviteWidget regWidget = new InviteWidget();
+        final InviteWidget regWidget = new InviteWidget();
         dialog.add(regWidget);
         regWidget.addInviteRequestHandler(new SimpleEvent.Handler<InviteRequestData>() {
             @Override
             public void onFire(InviteRequestData arg)
             {
+                regWidget.setEnabled(false);
                 inviteRequest(dialog, arg);
             }
         });

@@ -107,6 +107,10 @@
 
 }
 
+.worksheetModeEditable {
+
+}
+
 .worksheetDragPanel {
 	z-index: 1000;
 	background-color: transparent;
@@ -210,12 +214,12 @@
 }
 
 .textEditViewBox {
-	display: inline-block;
-	background-color: transparent;
+	display: none;
 }
 
-.worksheetModeEditable .textEditViewBox {
-	display: none;
+.worksheetModeViewOnly .textEditViewBox {
+    display: inline-block;
+    background-color: transparent;
 }
 
 .textEditFocused {
@@ -369,7 +373,7 @@
 	padding: 1px;
 }
 
-.worksheetModeEditable .toolFramePanel:hover,.worksheetModeEditable .toolFramePanel.drag,.worksheetModeEditable .toolFramePanel.selected
+.toolFramePanel:hover,.toolFramePanel.drag,.toolFramePanel.selected
 	{
 	padding: 0px;
 	border-style: solid;
@@ -419,10 +423,6 @@
 	cursor: pointer;
 }
 
-.worksheetModeEditable .toolFrameCloseLink:hover {
-
-}
-
 .toolFrameHeader {
 	background-color: rgba(200, 200, 200, 0.7);
 	cursor: move;
@@ -432,8 +432,13 @@
 	text-align: right;
 }
 
-.worksheetModeEditable .toolFramePanel:hover .toolFrameHeader,.worksheetModeEditable .toolFramePanel.drag .toolFrameHeader,.worksheetModeEditable .toolFramePanel.selected .toolFrameHeader
-	{
+.worksheetModeViewOnly .toolFramePanel
+{
+	visibility: hidden;
+}
+
+.toolFramePanel:hover .toolFrameHeader, .toolFramePanel.drag .toolFrameHeader, .toolFramePanel.selected .toolFrameHeader
+{
 	visibility: visible;
 }
 
@@ -468,12 +473,12 @@
 	gwt-image: "resizeIcon";
 }
 
-.toolFrameHoverVisibleElement {
+.worksheetModeViewOnly .toolFrameHoverVisibleElement {
 	visibility: hidden;
 }
 
-.worksheetModeEditable .toolFramePanel:hover .toolFrameHoverVisibleElement,.worksheetModeEditable .toolFramePanel.drag .toolFrameHoverVisibleElement,.worksheetModeEditable .toolFramePanel.selected .toolFrameHoverVisibleElement
-	{
+.toolFramePanel:hover .toolFrameHoverVisibleElement, .toolFramePanel.drag .toolFrameHoverVisibleElement, .toolFramePanel.selected .toolFrameHoverVisibleElement
+{
 	visibility: visible;
 }
 
@@ -501,7 +506,7 @@
 	width: 100px;
 }
 
-.worksheetModeEditable .imagePickerResultImage:hover,.worksheetModeEditable .imagePickerResultImage.hover
+ .imagePickerResultImage:hover, .imagePickerResultImage.hover
 	{
 	border-color: #ccc;
 }
@@ -544,8 +549,8 @@
 	margin-bottom: 8px;
 }
 
-.worksheetModeEditable .toolFramePanel:hover .videoBox,.worksheetModeEditable .toolFramePanel.drag .videoBox,.worksheetModeEditable .toolFramePanel.selected .videoBox
-	{
+.toolFramePanel:hover .videoBox,.toolFramePanel.drag .videoBox,.toolFramePanel.selected .videoBox
+{
 	margin-bottom: 42px;
 }
 
@@ -578,7 +583,7 @@
 	cursor: pointer;
 }
 
-.worksheetModeEditable .toolFramePanel:hover .videoOptionsLabel,.worksheetModeEditable .toolFramePanel.drag .videoOptionsLabel,.worksheetModeEditable .toolFramePanel.selected .videoOptionsLabel
+.toolFramePanel:hover .videoOptionsLabel,.toolFramePanel.drag .videoOptionsLabel, .toolFramePanel.selected .videoOptionsLabel
 	{
 	display: block;
 }

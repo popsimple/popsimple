@@ -20,8 +20,8 @@ import com.project.website.canvas.shared.data.MapData.MapType;
 public class MapToolStaticUtils
 {
     public static final ArrayList<MapProvider> AVAILABLE_PROVIDERS = ListUtils.create(
-        MapProvider.GOOGLE_V3
-//        MapProvider.MICROSOFT
+        MapProvider.GOOGLE_V3,
+        MapProvider.MICROSOFT
 //        MapProvider.OPENSTREETMAP
     );
 
