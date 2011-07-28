@@ -21,8 +21,8 @@ public class MapToolStaticUtils
 {
     public static final ArrayList<MapProvider> AVAILABLE_PROVIDERS = ListUtils.create(
         MapProvider.GOOGLE_V3,
-        MapProvider.MICROSOFT
-//        MapProvider.OPENSTREETMAP
+        MapProvider.MICROSOFT,
+        MapProvider.OPENLAYERS
     );
 
     private static final ArrayList<String> MAPSTRACTION_AVAILABLE_API_STRINGS = IterableUtils.select(AVAILABLE_PROVIDERS, new Func<MapProvider, String>(){
@@ -36,6 +36,8 @@ public class MapToolStaticUtils
     private static final String MAPSTRACTION_SCRIPT_FILE_URL = "mapstraction/mxn.js";
     private static final String MAPSTRACTION_SCRIPT_URL
         = MAPSTRACTION_SCRIPT_FILE_URL + "?(" + MAPSTRACTION_AVAILABLE_APIS + ")";
+
+    protected static boolean loaded = false;
 
     public static void prepareApi() {
         Scheduler.get().scheduleDeferred(new ScheduledCommand() {
@@ -95,7 +97,18 @@ public class MapToolStaticUtils
         for (MapProvider provider : AVAILABLE_PROVIDERS) {
             res = res.then(getLoadProviderAsyncFunc(provider));
         }
-        return res.then(DynamicScriptLoader.getLoadAsyncFunc(MAPSTRACTION_SCRIPT_URL));
+        return res.then(DynamicScriptLoader.getLoadAsyncFunc(MAPSTRACTION_SCRIPT_URL))
+                  .then(new Func.VoidAction() {
+                        @Override
+                        public void exec()
+                        {
+                            MapToolStaticUtils.loaded = true;
+                        }
+                    });
+    }
+
+    public static boolean isApiLoaded() {
+        return MapToolStaticUtils.loaded;
     }
 
     private static AsyncFunc<Void, Void> getLoadProviderAsyncFunc(MapProvider provider)
@@ -110,6 +123,8 @@ public class MapToolStaticUtils
             break;
         case MICROSOFT:
             res = res.then(DynamicScriptLoader.getLoadAsyncFunc("http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.3"));
+        case OPENLAYERS:
+            res = res.then(DynamicScriptLoader.getLoadAsyncFunc("http://openlayers.org/api/OpenLayers.js"));
         default:
             break;
         }

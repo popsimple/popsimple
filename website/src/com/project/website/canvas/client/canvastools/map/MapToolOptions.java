@@ -17,6 +17,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.gwtmapstraction.client.mxn.MapProvider;
+import com.project.gwtmapstraction.client.mxn.MapstractionMapType;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.data.DoubleHashMap;
 import com.project.website.canvas.shared.data.MapData;
@@ -49,6 +50,8 @@ public class MapToolOptions extends Composite implements TakesValue<MapData>, Ha
     private MapData mapData;
     private DoubleHashMap<MapProvider, RadioButton> providerButtons = new DoubleHashMap<MapProvider, RadioButton>();
     private DoubleHashMap<MapType, RadioButton> mapTypeButtons = new DoubleHashMap<MapType, RadioButton>();
+
+    private boolean _updatingOptions;
 
     public MapToolOptions(Iterable<MapProvider> availableProviders)
     {
@@ -89,7 +92,14 @@ public class MapToolOptions extends Composite implements TakesValue<MapData>, Ha
 
     protected void valueUpdated()
     {
-        ValueChangeEvent.fire(this, this.getValue());
+        if (this._updatingOptions) {
+            return;
+        }
+        this._updatingOptions = true;
+        this.updateAvailableOptions();
+        MapData updatedValue = this.getValue();
+        this._updatingOptions = false;
+        ValueChangeEvent.fire(this, updatedValue);
     }
 
 
@@ -116,17 +126,55 @@ public class MapToolOptions extends Composite implements TakesValue<MapData>, Ha
             // TODO is this what we want?
             throw new RuntimeException("Must set value first!");
         }
-        for (RadioButton button : this.providerButtons.values()) {
-            if (button.getValue()) {
-                this.mapData.provider = this.providerButtons.getByKey2(button).name();
-            }
-        }
+
+        MapProvider provider = getSelectedMapProvider();
+        this.mapData.provider = null != provider ? provider.name() : null;
+
         for (RadioButton button : this.mapTypeButtons.values()) {
             if (button.getValue()) {
                 this.mapData.mapType = this.mapTypeButtons.getByKey2(button);
             }
         }
         return this.mapData;
+    }
+
+
+    protected void updateAvailableOptions()
+    {
+        MapProvider provider = getSelectedMapProvider();
+        RadioButton currentSelectedButton = null;
+        for (RadioButton mapTypeButton : this.mapTypeButtons.values())
+        {
+            mapTypeButton.setEnabled(false);
+            if (mapTypeButton.getValue()) {
+                currentSelectedButton = mapTypeButton;
+            }
+        }
+        RadioButton firstEnabledButton = null;
+        for (MapstractionMapType mapstractionMapType : provider.getSupportedMapTypes()) {
+            MapType mapType = MapToolStaticUtils.fromMapstractionMapType(mapstractionMapType);
+            RadioButton button = this.mapTypeButtons.getByKey1(mapType);
+            button.setEnabled(true);
+            if (null == firstEnabledButton) {
+                firstEnabledButton = button;
+            }
+        }
+
+        if (false == currentSelectedButton.isEnabled()) {
+            currentSelectedButton.setValue(false);
+            firstEnabledButton.setValue(true);
+        }
+    }
+
+    private MapProvider getSelectedMapProvider()
+    {
+        MapProvider provider = null;
+        for (RadioButton button : this.providerButtons.values()) {
+            if (button.getValue()) {
+                provider = this.providerButtons.getByKey2(button);
+            }
+        }
+        return provider;
     }
 
     public HandlerRegistration addDoneHandler(SimpleEvent.Handler<Void> handler) {

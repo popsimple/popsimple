@@ -10,13 +10,13 @@ Redistribution and use in source and binary forms, with or without modification,
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-mxn.register('openlayers', {	
+mxn.register('openlayers', {
 
 	Mapstraction: {
 
 		init: function(element, api){
 			var me = this;
-			
+
 			var map = new OpenLayers.Map(
 				element.id,
 				{
@@ -27,7 +27,7 @@ mxn.register('openlayers', {
 					projection: 'EPSG:900913'
 				}
 			);
-			
+
 			// initialize layers map (this was previously in mxn.core.js)
 			this.layers = {};
 
@@ -92,7 +92,7 @@ mxn.register('openlayers', {
 					displayOutsideMaxExtent: true
 				}
 			);
-			
+
 			// deal with click
 			map.events.register('click', map, function(evt){
 				var lonlat = map.getLonLatFromViewPortPx(evt.xy);
@@ -105,19 +105,19 @@ mxn.register('openlayers', {
 			map.events.register('zoomend', map, function(evt){
 				me.changeZoom.fire();
 			});
-			
+
 			// deal with map movement
 			map.events.register('moveend', map, function(evt){
 				me.moveendHandler(me);
 				me.endPan.fire();
 			});
-			
+
 			// deal with initial tile loading
 			var loadfire = function(e) {
 				me.load.fire();
 				this.events.unregister('loadend', this, loadfire);
 			};
-			
+
 			for (var layerName in this.layers) {
 				if (this.layers.hasOwnProperty(layerName)) {
 					if (this.layers[layerName].visibility === true) {
@@ -125,7 +125,7 @@ mxn.register('openlayers', {
 					}
 				}
 			}
-			
+
 			map.addLayer(this.layers.osmmapnik);
 			map.addLayer(this.layers.osm);
 			this.maps[api] = map;
@@ -137,21 +137,21 @@ mxn.register('openlayers', {
 			// var myOptions = [];
 			// if (this.options.enableDragging) {
 			//	 myOptions.draggable = true;
-			// } 
+			// }
 			// if (this.options.enableScrollWheelZoom){
 			//	 myOptions.scrollwheel = true;
-			// } 
+			// }
 			// map.setOptions(myOptions);
 		},
 
-		resizeTo: function(width, height){	
+		resizeTo: function(width, height){
 			this.currentElement.style.width = width;
 			this.currentElement.style.height = height;
 			this.maps[this.api].updateSize();
 		},
 
 		addControls: function( args ) {
-			var map = this.maps[this.api];	
+			var map = this.maps[this.api];
 			// FIXME: OpenLayers has a bug removing all the controls says crschmidt
 			for (var i = map.controls.length; i>1; i--) {
 				map.controls[i-1].deactivate();
@@ -163,12 +163,12 @@ mxn.register('openlayers', {
 			else if ( args.zoom == 'small' ) {
 				map.addControl(new OpenLayers.Control.ZoomPanel());
 				if ( args.pan) {
-					map.addControl(new OpenLayers.Control.PanPanel()); 
+					map.addControl(new OpenLayers.Control.PanPanel());
 				}
 			}
 			else {
 				if ( args.pan){
-					map.addControl(new OpenLayers.Control.PanPanel()); 
+					map.addControl(new OpenLayers.Control.PanPanel());
 				}
 			}
 			if ( args.overview ) {
@@ -182,12 +182,12 @@ mxn.register('openlayers', {
 		addSmallControls: function() {
 			var map = this.maps[this.api];
 			this.addControlsArgs.pan = false;
-			this.addControlsArgs.scale = false;						
+			this.addControlsArgs.scale = false;
 			this.addControlsArgs.zoom = 'small';
 			map.addControl(new OpenLayers.Control.ZoomBox());
 			map.addControl(new OpenLayers.Control.LayerSwitcher({
 				'ascending':false
-			}));			
+			}));
 		},
 
 		addLargeControls: function() {
@@ -205,7 +205,7 @@ mxn.register('openlayers', {
 			this.addControlsArgs.map_type = true;
 		},
 
-		setCenterAndZoom: function(point, zoom) { 
+		setCenterAndZoom: function(point, zoom) {
 			var map = this.maps[this.api];
 			var pt = point.toProprietary(this.api);
 			map.setCenter(point.toProprietary(this.api), zoom);
@@ -249,7 +249,7 @@ mxn.register('openlayers', {
 			var pl = polyline.proprietary_polyline;
 			this.layers.polylines.removeFeatures([pl]);
 		},
-		
+
 		removeAllPolylines: function() {
 			var olpolylines = [];
 			for (var i = 0, length = this.polylines.length; i < length; i++) {
@@ -292,7 +292,10 @@ mxn.register('openlayers', {
 
 		setMapType: function(type) {
 			var map = this.maps[this.api];
-			throw 'Not implemented (setMapType)';
+			if (type == mxn.Mapstraction.ROAD) {
+				return;
+			}
+			throw 'Not implemented (setMapType = ' + type + ')';
 
 			// switch(type) {
 			//	 case mxn.Mapstraction.ROAD:
@@ -306,7 +309,7 @@ mxn.register('openlayers', {
 			//	 break;
 			//	 default:
 			//	 map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
-			// }	 
+			// }
 		},
 
 		getMapType: function() {
@@ -351,7 +354,7 @@ mxn.register('openlayers', {
 			}
 
 			var obounds = new OpenLayers.Bounds();
-			
+
 			obounds.extend(new mxn.LatLonPoint(sw.lat,sw.lon).toProprietary(this.api));
 			obounds.extend(new mxn.LatLonPoint(ne.lat,ne.lon).toProprietary(this.api));
 			map.zoomToExtent(obounds);
@@ -363,7 +366,7 @@ mxn.register('openlayers', {
 			bounds.extend(new mxn.LatLonPoint(south,west).toProprietary(this.api));
 			bounds.extend(new mxn.LatLonPoint(north,east).toProprietary(this.api));
 			var overlay = new OpenLayers.Layer.Image(
-				id, 
+				id,
 				src,
 				bounds,
 				new OpenLayers.Size(oContext.imgElm.width, oContext.imgElm.height),
@@ -392,7 +395,7 @@ mxn.register('openlayers', {
 					dataExtent = this.getDataExtent();
 					map.zoomToExtent(dataExtent);
 				};
-				kml.events.register('loadend', kml, setExtent); 
+				kml.events.register('loadend', kml, setExtent);
 			}
 			map.addLayer(kml);
 		},
@@ -421,13 +424,13 @@ mxn.register('openlayers', {
 		getPixelRatio: function() {
 			var map = this.maps[this.api];
 
-			// TODO: Add provider code	
+			// TODO: Add provider code
 		},
 
 		mousePosition: function(element) {
 			var map = this.maps[this.api];
 
-			// TODO: Add provider code	
+			// TODO: Add provider code
 		}
 	},
 
@@ -437,7 +440,7 @@ mxn.register('openlayers', {
 			var ollon = this.lon * 20037508.34 / 180;
 			var ollat = Math.log(Math.tan((90 + this.lat) * Math.PI / 360)) / (Math.PI / 180);
 			ollat = ollat * 20037508.34 / 180;
-			return new OpenLayers.LonLat(ollon, ollat);			
+			return new OpenLayers.LonLat(ollon, ollat);
 		},
 
 		fromProprietary: function(olPoint) {
@@ -529,7 +532,7 @@ mxn.register('openlayers', {
 			return marker;
 		},
 
-		openBubble: function() {		
+		openBubble: function() {
 			// TODO: Add provider code
 		},
 

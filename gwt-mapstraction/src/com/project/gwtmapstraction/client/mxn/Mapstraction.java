@@ -1,7 +1,10 @@
 package com.project.gwtmapstraction.client.mxn;
 
+import java.util.UUID;
+
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.user.client.Random;
 
 public class Mapstraction extends JavaScriptObject {
 	protected Mapstraction() {}
@@ -298,14 +301,17 @@ public class Mapstraction extends JavaScriptObject {
     }-*/;
 
 
-    private final native void swap(Element element, String api) /*-{
+    private final native void swap(String element, String api) /*-{
         this.swap(element, api);
     }-*/;
 
     /** Change the current api on the fly
      */
     public final void swap(MapProvider provider, Element element) {
-        this.swap(element, provider.getApiString());
+        if (null == element.getId()) {
+            element.setId("mxn_" + String.valueOf(Random.nextInt()));
+        }
+        this.swap(element.getId(), provider.getApiString());
     }
 
      /* toggleFilter(field, operator, value) Delete the current filter if
