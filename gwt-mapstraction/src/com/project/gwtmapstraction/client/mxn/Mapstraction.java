@@ -2,7 +2,6 @@ package com.project.gwtmapstraction.client.mxn;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.user.client.Random;
 
 public class Mapstraction extends JavaScriptObject {
 	protected Mapstraction() {}
@@ -306,9 +305,6 @@ public class Mapstraction extends JavaScriptObject {
     /** Change the current api on the fly
      */
     public final void swap(MapProvider provider, Element element) {
-        if (null == element.getId()) {
-            element.setId("mxn_" + String.valueOf(Random.nextInt()));
-        }
         this.swap(element.getId(), provider.getApiString());
     }
 

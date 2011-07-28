@@ -99,6 +99,9 @@ public class MapToolStaticUtils
     public static AsyncFunc<Void,Void> getLoadMapScriptsAsyncFunc()
     {
         AsyncFunc<Void, Void> res = AsyncFunc.immediate();
+        if (MapToolStaticUtils.loaded) {
+        	return res;
+        }
         for (MapProvider provider : AVAILABLE_PROVIDERS) {
             res = res.then(getLoadProviderAsyncFunc(provider));
         }
