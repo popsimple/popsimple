@@ -2,6 +2,8 @@ package com.project.shared.client.utils;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.data.funcs.Func;
 import com.project.shared.data.funcs.Func.Action;
@@ -58,4 +60,12 @@ public class HandlerUtils {
             }
         });
     }
+
+	public static ClickHandler asClickHandler(final Handler<Void> handler) {
+		return new ClickHandler(){
+			@Override
+			public void onClick(ClickEvent event) {
+				handler.onFire(null);
+			}};
+	}
 }

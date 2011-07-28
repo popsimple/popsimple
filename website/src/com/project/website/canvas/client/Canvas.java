@@ -32,7 +32,7 @@ public class Canvas implements EntryPoint {
 
 
         // start loading the maps api immediately, in case it will be needed later.
-        MapToolStaticUtils.prepareApi();
+        MapToolStaticUtils.loadApi();
 
 
         History.addValueChangeHandler(new ValueChangeHandler<String>() {

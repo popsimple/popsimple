@@ -8,6 +8,7 @@ import com.project.gwtmapstraction.client.mxn.MapProvider;
 import com.project.gwtmapstraction.client.mxn.MapstractionMapType;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.events.SimpleEvent.Handler;
+import com.project.shared.client.events.SingleEvent;
 import com.project.shared.client.utils.DynamicScriptLoader;
 import com.project.shared.client.utils.HandlerUtils;
 import com.project.shared.data.funcs.AsyncFunc;
@@ -38,13 +39,17 @@ public class MapToolStaticUtils
         = MAPSTRACTION_SCRIPT_FILE_URL + "?(" + MAPSTRACTION_AVAILABLE_APIS + ")";
 
     protected static boolean loaded = false;
+    
+    public static final SingleEvent<Void> apiLoadedEvent = new SingleEvent<Void>();
 
-    public static void prepareApi() {
+    public static void loadApi() {
         Scheduler.get().scheduleDeferred(new ScheduledCommand() {
             @Override
             public void execute()
             {
-                MapToolStaticUtils.getLoadMapScriptsAsyncFunc().run(null);
+                MapToolStaticUtils.getLoadMapScriptsAsyncFunc()
+                			      .then(apiLoadedEvent.getDispatchFunc())
+                				  .run(null);
             }
         });
     }

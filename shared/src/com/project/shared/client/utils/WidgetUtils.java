@@ -8,11 +8,15 @@ import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseMoveHandler;
+import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent;
+import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.data.Point2D;
+import com.project.shared.data.funcs.AsyncFunc;
+import com.project.shared.data.funcs.Func;
 
 public class WidgetUtils {
 
@@ -90,4 +94,37 @@ public class WidgetUtils {
                     errorHandler.onFire(null);
                 }});
     }
+
+	/**
+	 * Returns an AsyncFunc that waits until the widget is attached to the DOM, and the completes.
+	 * If the widget is already attached, it will complete immediately.
+	 * @param widget
+	 * @return
+	 */
+    public static AsyncFunc<Void, Void>  getOnAttachAsyncFunc(final Widget widget)
+    {
+    	if (widget.isAttached()) {
+    		return AsyncFunc.immediate();
+    	}
+    	return new AsyncFunc<Void,Void>(){
+			@Override
+			protected <S, E> void run(Void arg, final Func<Void, S> successHandler, Func<Throwable, E> errorHandler) {
+				if (widget.isAttached()) {
+					successHandler.call(null);
+					return;
+				}
+				final RegistrationsManager regs = new RegistrationsManager();
+		    	regs.add(widget.addAttachHandler(new AttachEvent.Handler() {
+					@Override
+					public void onAttachOrDetach(AttachEvent event) {
+						if (false == event.isAttached()) {
+							return;
+						}
+						regs.clear();
+						successHandler.call(null);
+					}
+				}));
+			}
+		};
+	}
 }

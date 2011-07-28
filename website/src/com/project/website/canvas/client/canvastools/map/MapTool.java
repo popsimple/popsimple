@@ -7,7 +7,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
-import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -24,8 +23,11 @@ import com.project.gwtmapstraction.client.mxn.Mapstraction;
 import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.utils.ElementUtils;
+import com.project.shared.client.utils.WidgetUtils;
 import com.project.shared.data.Location;
 import com.project.shared.data.Point2D;
+import com.project.shared.data.funcs.Func;
+import com.project.shared.utils.StringUtils;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
 import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.client.shared.widgets.DialogWithZIndex;
@@ -63,7 +65,14 @@ public class MapTool extends Composite implements CanvasTool<MapData>
         initWidget(uiBinder.createAndBindUi(this));
         this.addStyleName(CanvasResources.INSTANCE.main().mapTool());
         this.addStyleName(CanvasResources.INSTANCE.main().mapToolEmpty());
-        MapToolStaticUtils.prepareApi();
+
+        MapToolStaticUtils.loadApi();
+        MapToolStaticUtils.apiLoadedEvent.addHandler(new Handler<Void>() {
+			@Override
+			public void onFire(Void arg) {
+				ensureSetupProvider(DEFAULT_MAP_PROVIDER);
+			}
+		});
     }
 
     @Override
@@ -147,31 +156,27 @@ public class MapTool extends Composite implements CanvasTool<MapData>
         }
     }
 
-
     private void applyMapDataToWidget() {
-        MapProvider provider = this.getCurrentSelectedProvider();
-        Widget mapWidget = getWidgetForProvider(provider);
-        if (null == mapWidget)
-        {
-            this.addStyleName(CanvasResources.INSTANCE.main().mapToolEmpty());
-            this.createWidgetForProvider(provider);
-            return;
+        final MapProvider provider = this.getCurrentSelectedProvider();
+        final Widget mapWidget = ensureSetupProvider(provider);
+
+        MapToolStaticUtils.getLoadMapScriptsAsyncFunc()
+        	.then(WidgetUtils.getOnAttachAsyncFunc(mapWidget))
+    		.then(new Func.VoidAction(){
+				@Override
+				public void exec() {
+				    actualApplyMapDataToWidget(provider, mapWidget);
+				}})
+			.run(null);
+
+    }
+
+	private void actualApplyMapDataToWidget(MapProvider provider, Widget mapWidget) {
+        if (null == this.mapData) {
+        	return;
         }
 
-        // TODO: when we ARE ready, re-do this function.
-        if (false == this.isReady()) {
-            return;
-        }
-
-
-        if (null == this.mapstraction) {
-            this.mapstraction = Mapstraction.createInstance(mapWidget.getElement(), provider, true);
-            this.mapstraction.setDebug(true);
-            this.mapstraction.addSmallControls();
-            this.mapstraction.enableScrollWheelZoom();
-        }
-
-        for (Widget widget : this.mapWidgets.values()) {
+		for (Widget widget : this.mapWidgets.values()) {
             widget.setVisible(false);
         }
         mapWidget.setVisible(true);
@@ -191,7 +196,38 @@ public class MapTool extends Composite implements CanvasTool<MapData>
                 LatLonPoint.create(this.mapData.center.latitude, this.mapData.center.longitude));
         this.mapstraction.setZoom(this.mapData.zoom);
         this.mapstraction.setMapType(MapToolStaticUtils.fromMapType(this.mapData.mapType));
-    }
+	}
+
+	private Widget ensureSetupProvider(final MapProvider provider) {
+		Widget mapWidget = getWidgetForProvider(provider);
+        if (null == mapWidget)
+        {
+            mapWidget = this.createWidgetForProvider(provider);
+        }
+        
+        final Widget finalMapWidget = mapWidget;
+        WidgetUtils.getOnAttachAsyncFunc(mapWidget)
+        			.then(new Func.VoidAction() {
+						@Override
+						public void exec() {
+							ensureCreatedMapstractionInstance(finalMapWidget, provider);				
+						}})
+					.run(null);
+        
+		return finalMapWidget;
+	}
+
+	private void ensureCreatedMapstractionInstance(Widget mapWidget, MapProvider provider) {
+		if (null != this.mapstraction) {
+			return;
+		}
+        this.mapstraction = Mapstraction.createInstance(mapWidget.getElement(), provider, true);
+        this.mapstraction.setDebug(true);
+        this.mapstraction.addSmallControls();
+        this.mapstraction.enableScrollWheelZoom();
+        this.mapstraction.setCenter(LatLonPoint.create(DEFAULT_MAP_LATITUDE, DEFAULT_MAP_LONGITUDE));
+        this.mapstraction.setZoom(DEFAULT_MAP_ZOOM);
+	}
 
     private Widget getWidgetForProvider(MapProvider provider)
     {
@@ -211,28 +247,29 @@ public class MapTool extends Composite implements CanvasTool<MapData>
 
     private MapProvider getCurrentSelectedProvider()
     {
-        return MapProvider.valueOf(this.mapData.provider);
+    	if (StringUtils.isWhitespaceOrNull(this.mapData.provider)) {
+    		return DEFAULT_MAP_PROVIDER;
+    	}
+        try {
+        	return MapProvider.valueOf(this.mapData.provider);
+        }
+        catch (IllegalArgumentException e)
+        {
+        	return DEFAULT_MAP_PROVIDER;
+        }
     }
 
-    private void createWidgetForProvider(final MapProvider provider) {
-
+    private Widget createWidgetForProvider(final MapProvider provider) 
+    {
         Widget mapWidget = getWidgetForProvider(provider);
         if (null != mapWidget) {
-            return;
+            return mapWidget;
         }
         mapWidget = new FlowPanel();
         mapWidget.addStyleName(CanvasResources.INSTANCE.main().mapToolMapWidget());
         this.mapWidgets.put(provider, mapWidget);
-        mapWidget.addAttachHandler(new AttachEvent.Handler() {
-            @Override
-            public void onAttachOrDetach(AttachEvent event) {
-                if (false == event.isAttached()) {
-                    return;
-                }
-                applyMapDataToWidget();
-            }
-        });
         this.mapPanel.add(mapWidget);
+        return mapWidget;
     }
 
     protected void showOptions()
