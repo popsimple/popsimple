@@ -2,7 +2,6 @@ package com.project.website.shared.server.authentication;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.Properties;
 
 import javax.mail.Message;
@@ -14,8 +13,11 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.gwt.http.client.URL;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
+import com.project.shared.data.StringKeyValue;
 import com.project.shared.utils.StringUtils;
+import com.project.shared.utils.UrlUtils;
 import com.project.website.shared.contracts.authentication.AuthenticationService;
 import com.project.website.shared.data.Invitation;
 import com.project.website.shared.data.UrlParameterConstants;
@@ -23,9 +25,10 @@ import com.project.website.shared.data.User;
 
 public class AuthenticationServiceImpl extends RemoteServiceServlet implements AuthenticationService
 {
-    private static final String URL_CHAR_ENCODING = "UTF-8";
-
     private static final long serialVersionUID = 1L;
+
+    private static final String SITE_BASE_ADDR = "http://www.PopSimple.com";
+    private static final String INVITE_PATH = "/Login.html";
 
     private static final String ADMIN_USERNAME = "admin@popsimple.com";
     private static final String ADMIN_DEFAULT_PASSWORD = "admin";
@@ -153,12 +156,11 @@ public class AuthenticationServiceImpl extends RemoteServiceServlet implements A
         Session session = Session.getDefaultInstance(props, null);
 
         Invitation invitation = AuthenticationUtils.createInvitation();
-        String inviteId;
-        try {
-            inviteId = URLEncoder.encode(invitation.id, URL_CHAR_ENCODING);
-        } catch (UnsupportedEncodingException e1) {
-            throw new RuntimeException(e1);
-        }
+        String inviteId = URL.encode(invitation.id);
+
+        String inviteUrl = UrlUtils.buildUrl(SITE_BASE_ADDR + INVITE_PATH,
+                new StringKeyValue(UrlParameterConstants.URL_PARAMETER_INVITE_ID, inviteId));
+
         try {
             Message msg = new MimeMessage(session);
             msg.setFrom(new InternetAddress("no-reply@popsimple.com", "PopSimple.com"));
@@ -166,7 +168,7 @@ public class AuthenticationServiceImpl extends RemoteServiceServlet implements A
             msg.setSubject("You're invited to PopSimple.com!");
             String messageWrapped = StringUtils.isWhitespaceOrNull(message) ? "" : ("Here's a message from the person who invited you:\r\n"
                                                                                     + "'" + message + "'\r\n");
-            String text = "Your invitation is waiting at http://www.PopSimple.com/Login.html?" + UrlParameterConstants.URL_PARAMETER_INVITE_ID + "=" + inviteId + "\r\n"
+            String text = "Your invitation is waiting at " + inviteUrl + "\r\n"
                         + messageWrapped + "\r\n"
                         + "Come and try it out!";
             msg.setText(text);

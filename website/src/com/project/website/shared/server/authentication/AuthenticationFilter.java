@@ -57,13 +57,13 @@ public class AuthenticationFilter implements Filter
         throws IOException
     {
         String redirectUrl = UrlUtils.buildUrl(httpRequest.getRequestURI(), httpRequest.getQueryString());
-        String queryString = httpRequest.getQueryString();
-        if (false == StringUtils.isEmptyOrNull(queryString))
+        StringBuilder query = new StringBuilder(httpRequest.getQueryString());
+        if (query.length() > 0)
         {
-            UrlUtils.addQueryParameter(queryString, QueryParameters.REDIRECT_URL, redirectUrl);
+            UrlUtils.appendQueryParameter(query, QueryParameters.REDIRECT_URL, redirectUrl);
         }
         httpResponse.sendRedirect(
-                httpResponse.encodeRedirectURL(UrlUtils.buildUrl(this._loginUrl, queryString)));
+                httpResponse.encodeRedirectURL(UrlUtils.buildUrl(this._loginUrl, query.toString())));
     }
 
     private boolean isRequestExcluded(HttpServletRequest httpRequest)

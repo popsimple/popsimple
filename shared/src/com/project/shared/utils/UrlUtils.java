@@ -2,6 +2,8 @@ package com.project.shared.utils;
 
 import com.google.gwt.http.client.URL;
 import com.google.gwt.regexp.shared.RegExp;
+import com.project.shared.data.KeyValue;
+import com.project.shared.data.StringKeyValue;
 
 public class UrlUtils {
     private static RegExp urlValidator = null;
@@ -45,8 +47,24 @@ public class UrlUtils {
         return url + "?" + queryString;
     }
 
-    public static String addQueryParameter(String url, String parameterName, String parameterValue)
+    public static String buildUrl(String url, StringKeyValue... queryParams)
     {
-        return url + "&" + parameterName + "=" + parameterValue;
+        StringBuilder query = new StringBuilder();
+        for (KeyValue<String, String> queryParam : queryParams)
+        {
+            appendQueryParameter(query, queryParam.getKey(), queryParam.getValue());
+        }
+        return UrlUtils.buildUrl(url, query.toString());
+    }
+
+    public static void appendQueryParameter(StringBuilder url, String parameterName, String parameterValue)
+    {
+        String prefix = url.length() > 0 ? "&" : "";
+        url.append(prefix + UrlUtils.formatQueryParameter(parameterName, parameterValue));
+    }
+
+    public static String formatQueryParameter(String parameterName, String parameterValue)
+    {
+        return UrlUtils.encodeOnce(parameterName) + "=" + UrlUtils.encodeOnce(parameterValue);
     }
 }

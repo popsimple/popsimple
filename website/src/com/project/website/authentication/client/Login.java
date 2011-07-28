@@ -6,6 +6,7 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -38,7 +39,7 @@ public class Login implements EntryPoint {
     {
         List<String> inviteIds = Window.Location.getParameterMap().get(UrlParameterConstants.URL_PARAMETER_INVITE_ID);
         if ((null != inviteIds) && (1 == inviteIds.size())) {
-            String inviteId = inviteIds.get(0);
+            String inviteId = URL.decode(inviteIds.get(0));
             showRegistration(inviteId);
         }
         else {
