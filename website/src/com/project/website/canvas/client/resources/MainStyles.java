@@ -38,6 +38,8 @@ public interface MainStyles extends CssResource {
 
     String imagePickerResultImage();
 
+    String imageToolContentPanel();
+
     String imageToolEmpty();
 
     String imageToolSearchProviderIconStyle();
@@ -61,8 +63,6 @@ public interface MainStyles extends CssResource {
     String mapToolMapHolder();
 
     String mapToolMapWidget();
-
-    String mapToolShowHideBarLabel();
 
     String monospace();
 
@@ -154,6 +154,10 @@ public interface MainStyles extends CssResource {
 
     String toolFramePanel();
 
+    String toolOptionsBar();
+
+    String toolOptionsLabel();
+
     String urlTextBox();
 
     String videoBox();
@@ -161,10 +165,6 @@ public interface MainStyles extends CssResource {
     String videoCreateModeCanvasStyle();
 
     String videoFrame();
-
-    String videoOptionsBar();
-
-    String videoOptionsLabel();
 
     String videoToolEmpty();
 

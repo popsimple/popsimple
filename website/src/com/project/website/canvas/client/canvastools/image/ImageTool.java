@@ -3,6 +3,7 @@ package com.project.website.canvas.client.canvastools.image;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -11,8 +12,13 @@ import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.handlers.RegistrationsManager;
@@ -33,8 +39,19 @@ import com.project.website.canvas.shared.data.ElementData;
 import com.project.website.canvas.shared.data.ImageData;
 import com.project.website.canvas.shared.data.ImageInformation;
 
-public class ImageTool extends FlowPanel implements CanvasTool<ImageData>
+public class ImageTool  extends Composite implements CanvasTool<ImageData>
 {
+    interface ImageToolUiBinder extends UiBinder<Widget, ImageTool> {}
+
+    private static ImageToolUiBinder uiBinder = GWT.create(ImageToolUiBinder.class);
+
+    @UiField
+    Button optionsLabel;
+
+    @UiField
+    FlowPanel contentPanel;
+
+
     private final SimpleEvent<MouseEvent<?>> moveStartEvent = new SimpleEvent<MouseEvent<?>>();
     private final RegistrationsManager registrationsManager = new RegistrationsManager();
 
@@ -45,33 +62,35 @@ public class ImageTool extends FlowPanel implements CanvasTool<ImageData>
 	private ArrayList<ImageSearchProvider> searchProviders = new ArrayList<ImageSearchProvider>();
     private boolean viewMode;
 
+
+
 	public ImageTool(Collection<ImageSearchProvider> imageSearchProviders)
-    {
+	{
+	    initWidget(uiBinder.createAndBindUi(this));
         CanvasToolCommon.initCanvasToolWidget(this);
 
         searchProviders.addAll(imageSearchProviders);
 
         WidgetUtils.disableDrag(this);
-        super.addStyleName(CanvasResources.INSTANCE.main().imageBox());
         this.addStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
     }
 
     @Override
     public void bind() {
-        super.setTitle("Click for image options; Control-click to drag");
+        super.setTitle("Control-click to drag");
         this.setViewMode(viewMode); // do whatever bindings necessary for our mode
     }
 
     private void reRegisterHandlers() {
         registrationsManager.clear();
 
-        registrationsManager.add(this.addDomHandler(new ClickHandler() {
+        registrationsManager.add(this.optionsLabel.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 uploadImage();
 
             }
-        }, ClickEvent.getType()));
+        }));
         registrationsManager.add(this.addDomHandler(new MouseDownHandler() {
             @Override
             public void onMouseDown(MouseDownEvent event) {
@@ -147,7 +166,8 @@ public class ImageTool extends FlowPanel implements CanvasTool<ImageData>
             this.addStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
             this.removeStyleName(CanvasResources.INSTANCE.main().imageToolSet());
         }
-        ImageInformationUtils.setWidgetBackgroundAsync(this.data.imageInformation, this, autoSize,
+        this.removeStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
+        ImageInformationUtils.setWidgetBackgroundAsync(this.data.imageInformation, this.contentPanel, autoSize,
                 new SimpleEvent.Handler<Void>() {
                     @Override
                     public void onFire(Void arg) {
@@ -157,8 +177,13 @@ public class ImageTool extends FlowPanel implements CanvasTool<ImageData>
 
     private void setLoadedStyle()
     {
-        this.removeStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
         this.addStyleName(CanvasResources.INSTANCE.main().imageToolSet());
+        if (this.data.imageInformation.options.useOriginalSize) {
+            // TODO do this in a better way? We have to remove the hard-coded size from the widget, otherwise
+            // when choosing "use original size" the frame will not match the size of the contents
+//            this.setWidth("");
+//            this.setHeight("");
+        }
     }
 
     @Override

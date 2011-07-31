@@ -21,6 +21,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.ScrollPanel;
@@ -97,41 +98,58 @@ public class MediaSearchPanel extends Composite {
         {
             return;
         }
+        boolean allowSelect = (1 < searchProviders.size());
         for (final MediaSearchProvider searchProvider : searchProviders)
         {
-            addProvider(searchProvider);
+            addProvider(searchProvider, allowSelect);
         }
+
         this._selectedSearchProvider = searchProviders.get(0);
-        this._searchProviderMap.get(this._selectedSearchProvider).setValue(true);
+
+        if (allowSelect) {
+            this._searchProviderMap.get(this._selectedSearchProvider).setValue(true);
+        }
     }
 
-    public void addProvider(final MediaSearchProvider searchProvider)
+    public void addProvider(final MediaSearchProvider searchProvider, boolean allowSelect)
     {
-        final RadioButtonPanel radioButtonPanel = new RadioButtonPanel();
-        radioButtonPanel.addStyleName(
+        HasWidgets providerPanel;
+        Widget providerPanelWidget;
+        if (allowSelect) {
+            final RadioButtonPanel radioButtonPanel = new RadioButtonPanel();
+            radioButtonPanel.setName("searchProviders");
+            radioButtonPanel.addClickHandler(new ClickHandler() {
+
+                @Override
+                public void onClick(ClickEvent event) {
+                    if (false == radioButtonPanel.getValue())
+                    {
+                        return;
+                    }
+                    _selectedSearchProvider = searchProvider;
+                }
+            });
+            this._searchProviderMap.put(searchProvider, radioButtonPanel);
+
+            providerPanel = radioButtonPanel;
+            providerPanelWidget = radioButtonPanel;
+        }
+        else {
+            FlowPanel flowPanel = new FlowPanel();
+            providerPanel = flowPanel;
+            providerPanelWidget = flowPanel;
+        }
+        providerPanelWidget.addStyleName(
                 CanvasResources.INSTANCE.main().imageToolSearchProviderPanelStyle());
-        radioButtonPanel.setName("searchProviders");
         FlowPanel imagePanel = new FlowPanel();
         imagePanel.addStyleName(
                 CanvasResources.INSTANCE.main().imageToolSearchProviderIconStyle());
         imagePanel.getElement().getStyle()
             .setBackgroundImage("url(" + searchProvider.getIconUrl() + ")");
-        radioButtonPanel.add(imagePanel);
-        radioButtonPanel.add(new InlineLabel(searchProvider.getTitle()));
+        providerPanel.add(imagePanel);
+        providerPanel.add(new InlineLabel(searchProvider.getTitle()));
 
-        radioButtonPanel.addClickHandler(new ClickHandler() {
-
-            @Override
-            public void onClick(ClickEvent event) {
-                if (false == radioButtonPanel.getValue())
-                {
-                    return;
-                }
-                _selectedSearchProvider = searchProvider;
-            }
-        });
-        this.providersPanel.add(radioButtonPanel);
-        this._searchProviderMap.put(searchProvider, radioButtonPanel);
+        this.providersPanel.add(providerPanelWidget);
     }
 
     @UiHandler("searchButton")

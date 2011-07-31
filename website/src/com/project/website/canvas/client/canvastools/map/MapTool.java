@@ -12,10 +12,10 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Random;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.gwtmapstraction.client.mxn.LatLonPoint;
 import com.project.gwtmapstraction.client.mxn.MapProvider;
@@ -33,14 +33,15 @@ import com.project.shared.data.funcs.Func;
 import com.project.shared.utils.StringUtils;
 import com.project.shared.utils.loggers.Logger;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
+import com.project.website.canvas.client.canvastools.base.CanvasToolCommon;
 import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.client.shared.widgets.DialogWithZIndex;
 import com.project.website.canvas.shared.data.ElementData;
 import com.project.website.canvas.shared.data.MapData;
 
 public class MapTool extends Composite implements CanvasTool<MapData> {
-	private static final double DEFAULT_MAP_LONGITUDE = 75.67219739055291;
-	private static final double DEFAULT_MAP_LATITUDE = -130.078125;
+	private static final double DEFAULT_MAP_LONGITUDE = 0;
+	private static final double DEFAULT_MAP_LATITUDE = 0;
 	private static final int DEFAULT_MAP_ZOOM = 1;
 	private static final MapProvider DEFAULT_MAP_PROVIDER = MapProvider.GOOGLE_V3;
 
@@ -54,7 +55,7 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
 	@UiField
 	FlowPanel mapPanel;
 	@UiField
-	Label optionsLabel;
+	Button optionsLabel;
 
 	private final RegistrationsManager registrationsManager = new RegistrationsManager();
 	private DialogBox optionsDialog;
@@ -67,7 +68,8 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
 
 	public MapTool() {
 		initWidget(uiBinder.createAndBindUi(this));
-		this.addStyleName(CanvasResources.INSTANCE.main().mapTool());
+		CanvasToolCommon.initCanvasToolWidget(this);
+
 		this.addStyleName(CanvasResources.INSTANCE.main().mapToolEmpty());
 
 		this.optionsLabel.addStyleName(CanvasResources.INSTANCE.main().disabledLink());
@@ -76,7 +78,7 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
 			.then(new Func.VoidAction() {
 				@Override
 				public void exec() {
-					asyncInitCompleted.dispatch(null); 
+					asyncInitCompleted.dispatch(null);
 				}})
 			.run(null);
 	}
@@ -264,7 +266,7 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
 		return mapWidget;
 	}
 
-	protected void showOptions() 
+	protected void showOptions()
 	{
 		if (false == this.isReady()) {
 			return;

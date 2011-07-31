@@ -17,7 +17,7 @@
 			</g:HTMLPanel>
             <g:HTMLPanel addStyleNames="{res.main.dialogSectionPanel}">
                 <g:Label addStyleNames="{res.main.dialogSectionPanelHeader}">Get by URL</g:Label>
-                Paste a link to the image here:
+                Paste a link to the video here:
                 <g:HTMLPanel addStyleNames="{style.urlPanel}">
                     <g:TextBox ui:field="urlTextBox" addStyleNames="{res.main.urlTextBox}"/>
                     <g:Button ui:field="clearButton">Clear</g:Button>

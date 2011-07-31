@@ -23,7 +23,7 @@ public class MapToolStaticUtils
 {
     public static final ArrayList<MapProvider> AVAILABLE_PROVIDERS = ListUtils.create(
         MapProvider.GOOGLE_V3,
-        MapProvider.MICROSOFT,
+        //MapProvider.MICROSOFT,
         MapProvider.OPENLAYERS
     );
 
@@ -42,7 +42,7 @@ public class MapToolStaticUtils
 //        = MAPSTRACTION_SCRIPT_FILE_URL + "?(" + MAPSTRACTION_AVAILABLE_APIS + ")";
 
     protected static boolean loaded = false;
-    
+
     public static final SingleEvent<Void> apiLoadedEvent = new SingleEvent<Void>();
 
     public static void loadApi() {

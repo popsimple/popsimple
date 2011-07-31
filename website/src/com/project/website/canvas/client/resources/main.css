@@ -352,18 +352,27 @@
 
 .imageBox {
 	display: block;
-	border-radius: 2px;
-	width: 200px;
-	height: 200px;
+	padding-bottom:28px;
 }
 
-.imageToolEmpty {
-	background-color: emptyToolBackgroundColor;
+@sprite .imageToolEmpty {
+    gwt-image: "toolboxImageIcon";
+    background-position: center;
+    background-repeat: no-repeat;
+    width: 200px;
+    height: 200px;
+    background-color: emptyToolBackgroundColor;
 }
 
 .imageToolSet {
 	background-repeat: no-repeat;
 	background-size: 100% 100%;
+}
+
+.imageToolContentPanel {
+    border-radius: 2px;
+	height:100%;
+	width:100%;
 }
 
 .displayNone {
@@ -399,7 +408,7 @@
 	border-radius: 5px;
 	border-color: #ccc;
 	background-color: #ccc;
-	background-color: rgba(232, 232, 232, 0.5);
+	background-color: rgba(232, 232, 232, 0.9);
 	/*	-sand-transform:rotate(0deg);*/
 }
 
@@ -518,6 +527,19 @@
 }
 
 /*---------------------------------------------*/
+
+.toolOptionsBar {
+    text-align: center;
+}
+
+
+.toolOptionsLabel {
+    padding: 5px;
+    display: inline-block;
+}
+
+
+/*---------------------------------------------*/
 .imagePickerResultImage {
 	background-color: #FFFFFF;
 	background-position: center center;
@@ -574,7 +596,7 @@
 	/* The video IFrame takes 100% of our height, we need more space for the other stuff */
 	/* This should be enough to expand and enclose also the options label */
 	text-align: center;
-	padding-bottom: 42px;
+	padding-bottom: 28px;
 }
 
 @sprite .videoToolEmpty {
@@ -595,16 +617,6 @@
 	width: 100%;
 	height: 100%;
 	border-style: none;
-}
-
-.videoOptionsBar {
-    text-align: center;
-}
-
-
-.videoOptionsLabel {
-	padding: 5px;
-	display: inline-block;
 }
 
 
@@ -634,10 +646,8 @@
 }
 
 .mapToolMapHolder {
-	bottom: 0;
-	position: absolute;
 	overflow: hidden;
-	top: 0;
+	height: 100%;
 	width: 100%;
 }
 
@@ -646,18 +656,6 @@
 	margin-bottom: 30px;
 }
 
-.mapToolShowHideBarLabel {
-	color: #00f;
-	text-decoration: underline;
-	position: absolute;
-	margin: 2px auto;
-	text-align: center;
-	width: 100%;
-	height: 26px;
-	line-height: 26px;
-	cursor: pointer;
-	top: 100%;
-}
 
 .mapOptionsMapTypePanel {
 
