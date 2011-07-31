@@ -9,7 +9,7 @@ import com.project.website.canvas.shared.data.ElementData;
 public class VideoToolboxItem implements ToolboxItem
 {
     private static VideoToolFactory factory = new VideoToolFactory();
-    
+
     @Override
     public String getToolboxIconStyle() {
         return CanvasResources.INSTANCE.main().toolboxVideoIconStyle();

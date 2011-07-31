@@ -46,6 +46,8 @@ public interface MainStyles extends CssResource {
 
     String imageToolSet();
 
+    String link();
+
     String mapCreateModeCanvasStyle();
 
     String mapOptionsMapTypePanel();
@@ -140,11 +142,13 @@ public interface MainStyles extends CssResource {
 
     String toolFrameButtonsPanel();
 
-	String toolFrameCloseLink();
+    String toolFrameCloseLink();
 
 	String toolFrameFrontLink();
 
-    String toolFrameHeader();
+	String toolFrameHeader();
+
+    String toolFrameHoverDisplayBlockElement();
 
     String toolFrameHoverVisibleElement();
 
@@ -157,6 +161,8 @@ public interface MainStyles extends CssResource {
     String videoCreateModeCanvasStyle();
 
     String videoFrame();
+
+    String videoOptionsBar();
 
     String videoOptionsLabel();
 
@@ -186,7 +192,7 @@ public interface MainStyles extends CssResource {
 
     String worksheetPanel();
 
-    String worksheetRightButton();
+	String worksheetRightButton();
 
-	String worksheetRightLink();
+    String worksheetRightLink();
 }

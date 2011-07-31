@@ -77,7 +77,7 @@ public class AuthenticationFilter implements Filter
         responseUrlQueryString.set(QueryParameters.REDIRECT_URL, fullRequestURL);
         // TODO there must be a more sane way to build urls...
         URI loginURI;
-        String localNameAndPath = "//" + httpRequest.getLocalName() + ":" + httpRequest.getLocalPort() + this._loginUrl;
+        String localNameAndPath = "//" + httpRequest.getServerName() + ":" + httpRequest.getServerPort() + this._loginUrl;
         try {
             loginURI = new URI(httpRequest.getScheme(), localNameAndPath, null);
         } catch (URISyntaxException e) {

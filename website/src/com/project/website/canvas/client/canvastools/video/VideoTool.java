@@ -3,6 +3,7 @@ package com.project.website.canvas.client.canvastools.video;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -13,10 +14,15 @@ import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Frame;
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.handlers.RegistrationsManager;
@@ -36,57 +42,57 @@ import com.project.website.canvas.shared.data.ElementData;
 import com.project.website.canvas.shared.data.VideoData;
 import com.project.website.canvas.shared.data.VideoInformation;
 
-public class VideoTool extends FlowPanel implements CanvasTool<VideoData>
+public class VideoTool extends Composite implements CanvasTool<VideoData>
 {
+    private static VideoToolUiBinder uiBinder = GWT.create(VideoToolUiBinder.class);
+
+    interface VideoToolUiBinder extends UiBinder<Widget, VideoTool>{ }
+
+    @UiField
+    HTMLPanel rootPanel;
+
+    @UiField
+    Button optionsLabel;
+
+    @UiField
+    FlowPanel optionsBar;
+
+    @UiField
+    Frame videoFrame;
+
     private static final Point2D DEFAULT_SIZE = new Point2D(425, 349);
-    private static final String OPTIONS_LABEL_VIDEO_UNSET = "Choose a video...";
     private static final String OPTIONS_LABEL_VIDEO_SET = "Change video...";
 
     private final SimpleEvent<MouseEvent<?>> moveStartEvent = new SimpleEvent<MouseEvent<?>>();
-    private final Frame videoFrame = new Frame();
     private final RegistrationsManager registrationsManager = new RegistrationsManager();
-    private final Label optionsLabel = new Label(OPTIONS_LABEL_VIDEO_UNSET);
 
     private VideoData data = null;
     private SelectVideoDialog selectVideoDialog;
     private DialogBox dialogContainer;
-	private boolean optionsWidgetInited = false;
-	private ArrayList<VideoSearchProvider> searchProviders = new ArrayList<VideoSearchProvider>();
+    private boolean optionsWidgetInited = false;
+    private ArrayList<VideoSearchProvider> searchProviders = new ArrayList<VideoSearchProvider>();
     private boolean viewMode;
 
-	public VideoTool(Collection<VideoSearchProvider> videoSearchProviders)
+    public VideoTool(Collection<VideoSearchProvider> videoSearchProviders)
     {
+        initWidget(uiBinder.createAndBindUi(this));
         CanvasToolCommon.initCanvasToolWidget(this);
 
         searchProviders.addAll(videoSearchProviders);
 
         WidgetUtils.disableDrag(this);
-        super.addStyleName(CanvasResources.INSTANCE.main().videoBox());
         super.addStyleName(CanvasResources.INSTANCE.main().videoToolEmpty());
-        this.videoFrame.addStyleName(CanvasResources.INSTANCE.main().videoFrame());
-        this.videoFrame.setVisible(false);
-
-        this.optionsLabel.addStyleName(CanvasResources.INSTANCE.main().videoOptionsLabel());
-
-        this.add(videoFrame);
-        this.add(optionsLabel);
+        //this.videoFrame.setVisible(false);
     }
 
     @Override
     public void bind() {
-        super.setTitle("Click for video options; Control-click to drag");
+        super.setTitle("Control-click to drag");
         this.setViewMode(viewMode); // do whatever bindings necessary for our mode
     }
 
     private void reRegisterHandlers() {
-        registrationsManager.add(this.addDomHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                showOptionsDialog();
-
-            }
-        }, ClickEvent.getType()));
-        registrationsManager.add(this.addDomHandler(new MouseDownHandler() {
+        registrationsManager.add(this.rootPanel.addDomHandler(new MouseDownHandler() {
             @Override
             public void onMouseDown(MouseDownEvent event) {
                 if (event.isControlKeyDown()) {
@@ -103,9 +109,9 @@ public class VideoTool extends FlowPanel implements CanvasTool<VideoData>
     }
 
     private void showOptionsDialog() {
-    	initOptionsWidget();
-    	this.selectVideoDialog.setValue(
-    	        (VideoInformation)CloneableUtils.clone(data.videoInformation));
+        initOptionsWidget();
+        this.selectVideoDialog.setValue(
+                (VideoInformation)CloneableUtils.clone(data.videoInformation));
 
         Scheduler.get().scheduleDeferred(new ScheduledCommand() {
             @Override
@@ -116,35 +122,35 @@ public class VideoTool extends FlowPanel implements CanvasTool<VideoData>
         });
     }
 
-	private void initOptionsWidget() {
-		if (optionsWidgetInited) {
-			return;
-		}
-		this.optionsWidgetInited = true;
-		this.dialogContainer = new DialogWithZIndex(false, true);
+    private void initOptionsWidget() {
+        if (optionsWidgetInited) {
+            return;
+        }
+        this.optionsWidgetInited = true;
+        this.dialogContainer = new DialogWithZIndex(false, true);
         dialogContainer.setGlassEnabled(true);
         dialogContainer.setText("Video options");
 
-		this.selectVideoDialog = new SelectVideoDialog();
+        this.selectVideoDialog = new SelectVideoDialog();
         dialogContainer.add(this.selectVideoDialog);
 
         this.selectVideoDialog.setSearchProviders(this.searchProviders);
         this.selectVideoDialog.addCancelHandler(new SimpleEvent.Handler<Void>() {
-		    @Override
-		    public void onFire(Void arg) {
-		        dialogContainer.hide();
-		    }
-		});
+            @Override
+            public void onFire(Void arg) {
+                dialogContainer.hide();
+            }
+        });
         this.selectVideoDialog.addDoneHandler(new SimpleEvent.Handler<VideoInformation>() {
-		    @Override
-		    public void onFire(VideoInformation arg) {
-		        setVideoInformation(arg);
-		        dialogContainer.hide();
-		    }
-		});
-	}
+            @Override
+            public void onFire(VideoInformation arg) {
+                setVideoInformation(arg);
+                dialogContainer.hide();
+            }
+        });
+    }
 
-	private void setVideoInformation(VideoInformation videoInformation)
+    private void setVideoInformation(VideoInformation videoInformation)
     {
         if (data.videoInformation.equals(videoInformation))
         {
@@ -188,15 +194,15 @@ public class VideoTool extends FlowPanel implements CanvasTool<VideoData>
     }
 
     @Override
-	public HandlerRegistration addSelfMoveRequestEventHandler(Handler<Point2D> handler) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public HandlerRegistration addSelfMoveRequestEventHandler(Handler<Point2D> handler) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public ResizeMode getResizeMode() {
-		return ResizeMode.BOTH;
-	}
+    @Override
+    public ResizeMode getResizeMode() {
+        return ResizeMode.BOTH;
+    }
 
     @Override
     public void setViewMode(boolean isViewMode)
@@ -235,7 +241,6 @@ public class VideoTool extends FlowPanel implements CanvasTool<VideoData>
         if (autoSize || (false == UrlUtils.areEquivalent(url, videoFrame.getUrl()))) {
             videoFrame.setUrl(url);
         }
-        videoFrame.setVisible(true);
         optionsLabel.setText(OPTIONS_LABEL_VIDEO_SET);
 
         super.removeStyleName(CanvasResources.INSTANCE.main().videoToolEmpty());
@@ -246,7 +251,6 @@ public class VideoTool extends FlowPanel implements CanvasTool<VideoData>
     {
         super.addStyleName(CanvasResources.INSTANCE.main().videoToolEmpty());
         super.removeStyleName(CanvasResources.INSTANCE.main().videoToolSet());
-        this.videoFrame.setVisible(false);
         this.videoFrame.setUrl("");
     }
 
@@ -276,4 +280,5 @@ public class VideoTool extends FlowPanel implements CanvasTool<VideoData>
     public void onResize() {
         // TODO Auto-generated method stub
     }
+
 }
