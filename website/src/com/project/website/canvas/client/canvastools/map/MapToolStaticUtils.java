@@ -106,7 +106,8 @@ public class MapToolStaticUtils
         	return res;
         }
         for (MapProvider provider : AVAILABLE_PROVIDERS) {
-            res = res.then(getLoadProviderAsyncFunc(provider));
+            res = res.and(getLoadProviderAsyncFunc(provider))
+                     .constResult(null);
         }
         res = res.then(DynamicScriptLoader.getLoadAsyncFunc(MAPSTRACTION_SCRIPT_FILE_URL));
         res = res.then(DynamicScriptLoader.getLoadAsyncFunc(MAPSTRACTION_SCRIPT_CORE_FILE_URL));

@@ -17,6 +17,29 @@ public abstract class Func<A, B>
         };
     }
 
+    /**
+     * Converts this Func to one with any result type. The result value will always be the value given 'res'.
+     */
+    public <C> Func<A,C> constResult(C res)
+    {
+        return this.then(Func.<B,C>constFunc(res));
+    }
+
+    public <C> Func<C,B> constArg(final A constArg)
+    {
+        return Func.<C,A>constFunc(constArg).then(this);
+    }
+
+    public static <A,B> Func<A, B> constFunc(final B value)
+    {
+        return new Func<A,B>(){
+            @Override
+            public B call(A arg)
+            {
+                return value;
+            }};
+    }
+
     public static abstract class Action<A> extends Func<A, Void>
     {
         public abstract void exec(A arg);

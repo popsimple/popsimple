@@ -1,5 +1,6 @@
 package com.project.shared.data.funcs;
 
+import com.project.shared.data.Pair;
 import com.project.shared.data.funcs.Func.Action;
 import com.project.shared.utils.ThrowableUtils;
 import com.project.shared.utils.loggers.Logger;
@@ -33,6 +34,34 @@ public abstract class AsyncFunc<A, B>  {
         return AsyncFunc.<A,B,C>chain(this, success, recover);
     }
 
+    public AsyncFunc<A, Pair<B,B>> and(final AsyncFunc<A,B> other)
+    {
+        return AsyncFunc.<A,B>both(this, other);
+    }
+
+    /**
+     * Converts this AsyncFunc to one with any result type. The result value will always be the value given 'res'.
+     */
+    public <C> AsyncFunc<A,C> constResult(C res)
+    {
+        return this.then(AsyncFunc.<B,C>constFunc(res));
+    }
+
+    public <C> AsyncFunc<C,B> constArg(final A constArg)
+    {
+        return AsyncFunc.<C,A>constFunc(constArg).then(this);
+    }
+
+    public static <A,B> AsyncFunc<A, B> constFunc(final B value)
+    {
+        return new AsyncFunc<A,B>(){
+            @Override
+            protected <S, E> void run(A arg, final Func<B, S> successHandler, Func<Throwable, E> errorHandler)
+            {
+                successHandler.call(value);
+            }};
+    }
+
     private static <A,B,C> AsyncFunc<A, C> chain(final AsyncFunc<A, B> first, final AsyncFunc<B, C> success, final AsyncFunc<Throwable, C> recover)
     {
         return new AsyncFunc<A,C>(){
@@ -64,6 +93,34 @@ public abstract class AsyncFunc<A, B>  {
         };
     }
 
+    private static <A,B> AsyncFunc<A, Pair<B,B>> both(final AsyncFunc<A, B> left, final AsyncFunc<A, B> right)
+    {
+        return new AsyncFunc<A, Pair<B,B>>() {
+            @Override
+            protected <S, E> void run(A arg, final Func<Pair<B, B>, S> successHandler, Func<Throwable, E> errorHandler)
+            {
+                final int[] numCompleted = {0};
+                Func<B, S> singleSuccessHandler = new Func<B, S>(){
+                    private B _firstResult;
+
+                    @Override
+                    public S call(B arg)
+                    {
+                        numCompleted[0] += 1;
+
+                        if (1 == numCompleted[0]) {
+                            this._firstResult = arg;
+                            return null;
+                        }
+                        // Both completed
+                        return successHandler.call(new Pair<B, B>(this._firstResult, arg));
+                    }};
+
+                left.run(arg, singleSuccessHandler, Action.<Throwable>empty());
+                right.run(arg, singleSuccessHandler, Action.<Throwable>empty());
+            }
+        };
+    }
 
     public static <A,B> AsyncFunc<A, B> fromFunc(final Func<A,B> func)
     {

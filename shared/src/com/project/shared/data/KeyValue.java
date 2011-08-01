@@ -1,33 +1,19 @@
 package com.project.shared.data;
 
-public class KeyValue<TKey, TValue>
+public class KeyValue<TKey, TValue> extends Pair<TKey, TValue>
 {
-    private TKey _key;
-    private TValue _value;
-
     public KeyValue(TKey key, TValue value)
     {
-        this._key = key;
-        this._value = value;
+        super(key, value);
     }
 
     public TKey getKey()
     {
-        return this._key;
-    }
-
-    public void setKey(TKey key)
-    {
-        this._key = key;
+        return this.a;
     }
 
     public TValue getValue()
     {
-        return this._value;
-    }
-
-    public void setValue(TValue value)
-    {
-        this._value = value;
+        return this.b;
     }
 }
