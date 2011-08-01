@@ -494,6 +494,9 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     }
 
     private void onKeyDown(KeyDownEvent event){
+        if (this.viewMode) {
+            return;
+        }
         switch (event.getNativeKeyCode())
         {
             case (int)'C':
