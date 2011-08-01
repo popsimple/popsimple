@@ -3,6 +3,9 @@ package com.project.website.canvas.client.canvastools.map;
 import java.util.HashMap;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
@@ -18,6 +21,8 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.gwtmapstraction.client.mxn.LatLonPoint;
 import com.project.gwtmapstraction.client.mxn.MapProvider;
@@ -61,6 +66,11 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
 	Button optionsLabel;
 	@UiField
 	FlowPanel optionsBar;
+
+	@UiField
+	TextBox mapSearchTextBox;
+	@UiField
+	Button mapSearchButton;
 
 	private final SimpleEvent<MouseEvent<?>> moveStartEvent = new SimpleEvent<MouseEvent<?>>();
 	private final RegistrationsManager registrationsManager = new RegistrationsManager();
@@ -117,7 +127,7 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
 				showOptions();
 			}
 		}));
-        registrationsManager.add(this.optionsBar.addDomHandler(new MouseDownHandler() {
+        this.registrationsManager.add(this.optionsBar.addDomHandler(new MouseDownHandler() {
             @Override
             public void onMouseDown(MouseDownEvent event) {
                 if (event.isControlKeyDown()) {
@@ -125,9 +135,17 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
                 }
             }
         }, MouseDownEvent.getType()));
+
+        this.registrationsManager.add(this.mapSearchButton.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event)
+            {
+                mapSearch();
+            }
+        }));
 	}
 
-	@Override
+    @Override
 	public boolean canRotate() {
 		return true;
 	}
@@ -309,4 +327,30 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
 		this.mapToolOptionsWidget.setValue(this.getValue());
 		this.optionsDialog.center();
 	}
+
+    protected void mapSearch()
+    {
+        String query = this.mapSearchTextBox.getText();
+        if (StringUtils.isWhitespaceOrNull(query)) {
+            return;
+        }
+        final Widget tempElem = new FlowPanel();
+        MicrosoftMapFind finder = new MicrosoftMapFind() {
+            @Override
+            public void callback(boolean found, double lat, double lon, int zoomLevel)
+            {
+                RootPanel.get().remove(tempElem);
+                if (found) {
+                    mapData.center.latitude = lat;
+                    mapData.center.longitude = lon;
+                    mapData.zoom = zoomLevel;
+                    applyMapDataToWidget();
+                }
+            }
+        };
+        tempElem.getElement().setId("_temp_map_find_" + Random.nextInt());
+        tempElem.addStyleName(CanvasResources.INSTANCE.main().outOfBounds());
+        RootPanel.get().add(tempElem);
+        finder.find(tempElem.getElement().getId(), query);
+    }
 }

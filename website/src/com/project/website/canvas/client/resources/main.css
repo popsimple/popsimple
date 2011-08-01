@@ -592,6 +592,10 @@
     left: 0;
 }
 
+.toolOptionsBar input {
+	margin: 4px;
+}
+
 .toolOptionsLabel {
     padding: 5px;
     display: inline-block;
@@ -713,7 +717,7 @@
 
 .mapToolMainPanel {
 	position: relative;
-	margin-bottom: 30px;
+	margin-bottom: 64px;
 }
 
 

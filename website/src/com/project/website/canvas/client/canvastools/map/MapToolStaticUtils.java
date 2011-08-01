@@ -21,9 +21,13 @@ import com.project.website.canvas.shared.data.MapData.MapType;
 
 public class MapToolStaticUtils
 {
+    private static final String GOOGLE_MAPS_V3_SCRIPT_URL = "http://maps.googleapis.com/maps/api/js?sensor=false";
+    private static final String OPENLAYERS_SCRIPT_URL = "http://openlayers.org/api/OpenLayers.js";
+    private static final String MICROSOFT_MAP_6_3_URL = "http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.3";
+
     public static final ArrayList<MapProvider> AVAILABLE_PROVIDERS = ListUtils.create(
         MapProvider.GOOGLE_V3,
-        //MapProvider.MICROSOFT,
+        MapProvider.MICROSOFT,
         MapProvider.OPENLAYERS
     );
 
@@ -143,9 +147,9 @@ public class MapToolStaticUtils
             res = res.then(getLoadGoogleV3MapProviderAsyncFunc());
             break;
         case MICROSOFT:
-            res = res.then(DynamicScriptLoader.getLoadAsyncFunc("http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.3"));
+            res = res.then(DynamicScriptLoader.getLoadAsyncFunc(MICROSOFT_MAP_6_3_URL));
         case OPENLAYERS:
-            res = res.then(DynamicScriptLoader.getLoadAsyncFunc("http://openlayers.org/api/OpenLayers.js"));
+            res = res.then(DynamicScriptLoader.getLoadAsyncFunc(OPENLAYERS_SCRIPT_URL));
         default:
             break;
         }
@@ -178,7 +182,7 @@ public class MapToolStaticUtils
             return;
         }
         // see http://code.google.com/apis/maps/documentation/javascript/basics.html#Async
-        String source = "http://maps.googleapis.com/maps/api/js?sensor=false&callback=" + GoogleV3MapProviderCallbackName;
+        String source = GOOGLE_MAPS_V3_SCRIPT_URL + "&callback=" + GoogleV3MapProviderCallbackName;
         defineGoogleV3MapProviderLoadedCallback();
 
         googleMapV3ScriptLoadedSuccessEvent.addHandler(handler);

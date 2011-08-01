@@ -9,6 +9,10 @@
 		<g:FlowPanel ui:field="mapPanel" addStyleNames="{res.main.mapToolMapHolder}"></g:FlowPanel>
         <g:FlowPanel addStyleNames="{res.main.toolOptionsBarContainer}">
             <g:FlowPanel ui:field="optionsBar" addStyleNames="{res.main.toolOptionsBar} {res.main.toolFrameHoverDisplayBlockElement}">
+                <g:FlowPanel>
+                    <g:TextBox ui:field="mapSearchTextBox"/>
+                    <g:Button ui:field="mapSearchButton">Find</g:Button>
+                </g:FlowPanel>
                 <g:Button ui:field="optionsLabel" addStyleNames="{res.main.link} {res.main.toolOptionsLabel} ">
                     Map options...
                 </g:Button>

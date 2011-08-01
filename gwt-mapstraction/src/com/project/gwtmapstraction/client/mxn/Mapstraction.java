@@ -129,6 +129,10 @@ public class Mapstraction extends JavaScriptObject {
      /* getMap() getMap returns the native map object that mapstraction is
      * talking to
      */
+	public native final JavaScriptObject getMap() /*-{
+	    return this.getMap();
+	}-*/;
+
      /* getMapType() Gets the imagery type for the map.
      */
 	private final native int getMapTypeInternal() /*-{
