@@ -1,6 +1,6 @@
 @def initialMapSize 300px;
 @def emptyToolBackgroundColor #e5e3df;
-@def toolboxIconSize 32px;
+@def toolboxIconSize 48px;
 @def toolboxIconExpandedSize 48px;
 @def toolboxIconExpandedSizeWithPadding 58px;
 @def toolboxWidth 90px;
@@ -205,20 +205,21 @@
 	margin: 0 auto;
     width: toolboxIconSize;
     height: toolboxIconSize;
-	padding: 14px 5px;
+	padding: 12px 5px;
 }
 
 .toolboxCommonIconStyle:hover, .toolboxCommonSelectedIconStyle , .toolboxCommonSelectedIconStyle:hover {
     width: toolboxIconExpandedSizeWithPadding;
     height: toolboxIconExpandedSize;
-    padding: 6px 5px;
+    padding: 12px 5px;
 }
 
 .toolboxInnerIconStyle {
 	width: toolboxIconSize;
 	height: toolboxIconSize;
-	background-size: 32px auto;
+	background-size: toolboxIconSize auto;
     background-position: center center;
+    padding: 5px 0;
 }
 
 .toolboxCommonIconStyle:hover .toolboxInnerIconStyle, .toolboxCommonSelectedIconStyle .toolboxInnerIconStyle, .toolboxCommonSelectedIconStyle:hover .toolboxInnerIconStyle  {
