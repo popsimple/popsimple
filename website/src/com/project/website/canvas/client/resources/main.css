@@ -175,36 +175,64 @@
 	text-align: center;
 }
 
-.toolboxCommonIconStyle {
-	margin: 10px auto;
-	width: 48px;
-	hight: 48px;
-	padding: 5px;
+/*-------------------------------------------------------------------*/
+
+@sprite .toolboxVideoIconStyle {
+    gwt-image: "toolboxVideoIcon";
+}
+@sprite .toolboxTextIconStyle {
+    gwt-image: "toolboxTextIcon";
+}
+@sprite .toolboxCursorIconStyle {
+    gwt-image: "toolboxCursorIcon";
+}
+@sprite .toolboxTaskListIconStyle {
+    gwt-image: "toolboxTaskListIcon";
+}
+@sprite .toolboxImageIconStyle {
+    gwt-image: "toolboxImageIcon";
+}
+@sprite .toolboxMapIconStyle {
+    gwt-image: "mapIcon48";
 }
 
-.toolboxCommonIconStyle:hover {
-	padding: 4px;
-	border-color: #ddd;
-	border-radius: 5px 5px 5px 5px;
-	border-width: 1px;
-	border-style: solid;
+/*-------------------------------------------------------------------*/
+
+.toolboxCommonIconStyle {
+	margin: 0 auto;
+    width: 32px;
+    height: 32px;
+	padding: 13px 5px;
+}
+
+.toolboxCommonIconStyle:hover, .toolboxCommonSelectedIconStyle , .toolboxCommonSelectedIconStyle:hover {
+    width: 48px;
+    height: 48px;
+    padding: 5px 5px;
 }
 
 .toolboxInnerIconStyle {
-	background-position: center center;
+	width: 32px;
+	height: 32px;
+	background-size: 32px auto;
+    background-position: center center;
 }
 
-.toolboxCommonIconStyle:hover .toolboxInnerIconStyle {
-	box-shadow: 0 0 15px #FFFFFF inset;
+.toolboxCommonIconStyle:hover .toolboxInnerIconStyle, .toolboxCommonSelectedIconStyle .toolboxInnerIconStyle, .toolboxCommonSelectedIconStyle:hover .toolboxInnerIconStyle  {
+    box-shadow: 0 0 15px #FFFFFF inset;
+    padding: 4px;
+    border-color: #ddd;
+    border-radius: 5px 5px 5px 5px;
+    border-width: 1px;
+    border-style: solid;
+    width: 48px;
+    height: 48px;
+    background-size: 48px auto;
 }
-
-.toolboxCommonSelectedIconStyle,.toolboxCommonSelectedIconStyle:hover {
-	padding: 4px;
+.toolboxCommonSelectedIconStyle .toolboxInnerIconStyle, .toolboxCommonSelectedIconStyle:hover .toolboxInnerIconStyle {
 	border-color: #aaa;
-	border-radius: 5px 5px 5px 5px;
-	border-width: 1px;
-	border-style: solid;
 }
+
 
 .textEdit {
 
@@ -279,17 +307,11 @@
 	cursor: text;
 }
 
-@sprite .toolboxTextIconStyle {
-	gwt-image: "toolboxTextIcon";
-}
 
 .cursorCreateModeCanvasStyle {
 	cursor: default;
 }
 
-@sprite .toolboxCursorIconStyle {
-	gwt-image: "toolboxCursorIcon";
-}
 
 .taskImageContainer {
 	display: inline-block;
@@ -353,9 +375,6 @@
 
 }
 
-@sprite .toolboxTaskListIconStyle {
-	gwt-image: "toolboxTaskListIcon";
-}
 
 .hoverTextBoxView {
 	border-style: none;
@@ -398,9 +417,6 @@
 	display: none;
 }
 
-@sprite .toolboxImageIconStyle {
-	gwt-image: "toolboxImageIcon";
-}
 
 .imageCreateModeCanvasStyle {
 	cursor: default;
@@ -620,9 +636,6 @@
 	margin-right:2px;
 }
 
-@sprite .toolboxVideoIconStyle {
-	gwt-image: "toolboxVideoIcon";
-}
 
 .videoCreateModeCanvasStyle {
 	cursor: default;
@@ -665,12 +678,6 @@
 }
 
 
-@sprite .toolboxMapIconStyle {
-	gwt-image: "mapIcon48";
-	height: 48px;
-	width: 48px;
-	background-position: center center;
-}
 
 .mapCreateModeCanvasStyle {
 	cursor: default;
@@ -761,3 +768,4 @@
 .dialogSectionPanel {
 	padding-bottom: 10px;
 }
+

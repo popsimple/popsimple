@@ -664,11 +664,14 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     {
         boolean canInvite = false;
         String publicName = "Guest";
+        String email = "";
         if (null != userProfile) {
             canInvite = userProfile.canInvite;
             publicName = userProfile.publicName;
+            email = userProfile.email;
         }
         this.linkInvite.setVisible(canInvite);
         this.userWelcomeLabel.setText(publicName);
+        this.userWelcomeLabel.setTitle(email);
     }
 }
