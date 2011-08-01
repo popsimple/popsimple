@@ -5,6 +5,8 @@ import java.util.HashMap;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.MouseDownEvent;
+import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
@@ -20,6 +22,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.project.gwtmapstraction.client.mxn.LatLonPoint;
 import com.project.gwtmapstraction.client.mxn.MapProvider;
 import com.project.gwtmapstraction.client.mxn.Mapstraction;
+import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.events.SingleEvent;
 import com.project.shared.client.handlers.RegistrationsManager;
@@ -56,7 +59,10 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
 	FlowPanel mapPanel;
 	@UiField
 	Button optionsLabel;
+	@UiField
+	FlowPanel optionsBar;
 
+	private final SimpleEvent<MouseEvent<?>> moveStartEvent = new SimpleEvent<MouseEvent<?>>();
 	private final RegistrationsManager registrationsManager = new RegistrationsManager();
 	private DialogBox optionsDialog;
 	private MapToolOptions mapToolOptionsWidget;
@@ -95,7 +101,7 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
 
 	@Override
 	public HandlerRegistration addMoveStartEventHandler(Handler<MouseEvent<?>> handler) {
-		return null;
+		return this.moveStartEvent.addHandler(handler);
 	}
 
 	@Override
@@ -111,6 +117,14 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
 				showOptions();
 			}
 		}));
+        registrationsManager.add(this.optionsBar.addDomHandler(new MouseDownHandler() {
+            @Override
+            public void onMouseDown(MouseDownEvent event) {
+                if (event.isControlKeyDown()) {
+                    moveStartEvent.dispatch(event);
+                }
+            }
+        }, MouseDownEvent.getType()));
 	}
 
 	@Override

@@ -99,9 +99,13 @@ public class Mapstraction extends JavaScriptObject {
      * doFilter(showCallback, hideCallback) doFilter executes all filters added
      * since last call Now supports a callback function for when a marker is
      * shown or hidden
-     *
-     * dragging(on) Enable/disable dragging of the map
      */
+
+	/* dragging(on) Enable/disable dragging of the map
+     */
+	public native final void setDraggable(boolean isDraggable) /*-{
+	    this.dragging(isDraggable);
+	}-*/;
 
      /** Enable scroll wheel zooming
       */

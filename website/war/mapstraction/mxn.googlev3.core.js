@@ -10,11 +10,11 @@ Redistribution and use in source and binary forms, with or without modification,
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-mxn.register('googlev3', {	
+mxn.register('googlev3', {
 
 Mapstraction: {
-	
-	init: function(element, api){		
+
+	init: function(element, api){
 		var me = this;
 		if ( google && google.maps ){
 			// by default add road map and no controls
@@ -47,11 +47,11 @@ Mapstraction: {
 					myOptions.mapTypeControlOptions = {style: google.maps.MapTypeControlStyle.DEFAULT};
 				}
 			}
-		
+
 			var map = new google.maps.Map(element, myOptions);
-			
+
 			var fireOnNextIdle = [];
-			
+
 			google.maps.event.addListener(map, 'idle', function() {
 				var fireListCount = fireOnNextIdle.length;
 				if(fireListCount > 0) {
@@ -62,17 +62,17 @@ Mapstraction: {
 					}
 				}
 			});
-			
+
 			// deal with click
 			google.maps.event.addListener(map, 'click', function(location){
-				me.click.fire({'location': 
+				me.click.fire({'location':
 					new mxn.LatLonPoint(location.latLng.lat(),location.latLng.lng())
 				});
 			});
 
 			// deal with zoom change
 			google.maps.event.addListener(map, 'zoom_changed', function(){
-				// zoom_changed fires before the zooming has finished so we 
+				// zoom_changed fires before the zooming has finished so we
 				// wait for the next idle event before firing our changezoom
 				// so that method calls report the correct values
 				fireOnNextIdle.push(function() {
@@ -85,13 +85,13 @@ Mapstraction: {
 				me.moveendHandler(me);
 				me.endPan.fire();
 			});
-			
+
 			// deal with initial tile loading
 			var loadListener = google.maps.event.addListener(map, 'tilesloaded', function(){
 				me.load.fire();
 				google.maps.event.removeListener( loadListener );
-			});			
-			
+			});
+
 			this.maps[api] = map;
 			this.loaded[api] = true;
 		}
@@ -99,21 +99,25 @@ Mapstraction: {
 			alert(api + ' map script not imported');
 		}
 	},
-	
+
 	applyOptions: function(){
 		var map = this.maps[this.api];
 		if (null == map) { throw new 'Unexpected: map was null'; }
 		var myOptions = [];
 		if (this.options.enableDragging) {
 			myOptions.draggable = true;
-		} 
+		}
+		else {
+			myOptions.draggable = false;
+		}
+
 		if (this.options.enableScrollWheelZoom){
 			myOptions.scrollwheel = true;
-		} 
+		}
 		map.setOptions(myOptions);
 	},
 
-	resizeTo: function(width, height){	
+	resizeTo: function(width, height){
 		this.currentElement.style.width = width;
 		this.currentElement.style.height = height;
 		var map = this.maps[this.api];
@@ -121,21 +125,21 @@ Mapstraction: {
   	},
 
 	addControls: function( args ) {
-		var map = this.maps[this.api];	
+		var map = this.maps[this.api];
 		// remove old controls
 
 		// Google has a combined zoom and pan control.
 		if (args.zoom || args.pan) {
-			if (args.zoom == 'large'){ 
+			if (args.zoom == 'large'){
 				this.addLargeControls();
-			} else { 
+			} else {
 				this.addSmallControls();
 			}
 		}
 		if (args.scale){
 			var myOptions = {
 				scaleControl:true,
-				scaleControlOptions: {style:google.maps.ScaleControlStyle.DEFAULT}				
+				scaleControlOptions: {style:google.maps.ScaleControlStyle.DEFAULT}
 			};
 			map.setOptions(myOptions);
 			this.addControlsArgs.scale = true;
@@ -154,7 +158,7 @@ Mapstraction: {
 		map.setOptions(myOptions);
 
 		this.addControlsArgs.pan = false;
-		this.addControlsArgs.scale = false;						
+		this.addControlsArgs.scale = false;
 		this.addControlsArgs.zoom = 'small';
 	},
 
@@ -179,22 +183,22 @@ Mapstraction: {
 		this.addControlsArgs.map_type = true;
 	},
 
-	setCenterAndZoom: function(point, zoom) { 
+	setCenterAndZoom: function(point, zoom) {
 		var map = this.maps[this.api];
 		var pt = point.toProprietary(this.api);
 		map.setCenter(pt);
 		map.setZoom(zoom);
 	},
-	
+
 	addMarker: function(marker, old) {
-	   return marker.toProprietary(this.api);		
+	   return marker.toProprietary(this.api);
 	},
 
 	removeMarker: function(marker) {
 		// doesn't really remove them, just hides them
 		marker.hide();
 	},
-	
+
 	declutterMarkers: function(opts) {
 		var map = this.maps[this.api];
 		// TODO: Add provider code
@@ -211,7 +215,7 @@ Mapstraction: {
 		var map = this.maps[this.api];
 		polyline.proprietary_polyline.setMap(null);
 	},
-	   
+
 	getCenter: function() {
 		var map = this.maps[this.api];
 		var pt = map.getCenter();
@@ -221,10 +225,10 @@ Mapstraction: {
 	setCenter: function(point, options) {
 		var map = this.maps[this.api];
 		var pt = point.toProprietary(this.api);
-		if(options && options.pan) { 
+		if(options && options.pan) {
 			map.panTo(pt);
 		}
-		else { 
+		else {
 			map.setCenter(pt);
 		}
 	},
@@ -233,7 +237,7 @@ Mapstraction: {
 		var map = this.maps[this.api];
 		map.setZoom(zoom);
 	},
-	
+
 	getZoom: function() {
 		var map = this.maps[this.api];
 		return map.getZoom();
@@ -265,7 +269,7 @@ Mapstraction: {
 				break;
 			default:
 				map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
-		}	 
+		}
 	},
 
 	getMapType: function() {
@@ -306,11 +310,11 @@ Mapstraction: {
 
 	addImageOverlay: function(id, src, opacity, west, south, east, north, oContext) {
 		var map = this.maps[this.api];
-		
+
 		var imageBounds = new google.maps.LatLngBounds(
 			new google.maps.LatLng(south,west),
 			new google.maps.LatLng(north,east));
-		
+
 		var groundOverlay = new google.maps.GroundOverlay(src, imageBounds);
 		groundOverlay.setMap(map);
 	},
@@ -318,7 +322,7 @@ Mapstraction: {
 	setImagePosition: function(id, oContext) {
 		// do nothing
 	},
-	
+
 	addOverlay: function(url, autoCenterAndZoom) {
 		var map = this.maps[this.api];
 
@@ -387,9 +391,9 @@ Mapstraction: {
 	getPixelRatio: function() {
 		var map = this.maps[this.api];
 
-		// TODO: Add provider code	
+		// TODO: Add provider code
 	},
-	
+
 	mousePosition: function(element) {
 		var map = this.maps[this.api];
 		var locDisp = document.getElementById(element);
@@ -404,7 +408,7 @@ Mapstraction: {
 },
 
 LatLonPoint: {
-	
+
 	toProprietary: function() {
 		return new google.maps.LatLng(this.lat, this.lon);
 	},
@@ -413,16 +417,16 @@ LatLonPoint: {
 		this.lat = googlePoint.lat();
 		this.lon = googlePoint.lng();
 	}
-	
+
 },
 
 Marker: {
-	
+
 	toProprietary: function() {
 		var options = {};
 
 		// do we have an Anchor?
-		var ax = 0;  // anchor x 
+		var ax = 0;  // anchor x
 		var ay = 0;  // anchor y
 
 		if (this.iconAnchor) {
@@ -448,7 +452,7 @@ Marker: {
 						this.iconShadowUrl,
 						new google.maps.Size(x,y),
 						new google.maps.Point(0,0),
-						gAnchorPoint 
+						gAnchorPoint
 					);
 				}
 				else {
@@ -468,7 +472,7 @@ Marker: {
 				type: 'poly'
 			};
 		}
-		
+
 		options.position = this.location.toProprietary(this.api);
 		options.map = this.map;
 
@@ -500,15 +504,15 @@ Marker: {
 				gAnchorPoint
 			);
 			google.maps.event.addListener(
-				marker, 
-				"mouseover", 
-				function(){ 
-					marker.setIcon(hIcon); 
+				marker,
+				"mouseover",
+				function(){
+					marker.setIcon(hIcon);
 				}
 			);
 			google.maps.event.addListener(
-				marker, 
-				"mouseout", 
+				marker,
+				"mouseout",
 				function(){ marker.setIcon(Icon); }
 			);
 		}
@@ -516,7 +520,7 @@ Marker: {
 		google.maps.event.addListener(marker, 'click', function() {
 			marker.mapstraction_marker.click.fire();
 		});
-		
+
 		return marker;
 	},
 
@@ -531,7 +535,7 @@ Marker: {
 		infowindow.open(this.map,this.proprietary_marker);
 		this.proprietary_infowindow = infowindow; // Save so we can close it later
 	},
-	
+
 	closeBubble: function() {
 		if (this.hasOwnProperty('proprietary_infowindow')) {
 			this.proprietary_infowindow.close();
@@ -552,7 +556,7 @@ Marker: {
 		point.fromProprietary('googlev3', this.proprietary_marker.getPosition());
 		this.location = point;
 	}
-	
+
 },
 
 Polyline: {
@@ -562,11 +566,11 @@ Polyline: {
 		for(var i =0, length = this.points.length; i < length; i++) {
 			points.push(this.points[i].toProprietary('googlev3'));
 		}
-		
+
 		var polyOptions = {
 			path: points,
 			strokeColor: this.color || '#000000',
-			strokeOpacity: this.opacity || 1.0, 
+			strokeOpacity: this.opacity || 1.0,
 			strokeWeight: this.width || 3
 		};
 
@@ -574,7 +578,7 @@ Polyline: {
 
 		return polyline;
 	},
-	
+
 	show: function() {
 			throw 'Not implemented';
 	},
@@ -582,7 +586,7 @@ Polyline: {
 	hide: function() {
 			throw 'Not implemented';
 	}
-	
+
 }
 
 });

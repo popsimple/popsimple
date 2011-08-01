@@ -76,7 +76,6 @@ public class ImageTool  extends Composite implements CanvasTool<ImageData>
 
     @Override
     public void bind() {
-        super.setTitle("Control-click to drag");
         this.setViewMode(viewMode); // do whatever bindings necessary for our mode
     }
 
@@ -93,9 +92,7 @@ public class ImageTool  extends Composite implements CanvasTool<ImageData>
         registrationsManager.add(this.addDomHandler(new MouseDownHandler() {
             @Override
             public void onMouseDown(MouseDownEvent event) {
-                if (event.isControlKeyDown()) {
-                    moveStartEvent.dispatch(event);
-                }
+                moveStartEvent.dispatch(event);
             }
         }, MouseDownEvent.getType()));
     }
