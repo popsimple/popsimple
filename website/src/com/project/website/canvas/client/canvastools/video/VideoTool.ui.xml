@@ -6,10 +6,12 @@
     </ui:style>
     <g:HTMLPanel ui:field="rootPanel" addStyleNames="{res.main.videoBox}">
         <g:Frame ui:field="videoFrame" addStyleNames="{res.main.videoFrame}"></g:Frame>
-        <g:FlowPanel ui:field="optionsBar" addStyleNames="{res.main.toolOptionsBar} {res.main.toolFrameHoverDisplayBlockElement}">
-            <g:Button ui:field="optionsLabel" addStyleNames="{res.main.link} {res.main.toolOptionsLabel} ">
-                Choose a video...
-            </g:Button>
+        <g:FlowPanel addStyleNames="{res.main.toolOptionsBarContainer}">
+            <g:FlowPanel ui:field="optionsBar" addStyleNames="{res.main.toolOptionsBar} {res.main.toolFrameHoverDisplayBlockElement}">
+                <g:Button ui:field="optionsLabel" addStyleNames="{res.main.link} {res.main.toolOptionsLabel} ">
+                    Choose a video...
+                </g:Button>
+            </g:FlowPanel>
         </g:FlowPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

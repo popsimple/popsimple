@@ -42,6 +42,8 @@ public interface MainStyles extends CssResource {
 
     String imageToolEmpty();
 
+    String imageToolOptionsBar();
+
     String imageToolSearchProviderIconStyle();
 
     String imageToolSearchProviderPanelStyle();
@@ -144,17 +146,19 @@ public interface MainStyles extends CssResource {
 
     String toolFrameCloseLink();
 
-	String toolFrameFrontLink();
+    String toolFrameFrontLink();
 
 	String toolFrameHeader();
 
-    String toolFrameHoverDisplayBlockElement();
+	String toolFrameHoverDisplayBlockElement();
 
     String toolFrameHoverVisibleElement();
 
     String toolFramePanel();
 
     String toolOptionsBar();
+
+    String toolOptionsBarContainer();
 
     String toolOptionsLabel();
 
@@ -190,9 +194,9 @@ public interface MainStyles extends CssResource {
 
     String worksheetOptions();
 
-    String worksheetPanel();
+	String worksheetPanel();
 
-	String worksheetRightButton();
+    String worksheetRightButton();
 
     String worksheetRightLink();
 }

@@ -352,7 +352,6 @@
 
 .imageBox {
 	display: block;
-	padding-bottom:28px;
 }
 
 @sprite .imageToolEmpty {
@@ -364,6 +363,11 @@
     background-color: emptyToolBackgroundColor;
 }
 
+.imageToolOptionsBar {
+}
+
+
+
 .imageToolSet {
 	background-repeat: no-repeat;
 	background-size: 100% 100%;
@@ -371,8 +375,6 @@
 
 .imageToolContentPanel {
     border-radius: 2px;
-	height:100%;
-	width:100%;
 }
 
 .displayNone {
@@ -527,11 +529,20 @@
 }
 
 /*---------------------------------------------*/
+.toolOptionsBarContainer {
+    position: relative;
+}
+
 
 .toolOptionsBar {
     text-align: center;
+    min-width: 18em;
+    width:100%;
+    position:absolute;
+    background-color: rgba(232, 232, 232, 0.5);
+    top: 0;
+    left: 0;
 }
-
 
 .toolOptionsLabel {
     padding: 5px;
@@ -636,7 +647,11 @@
 	height: initialMapSize;
 }
 
-.mapToolEmpty {
+@sprite .mapToolEmpty {
+    gwt-image: "mapIcon48";
+    height: 200px;
+    width: 200px;
+    background-position: center center;
 	background-color: emptyToolBackgroundColor;
 }
 
@@ -665,7 +680,6 @@
 	display: block;
 
 }
-
 
 .selectionPanelStyle {
 	background-color: transparent;

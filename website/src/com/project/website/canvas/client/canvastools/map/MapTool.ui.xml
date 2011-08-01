@@ -7,10 +7,12 @@
 	</ui:style>
 	<g:FlowPanel ui:field="mainPanel" addStyleNames="{res.main.mapToolMainPanel} {res.main.mapTool}">
 		<g:FlowPanel ui:field="mapPanel" addStyleNames="{res.main.mapToolMapHolder}"></g:FlowPanel>
-        <g:FlowPanel ui:field="optionsBar" addStyleNames="{res.main.toolOptionsBar} {res.main.toolFrameHoverDisplayBlockElement}">
-            <g:Button ui:field="optionsLabel" addStyleNames="{res.main.link} {res.main.toolOptionsLabel} ">
-                Map options...
-            </g:Button>
+        <g:FlowPanel addStyleNames="{res.main.toolOptionsBarContainer}">
+            <g:FlowPanel ui:field="optionsBar" addStyleNames="{res.main.toolOptionsBar} {res.main.toolFrameHoverDisplayBlockElement}">
+                <g:Button ui:field="optionsLabel" addStyleNames="{res.main.link} {res.main.toolOptionsLabel} ">
+                    Map options...
+                </g:Button>
+            </g:FlowPanel>
         </g:FlowPanel>
 	</g:FlowPanel>
 </ui:UiBinder>

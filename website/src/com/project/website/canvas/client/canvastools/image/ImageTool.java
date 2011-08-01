@@ -49,8 +49,7 @@ public class ImageTool  extends Composite implements CanvasTool<ImageData>
     Button optionsLabel;
 
     @UiField
-    FlowPanel contentPanel;
-
+    FlowPanel optionsBar;
 
     private final SimpleEvent<MouseEvent<?>> moveStartEvent = new SimpleEvent<MouseEvent<?>>();
     private final RegistrationsManager registrationsManager = new RegistrationsManager();
@@ -165,9 +164,10 @@ public class ImageTool  extends Composite implements CanvasTool<ImageData>
         if (StringUtils.isWhitespaceOrNull(this.data.imageInformation.url)) {
             this.addStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
             this.removeStyleName(CanvasResources.INSTANCE.main().imageToolSet());
+            return;
         }
         this.removeStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
-        ImageInformationUtils.setWidgetBackgroundAsync(this.data.imageInformation, this.contentPanel, autoSize,
+        ImageInformationUtils.setWidgetBackgroundAsync(this.data.imageInformation, this, autoSize,
                 new SimpleEvent.Handler<Void>() {
                     @Override
                     public void onFire(Void arg) {
@@ -178,12 +178,6 @@ public class ImageTool  extends Composite implements CanvasTool<ImageData>
     private void setLoadedStyle()
     {
         this.addStyleName(CanvasResources.INSTANCE.main().imageToolSet());
-        if (this.data.imageInformation.options.useOriginalSize) {
-            // TODO do this in a better way? We have to remove the hard-coded size from the widget, otherwise
-            // when choosing "use original size" the frame will not match the size of the contents
-//            this.setWidth("");
-//            this.setHeight("");
-        }
     }
 
     @Override
@@ -244,6 +238,5 @@ public class ImageTool  extends Composite implements CanvasTool<ImageData>
 
     @Override
     public void onResize() {
-        data.imageInformation.options.useOriginalSize = false;
     }
 }
