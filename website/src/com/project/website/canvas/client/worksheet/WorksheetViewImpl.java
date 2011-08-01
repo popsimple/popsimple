@@ -37,7 +37,7 @@ import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.events.SimpleEvent.Handler;
@@ -65,6 +65,7 @@ import com.project.website.canvas.shared.data.CanvasPageOptions;
 import com.project.website.canvas.shared.data.ElementData;
 import com.project.website.canvas.shared.data.ImageInformation;
 import com.project.website.canvas.shared.data.Transform2D;
+import com.project.website.shared.data.UserProfile;
 
 public class WorksheetViewImpl extends Composite implements WorksheetView {
     interface WorksheetViewImplUiBinder extends UiBinder<Widget, WorksheetViewImpl> {
@@ -74,10 +75,6 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
     @UiField
     HTMLPanel dragPanel;
-    @UiField
-    Button loadButton;
-    @UiField
-    TextBox loadIdBox;
 
     @UiField
     Anchor optionsBackground;
@@ -109,6 +106,12 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
     @UiField
     HTMLPanel selectionPanel;
+
+    @UiField
+    Label userWelcomeLabel;
+
+    @UiField
+    Label statusLabel;
 
     private Handler<Void> _floatingWidgetTerminator;
     private ToolboxItem activeToolboxItem;
@@ -175,12 +178,13 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
     @Override
     public HandlerRegistration addLoadHandler(final Handler<String> handler) {
-        return loadButton.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                load(handler);
-            }
-        });
+        return null;
+//        return loadButton.addClickHandler(new ClickHandler() {
+//            @Override
+//            public void onClick(ClickEvent event) {
+//                load(handler);
+//            }
+//        });
     }
 
     @Override
@@ -325,14 +329,19 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         }
     }
 
-    public void load(Handler<String> handler) {
-        String idStr = loadIdBox.getText();
-        handler.onFire(idStr);
-    }
-
     @Override
     public void onLoadOperationChange(OperationStatus status, String reason) {
-        this.changeButtonStatus(loadButton, status, "Loading...", "Load");
+        switch (status) {
+        case PENDING:
+            this.statusLabel.setText("Loading...");
+            break;
+        case SUCCESS:
+            this.statusLabel.setText("");
+            break;
+        case FAILURE:
+            this.statusLabel.setText("Failed to load :(");
+            break;
+        }
         if (OperationStatus.FAILURE == status) {
             Window.alert("Load failed. Reason: " + reason);
         }
@@ -340,7 +349,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
     @Override
     public void onSaveOperationChange(OperationStatus status, String reason) {
-        this.changeButtonStatus(saveButton, status, "Saving...", "Save");
+        this.changeStatusLabel(saveButton, status, "Saving...", "Save");
         if (OperationStatus.FAILURE == status) {
             Window.alert("Save failed. Reason: " + reason);
         }
@@ -542,7 +551,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         }
     }
 
-    private void changeButtonStatus(Button button, OperationStatus status, String pendingText, String doneText) {
+    private void changeStatusLabel(Button button, OperationStatus status, String pendingText, String doneText) {
         switch (status) {
         case PENDING:
             button.setText(pendingText);
@@ -651,8 +660,15 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     }
 
     @Override
-    public void setInviteLinkVisible(boolean isVisible)
+    public void setUserProfile(UserProfile userProfile)
     {
-        this.linkInvite.setVisible(isVisible);
+        boolean canInvite = false;
+        String publicName = "Guest";
+        if (null != userProfile) {
+            canInvite = userProfile.canInvite;
+            publicName = userProfile.publicName;
+        }
+        this.linkInvite.setVisible(canInvite);
+        this.userWelcomeLabel.setText(publicName);
     }
 }

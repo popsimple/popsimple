@@ -14,6 +14,7 @@ import com.project.website.canvas.client.canvastools.base.ToolboxItem;
 import com.project.website.canvas.shared.data.CanvasPageOptions;
 import com.project.website.canvas.shared.data.ElementData;
 import com.project.website.canvas.shared.data.Transform2D;
+import com.project.website.shared.data.UserProfile;
 
 public interface WorksheetView extends IsWidget
 {
@@ -116,8 +117,8 @@ public interface WorksheetView extends IsWidget
 
     void clearToolFrameSelection();
 
-    ArrayList<CanvasToolFrame> getToolFrames();
+    void setUserProfile(UserProfile result);
 
-    void setInviteLinkVisible(boolean isVisible);
+    ArrayList<CanvasToolFrame> getToolFrames();
 
 }

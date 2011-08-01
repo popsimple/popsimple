@@ -188,15 +188,19 @@ public interface MainStyles extends CssResource {
 
     String worksheetHeader();
 
+    String worksheetHeaderRightElement();
+
     String worksheetModeEditable();
 
     String worksheetModeViewOnly();
 
-    String worksheetOptions();
+	String worksheetOptions();
 
-	String worksheetPanel();
+    String worksheetPanel();
 
     String worksheetRightButton();
 
-    String worksheetRightLink();
+    String worksheetSaveButton();
+
+    String worksheetWelcomeLabelHolder();
 }

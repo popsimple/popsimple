@@ -41,14 +41,14 @@ public class CanvasContainer extends Composite {
                 worksheet.setActiveToolboxItem(arg);
             }
         });
-        this.worksheet.getDefaultToolRequestEvent().addHandler(new SimpleEvent.Handler<Void>() {
+        this.worksheet.addDefaultToolRequestHandler(new SimpleEvent.Handler<Void>() {
             @Override
             public void onFire(Void arg) {
                 toolbox.setActiveTool(defaultTool);
             }
         });
 
-        this.worksheet.getViewModeEvent().addHandler(new SimpleEvent.Handler<Boolean>() {
+        this.worksheet.addViewModeChangedHandler(new SimpleEvent.Handler<Boolean>() {
             @Override
             public void onFire(Boolean fullScreen) {
                 if (fullScreen) {

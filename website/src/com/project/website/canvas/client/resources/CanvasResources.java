@@ -92,4 +92,7 @@ public interface CanvasResources extends ClientBundle {
     @Source("com/project/website/shared/client/resources/images/bitmaps/flickrLogo_16.png")
     ImageResource flickrLogo16();
 
+    @Source("com/project/website/shared/client/resources/images/bitmaps/person_24.png")
+    ImageResource person24();
+
 }

@@ -10,6 +10,7 @@ import java.util.TreeMap;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -41,6 +42,7 @@ import com.project.website.shared.client.widgets.authentication.invite.InviteWid
 import com.project.website.shared.client.widgets.authentication.invite.InviteWidget.InviteRequestData;
 import com.project.website.shared.contracts.authentication.AuthenticationService;
 import com.project.website.shared.contracts.authentication.AuthenticationServiceAsync;
+import com.project.website.shared.data.UserProfile;
 
 public class WorksheetImpl implements Worksheet
 {
@@ -60,18 +62,6 @@ public class WorksheetImpl implements Worksheet
         AuthenticationServiceAsync service = getAuthService();
         updateUserSpecificInfo(view, service);
         setRegistrations();
-    }
-
-    @Override
-    public SimpleEvent<Void> getDefaultToolRequestEvent()
-    {
-        return defaultToolRequestEvent;
-    }
-
-    @Override
-    public SimpleEvent<Boolean> getViewModeEvent()
-    {
-        return viewModeEvent;
     }
 
     public void load(Long id)
@@ -588,13 +578,13 @@ public class WorksheetImpl implements Worksheet
 
     private void updateUserSpecificInfo(WorksheetView view, AuthenticationServiceAsync service)
     {
-        this.view.setInviteLinkVisible(false);
+        this.view.setUserProfile(null);
         final WorksheetImpl that = this;
-        service.canRegisterUsers(new AsyncCallback<Boolean>() {
+        service.getUserProfile(new AsyncCallback<UserProfile>() {
             @Override
-            public void onSuccess(Boolean result)
+            public void onSuccess(UserProfile result)
             {
-                that.view.setInviteLinkVisible(result);
+                that.view.setUserProfile(result);
             }
 
             @Override
@@ -602,6 +592,18 @@ public class WorksheetImpl implements Worksheet
             {
             }
         });
+    }
+
+    @Override
+    public HandlerRegistration addDefaultToolRequestHandler(SimpleEvent.Handler<Void> handler)
+    {
+        return defaultToolRequestEvent.addHandler(handler);
+    }
+
+    @Override
+    public HandlerRegistration addViewModeChangedHandler(Handler<Boolean> handler)
+    {
+        return this.viewModeEvent.addHandler(handler);
     }
 }
 

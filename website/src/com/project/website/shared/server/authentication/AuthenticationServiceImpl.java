@@ -23,6 +23,7 @@ import com.project.website.shared.contracts.authentication.AuthenticationService
 import com.project.website.shared.data.Invitation;
 import com.project.website.shared.data.QueryParameters;
 import com.project.website.shared.data.User;
+import com.project.website.shared.data.UserProfile;
 
 public class AuthenticationServiceImpl extends RemoteServiceServlet implements AuthenticationService
 {
@@ -49,8 +50,10 @@ public class AuthenticationServiceImpl extends RemoteServiceServlet implements A
     @Override
     public void register(String email, String password, String name, Invitation invitation)
     {
-        boolean needsInvitation = false == canRegisterUsers();
-        if (needsInvitation && (false == AuthenticationUtils.invitationIsValid(invitation))) {
+        User authenticatedUser = getAuthenticatedUser();
+        boolean needsInvitation = false == canRegisterUsers(authenticatedUser);
+        boolean validInvitation = AuthenticationUtils.invitationIsValid(invitation);
+        if (needsInvitation && (false == validInvitation)) {
             // User has no invitation and no privileges to register new users.
             this.onInvalidInvitation();
             return;
@@ -62,20 +65,9 @@ public class AuthenticationServiceImpl extends RemoteServiceServlet implements A
         }
 
         AuthenticationUtils.createUser(email, password, name);
-        AuthenticationUtils.invalidateInvitation(invitation);
-    }
-
-
-
-    @Override
-    public boolean canRegisterUsers()
-    {
-        // TODO implement a permissions system
-        User registeringUser = HttpAuthentication.getAuthenticatedUser(this.getThreadLocalRequest(), this.getThreadLocalResponse());
-        if (null == registeringUser) {
-            return false;
+        if (needsInvitation || validInvitation) {
+            AuthenticationUtils.invalidateInvitation(invitation);
         }
-        return registeringUser.username.equals(ADMIN_USERNAME);
     }
 
 
@@ -192,5 +184,30 @@ public class AuthenticationServiceImpl extends RemoteServiceServlet implements A
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+
+    @Override
+    public UserProfile getUserProfile()
+    {
+        User user = getAuthenticatedUser();
+        boolean canInvite = this.canRegisterUsers(user);
+        UserProfile userProfile = new UserProfile(user.username, user.publicName, canInvite);
+        return userProfile;
+    }
+
+    private boolean canRegisterUsers(User user)
+    {
+        // TODO implement a permissions system
+        if (null == user) {
+            return false;
+        }
+        return user.username.equals(ADMIN_USERNAME);
+    }
+
+    private User getAuthenticatedUser()
+    {
+        User user = HttpAuthentication.getAuthenticatedUser(this.getThreadLocalRequest(), this.getThreadLocalResponse());
+        return user;
     }
 }
