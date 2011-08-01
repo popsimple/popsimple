@@ -418,6 +418,13 @@
 
 }
 
+.worksheetModeViewOnly .toolFramePanel:hover, .worksheetModeViewOnly .toolFramePanel.drag, .worksheetModeViewOnly .toolFramePanel.selected
+{
+	border-style: none;
+	background-color: transparent;
+	padding: 1px;
+}
+
 .toolFrameBodyPanel {
 	cursor: default;
 	padding: 1px 5px 10px 5px;
@@ -461,15 +468,6 @@
 	text-align: right;
 }
 
-.worksheetModeViewOnly .toolFramePanel
-{
-	visibility: hidden;
-}
-
-.toolFramePanel:hover .toolFrameHeader, .toolFramePanel.drag .toolFrameHeader, .toolFramePanel.selected .toolFrameHeader
-{
-	visibility: visible;
-}
 
 .toolFrameButtonsPanel {
 	font-family: verdana, sans-serif;
@@ -509,6 +507,12 @@
 {
     visibility: visible;
 }
+.worksheetModeViewOnly .toolFramePanel:hover .toolFrameHoverVisibleElement, .worksheetModeViewOnly .toolFramePanel.drag .toolFrameHoverVisibleElement, .worksheetModeViewOnly .toolFramePanel.selected .toolFrameHoverVisibleElement
+{
+    visibility: hidden;
+}
+
+
 
 .toolFrameHoverDisplayBlockElement {
     display: none;
@@ -517,18 +521,25 @@
 {
     display:block;
 }
-
+.worksheetModeViewOnly .toolFramePanel:hover .toolFrameHoverDisplayBlockElement, .worksheetModeViewOnly .toolFramePanel.drag .toolFrameHoverDisplayBlockElement, .worksheetModeViewOnly .toolFramePanel.selected .toolFrameHoverDisplayBlockElement
+{
+	display: none;
+}
 
 
 .toolFramePanel.selected {
-	border-style: dotted !important;
-	border-color: black !important;
+	border-style: dotted; /* !important; */
+	border-color: black; /* !important; */
 	border-radius: 5px;
 	border-width: 1px;
 	padding: 0;
 }
 
 /*---------------------------------------------*/
+.worksheetModeViewOnly .toolOptionsBarContainer, .worksheetModeViewOnly .toolOptionsBar {
+	display: none;
+}
+
 .toolOptionsBarContainer {
     position: relative;
 }
