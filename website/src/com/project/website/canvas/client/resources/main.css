@@ -1,6 +1,9 @@
 @def initialMapSize 300px;
 @def emptyToolBackgroundColor #e5e3df;
-
+@def toolboxIconSize 32px;
+@def toolboxIconExpandedSize 48px;
+@def toolboxIconExpandedSizeWithPadding 58px;
+@def toolboxWidth 90px;
 
 @external gwt-RadioButton;
 .monospace {
@@ -40,7 +43,7 @@
 
 .worksheet {
 	height: 100%;
-	margin-left: 120px;
+	margin-left: toolboxWidth;
 	border-left: 2px solid black;
 	position: relative;
 }
@@ -71,7 +74,7 @@
 
 .worksheetHeader {
 	margin-left: 10px;
-	font-size: 1.5em;
+	font-size: 1.3em;
 	padding: 5px;
 	height: 25px;
 }
@@ -159,12 +162,12 @@
 
 .toolbox {
 	float: left;
-	width: 120px;
+	width: toolboxWidth;
 	height: 100%;
 }
 
 .toolboxHeader {
-	font-size: 1.5em;
+	font-size: 1.3em;
 	padding: 5px;
 	text-align: center;
 	margin-bottom: 10px;
@@ -200,20 +203,20 @@
 
 .toolboxCommonIconStyle {
 	margin: 0 auto;
-    width: 32px;
-    height: 32px;
-	padding: 13px 5px;
+    width: toolboxIconSize;
+    height: toolboxIconSize;
+	padding: 14px 5px;
 }
 
 .toolboxCommonIconStyle:hover, .toolboxCommonSelectedIconStyle , .toolboxCommonSelectedIconStyle:hover {
-    width: 48px;
-    height: 48px;
-    padding: 5px 5px;
+    width: toolboxIconExpandedSizeWithPadding;
+    height: toolboxIconExpandedSize;
+    padding: 6px 5px;
 }
 
 .toolboxInnerIconStyle {
-	width: 32px;
-	height: 32px;
+	width: toolboxIconSize;
+	height: toolboxIconSize;
 	background-size: 32px auto;
     background-position: center center;
 }
@@ -225,9 +228,9 @@
     border-radius: 5px 5px 5px 5px;
     border-width: 1px;
     border-style: solid;
-    width: 48px;
-    height: 48px;
-    background-size: 48px auto;
+    width: toolboxIconExpandedSize;
+    height: toolboxIconExpandedSize;
+    background-size: toolboxIconExpandedSize auto;
 }
 .toolboxCommonSelectedIconStyle .toolboxInnerIconStyle, .toolboxCommonSelectedIconStyle:hover .toolboxInnerIconStyle {
 	border-color: #aaa;
