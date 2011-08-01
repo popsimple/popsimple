@@ -221,8 +221,12 @@ public class ImageTool  extends Composite implements CanvasTool<ImageData>
         this.viewMode = isViewMode;
         if (isViewMode) {
             registrationsManager.clear();
+            if (StringUtils.isWhitespaceOrNull(this.data.imageInformation.url)) {
+                this.setVisible(false);
+            }
         }
         else {
+            this.setVisible(true);
             reRegisterHandlers();
         }
     }

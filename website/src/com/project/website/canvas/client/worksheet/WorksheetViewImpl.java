@@ -125,6 +125,8 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     private final HashMap<CanvasToolFrame, RegistrationsManager> toolFrameRegistrations = new HashMap<CanvasToolFrame, RegistrationsManager>();
 
     private final HashSet<CanvasToolFrame> overToolFrames = new HashSet<CanvasToolFrame>();
+    private final RegistrationsManager editModeRegistrations = new RegistrationsManager();
+    private final RegistrationsManager allModesRegistrations = new RegistrationsManager();
 
     private final SimpleEvent<CanvasPageOptions> optionsUpdatedEvent = new SimpleEvent<CanvasPageOptions>();
     private final SimpleEvent<Void> stopOperationEvent = new SimpleEvent<Void>();
@@ -397,11 +399,16 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
             frame.setViewMode(isViewMode);
         }
         if (isViewMode) {
+            this.editModeRegistrations.clear();
+
             worksheetHeader.addStyleName(CanvasResources.INSTANCE.main().displayNone());
             addStyleName(CanvasResources.INSTANCE.main().worksheetFullView());
             addStyleName(CanvasResources.INSTANCE.main().worksheetModeViewOnly());
             removeStyleName(CanvasResources.INSTANCE.main().worksheetModeEditable());
+
         } else {
+            this.addEditModeRegistrations();
+
             worksheetHeader.removeStyleName(CanvasResources.INSTANCE.main().displayNone());
             removeStyleName(CanvasResources.INSTANCE.main().worksheetFullView());
             removeStyleName(CanvasResources.INSTANCE.main().worksheetModeViewOnly());
@@ -410,42 +417,36 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     }
 
     private void addRegistrations() {
-        this.optionsBackground.addClickHandler(new ClickHandler() {
+        this.addEditModeRegistrations();
+
+        this.allModesRegistrations.add(this.optionsBackground.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 selectImageDialog.setValue(
                     (ImageInformation)CloneableUtils.clone(pageOptions.backgroundImage));
                 optionsDialog.center();
             }
-        });
-        this.selectImageDialog.addCancelHandler(new SimpleEvent.Handler<Void>() {
+        }));
+        this.allModesRegistrations.add(this.selectImageDialog.addCancelHandler(new SimpleEvent.Handler<Void>() {
             @Override
             public void onFire(Void arg) {
                 optionsDialog.hide();
             }
-        });
-        this.selectImageDialog.addDoneHandler(new SimpleEvent.Handler<ImageInformation>() {
+        }));
+        this.allModesRegistrations.add(this.selectImageDialog.addDoneHandler(new SimpleEvent.Handler<ImageInformation>() {
 
             @Override
             public void onFire(ImageInformation arg) {
                 optionsDialog.hide();
                 onBackgroundImageSelected(arg);
             }
-        });
-        this.worksheetPanel.addDomHandler(new MouseDownHandler() {
-            @Override
-            public void onMouseDown(MouseDownEvent event) {
-                if (overToolFrames.isEmpty()) {
-                    onClearAreaClicked(event);
-                }
-            }
-        }, MouseDownEvent.getType());
+        }));
         final WorksheetViewImpl that = this;
-        this.focusPanel.addKeyDownHandler(new KeyDownHandler(){
+        this.allModesRegistrations.add(this.focusPanel.addKeyDownHandler(new KeyDownHandler(){
             @Override
             public void onKeyDown(KeyDownEvent event) {
                 that.onKeyDown(event);
-            }});
+            }}));
 
         Event.addNativePreviewHandler(new NativePreviewHandler() {
             @Override
@@ -457,6 +458,18 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
                 }
             }
         });
+    }
+
+    private void addEditModeRegistrations()
+    {
+        this.editModeRegistrations.add(this.worksheetPanel.addDomHandler(new MouseDownHandler() {
+            @Override
+            public void onMouseDown(MouseDownEvent event) {
+                if (overToolFrames.isEmpty()) {
+                    onClearAreaClicked(event);
+                }
+            }
+        }, MouseDownEvent.getType()));
     }
 
     private void onBackgroundImageSelected(ImageInformation arg)

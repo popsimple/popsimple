@@ -209,6 +209,10 @@ public class VideoTool extends Composite implements CanvasTool<VideoData>
     {
         this.viewMode = isViewMode;
         if (isViewMode) {
+            registrationsManager.clear();
+            if (StringUtils.isWhitespaceOrNull(this.data.videoInformation.url)) {
+                this.setVisible(false);
+            }
             this.registrationsManager.clear();
         }
         else {
