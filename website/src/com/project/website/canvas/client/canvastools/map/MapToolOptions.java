@@ -117,6 +117,7 @@ public class MapToolOptions extends Composite implements TakesValue<MapData>, Ha
         this.clearButtons();
         this.providerButtons.getByKey1(MapProvider.valueOf(value.provider)).setValue(true);
         this.mapTypeButtons.getByKey1(value.mapType).setValue(true);
+        this.updateAvailableOptions();
     }
 
     @Override
