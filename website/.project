@@ -3,6 +3,11 @@
 	<name>website</name>
 	<comment></comment>
 	<projects>
+		<project>dolomite</project>
+		<project>gwt-bing</project>
+		<project>gwt-mapstraction</project>
+		<project>gwt-youtube</project>
+		<project>shared</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

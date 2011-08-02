@@ -349,5 +349,22 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
         tempElem.addStyleName(CanvasResources.INSTANCE.main().outOfBounds());
         RootPanel.get().add(tempElem);
         finder.find(tempElem.getElement().getId(), query);
+
+        //bingLocationsQuery(query);
     }
+
+//    private void bingLocationsQuery(String query)
+//    {
+//        BindLocationRequestFactory factory = GWT.create(BindLocationRequestFactory.class);
+//        BindLocationRequest request = factory.create();
+//        request.locations(ApiKeys.BIND_MAPS, query)
+//        .
+//               .request(new JsonpRequestCallback<LocationResponse>() {
+//                @Override
+//                public void onSuccess(LocationResponse result)
+//                {
+//                    Window.alert("Result: " + result);
+//                }
+//            });
+//    }
 }
