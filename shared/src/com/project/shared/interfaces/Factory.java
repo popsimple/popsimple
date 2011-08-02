@@ -1,4 +1,4 @@
-package com.project.shared.data;
+package com.project.shared.interfaces;
 
 public interface Factory<T> {
     public T create();

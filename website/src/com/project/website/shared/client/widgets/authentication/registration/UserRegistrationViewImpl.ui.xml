@@ -31,10 +31,13 @@
 					</p>
 					<p class="{res.main.buttonRow}">
                         <g:HTMLPanel ui:field="errorPanel" addStyleNames="{res.main.errorPanel}">
-                            <g:Label addStyleNames="{res.main.errorLabel}"></g:Label>
+                            <g:Label ui:field="genericErrorLabel" addStyleNames="{res.main.errorLabel}"></g:Label>
                         </g:HTMLPanel>
 						<g:SubmitButton ui:field="buttonRegister" addStyleNames="{res.main.button}">Create my account</g:SubmitButton>
 					</p>
+                    <p class="{res.main.buttonRow}">
+                        Already registered? <g:InlineHyperlink ui:field="loginLink" targetHistoryToken="">Login here</g:InlineHyperlink>
+                    </p>
 				</g:HTMLPanel>
 			</g:FormPanel>
 		</g:HTMLPanel>

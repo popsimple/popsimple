@@ -3,8 +3,8 @@ package com.project.website.canvas.shared.data;
 import java.io.Serializable;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
-import com.project.shared.data.ICloneable;
 import com.project.shared.data.Point2D;
+import com.project.shared.interfaces.ICloneable;
 import com.project.shared.utils.CloneableUtils;
 import com.project.shared.utils.ObjectUtils;
 

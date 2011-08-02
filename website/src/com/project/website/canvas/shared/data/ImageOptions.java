@@ -3,7 +3,7 @@ package com.project.website.canvas.shared.data;
 import java.io.Serializable;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
-import com.project.shared.data.ICloneable;
+import com.project.shared.interfaces.ICloneable;
 
 public class ImageOptions implements Serializable, IsSerializable, ICloneable {
     private static final long serialVersionUID = 1L;

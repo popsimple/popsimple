@@ -1,4 +1,4 @@
-package com.project.shared.client;
+package com.project.shared.client.net;
 
 import com.google.gwt.event.dom.client.ErrorEvent;
 import com.google.gwt.event.dom.client.ErrorHandler;

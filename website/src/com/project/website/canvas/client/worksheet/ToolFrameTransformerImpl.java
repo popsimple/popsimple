@@ -9,8 +9,8 @@ import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.data.Point2D;
-import com.project.shared.data.PointTransformer;
-import com.project.shared.data.PointTransformer.TransformationMode;
+import com.project.shared.utils.PointUtils;
+import com.project.shared.utils.PointUtils.TransformationMode;
 import com.project.website.canvas.client.canvastools.base.CanvasToolFrame;
 import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.client.worksheet.interfaces.ElementDragManager;
@@ -227,7 +227,7 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
             else if (event.getAltKey()) {
                 mode = TransformationMode.SNAP_X;
             }
-            sizeDelta = PointTransformer.transform(sizeDelta, mode);
+            sizeDelta = PointUtils.transform(sizeDelta, mode);
             if (event.getShiftKey() && event.getAltKey()) {
                 // Snap to grid.
                 sizeDelta = sizeDelta.mul(1/GRID_RESOLUTION).mul(GRID_RESOLUTION);

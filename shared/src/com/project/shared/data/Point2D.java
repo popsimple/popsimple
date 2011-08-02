@@ -3,6 +3,7 @@ package com.project.shared.data;
 import java.io.Serializable;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
+import com.project.shared.interfaces.ICloneable;
 
 public class Point2D implements Serializable, IsSerializable, ICloneable {
     private static final long serialVersionUID = 1L;

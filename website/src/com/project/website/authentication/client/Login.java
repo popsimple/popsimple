@@ -12,9 +12,12 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.project.shared.client.events.SimpleEvent.Handler;
+import com.project.shared.client.utils.UrlUtils;
+import com.project.shared.utils.QueryString;
+import com.project.shared.utils.StringUtils;
 import com.project.website.shared.client.widgets.authentication.login.LoginWidget;
-import com.project.website.shared.client.widgets.authentication.registration.RegistrationWidget;
-import com.project.website.shared.client.widgets.authentication.registration.RegistrationWidget.RegistrationRequestData;
+import com.project.website.shared.client.widgets.authentication.registration.RegistrationRequestData;
+import com.project.website.shared.client.widgets.authentication.registration.UserRegistrationViewImpl;
 import com.project.website.shared.client.widgets.authentication.resources.AuthenticationResources;
 import com.project.website.shared.contracts.authentication.AuthenticationService;
 import com.project.website.shared.contracts.authentication.AuthenticationServiceAsync;
@@ -38,8 +41,16 @@ public class Login implements EntryPoint {
     protected void handleLoginHistoryEvent(ValueChangeEvent<String> event)
     {
         List<String> inviteIds = Window.Location.getParameterMap().get(QueryParameters.INVITE_ID);
+        String inviteId = null;
         if ((null != inviteIds) && (1 == inviteIds.size())) {
-            String inviteId = URL.decode(inviteIds.get(0));
+            inviteId = URL.decode(inviteIds.get(0));
+        }
+        else {
+            QueryString queryString = QueryString.parse(UrlUtils.getUrlEncoder(), event.getValue());
+            inviteId = queryString.get(QueryParameters.INVITE_ID);
+        }
+
+        if (false == StringUtils.isWhitespaceOrNull(inviteId)) {
             showRegistration(inviteId);
         }
         else {
@@ -56,14 +67,15 @@ public class Login implements EntryPoint {
     private void showRegistration(String inviteId)
     {
         // TODO: save invitation id
-        RegistrationWidget regWidget = new RegistrationWidget(inviteId);
-        regWidget.addRegistrationRequestHandler(new Handler<RegistrationWidget.RegistrationRequestData>() {
+        final UserRegistrationViewImpl regWidget = new UserRegistrationViewImpl(inviteId);
+        regWidget.addRegistrationRequestHandler(new Handler<RegistrationRequestData>() {
             @Override
             public void onFire(final RegistrationRequestData arg)
             {
                 final AuthenticationServiceAsync service =
                         (AuthenticationServiceAsync)GWT.create(AuthenticationService.class);
-                service.register(arg.getEmail(), arg.getPassword(), arg.getName(), arg.getInvitation(), new AsyncCallback<Void>() {
+                final String email = arg.getEmail();
+                service.register(email, arg.getPassword(), arg.getName(), arg.getInvitation(), new AsyncCallback<Void>() {
 
                     @Override
                     public void onSuccess(Void result)
@@ -74,6 +86,11 @@ public class Login implements EntryPoint {
                     @Override
                     public void onFailure(Throwable caught)
                     {
+                        if (caught instanceof AuthenticationService.UserAlreadyExists)
+                        {
+                            regWidget.onEmailAlreadyExists(email);
+                        }
+                        regWidget.setErrorText("Registration failed :(");
                         Window.alert("Unable to register. Reason: " + caught.toString());
                     }
                 });

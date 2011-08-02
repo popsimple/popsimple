@@ -1,6 +1,6 @@
 package com.project.shared.utils;
 
-import com.project.shared.data.ICloneable;
+import com.project.shared.interfaces.ICloneable;
 
 public class CloneableUtils {
 

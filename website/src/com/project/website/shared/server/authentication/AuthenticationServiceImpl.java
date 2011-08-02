@@ -17,7 +17,7 @@ import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
-import com.project.shared.server.UrlEncodedQueryString;
+import com.project.shared.server.ServerQueryString;
 import com.project.shared.utils.StringUtils;
 import com.project.website.shared.contracts.authentication.AuthenticationService;
 import com.project.website.shared.data.Invitation;
@@ -49,6 +49,7 @@ public class AuthenticationServiceImpl extends RemoteServiceServlet implements A
 
     @Override
     public void register(String email, String password, String name, Invitation invitation)
+        throws UserAlreadyExists
     {
         User authenticatedUser = getAuthenticatedUser();
         boolean needsInvitation = false == canRegisterUsers(authenticatedUser);
@@ -61,7 +62,7 @@ public class AuthenticationServiceImpl extends RemoteServiceServlet implements A
 
         if (null != AuthenticationUtils.loadUser(email)) {
             // todo do this normally
-            throw new RuntimeException("User already exists.");
+            throw new UserAlreadyExists();
         }
 
         AuthenticationUtils.createUser(email, password, name);
@@ -149,13 +150,13 @@ public class AuthenticationServiceImpl extends RemoteServiceServlet implements A
         Session session = Session.getDefaultInstance(props, null);
 
         Invitation invitation = AuthenticationUtils.createInvitation();
-        UrlEncodedQueryString query = UrlEncodedQueryString.create();
+        ServerQueryString query = ServerQueryString.create();
         query.set(QueryParameters.INVITE_ID, invitation.id);
         String inviteUrl;
 
         try {
-            URI inviteURI = new URI(SITE_BASE_ADDR + INVITE_PATH);
-            inviteUrl = query.apply(inviteURI).toURL().toString();
+            URI inviteURI = new URI(SITE_BASE_ADDR + INVITE_PATH + "#" + query.toString());
+            inviteUrl = inviteURI.toURL().toString();
         } catch (MalformedURLException e) {
             // TODO Auto-generated catch block
             throw new RuntimeException(e);

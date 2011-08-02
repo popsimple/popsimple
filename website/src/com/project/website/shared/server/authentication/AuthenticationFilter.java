@@ -15,7 +15,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.project.shared.server.UrlEncodedQueryString;
+import com.project.shared.server.ServerQueryString;
 import com.project.shared.utils.StringUtils;
 import com.project.website.shared.data.QueryParameters;
 
@@ -63,11 +63,11 @@ public class AuthenticationFilter implements Filter
         String requestQueryString = httpRequest.getQueryString();
         String fullRequestURL = redirectUrlBuffer.toString();
 
-        UrlEncodedQueryString responseUrlQueryString = UrlEncodedQueryString.create();
+        ServerQueryString responseUrlQueryString = ServerQueryString.create();
         if (false == StringUtils.isWhitespaceOrNull(requestQueryString)) {
             fullRequestURL = redirectUrlBuffer.append("?" + requestQueryString).toString();
 
-            UrlEncodedQueryString requestUrlQueryString = UrlEncodedQueryString.parse(requestQueryString);
+            ServerQueryString requestUrlQueryString = ServerQueryString.parse(requestQueryString);
 
             if (requestUrlQueryString.contains(QueryParameters.GWT_CODESERVER)) {
                 responseUrlQueryString.append(QueryParameters.GWT_CODESERVER, requestUrlQueryString.get(QueryParameters.GWT_CODESERVER));

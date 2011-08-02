@@ -9,7 +9,7 @@ import com.project.gwtmapstraction.client.mxn.MapstractionMapType;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.events.SingleEvent;
-import com.project.shared.client.utils.DynamicScriptLoader;
+import com.project.shared.client.net.DynamicScriptLoader;
 import com.project.shared.client.utils.HandlerUtils;
 import com.project.shared.client.utils.SchedulerUtils;
 import com.project.shared.data.funcs.AsyncFunc;

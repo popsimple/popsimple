@@ -1,7 +1,8 @@
-package com.project.shared.data;
+package com.project.shared.utils;
 
-//TODO: Should be in PointUtils?
-public class PointTransformer
+import com.project.shared.data.Point2D;
+
+public class PointUtils
 {
     public enum TransformationMode {
         NONE, // identity function

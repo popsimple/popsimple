@@ -3,11 +3,28 @@ package com.project.shared.client.utils;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.regexp.shared.RegExp;
 import com.project.shared.data.KeyValue;
+import com.project.shared.data.StringEncoder;
 import com.project.shared.data.StringKeyValue;
 
 public class UrlUtils {
     private static RegExp urlValidator = null;
     private static RegExp urlPlusTldValidator = null;
+
+    public static StringEncoder getUrlEncoder()
+    {
+        return new StringEncoder(){
+            @Override
+            public String encode(String value)
+            {
+                return URL.encode(value);
+            }
+
+            @Override
+            public String decode(String value)
+            {
+                return URL.decode(value);
+            }};
+    }
 
     public static boolean isValidUrl(String url, boolean topLevelDomainRequired) {
         if (urlValidator == null || urlPlusTldValidator == null) {

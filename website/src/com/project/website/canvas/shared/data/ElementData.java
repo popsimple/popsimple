@@ -5,7 +5,7 @@ import java.io.Serializable;
 import com.google.code.twig.annotation.Embedded;
 import com.google.code.twig.annotation.Id;
 import com.google.gwt.user.client.rpc.IsSerializable;
-import com.project.shared.data.ICloneable;
+import com.project.shared.interfaces.ICloneable;
 import com.project.shared.utils.CloneableUtils;
 
 public class ElementData implements Serializable, IsSerializable, ICloneable {

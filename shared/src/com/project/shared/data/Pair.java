@@ -1,7 +1,12 @@
 package com.project.shared.data;
 
-public class Pair<A, B>
+import java.io.Serializable;
+
+
+public class Pair<A, B> implements Serializable
 {
+    private static final long serialVersionUID = 1L;
+
     protected final A a;
     protected final B b;
 

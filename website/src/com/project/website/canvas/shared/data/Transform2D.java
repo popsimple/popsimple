@@ -4,8 +4,8 @@ import java.io.Serializable;
 
 import com.google.code.twig.annotation.Embedded;
 import com.google.gwt.user.client.rpc.IsSerializable;
-import com.project.shared.data.ICloneable;
 import com.project.shared.data.Point2D;
+import com.project.shared.interfaces.ICloneable;
 
 public class Transform2D implements Serializable, IsSerializable, ICloneable {
     private static final long serialVersionUID = 1L;

@@ -18,12 +18,15 @@ import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.website.shared.data.Invitation;
 
-public class RegistrationWidget extends Composite {
+public class UserRegistrationViewImpl extends Composite implements UserRegistrationView {
 
     private static RegistrationWidgetUiBinder uiBinder = GWT.create(RegistrationWidgetUiBinder.class);
 
-    interface RegistrationWidgetUiBinder extends UiBinder<Widget, RegistrationWidget> {
+    interface RegistrationWidgetUiBinder extends UiBinder<Widget, UserRegistrationViewImpl> {
     }
+
+    @UiField
+    Label genericErrorLabel;
 
     @UiField
     TextBox textName;
@@ -59,41 +62,7 @@ public class RegistrationWidget extends Composite {
 
     private String _inviteId;
 
-    public class RegistrationRequestData {
-        private final String email;
-        private final String password;
-        private final String name;
-        private final Invitation invitation;
-
-        public RegistrationRequestData(String name, String email, String password, Invitation invitation)
-        {
-            this.email = email;
-            this.name = name;
-            this.password = password;
-            this.invitation = invitation;
-        }
-
-        public Invitation getInvitation()
-        {
-            return invitation;
-        }
-
-        public String getName()
-        {
-            return name;
-        }
-
-        public String getEmail()
-        {
-            return email;
-        }
-        public String getPassword()
-        {
-            return password;
-        }
-    }
-
-    public RegistrationWidget() {
+    public UserRegistrationViewImpl() {
         initWidget(uiBinder.createAndBindUi(this));
 
         this.registerFormHandlers();
@@ -105,12 +74,13 @@ public class RegistrationWidget extends Composite {
 
     }
 
-    public RegistrationWidget(String inviteId)
+    public UserRegistrationViewImpl(String inviteId)
     {
         this();
         this._inviteId = inviteId;
     }
 
+    @Override
     public HandlerRegistration addRegistrationRequestHandler(Handler<RegistrationRequestData> handler) {
         return this.registrationRequestEvent.addHandler(handler);
     }
@@ -199,5 +169,23 @@ public class RegistrationWidget extends Composite {
             this.setError(confirmErrorLabel, "Confirm password does not match");
         }
         return isValid;
+    }
+
+    @Override
+    public void setErrorText(String text)
+    {
+        this.setError(this.genericErrorLabel, text);
+    }
+
+    @Override
+    public void clearErrorText()
+    {
+        this.clearError(this.genericErrorLabel);
+    }
+
+    @Override
+    public void onEmailAlreadyExists(String alreadyTakenEmail)
+    {
+        this.setError(this.emailErrorLabel, alreadyTakenEmail + " is already registered.");
     }
 }

@@ -5,4 +5,5 @@
 	<source path="client"/>
 	<source path="data"/>
 	<source path="utils"/>
+    <source path="interfaces"/>
 </module>

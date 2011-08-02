@@ -1,4 +1,4 @@
-package com.project.shared.client.utils;
+package com.project.shared.client.net;
 
 import java.util.HashMap;
 
@@ -10,6 +10,7 @@ import com.google.gwt.dom.client.ScriptElement;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.events.SingleEvent;
+import com.project.shared.client.utils.HandlerUtils;
 import com.project.shared.data.funcs.AsyncFunc;
 import com.project.shared.data.funcs.Func;
 import com.project.shared.utils.loggers.Logger;
@@ -38,7 +39,7 @@ public class DynamicScriptLoader
     /*-{
 		var me = this;
 		elem.onload = function() {
-			me.@com.project.shared.client.utils.DynamicScriptLoader::scriptLoaded()();
+			me.@com.project.shared.client.net.DynamicScriptLoader::scriptLoaded()();
 		};
     }-*/;
 
