@@ -89,6 +89,7 @@ public class Login implements EntryPoint {
                         if (caught instanceof AuthenticationService.UserAlreadyExists)
                         {
                             regWidget.onEmailAlreadyExists(email);
+                            return;
                         }
                         regWidget.setErrorText("Registration failed :(");
                         Window.alert("Unable to register. Reason: " + caught.toString());

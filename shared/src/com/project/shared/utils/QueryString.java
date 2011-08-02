@@ -37,7 +37,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.StringTokenizer;
 
 import com.project.shared.data.StringEncoder;
 
@@ -763,13 +762,13 @@ public class QueryString {
         // of what the user later nominates as their output parameter
         // separator using toString()
 
-        StringTokenizer tokenizer = new StringTokenizer( parameters.toString(), PARSE_PARAMETER_SEPARATORS );
+        //StringTokenizer tokenizer = new StringTokenizer( parameters.toString(), PARSE_PARAMETER_SEPARATORS );
+        String[] parts = parameters.toString().split("(" + Separator.AMPERSAND  + "|" + Separator.SEMICOLON + ")");
 
         Set<String> setAlreadyParsed = null;
 
-        while ( tokenizer.hasMoreTokens() ) {
-            String parameter = tokenizer.nextToken();
-
+        for (String parameter : parts)
+        {
             int indexOf = parameter.indexOf( '=' );
 
             String name;
