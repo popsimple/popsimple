@@ -94,5 +94,4 @@ public interface CanvasResources extends ClientBundle {
 
     @Source("com/project/website/shared/client/resources/images/bitmaps/person_24.png")
     ImageResource person24();
-
 }

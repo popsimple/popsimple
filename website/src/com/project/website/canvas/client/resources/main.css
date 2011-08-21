@@ -4,6 +4,8 @@
 @def toolboxIconExpandedSize 48px;
 @def toolboxIconExpandedSizeWithPadding 58px;
 @def toolboxWidth 90px;
+@def imageToolDefaultWidth 200px;
+@def imageToolDefaultHeight 200px;
 
 @external gwt-RadioButton;
 .monospace {
@@ -390,17 +392,18 @@
 
 }
 
-.imageBox {
-	display: block;
+.imageToolDefault {
+	width: imageToolDefaultWidth;
+    height: imageToolDefaultHeight;
 }
 
 @sprite .imageToolEmpty {
     gwt-image: "toolboxImageIcon";
     background-position: center;
     background-repeat: no-repeat;
-    width: 200px;
-    height: 200px;
     background-color: emptyToolBackgroundColor;
+    width: imageToolDefaultWidth;
+    height: imageToolDefaultHeight;
 }
 
 .imageToolOptionsBar {

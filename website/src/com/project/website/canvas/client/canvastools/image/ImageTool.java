@@ -71,6 +71,7 @@ public class ImageTool  extends Composite implements CanvasTool<ImageData>
         searchProviders.addAll(imageSearchProviders);
 
         WidgetUtils.disableDrag(this);
+        this.addStyleName(CanvasResources.INSTANCE.main().imageToolDefault());
         this.addStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
     }
 

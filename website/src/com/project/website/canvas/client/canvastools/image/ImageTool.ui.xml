@@ -5,7 +5,7 @@
     <ui:style>
 
     </ui:style>
-    <g:FlowPanel ui:field="mainPanel" addStyleNames="{res.main.imageBox} {res.main.imageToolContentPanel}">
+    <g:FlowPanel ui:field="mainPanel" addStyleNames="{res.main.imageToolDefault} {res.main.imageToolContentPanel}">
         <g:FlowPanel ui:field="optionsBar" addStyleNames="{res.main.toolOptionsBar} {res.main.toolFrameHoverDisplayBlockElement} {res.main.imageToolOptionsBar}">
             <g:Button ui:field="optionsLabel" addStyleNames="{res.main.link} {res.main.toolOptionsLabel} ">
                 Change image or appearance...

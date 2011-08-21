@@ -30,7 +30,7 @@ public interface MainStyles extends CssResource {
 
     String hoverTextBoxView();
 
-    String imageBox();
+    String imageToolDefault();
 
     String imageCreateModeCanvasStyle();
 
