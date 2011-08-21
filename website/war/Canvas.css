@@ -2,6 +2,11 @@ body, html {
 	height:100%;
 
 }
+/* Hide the scrollbar for the body since currently the canvas doesnt extend and when dragging popup panels (dialogbox)
+it automatically displays a scrollbar. */
+body {
+	overflow: hidden;
+}
 *{
 	font-family:verdana,sans-serif;
 }
