@@ -150,7 +150,6 @@ public class WorksheetImpl implements Worksheet
             }
         });
         dialog.setText("Invite a friend to PopSimple.com");
-        dialog.show();
         Scheduler.get().scheduleDeferred(new ScheduledCommand() {
             @Override
             public void execute()
