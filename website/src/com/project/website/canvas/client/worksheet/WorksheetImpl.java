@@ -47,7 +47,7 @@ import com.project.website.shared.data.UserProfile;
 public class WorksheetImpl implements Worksheet
 {
     private CanvasPage page = new CanvasPage();
-    private final SimpleEvent<Void> defaultToolRequestEvent = new SimpleEvent<Void>();
+    private final SimpleEvent<Void> _defaultToolRequestEvent = new SimpleEvent<Void>();
     private final SimpleEvent<Boolean> viewModeEvent = new SimpleEvent<Boolean>();
     private final WorksheetView view;
     private final HashMap<CanvasTool<?>, ToolInstanceInfo> toolInfoMap = new HashMap<CanvasTool<?>, ToolInstanceInfo>();
@@ -226,7 +226,10 @@ public class WorksheetImpl implements Worksheet
             return;
         }
         this.activeToolboxItem = toolboxItem;
-        this.setActiveToolInstance(null);
+        if (null != this.activeToolboxItem.getToolFactory())
+        {
+            this.setActiveToolInstance(null);
+        }
     }
 
     private CanvasToolFrame createToolInstance(final Point2D relativePos,
@@ -292,7 +295,11 @@ public class WorksheetImpl implements Worksheet
                 CanvasToolFrame toolFrame = createToolInstance(arg.getPosition(), factory);
                 toolFrame.getTool().setActive(true);
                 if (arg.getFactory().isOneShot()) {
-                    defaultToolRequestEvent.dispatch(null);
+                    _defaultToolRequestEvent.dispatch(null);
+                }
+                else
+                {
+                    setActiveToolboxItem(activeToolboxItem);
                 }
             }
         });
@@ -453,7 +460,7 @@ public class WorksheetImpl implements Worksheet
         setActiveToolInstance(null);
         // TODO dispatch stop operation
         // stopOperationEvent.dispatch(null);
-        defaultToolRequestEvent.dispatch(null);
+        _defaultToolRequestEvent.dispatch(null);
     }
 
     private void load(CanvasPage newPage)
@@ -596,7 +603,7 @@ public class WorksheetImpl implements Worksheet
     @Override
     public HandlerRegistration addDefaultToolRequestHandler(SimpleEvent.Handler<Void> handler)
     {
-        return defaultToolRequestEvent.addHandler(handler);
+        return _defaultToolRequestEvent.addHandler(handler);
     }
 
     @Override

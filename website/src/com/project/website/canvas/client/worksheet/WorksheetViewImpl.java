@@ -368,9 +368,6 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
     @Override
     public void setActiveToolboxItem(final ToolboxItem toolboxItem) {
-        if (toolboxItem == this.activeToolboxItem) {
-            return;
-        }
         this.clearActiveToolboxItem();
         this.activeToolboxItem = toolboxItem;
         this.worksheetPanel.addStyleName(toolboxItem.getCanvasStyleInCreateMode());
@@ -622,8 +619,8 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         Handler<Point2D> floatingWidgetStop = new Handler<Point2D>() {
             @Override
             public void onFire(Point2D position) {
-                toolCreationRequestEvent.dispatch(new ToolCreationRequest(position, toolboxItem
-                        .getToolFactory()));
+                toolCreationRequestEvent.dispatch(
+                        new ToolCreationRequest(position, toolboxItem.getToolFactory()));
             }
         };
         this._floatingWidgetTerminator = this._floatingWidgetDragManager.startMouseMoveOperation(

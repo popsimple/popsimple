@@ -18,11 +18,6 @@ public class TextEditToolFactory extends CanvasToolFactoryBase<TextEditTool> {
     }
 
     @Override
-    public boolean isOneShot() {
-        return true;
-    }
-
-    @Override
     public Widget getFloatingWidget() {
         return new FlowPanel();
     }
