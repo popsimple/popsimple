@@ -8,6 +8,8 @@ import com.project.website.canvas.client.canvastools.image.ImageToolFactory;
 import com.project.website.canvas.client.canvastools.image.ImageToolboxItem;
 import com.project.website.canvas.client.canvastools.map.MapToolFactory;
 import com.project.website.canvas.client.canvastools.map.MapToolboxItem;
+import com.project.website.canvas.client.canvastools.sitecrop.SiteCropToolboxItem;
+import com.project.website.canvas.client.canvastools.sketch.SketchToolboxItem;
 import com.project.website.canvas.client.canvastools.tasklist.TaskListToolFactory;
 import com.project.website.canvas.client.canvastools.tasklist.TaskListToolboxItem;
 import com.project.website.canvas.client.canvastools.textedit.TextEditToolFactory;
@@ -36,6 +38,8 @@ public class BuiltinTools {
         tools.add(new ImageToolboxItem());
         tools.add(new VideoToolboxItem());
         tools.add(new MapToolboxItem());
+        tools.add(new SiteCropToolboxItem());
+        tools.add(new SketchToolboxItem());
         tools.add(new TaskListToolboxItem());
     }
 

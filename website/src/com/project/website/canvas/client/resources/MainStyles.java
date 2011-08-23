@@ -203,4 +203,18 @@ public interface MainStyles extends CssResource {
     String worksheetSaveButton();
 
     String worksheetWelcomeLabelHolder();
+
+    String toolboxCropSiteIconStyle();
+
+    String cropSiteCreateModeCanvasStyle();
+
+    String sketchCreateModeCanvasStyle();
+
+    String toolboxSketchIconStyle();
+
+    String cropSiteFrame();
+
+    String cropSiteBox();
+
+    String cropSiteToolEmpty();
 }

@@ -2,6 +2,8 @@ package com.project.shared.client.utils;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.ContextMenuEvent;
+import com.google.gwt.event.dom.client.ContextMenuHandler;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
@@ -127,4 +129,14 @@ public class WidgetUtils {
 			}
 		};
 	}
+
+    public static void DisableContextMenu(Widget widget){
+        widget.addDomHandler(new ContextMenuHandler() {
+
+            @Override
+            public void onContextMenu(ContextMenuEvent event) {
+                event.preventDefault();
+            }
+        }, ContextMenuEvent.getType());
+    }
 }
