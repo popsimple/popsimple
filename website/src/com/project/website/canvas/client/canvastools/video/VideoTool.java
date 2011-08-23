@@ -190,7 +190,7 @@ public class VideoTool extends Composite implements CanvasTool<VideoData>
 
     @Override
     public boolean canRotate() {
-        return false;
+        return true;
     }
 
     @Override
