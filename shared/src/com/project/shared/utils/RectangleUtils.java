@@ -1,5 +1,6 @@
 package com.project.shared.utils;
 
+import com.google.gwt.dom.client.Style.Unit;
 import com.project.shared.data.Point2D;
 import com.project.shared.data.Rectangle;
 
@@ -30,5 +31,14 @@ public class RectangleUtils
 			rectangle.setBottom(corner1.getY());
 		}
 		return rectangle;
+	}
+
+	public final static String toRect(Rectangle rectangle, Unit unit)
+	{
+	    return "rect(" +
+	            rectangle.getTop() + Unit.PX.toString() + "," +
+	            rectangle.getRight() + Unit.PX.toString() + "," +
+	            rectangle.getBottom() + Unit.PX.toString() + "," +
+	            rectangle.getLeft() + Unit.PX.toString() + ")";
 	}
 }

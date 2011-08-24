@@ -16,11 +16,11 @@
 			position: relative;
 			margin: auto;
 		}
-		.framePanel{
+		.coverPanel{
 			overflow: hidden;
 			width: 100%;
 			height: 100%;
-			position: relative;
+			position: absolute;
 		}
 		.dragPanel {
 		    z-index: 1000;
@@ -52,18 +52,28 @@
 			position: absolute;
 			z-index: 1001;
 		}
+		.cropSiteFrame{
+			border-style: none;
+			overflow: hidden;
+			position: relative;
+			width: 100%;
+			height: 100%;
+		}
     </ui:style>
     <g:HTMLPanel ui:field="rootPanel" addStyleNames="{res.main.cropSiteBox}">
         <g:FlowPanel ui:field="frameContainer" addStyleNames="{style.frameContainer}">
-	       	<g:HTMLPanel ui:field="blockPanel" addStyleNames="{style.blockPanel}"></g:HTMLPanel>
-	       	<g:HTMLPanel ui:field="selectionPanel" addStyleNames="{style.selectionPanel}"></g:HTMLPanel>
-	       	<g:HTMLPanel ui:field="dragPanel" addStyleNames="{style.dragPanel}"></g:HTMLPanel>
-	       	<g:Frame ui:field="siteFrame" addStyleNames="{res.main.cropSiteFrame}"></g:Frame>
+	       	<g:FlowPanel ui:field="coverPanel" addStyleNames="{style.coverPanel}">
+		       	<g:HTMLPanel ui:field="blockPanel" addStyleNames="{style.blockPanel}"></g:HTMLPanel>
+		       	<g:HTMLPanel ui:field="selectionPanel" addStyleNames="{style.selectionPanel}"></g:HTMLPanel>
+		       	<g:HTMLPanel ui:field="dragPanel" addStyleNames="{style.dragPanel}"></g:HTMLPanel>
+		       	<g:Frame ui:field="siteFrame" addStyleNames="{style.cropSiteFrame}"></g:Frame>
+	       	</g:FlowPanel>
        	</g:FlowPanel>
         <g:FlowPanel addStyleNames="{res.main.toolOptionsBarContainer}">
             <g:FlowPanel ui:field="urlPanel" addStyleNames="{res.main.toolOptionsBar} {res.main.toolFrameHoverDisplayBlockElement}">
                 <g:Label addStyleNames="{style.urlPanel}">Url:</g:Label>
                 <g:TextBox ui:field="urlTextBox" addStyleNames="{style.urlPanel} {style.urlText}"></g:TextBox>
+                <g:CheckBox ui:field="chkAutoSize" addStyleNames="{style.urlPanel}"/>
                 <g:Button ui:field="leftButton" addStyleNames="{style.urlPanel}">&lt;</g:Button>
                 <g:Button ui:field="upButton" addStyleNames="{style.urlPanel}">&#94;</g:Button>
                 <g:Button ui:field="rightButton" addStyleNames="{style.urlPanel}">&gt;</g:Button>

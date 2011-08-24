@@ -16,8 +16,8 @@ import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Frame;
@@ -32,6 +32,7 @@ import com.project.shared.client.utils.NativeUtils;
 import com.project.shared.client.utils.WidgetUtils;
 import com.project.shared.data.Point2D;
 import com.project.shared.data.Rectangle;
+import com.project.shared.utils.RectangleUtils;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
 import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.client.worksheet.ElementDragManagerImpl;
@@ -68,6 +69,11 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
     HTMLPanel selectionPanel;
     @UiField
     HTMLPanel dragPanel;
+    @UiField
+    FlowPanel coverPanel;
+
+    @UiField
+    CheckBox chkAutoSize;
 
     private final int FRAME_STEP = 20;
 
@@ -77,6 +83,8 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
     private final SimpleEvent<Void> stopOperationEvent = new SimpleEvent<Void>();
     private ElementDragManagerImpl _frameDragManager = null;
     private SiteFrameSelectionManager _frameSelectionManager = null;
+
+    private SimpleEvent<Point2D> _selfMoveEvent = new SimpleEvent<Point2D>();
 
     public SiteCropTool() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -97,12 +105,24 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
                 new Handler<Rectangle>(){
                     @Override
                     public void onFire(Rectangle arg) {
-                        updateFrameLeft(-arg.getLeft());
-                        updateFrameTop(-arg.getTop());
-                        ElementUtils.setElementSize(getElement(), arg.getSize());
+                        cropFrame(arg);
                     }});
 
         this.setUrl("http://www.google.com");
+    }
+
+    private void cropFrame(Rectangle rect)
+    {
+        coverPanel.getElement().getStyle().setProperty("clip",
+                RectangleUtils.toRect(rect, Unit.PX));
+        ElementUtils.setElementRectangle(coverPanel.getElement(),
+                ElementUtils.getElementOffsetRectangle(coverPanel.getElement()));
+
+        this._selfMoveEvent.dispatch(new Point2D(rect.getLeft(), rect.getTop()));
+
+        ElementUtils.setElementPosition(this.coverPanel.getElement(),
+                Point2D.zero.minus(new Point2D(rect.getLeft(), rect.getTop())));
+        ElementUtils.setElementSize(this.getElement(), rect.getSize());
     }
 
     private void registerHandlers()
@@ -193,7 +213,10 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
         this._frameTop += delta;
         Style frameStyle = siteFrame.getElement().getStyle();
         frameStyle.setTop(this._frameTop, Unit.PX);
-        frameStyle.setHeight(siteFrame.getOffsetHeight() - delta, Unit.PX);
+        if (this.chkAutoSize.getValue())
+        {
+            frameStyle.setHeight(siteFrame.getOffsetHeight() - delta, Unit.PX);
+        }
     }
 
     private void updateFrameLeft(int delta)
@@ -201,8 +224,15 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
         this._frameLeft += delta;
         Style frameStyle = siteFrame.getElement().getStyle();
         frameStyle.setLeft(this._frameLeft, Unit.PX);
-        frameStyle.setWidth(siteFrame.getOffsetWidth() - delta, Unit.PX);
+        if (this.chkAutoSize.getValue())
+        {
+            frameStyle.setWidth(siteFrame.getOffsetWidth() - delta, Unit.PX);
+        }
     }
+
+//    public final native int getHorizontalScroll(Element frame) /*-{
+//        return frame.Height;
+//    }-*/;
 
 
     private void setUrl(String text) {
@@ -235,8 +265,7 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
 
     @Override
     public HandlerRegistration addSelfMoveRequestEventHandler(Handler<Point2D> handler) {
-        // TODO Auto-generated method stub
-        return null;
+        return this._selfMoveEvent.addHandler(handler);
     }
 
     @Override
@@ -271,7 +300,7 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
 
     @Override
     public void onResize() {
-        // TODO Auto-generated method stub
+//        this.siteFrame.getElement().getStyle().setWidth(this.getElement().getOffsetWidth(), Unit.PX);
     }
 
 }

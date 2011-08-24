@@ -241,6 +241,19 @@ public class CanvasToolFrame extends Composite implements Focusable, HasFocusHan
         return ElementUtils.getElementClientSize(this.tool.asWidget().getElement());
     }
 
+
+//    public void setToolPosition(Point2D pos)
+//    {
+//        Point2D toolPosition = new Point2D(
+//            this.toolPanel.getAbsoluteLeft(), this.toolPanel.getAbsoluteLeft());
+//        Point2D framePosition = new Point2D(
+//            this.getAbsoluteLeft(), this.getAbsoluteLeft());
+//        Point2D actualPosition = pos.minus(toolPosition.minus(framePosition));
+//
+//        ElementUtils.setElementPosition(this.getElement(), actualPosition);
+//    }
+
+
     /**
      * Note: make sure the size here does NOT include padding/margin/border of the tool, otherwise
      * getToolSize and setToolSize will not be compatible (will be using different values.)
