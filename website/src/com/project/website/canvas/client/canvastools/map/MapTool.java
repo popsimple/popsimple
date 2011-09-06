@@ -19,7 +19,6 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.gwtmapstraction.client.mxn.LatLonPoint;
@@ -367,7 +366,7 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
                 that.applyMapDataToWidget();
             }
         };
-        finder.find(microsoftMapElem.getId(), query);
+        finder.find(this.mapstraction.getMap(), query);
         //bingLocationsQuery(query);
     }
 

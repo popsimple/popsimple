@@ -1,15 +1,17 @@
 package com.project.website.canvas.client.canvastools.map;
 
+import com.google.gwt.core.client.JavaScriptObject;
+
 
 public abstract class MicrosoftMapFind
 {
     public abstract void callback(boolean found, double lat, double lon, int zoomLevel);
 
 
-    public native void find(String elemId, String text) /*-{
+    public native void find(JavaScriptObject map, String text) /*-{
         var me = this;
-        var _vemap = $wnd.VEMap;
-        var map = new _vemap(elemId);
+        //var _vemap = $wnd.VEMap;
+        //var map = new _vemap(elemId);
         map.LoadMap();
         var callback = function(layer, resultsArray, places, hasMore, veErrorMessage) {
             var lat = 0;
