@@ -6,6 +6,14 @@ public interface MainStyles extends CssResource {
 
     String canvasContainer();
 
+    String cropSiteBox();
+
+    String cropSiteCreateModeCanvasStyle();
+
+    String cropSiteFrame();
+
+    String cropSiteToolEmpty();
+
     String cursorCreateModeCanvasStyle();
 
     String dialogButtonsPanel();
@@ -30,8 +38,6 @@ public interface MainStyles extends CssResource {
 
     String hoverTextBoxView();
 
-    String imageToolDefault();
-
     String imageCreateModeCanvasStyle();
 
     String imageLoadingStyle();
@@ -39,6 +45,8 @@ public interface MainStyles extends CssResource {
     String imagePickerResultImage();
 
     String imageToolContentPanel();
+
+    String imageToolDefault();
 
     String imageToolEmpty();
 
@@ -51,6 +59,8 @@ public interface MainStyles extends CssResource {
     String imageToolSet();
 
     String link();
+
+    String loadingFiller();
 
     String mapCreateModeCanvasStyle();
 
@@ -73,6 +83,8 @@ public interface MainStyles extends CssResource {
     String selected();
 
     String selectionPanelStyle();
+
+    String sketchCreateModeCanvasStyle();
 
     String taskImageChecked();
 
@@ -114,6 +126,8 @@ public interface MainStyles extends CssResource {
 
     String toolboxCommonSelectedIconStyle();
 
+    String toolboxCropSiteIconStyle();
+
     String toolboxCursorIconStyle();
 
     String toolboxHeader();
@@ -124,6 +138,8 @@ public interface MainStyles extends CssResource {
 
     String toolboxMapIconStyle();
 
+    String toolboxSketchIconStyle();
+
     String toolboxTaskListIconStyle();
 
     String toolboxTextIconStyle();
@@ -132,9 +148,9 @@ public interface MainStyles extends CssResource {
 
     String toolboxVideoIconStyle();
 
-    String toolFrameBackLink();
+	String toolFrameBackLink();
 
-    String toolFrameBodyPanel();
+	String toolFrameBodyPanel();
 
     String toolFrameBottomLeftRotate();
 
@@ -148,9 +164,9 @@ public interface MainStyles extends CssResource {
 
     String toolFrameFrontLink();
 
-	String toolFrameHeader();
+    String toolFrameHeader();
 
-	String toolFrameHoverDisplayBlockElement();
+    String toolFrameHoverDisplayBlockElement();
 
     String toolFrameHoverVisibleElement();
 
@@ -178,7 +194,7 @@ public interface MainStyles extends CssResource {
 
     String worksheetBackground();
 
-    String worksheetButtons();
+	String worksheetButtons();
 
     String worksheetDragPanel();
 
@@ -194,7 +210,7 @@ public interface MainStyles extends CssResource {
 
     String worksheetModeViewOnly();
 
-	String worksheetOptions();
+    String worksheetOptions();
 
     String worksheetPanel();
 
@@ -203,18 +219,4 @@ public interface MainStyles extends CssResource {
     String worksheetSaveButton();
 
     String worksheetWelcomeLabelHolder();
-
-    String toolboxCropSiteIconStyle();
-
-    String cropSiteCreateModeCanvasStyle();
-
-    String sketchCreateModeCanvasStyle();
-
-    String toolboxSketchIconStyle();
-
-    String cropSiteFrame();
-
-    String cropSiteBox();
-
-    String cropSiteToolEmpty();
 }

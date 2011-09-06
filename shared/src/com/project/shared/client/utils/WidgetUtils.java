@@ -13,6 +13,7 @@ import com.google.gwt.event.dom.client.MouseMoveHandler;
 import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Focusable;
+import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.handlers.RegistrationsManager;
@@ -69,14 +70,14 @@ public class WidgetUtils {
 		widget.setHeight(editSize.getY() + "px");
 	}
 
-	public static void SetBackgroundImageAsync(final Widget widget,
+	public static void setBackgroundImageAsync(final Widget widget,
             String imageUrl, String errorImageUrl, final boolean autoSize, final String loadingStyleName)
     {
-	    WidgetUtils.SetBackgroundImageAsync(widget, imageUrl, errorImageUrl, autoSize, loadingStyleName,
+	    WidgetUtils.setBackgroundImageAsync(widget, imageUrl, errorImageUrl, autoSize, loadingStyleName,
 	            HandlerUtils.<Void>emptyHandler(), HandlerUtils.<Void>emptyHandler());
     }
 
-	public static void SetBackgroundImageAsync(final Widget widget, String imageUrl, String errorImageUrl,
+	public static void setBackgroundImageAsync(final Widget widget, String imageUrl, String errorImageUrl,
 	        final boolean autoSize, final String loadingStyleName,
 	        final SimpleEvent.Handler<Void> loadHandler, final SimpleEvent.Handler<Void> errorHandler)
     {
@@ -130,7 +131,7 @@ public class WidgetUtils {
 		};
 	}
 
-    public static void DisableContextMenu(Widget widget){
+    public static void disableContextMenu(Widget widget){
         widget.addDomHandler(new ContextMenuHandler() {
 
             @Override
@@ -138,5 +139,16 @@ public class WidgetUtils {
                 event.preventDefault();
             }
         }, ContextMenuEvent.getType());
+    }
+
+    public static Func.VoidAction setEnabledFunc(final HasEnabled widget, final boolean isEnabled)
+    {
+        return new Func.VoidAction() {
+            @Override
+            public void exec()
+            {
+                widget.setEnabled(isEnabled);
+            }
+        };
     }
 }

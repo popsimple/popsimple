@@ -96,7 +96,7 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
 
         this.registerHandlers();
 
-        WidgetUtils.DisableContextMenu(this.blockPanel);
+        WidgetUtils.disableContextMenu(this.blockPanel);
 
         this._frameDragManager = new ElementDragManagerImpl(
                 this.frameContainer, this.dragPanel, 0, this.stopOperationEvent);

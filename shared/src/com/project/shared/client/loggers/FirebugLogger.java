@@ -16,6 +16,8 @@ public class FirebugLogger implements ILogger
     }
 
     private final native void firebugLog(String str) /*-{
-        $wnd.console.log(str);
+        if ($wnd.console != undefined) {
+            $wnd.console.log(str);
+        }
     }-*/;
 }

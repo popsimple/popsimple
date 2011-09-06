@@ -10,24 +10,24 @@ Redistribution and use in source and binary forms, with or without modification,
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-mxn.register('microsoft', {	
+mxn.register('microsoft', {
 
 Mapstraction: {
-	
-	init: function(element, api) {		
+
+	init: function(element, api) {
 		var me = this;
 		if (!VEMap) {
 			throw api + ' map script not imported';
 		}
-		
+
 		this.maps[api] = new VEMap(element.id);
 		this.maps[api].AttachEvent('onclick', function(event){
 			me.clickHandler();
 			var map = me.maps[me.api];
 			var shape = map.GetShapeByID(event.elementID);
 			if (shape && shape.mapstraction_marker) {
-				shape.mapstraction_marker.click.fire();   
-			} 
+				shape.mapstraction_marker.click.fire();
+			}
 			else {
 				var x = event.mapX;
 				var y = event.mapY;
@@ -38,39 +38,39 @@ Mapstraction: {
 		});
 		this.maps[api].AttachEvent('onendzoom', function(event){
 			me.moveendHandler(me);
-			me.changeZoom.fire();				
+			me.changeZoom.fire();
 		});
 		this.maps[api].AttachEvent('onendpan', function(event){
 			me.moveendHandler(me);
 			me.endPan.fire();
 		});
 		this.maps[api].AttachEvent('onchangeview', function(event){
-			me.endPan.fire();				
+			me.endPan.fire();
 		});
 		this.maps[api].LoadMap();
-		document.getElementById("MSVE_obliqueNotification").style.visibility = "hidden"; 
-	
+		document.getElementById("MSVE_obliqueNotification").style.visibility = "hidden";
+
 		//removes the bird's eye pop-up
 		this.loaded[api] = true;
-		me.load.fire();	
+		me.load.fire();
 	},
-	
+
 	applyOptions: function(){
 		var map = this.maps[this.api];
 		if (null == map) { throw new 'Unexpected: map was null'; }
-		if(this.options.enableScrollWheelZoom){
-			// Apparently this is old stuff (no such function): map.enableContinuousZoom();
-			map.enableScrollWheelZoom();
-		}		
+//		if(this.options.enableScrollWheelZoom){
+//			// Apparently this is old stuff (no such function): map.enableContinuousZoom();
+//			// this too: map.enableScrollWheelZoom();
+//		}
 	},
 
-	resizeTo: function(width, height){	
+	resizeTo: function(width, height){
 		this.maps[this.api].Resize(width, height);
 	},
 
 	addControls: function( args ) {
 		var map = this.maps[this.api];
-		
+
 		if (args.pan) {
 			map.SetDashboardSize(VEDashboardSize.Normal);
 		}
@@ -105,7 +105,7 @@ Mapstraction: {
 	addMapTypeControls: function() {
 		var map = this.maps[this.api];
 		map.addTypeControl();
-	
+
 	},
 
 	dragging: function(on) {
@@ -118,24 +118,24 @@ Mapstraction: {
 		}
 	},
 
-	setCenterAndZoom: function(point, zoom) { 
+	setCenterAndZoom: function(point, zoom) {
 		var map = this.maps[this.api];
 		var pt = point.toProprietary(this.api);
 		var vzoom =  zoom;
 		map.SetCenterAndZoom(new VELatLong(point.lat,point.lon), vzoom);
 	},
-	
+
 	addMarker: function(marker, old) {
 		var map = this.maps[this.api];
 		marker.pinID = "mspin-"+new Date().getTime()+'-'+(Math.floor(Math.random()*Math.pow(2,16)));
 		var pin = marker.toProprietary(this.api);
-		
+
 		map.AddShape(pin);
 		//give onclick event
 		//give on double click event
 		//give on close window
 		//return the marker
-				
+
 		return pin;
 	},
 
@@ -145,10 +145,10 @@ Mapstraction: {
 		var microsoftShape = map.GetShapeByID(id);
 		map.DeleteShape(microsoftShape);
 	},
-	
+
 	declutterMarkers: function(opts) {
 		var map = this.maps[this.api];
-		
+
 		// TODO: Add provider code
 	},
 
@@ -166,14 +166,14 @@ Mapstraction: {
 		var microsoftShape = map.GetShapeByID(id);
 		map.DeleteShape(microsoftShape);
 	},
-	
+
 	getCenter: function() {
 		var map = this.maps[this.api];
 		var LL = map.GetCenter();
 		var point = new mxn.LatLonPoint(LL.Latitude, LL.Longitude);
 		return point;
 	},
- 
+
 	setCenter: function(point, options) {
 		var map = this.maps[this.api];
 		var pt = point.toProprietary(this.api);
@@ -184,7 +184,7 @@ Mapstraction: {
 		var map = this.maps[this.api];
 		map.SetZoomLevel(zoom);
 	},
-	
+
 	getZoom: function() {
 		var map = this.maps[this.api];
 		var zoom = map.GetZoomLevel();
@@ -197,9 +197,9 @@ Mapstraction: {
 		var ne = bbox.getNorthEast();
 		var sw = bbox.getSouthWest();
 		var zoom;
-		
+
 		// TODO: Add provider code
-		
+
 		return zoom;
 	},
 
@@ -217,7 +217,7 @@ Mapstraction: {
 				break;
 			default:
 				map.SetMapStyle(VEMapStyle.Road);
-		}	 
+		}
 	},
 
 	getMapType: function() {
@@ -240,7 +240,7 @@ Mapstraction: {
 		view = map.GetMapView();
 		var topleft = view.TopLeftLatLong;
 		var bottomright = view.BottomRightLatLong;
-		
+
 		return new mxn.BoundingBox(bottomright.Latitude,topleft.Longitude,topleft.Latitude, bottomright.Longitude );
 	},
 
@@ -248,14 +248,14 @@ Mapstraction: {
 		var map = this.maps[this.api];
 		var sw = bounds.getSouthWest();
 		var ne = bounds.getNorthEast();
-		
+
 		var rec = new VELatLongRectangle(new VELatLong(ne.lat, ne.lon), new VELatLong(sw.lat, sw.lon));
 		map.SetMapView(rec);
 	},
 
 	addImageOverlay: function(id, src, opacity, west, south, east, north, oContext) {
 		var map = this.maps[this.api];
-		
+
 		// TODO: Add provider code
 	},
 
@@ -270,10 +270,10 @@ Mapstraction: {
 		//	oContext.pixels.bottom = ...;
 		//	oContext.pixels.right = ...;
 	},
-	
+
 	addOverlay: function(url, autoCenterAndZoom) {
 		var map = this.maps[this.api];
-		var layer = new VEShapeLayer(); 
+		var layer = new VEShapeLayer();
 		var mlayerspec = new VEShapeSourceSpecification(VEDataType.GeoRSS, url, layer);
 	 	map.ImportShapeLayerData(mlayerspec);
 	},
@@ -289,7 +289,7 @@ Mapstraction: {
 	getPixelRatio: function() {
 		throw 'Not implemented';
 	},
-	
+
 	mousePosition: function(element) {
 		var locDisp = document.getElementById(element);
 		if (locDisp !== null) {
@@ -305,7 +305,7 @@ Mapstraction: {
 },
 
 LatLonPoint: {
-	
+
 	toProprietary: function() {
 		return  new VELatLong(this.lat, this.lon);
 	},
@@ -314,16 +314,16 @@ LatLonPoint: {
 		this.lat = mpoint.Latitude;
 		this.lon = mpoint.Longitude;
 	}
-	
+
 },
 
 Marker: {
-	
+
 	toProprietary: function() {
 		var mmarker = new VEShape(VEShapeType.Pushpin, this.location.toProprietary('microsoft'));
 		mmarker.SetTitle(this.labelText);
 		mmarker.SetDescription(this.infoBubble);
-		
+
 		if (this.iconUrl) {
 			var customIcon = new VECustomIconSpecification();
 			customIcon.Image = this.iconUrl;
@@ -331,16 +331,16 @@ Marker: {
 			// http://social.msdn.microsoft.com/Forums/en-US/vemapcontroldev/thread/5ee2f15d-09bf-4158-955e-e3fa92f33cda?prof=required&ppud=4
 			if (this.iconAnchor) {
 			   customIcon.ImageOffset = new VEPixel(-this.iconAnchor[0], -this.iconAnchor[1]);
-			} 
+			}
 			else if (this.iconSize) {
 			   customIcon.ImageOffset = new VEPixel(-this.iconSize[0]/2, -this.iconSize[1]/2);
 			}
-			mmarker.SetCustomIcon(customIcon);	
+			mmarker.SetCustomIcon(customIcon);
 		}
 		if (this.draggable){
 			mmarker.Draggable = true;
 		}
-		
+
 		return mmarker;
 	},
 
@@ -350,7 +350,7 @@ Marker: {
 		}
 		this.map.ShowInfoBox(this.proprietary_marker);
 	},
-	
+
 	closeBubble: function() {
 		if (!this.map) {
 			throw 'Marker must be added to map in order to display infobox';
@@ -369,7 +369,7 @@ Marker: {
 	update: function() {
 		throw 'Not implemented';
 	}
-	
+
 },
 
 Polyline: {
@@ -389,7 +389,7 @@ Polyline: {
 		//	TODO ability to change line width
 		return mpolyline;
 	},
-		
+
 	show: function() {
 		this.proprietary_polyline.Show();
 	},
@@ -397,7 +397,7 @@ Polyline: {
 	hide: function() {
 		this.proprietary_polyline.Hide();
 	}
-	
+
 }
 
 });

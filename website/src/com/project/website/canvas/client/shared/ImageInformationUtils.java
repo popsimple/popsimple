@@ -40,7 +40,7 @@ public class ImageInformationUtils
 
         final Style style = widget.getElement().getStyle();
 
-        WidgetUtils.SetBackgroundImageAsync(widget, imageInformation.url,
+        WidgetUtils.setBackgroundImageAsync(widget, imageInformation.url,
                 CanvasResources.INSTANCE.imageUnavailable().getURL(), autoSizeElement,
                 CanvasResources.INSTANCE.main().imageLoadingStyle(), new SimpleEvent.Handler<Void>() {
                     @Override

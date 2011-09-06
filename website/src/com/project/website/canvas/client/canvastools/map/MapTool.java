@@ -3,6 +3,7 @@ package com.project.website.canvas.client.canvastools.map;
 import java.util.HashMap;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
@@ -63,6 +64,8 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
 	Button optionsLabel;
 	@UiField
 	FlowPanel optionsBar;
+	@UiField
+	FlowPanel mapLoadingPanel;
 
 	@UiField
 	TextBox mapSearchTextBox;
@@ -327,29 +330,44 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
 
     protected void mapSearch()
     {
-        String query = this.mapSearchTextBox.getText();
+        final String query = this.mapSearchTextBox.getText();
         if (StringUtils.isWhitespaceOrNull(query)) {
             return;
         }
-        final Widget tempElem = new FlowPanel();
+        final MapTool that = this;
+        this.asyncInitCompleted.addHandler(HandlerUtils.fromAsyncFunc(
+                WidgetUtils.setEnabledFunc(this.mapSearchButton, false)
+          .then(this.getEnsureSetupProviderAsyncFunc(MapProvider.MICROSOFT))
+          .then(new Func.VoidAction() {
+                @Override
+                public void exec() {
+                    that.performMapSearch(query);
+             }})
+          .then(WidgetUtils.setEnabledFunc(this.mapSearchButton, true))
+        ));
+    }
+
+    private void performMapSearch(String query)
+    {
+        // Assumes the map provider is ready.
+        Element microsoftMapElem = this.getWidgetForProvider(MapProvider.MICROSOFT).getElement();
+        this.mapstraction.swap(MapProvider.MICROSOFT, microsoftMapElem);
+        final MapTool that = this;
+        this.mapLoadingPanel.setVisible(true);
         MicrosoftMapFind finder = new MicrosoftMapFind() {
             @Override
             public void callback(boolean found, double lat, double lon, int zoomLevel)
             {
-                RootPanel.get().remove(tempElem);
+                that.mapLoadingPanel.setVisible(false);
                 if (found) {
-                    mapData.center.latitude = lat;
-                    mapData.center.longitude = lon;
-                    mapData.zoom = zoomLevel;
-                    applyMapDataToWidget();
+                    that.mapData.center.latitude = lat;
+                    that.mapData.center.longitude = lon;
+                    that.mapData.zoom = zoomLevel;
                 }
+                that.applyMapDataToWidget();
             }
         };
-        tempElem.getElement().setId("_temp_map_find_" + Random.nextInt());
-        tempElem.addStyleName(CanvasResources.INSTANCE.main().outOfBounds());
-        RootPanel.get().add(tempElem);
-        finder.find(tempElem.getElement().getId(), query);
-
+        finder.find(microsoftMapElem.getId(), query);
         //bingLocationsQuery(query);
     }
 

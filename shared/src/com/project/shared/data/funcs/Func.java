@@ -17,6 +17,11 @@ public abstract class Func<A, B>
         };
     }
 
+    public <C> AsyncFunc<A,C> then(final AsyncFunc<B, C> next)
+    {
+        return AsyncFunc.fromFunc(this).then(next);
+    }
+
     /**
      * Converts this Func to one with any result type. The result value will always be the value given 'res'.
      */
