@@ -15,6 +15,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Random;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -60,7 +61,7 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
 	@UiField
 	FlowPanel mapPanel;
 	@UiField
-	Button optionsLabel;
+	Anchor optionsLink;
 	@UiField
 	FlowPanel optionsBar;
 	@UiField
@@ -87,7 +88,7 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
 
 		this.addStyleName(CanvasResources.INSTANCE.main().mapToolEmpty());
 
-		this.optionsLabel.addStyleName(CanvasResources.INSTANCE.main().disabledLink());
+		this.optionsLink.addStyleName(CanvasResources.INSTANCE.main().disabledLink());
 		this.getApiLoadedAndAttachedAsyncFunc()
 			.then(getEnsureSetupProviderAsyncFunc(DEFAULT_MAP_PROVIDER))
 			.then(new Func.VoidAction() {
@@ -120,7 +121,7 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
 
 	@Override
 	public void bind() {
-		this.registrationsManager.add(this.optionsLabel.addClickHandler(new ClickHandler() {
+		this.registrationsManager.add(this.optionsLink.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
 				showOptions();
@@ -186,7 +187,7 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
 
 	@Override
 	public void setViewMode(boolean isViewMode) {
-		this.optionsLabel.setVisible(false == isViewMode);
+		this.optionsLink.setVisible(false == isViewMode);
 	}
 
 	@Override
@@ -202,11 +203,11 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
 		// apply the data to the widget only after the async init has finished.
 		this.asyncInitCompleted.addHandler(HandlerUtils.fromAsyncFunc(
 				this.getEnsureSetupProviderAsyncFunc(provider)
-					.then(new Func.VoidAction() {
-						@Override
-						public void exec() {
-							actualApplyMapDataToWidget(provider, getWidgetForProvider(provider));
-						}})
+ 		  .then(new Func.VoidAction() {
+				@Override
+				public void exec() {
+					actualApplyMapDataToWidget(provider, getWidgetForProvider(provider));
+		   }})
 		));
 
 	}
@@ -256,7 +257,7 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
 		this.mapstraction.enableScrollWheelZoom();
 		this.mapstraction.setCenter(LatLonPoint.create(DEFAULT_MAP_LATITUDE, DEFAULT_MAP_LONGITUDE));
 		this.mapstraction.setZoom(DEFAULT_MAP_ZOOM);
-		this.optionsLabel.removeStyleName(CanvasResources.INSTANCE.main().disabledLink());
+		this.optionsLink.removeStyleName(CanvasResources.INSTANCE.main().disabledLink());
 	}
 
 	private Widget getWidgetForProvider(MapProvider provider) {

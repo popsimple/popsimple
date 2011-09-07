@@ -11,13 +11,13 @@
         </g:FlowPanel>
         <g:FlowPanel addStyleNames="{res.main.toolOptionsBarContainer}">
             <g:FlowPanel ui:field="optionsBar" addStyleNames="{res.main.toolOptionsBar} {res.main.toolFrameHoverDisplayBlockElement}">
-                <g:FlowPanel>
+                <g:FlowPanel addStyleNames="{res.main.mapToolFindBar}">
                     <g:TextBox ui:field="mapSearchTextBox"/>
-                    <g:Button ui:field="mapSearchButton">Find</g:Button>
+                    <g:Button ui:field="mapSearchButton">Map Search</g:Button>
                 </g:FlowPanel>
-                <g:Button ui:field="optionsLabel" addStyleNames="{res.main.link} {res.main.toolOptionsLabel} ">
+                <g:Anchor ui:field="optionsLink" addStyleNames="{res.main.link} {res.main.toolOptionsLabel} ">
                     Map options...
-                </g:Button>
+                </g:Anchor>
             </g:FlowPanel>
         </g:FlowPanel>
 	</g:FlowPanel>

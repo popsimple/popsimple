@@ -13,19 +13,24 @@ public class LatLonPoint extends JavaScriptObject {
 
     /** Returns latitude conversion based on current projection  */
     public final native double latConv() /*-{
-        return this.latConv();
+        // Never return nulls - java return type is double
+        // see http://helephant.com/2008/12/09/javascript-null-or-default-operator/
+        return this.latConv() || 0.0;
     }-*/;
 
     /** Returns longitude conversion based on current projection  */
     public final native double lonConv() /*-{
-        return this.lonConv();
+        // Never return nulls - java return type is double
+        return this.lonConv() || 0.0;
     }-*/;
 
     public final native double getLat() /*-{
-        return this.lat;
+        // Never return nulls - java return type is double
+        return this.lat || 0.0;
     }-*/;
 
     public final native double getLon() /*-{
-        return this.lon;
+        // Never return nulls - java return type is double
+        return this.lon || 0.0;
     }-*/;
 }

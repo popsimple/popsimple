@@ -136,7 +136,8 @@ public class Mapstraction extends JavaScriptObject {
      /* getMapType() Gets the imagery type for the map.
      */
 	private final native int getMapTypeInternal() /*-{
-	    return this.getMapType();
+	    // Never return nulls - java return type is int
+	    return this.getMapType() || $wnd.mxn.Mapstraction.ROAD;
 	}-*/;
 
 	public final MapstractionMapType getMapType() {
@@ -162,8 +163,9 @@ public class Mapstraction extends JavaScriptObject {
 
      /** Returns the zoom level of the map
      */
-	public final native int  getZoom() /*-{
-	    return this.getZoom();
+	public final native int getZoom() /*-{
+        // Never return nulls - java return type is int
+	    return this.getZoom() || 1;
 	}-*/;
 
      /* getZoomLevelForBoundingBox(bbox) Returns the best zoom level for bounds
@@ -176,12 +178,14 @@ public class Mapstraction extends JavaScriptObject {
      */
     public final native boolean isLoaded(String api)
     /*-{
-        return this.isLoaded(api);
+        // Should we allow nulls to be returned so that an exception will occur?
+        // for now we do.
+        return this.isLoaded(api); // || false;
     }-*/;
 
     public final native boolean isLoaded()
     /*-{
-        return this.isLoaded();
+        return this.isLoaded(); // || false;
     }-*/;
 
 

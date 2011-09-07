@@ -740,6 +740,10 @@
 	margin-bottom: 64px;
 }
 
+.mapToolFindBar {
+    display: inline-block;
+}
+
 
 .mapOptionsMapTypePanel {
 

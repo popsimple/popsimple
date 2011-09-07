@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.project.shared.data.funcs.AsyncFunc;
 import com.project.shared.data.funcs.Func;
 
 public class SimpleEvent<T> {
@@ -31,7 +32,7 @@ public class SimpleEvent<T> {
 
     /**
      * Convenience method for using event firing in an AsyncFunc / Func chain.
-     * @return
+     * @return An action that dispatches (fires) the event.
      */
 	public Func.Action<T> getDispatchFunc() {
 		return new Func.Action<T>() {

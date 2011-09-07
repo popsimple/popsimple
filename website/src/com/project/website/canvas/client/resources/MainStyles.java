@@ -70,6 +70,8 @@ public interface MainStyles extends CssResource {
 
     String mapToolEmpty();
 
+    String mapToolFindBar();
+
     String mapToolMainPanel();
 
     String mapToolMapHolder();
@@ -146,11 +148,11 @@ public interface MainStyles extends CssResource {
 
     String toolboxTools();
 
-    String toolboxVideoIconStyle();
+	String toolboxVideoIconStyle();
 
 	String toolFrameBackLink();
 
-	String toolFrameBodyPanel();
+    String toolFrameBodyPanel();
 
     String toolFrameBottomLeftRotate();
 
@@ -192,9 +194,9 @@ public interface MainStyles extends CssResource {
 
     String worksheet();
 
-    String worksheetBackground();
+	String worksheetBackground();
 
-	String worksheetButtons();
+    String worksheetButtons();
 
     String worksheetDragPanel();
 
