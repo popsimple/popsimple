@@ -259,21 +259,21 @@ public class CanvasToolFrame extends Composite implements Focusable, HasFocusHan
      * getToolSize and setToolSize will not be compatible (will be using different values.)
      */
     public void setToolSize(Point2D size) {
-        Element toolEmenet = this.tool.asWidget().getElement();
+        Element toolElement = this.tool.asWidget().getElement();
         switch (this.tool.getResizeMode())
     	{
     	    case BOTH:
-    	        ElementUtils.setElementSize(toolEmenet, size);
+    	        ElementUtils.setElementSize(toolElement, size);
     	        break;
     	    case WIDTH_ONLY:
-    	        toolEmenet.getStyle().setWidth(size.getX(), Unit.PX);
+    	        toolElement.getStyle().setWidth(size.getX(), Unit.PX);
     	        break;
     	    case HEIGHT_ONLY:
-    	        toolEmenet.getStyle().setHeight(size.getY(), Unit.PX);
+    	        toolElement.getStyle().setHeight(size.getY(), Unit.PX);
                 break;
     	    case RELATIVE:
     	        int uniformSize = (size.getX() + size.getY()) / 2;
-                ElementUtils.setElementSize(toolEmenet, new Point2D(uniformSize, uniformSize));
+                ElementUtils.setElementSize(toolElement, new Point2D(uniformSize, uniformSize));
                 break;
     	    case NONE:
     	    default:

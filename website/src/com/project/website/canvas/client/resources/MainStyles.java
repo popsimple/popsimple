@@ -146,11 +146,11 @@ public interface MainStyles extends CssResource {
 
     String toolboxTextIconStyle();
 
-    String toolboxTools();
+	String toolboxTools();
 
 	String toolboxVideoIconStyle();
 
-	String toolFrameBackLink();
+    String toolFrameBackLink();
 
     String toolFrameBodyPanel();
 
@@ -192,9 +192,9 @@ public interface MainStyles extends CssResource {
 
     String videoToolSet();
 
-    String worksheet();
+	String worksheet();
 
-	String worksheetBackground();
+    String worksheetBackground();
 
     String worksheetButtons();
 

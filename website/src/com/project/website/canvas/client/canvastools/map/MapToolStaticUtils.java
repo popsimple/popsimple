@@ -1,6 +1,8 @@
 package com.project.website.canvas.client.canvastools.map;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
@@ -12,6 +14,8 @@ import com.project.shared.client.events.SingleEvent;
 import com.project.shared.client.net.DynamicScriptLoader;
 import com.project.shared.client.utils.HandlerUtils;
 import com.project.shared.client.utils.SchedulerUtils;
+import com.project.shared.data.DoubleHashMap;
+import com.project.shared.data.Pair;
 import com.project.shared.data.funcs.AsyncFunc;
 import com.project.shared.data.funcs.Func;
 import com.project.shared.utils.IterableUtils;
@@ -25,11 +29,11 @@ public class MapToolStaticUtils
     private static final String OPENLAYERS_SCRIPT_URL = "http://openlayers.org/api/OpenLayers.js";
     private static final String MICROSOFT_MAP_6_3_URL = "http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.3";
 
-    public static final ArrayList<MapProvider> AVAILABLE_PROVIDERS = ListUtils.create(
+    public static final List<MapProvider> AVAILABLE_PROVIDERS = Collections.unmodifiableList(ListUtils.create(
         MapProvider.GOOGLE_V3,
         MapProvider.MICROSOFT,
         MapProvider.OPENLAYERS
-    );
+    ));
 
     private static final ArrayList<String> MAPSTRACTION_AVAILABLE_API_STRINGS = IterableUtils.select(AVAILABLE_PROVIDERS, new Func<MapProvider, String>(){
         @Override
@@ -61,36 +65,30 @@ public class MapToolStaticUtils
         });
     }
 
+    private static class MapTypePair extends Pair<MapType, MapstractionMapType> {
+        private static final long serialVersionUID = 1L;
+        public MapTypePair(MapType a, MapstractionMapType b)
+        {
+            super(a, b);
+        }
+    }
+
+    private static DoubleHashMap<MapType, MapstractionMapType> mapTypeConversionMap =
+            new DoubleHashMap<MapType, MapstractionMapType>(new MapTypePair[]{
+        new MapTypePair(MapType.HYBRID, MapstractionMapType.HYBRID),
+        new MapTypePair(MapType.PHYSICAL, MapstractionMapType.PHYSICAL),
+        new MapTypePair(MapType.ROAD, MapstractionMapType.ROAD),
+        new MapTypePair(MapType.SATELLITE, MapstractionMapType.SATELLITE)
+    });
+
     public static MapType fromMapstractionMapType(MapstractionMapType mapstractionMapType)
     {
-        switch (mapstractionMapType) {
-            case HYBRID:
-                return MapType.HYBRID;
-            case PHYSICAL:
-                return MapType.PHYSICAL;
-            case ROAD:
-                return MapType.ROAD;
-            case SATELLITE:
-                return MapType.SATELLITE;
-            default:
-                throw new RuntimeException("Unsupported mapstraction map type: " + mapstractionMapType);
-        }
+        return mapTypeConversionMap.getByKey2(mapstractionMapType);
     }
 
     public static MapstractionMapType fromMapType(MapType mapType)
     {
-        switch (mapType) {
-            case HYBRID:
-                return MapstractionMapType.HYBRID;
-            case PHYSICAL:
-                return MapstractionMapType.PHYSICAL;
-            case ROAD:
-                return MapstractionMapType.ROAD;
-            case SATELLITE:
-                return MapstractionMapType.SATELLITE;
-            default:
-                throw new RuntimeException("Unsupported map type: " + mapType);
-        }
+        return mapTypeConversionMap.getByKey1(mapType);
     }
 
     public static void loadMapScriptsAsync(Handler<Void> loadHandler) {

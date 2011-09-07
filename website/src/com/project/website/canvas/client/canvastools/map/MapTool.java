@@ -25,6 +25,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.project.gwtmapstraction.client.mxn.LatLonPoint;
 import com.project.gwtmapstraction.client.mxn.MapProvider;
 import com.project.gwtmapstraction.client.mxn.Mapstraction;
+import com.project.gwtmapstraction.client.mxn.Marker;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.events.SingleEvent;
@@ -36,6 +37,7 @@ import com.project.shared.data.Location;
 import com.project.shared.data.Point2D;
 import com.project.shared.data.funcs.AsyncFunc;
 import com.project.shared.data.funcs.Func;
+import com.project.shared.utils.ListUtils;
 import com.project.shared.utils.StringUtils;
 import com.project.shared.utils.loggers.Logger;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
@@ -51,6 +53,10 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
 	private static final int DEFAULT_MAP_ZOOM = 1;
 	private static final MapProvider DEFAULT_MAP_PROVIDER = MapProvider.GOOGLE_V3;
 
+	// Don't expose the Microsoft maps provider, the way we work with it is buggy...
+    private static final Iterable<MapProvider> userAvailableProviders =
+            ListUtils.exclude(MapToolStaticUtils.AVAILABLE_PROVIDERS, MapProvider.MICROSOFT);
+
 	interface MapToolUiBinder extends UiBinder<Widget, MapTool> {
 	}
 
@@ -62,6 +68,9 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
 	FlowPanel mapPanel;
 	@UiField
 	Anchor optionsLink;
+    @UiField
+    Anchor removeMarkersLink;
+
 	@UiField
 	FlowPanel optionsBar;
 	@UiField
@@ -141,6 +150,18 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
             public void onClick(ClickEvent event)
             {
                 mapSearch();
+            }
+        }));
+
+        this.registrationsManager.add(this.removeMarkersLink.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event)
+            {
+                if (null != mapstraction) {
+                    mapstraction.removeAllMarkers();
+                }
+                removeMarkersLink.setEnabled(false);
+                removeMarkersLink.addStyleName(CanvasResources.INSTANCE.main().disabledLink());
             }
         }));
 	}
@@ -308,7 +329,7 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
 			this.optionsDialog.setText("Map options");
 		}
 		if (null == this.mapToolOptionsWidget) {
-			this.mapToolOptionsWidget = new MapToolOptions(MapToolStaticUtils.AVAILABLE_PROVIDERS);
+			this.mapToolOptionsWidget = new MapToolOptions(userAvailableProviders);
 			this.mapToolOptionsWidget.addDoneHandler(new Handler<Void>() {
 				@Override
 				public void onFire(Void arg) {
@@ -365,6 +386,11 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
                     that.mapData.zoom = zoomLevel;
                 }
                 that.applyMapDataToWidget();
+                if (found) {
+                    that.mapstraction.addMarker(Marker.create(LatLonPoint.create(lat, lon)));
+                    that.removeMarkersLink.setEnabled(true);
+                    that.removeMarkersLink.removeStyleName(CanvasResources.INSTANCE.main().disabledLink());
+                }
             }
         };
         finder.find(this.mapstraction.getMap(), query);

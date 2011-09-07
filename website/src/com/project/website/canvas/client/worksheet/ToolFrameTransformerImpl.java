@@ -81,14 +81,7 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
                 cancelMoveHandler, ElementDragManager.StopCondition.STOP_CONDITION_MOUSE_UP);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see com.project.website.canvas.client.worksheet.ToolFrameTransformer#
-     * startResizeCanvasToolFrame
-     * (com.project.website.canvas.client.canvastools.base.CanvasToolFrame,
-     * com.google.gwt.event.dom.client.MouseEvent)
-     */
+
     @Override
     public void startResizeCanvasToolFrame(final CanvasToolFrame toolFrame, final MouseEvent<?> startEvent)
     {
@@ -139,14 +132,7 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
                 cancelHandler, ElementDragManager.StopCondition.STOP_CONDITION_MOUSE_UP);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see com.project.website.canvas.client.worksheet.ToolFrameTransformer#
-     * startRotateCanvasToolFrame
-     * (com.project.website.canvas.client.canvastools.base.CanvasToolFrame,
-     * com.google.gwt.event.dom.client.MouseEvent)
-     */
+
     @Override
     public void startRotateCanvasToolFrame(final CanvasToolFrame toolFrame, MouseEvent<?> startEvent)
     {

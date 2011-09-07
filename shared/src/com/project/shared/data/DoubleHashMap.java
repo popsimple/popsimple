@@ -5,6 +5,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * A bi-direction hash map, with a one-to-one relation between two sets.
+ * @param <K1> Key 1
+ * @param <K2> Key 2
+ */
 public class DoubleHashMap<K1, K2> implements Map<K1, K2>
 {
     private final HashMap<K1, K2> map1;
@@ -15,10 +20,19 @@ public class DoubleHashMap<K1, K2> implements Map<K1, K2>
         this.map1 = map1;
         this.map2 = map2;
     }
-    
+
     public DoubleHashMap() {
-        this.map1 = new HashMap<K1, K2>(); 
+        this.map1 = new HashMap<K1, K2>();
         this.map2 = new HashMap<K2, K1>();
+    }
+
+    public DoubleHashMap(Pair<K1,K2>[] pairs)
+    {
+        this();
+        for (Pair<K1,K2> pair : pairs)
+        {
+            this.put(pair.a, pair.b);
+        }
     }
 
     public DoubleHashMap<K2, K1> reverseMap() {
@@ -99,6 +113,6 @@ public class DoubleHashMap<K1, K2> implements Map<K1, K2>
     {
         return map1.entrySet();
     }
-    
-    
+
+
 }

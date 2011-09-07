@@ -52,8 +52,12 @@ public class Mapstraction extends JavaScriptObject {
 	}-*/;
 
      /* addMarker(marker, old) Adds a marker pin to the map
-     *
-     * addMarkerWithData(marker, data) addMarkerWithData will addData to the
+     */
+	public final native void addMarker(Marker marker) /*-{
+	    this.addMarker(marker);
+	}-*/;
+
+     /* addMarkerWithData(marker, data) addMarkerWithData will addData to the
      * marker, then add it to the map
      *
      * addOverlay(url, autoCenterAndZoom) Adds a GeoRSS or KML overlay to the
@@ -202,9 +206,14 @@ public class Mapstraction extends JavaScriptObject {
      *
      * removeAllFilters() removeAllFilters
      *
-     * removeAllMarkers() removeAllMarkers removes all the Markers on a map
-     *
-     * removeAllPolylines() Removes all polylines from the map
+     /* removeAllMarkers() removeAllMarkers removes all the Markers on a map
+     */
+    public final native void removeAllMarkers()
+    /*-{
+        this.removeAllMarkers();
+    }-*/;
+
+     /* removeAllPolylines() Removes all polylines from the map
      *
      * removeFilter(field, operator, value) Remove the specified filter
      *

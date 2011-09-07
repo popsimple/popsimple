@@ -16,7 +16,7 @@
 
 }
 
-.disabledLink {
+.disabledLink, .link.disabledLink {
 	cursor: default;
 	color: #777;
 }

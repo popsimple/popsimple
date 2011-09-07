@@ -18,6 +18,9 @@
                 <g:Anchor ui:field="optionsLink" addStyleNames="{res.main.link} {res.main.toolOptionsLabel} ">
                     Map options...
                 </g:Anchor>
+                <g:Anchor ui:field="removeMarkersLink" enabled="false" addStyleNames="{res.main.link} {res.main.toolOptionsLabel}  {res.main.disabledLink} ">
+                    Remove all markers
+                </g:Anchor>
             </g:FlowPanel>
         </g:FlowPanel>
 	</g:FlowPanel>
