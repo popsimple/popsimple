@@ -312,7 +312,7 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
 		}
 		mapWidget = new FlowPanel();
 		// For mapstraction to work properly, must set the element id
-		mapWidget.getElement().setId("mw_" + provider.ordinal() + "_" + String.valueOf(Random.nextInt()));
+		ElementUtils.generateId("mw_" + provider.ordinal(), mapWidget.getElement());
 		mapWidget.addStyleName(CanvasResources.INSTANCE.main().mapToolMapWidget());
 		this.mapWidgets.put(provider, mapWidget);
 		this.mapPanel.add(mapWidget);

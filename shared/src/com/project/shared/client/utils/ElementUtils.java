@@ -6,6 +6,7 @@ import com.google.gwt.animation.client.Animation;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.MouseEvent;
+import com.google.gwt.user.client.Random;
 import com.google.gwt.user.client.ui.Image;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.net.ImageLoader;
@@ -203,6 +204,11 @@ public abstract class ElementUtils {
             return;
         }
         element.removeClassName(styleName);
+    }
+
+    public static void generateId(String prefix, Element elem)
+    {
+        elem.setId(prefix + "_" + String.valueOf(Random.nextInt()));
     }
 
 }

@@ -10,7 +10,6 @@ import com.project.shared.client.loggers.GwtLogger;
 import com.project.shared.utils.loggers.Logger;
 import com.project.website.canvas.client.canvastools.base.BuiltinTools;
 import com.project.website.canvas.client.canvastools.map.MapToolStaticUtils;
-import com.project.website.canvas.client.canvastools.textedit.AlohaEditor;
 import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.shared.client.widgets.authentication.resources.AuthenticationResources;
 
@@ -27,7 +26,7 @@ public class Canvas implements EntryPoint {
 
         // start loading the maps, aloha apis immediately, in case it will be needed later.
         MapToolStaticUtils.loadApi();
-        AlohaEditor.loadApi();
+        //AlohaEditor.loadApi();
 
         // Make sure we have all resources loaded
         CanvasResources.INSTANCE.main().ensureInjected();
