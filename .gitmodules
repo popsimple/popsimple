@@ -7,3 +7,6 @@
 [submodule "mapstraction"]
 	path = mapstraction
 	url = https://github.com/mapstraction/mxn.git
+[submodule "submodules/Aloha-Editor"]
+	path = submodules/Aloha-Editor
+	url = git://github.com/alohaeditor/Aloha-Editor.git

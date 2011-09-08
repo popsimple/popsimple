@@ -6,6 +6,7 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.LinkElement;
 import com.google.gwt.dom.client.ScriptElement;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.events.SimpleEvent.Handler;
@@ -15,17 +16,34 @@ import com.project.shared.data.funcs.AsyncFunc;
 import com.project.shared.data.funcs.Func;
 import com.project.shared.utils.loggers.Logger;
 
-public class DynamicScriptLoader
+public class DynamicSourceLoader
 {
     private final SimpleEvent.Handler<Void> handler;
 
-    private DynamicScriptLoader(String source, SimpleEvent.Handler<Void> handler)
+    private DynamicSourceLoader(String source, SimpleEvent.Handler<Void> handler)
     {
         this.handler = handler;
-        ScriptElement elem = Document.get().createScriptElement();
-        elem.setSrc(source);
-        elem.setLang("javascript");
-        elem.setType("text/javascript");
+        String normalizedSource = source.toLowerCase().trim();
+        Element elem = null;
+        if (normalizedSource.endsWith(".js"))
+        {
+            ScriptElement scriptElem = Document.get().createScriptElement();
+            scriptElem.setSrc(source);
+            // scriptElem.setLang("javascript"); // lang is deprecated?
+            scriptElem.setType("text/javascript");
+            elem = scriptElem;
+        }
+        else if (normalizedSource.endsWith(".css"))
+        {
+            LinkElement linkElem = Document.get().createLinkElement();
+            linkElem.setHref(source);
+            linkElem.setRel("stylesheet");
+            linkElem.setType("text/css");
+            elem = linkElem;
+        }
+        else {
+            throw new UnsupportedOperationException("Don't know how to load non-js/css source: '" + source + "'");
+        }
         this.registerLoadedHandler(elem);
         Document.get().getElementsByTagName("head").getItem(0).appendChild(elem);
     }
@@ -39,7 +57,7 @@ public class DynamicScriptLoader
     /*-{
 		var me = this;
 		elem.onload = function() {
-			me.@com.project.shared.client.net.DynamicScriptLoader::scriptLoaded()();
+			me.@com.project.shared.client.net.DynamicSourceLoader::scriptLoaded()();
 		};
     }-*/;
 
@@ -110,7 +128,7 @@ public class DynamicScriptLoader
                 sourceLoaded(source);
             }
         };
-        new DynamicScriptLoader(source, wrappedHandler);
+        new DynamicSourceLoader(source, wrappedHandler);
     }
 
     private static void sourceLoaded(final String source)

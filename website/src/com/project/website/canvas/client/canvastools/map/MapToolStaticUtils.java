@@ -11,7 +11,7 @@ import com.project.gwtmapstraction.client.mxn.MapstractionMapType;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.events.SingleEvent;
-import com.project.shared.client.net.DynamicScriptLoader;
+import com.project.shared.client.net.DynamicSourceLoader;
 import com.project.shared.client.utils.HandlerUtils;
 import com.project.shared.client.utils.SchedulerUtils;
 import com.project.shared.data.DoubleHashMap;
@@ -111,10 +111,10 @@ public class MapToolStaticUtils
             res = res.and(getLoadProviderAsyncFunc(provider))
                      .constResult(null);
         }
-        res = res.then(DynamicScriptLoader.getLoadAsyncFunc(MAPSTRACTION_SCRIPT_FILE_URL));
-        res = res.then(DynamicScriptLoader.getLoadAsyncFunc(MAPSTRACTION_SCRIPT_CORE_FILE_URL));
+        res = res.then(DynamicSourceLoader.getLoadAsyncFunc(MAPSTRACTION_SCRIPT_FILE_URL));
+        res = res.then(DynamicSourceLoader.getLoadAsyncFunc(MAPSTRACTION_SCRIPT_CORE_FILE_URL));
         for (MapProvider provider : AVAILABLE_PROVIDERS) {
-            res = res.then(DynamicScriptLoader.getLoadAsyncFunc(getProviderCoreMxnScriptUrl(provider, "core")));
+            res = res.then(DynamicSourceLoader.getLoadAsyncFunc(getProviderCoreMxnScriptUrl(provider, "core")));
         }
         res = res.then(SchedulerUtils.getDeferredAsyncFunc());
         return res.then(new Func.VoidAction() {
@@ -145,9 +145,9 @@ public class MapToolStaticUtils
             res = res.then(getLoadGoogleV3MapProviderAsyncFunc());
             break;
         case MICROSOFT:
-            res = res.then(DynamicScriptLoader.getLoadAsyncFunc(MICROSOFT_MAP_6_3_URL));
+            res = res.then(DynamicSourceLoader.getLoadAsyncFunc(MICROSOFT_MAP_6_3_URL));
         case OPENLAYERS:
-            res = res.then(DynamicScriptLoader.getLoadAsyncFunc(OPENLAYERS_SCRIPT_URL));
+            res = res.then(DynamicSourceLoader.getLoadAsyncFunc(OPENLAYERS_SCRIPT_URL));
         default:
             break;
         }
@@ -184,7 +184,7 @@ public class MapToolStaticUtils
         defineGoogleV3MapProviderLoadedCallback();
 
         googleMapV3ScriptLoadedSuccessEvent.addHandler(handler);
-        DynamicScriptLoader.getLoadAsyncFunc(source).run(null);
+        DynamicSourceLoader.getLoadAsyncFunc(source).run(null);
     }
 
     private static SimpleEvent<Void> googleMapV3ScriptLoadedSuccessEvent = new SimpleEvent<Void>();
