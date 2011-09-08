@@ -14,6 +14,8 @@ public interface MainStyles extends CssResource {
 
     String cropSiteToolEmpty();
 
+    String cropSiteToolSet();
+
     String cursorCreateModeCanvasStyle();
 
     String dialogButtonsPanel();
@@ -221,4 +223,17 @@ public interface MainStyles extends CssResource {
     String worksheetSaveButton();
 
     String worksheetWelcomeLabelHolder();
+
+    String cropSelectButton();
+
+    String cropBrowseButton();
+
+    String cropMoveButton();
+
+    String cropCutButton();
+
+    String cropAcceptIcon();
+
+    String cropCancelIcon();
 }
+

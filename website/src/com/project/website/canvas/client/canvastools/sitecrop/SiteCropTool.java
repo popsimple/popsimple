@@ -1,6 +1,8 @@
 package com.project.website.canvas.client.canvastools.sitecrop;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
@@ -13,6 +15,8 @@ import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -22,7 +26,9 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Frame;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.events.SimpleEvent.Handler;
@@ -53,15 +59,6 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
     Frame siteFrame;
 
     @UiField
-    Button leftButton;
-    @UiField
-    Button upButton;
-    @UiField
-    Button rightButton;
-    @UiField
-    Button downButton;
-
-    @UiField
     FlowPanel frameContainer;
     @UiField
     HTMLPanel blockPanel;
@@ -74,6 +71,16 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
 
     @UiField
     CheckBox chkAutoSize;
+
+    @UiField
+    ToggleButton cutButton;
+
+    @UiField
+    ToggleButton browseButton;
+
+//    ONLY FOR DEBUGGING
+    @UiField
+    Label urlLabel;
 
     private final int FRAME_STEP = 20;
 
@@ -108,11 +115,18 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
                         cropFrame(arg);
                     }});
 
-        this.setUrl("http://www.google.com");
+//        ONLY FOR DEBUG
+        urlLabel.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                setUrl("http://www.google.com");
+            }
+        });
     }
 
     private void cropFrame(Rectangle rect)
     {
+//        this.selectionPanel.setVisible(true);
         coverPanel.getElement().getStyle().setProperty("clip",
                 RectangleUtils.toRect(rect, Unit.PX));
         ElementUtils.setElementRectangle(coverPanel.getElement(),
@@ -134,28 +148,10 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
             }
         });
 
-        this.leftButton.addClickHandler(new ClickHandler() {
+        this.browseButton.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
             @Override
-            public void onClick(ClickEvent event) {
-                updateFrameLeft(-FRAME_STEP);
-            }
-        });
-        this.upButton.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                updateFrameTop(-FRAME_STEP);
-            }
-        });
-        this.rightButton.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                updateFrameLeft(FRAME_STEP);
-            }
-        });
-        this.downButton.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                updateFrameTop(FRAME_STEP);
+            public void onValueChange(ValueChangeEvent<Boolean> event) {
+                blockPanel.setVisible(false == event.getValue());
             }
         });
 
@@ -238,6 +234,10 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
     private void setUrl(String text) {
         siteFrame.setUrl(text);
         this.siteFrame.getElement().setPropertyString("scrolling", "no");
+        ElementUtils.setElementSize(this.getElement(),
+                ElementUtils.getElementOffsetSize(this.getElement()));
+        this.removeStyleName(CanvasResources.INSTANCE.main().cropSiteToolEmpty());
+        this.addStyleName(CanvasResources.INSTANCE.main().cropSiteToolSet());
     }
 
     @Override

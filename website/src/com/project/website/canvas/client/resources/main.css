@@ -810,12 +810,10 @@
 .cropSiteBox {
 	display: block;
 	border-radius: 2px;
-	/* Margin is required because: */
-	/* The video IFrame takes 100% of our height, we need more space for the other stuff */
-	/* This should be enough to expand and enclose also the options label */
 	text-align: center;
 	margin-bottom: 30px;
 	overflow: visible;
+	min-width: 560px;
 }
 
 @sprite .cropSiteToolEmpty {
@@ -826,4 +824,33 @@
 	height: 200px;
 	background-color: emptyToolBackgroundColor;
 	overflow: visible;
+}
+
+.cropSiteToolSet {
+	background-color: transparent;
+	overflow: visible;
+}
+
+@sprite .cropSelectButton{
+	gwt-image: "cropSelectIcon";
+}
+
+@sprite .cropBrowseButton{
+	gwt-image: "cropBrowseIcon";
+}
+
+@sprite .cropMoveButton{
+	gwt-image: "cropMoveIcon";
+}
+
+@sprite .cropCutButton{
+	gwt-image: "cropCutIcon";
+}
+
+@sprite .cropAcceptIcon{
+	gwt-image: "cropAcceptIcon";
+}
+
+@sprite .cropCancelIcon{
+	gwt-image: "cropCancelIcon";
 }

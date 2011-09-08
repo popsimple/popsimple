@@ -103,4 +103,22 @@ public interface CanvasResources extends ClientBundle {
 
     @Source("com/project/website/shared/client/resources/images/bitmaps/sketchIcon_48.png")
     ImageResource sketchIcon48();
+
+    @Source("com/project/website/shared/client/resources/images/bitmaps/cropSelectIcon_16.png")
+    ImageResource cropSelectIcon();
+
+    @Source("com/project/website/shared/client/resources/images/bitmaps/browseIcon_16.png")
+    ImageResource cropBrowseIcon();
+
+    @Source("com/project/website/shared/client/resources/images/bitmaps/cropMoveIcon_16.png")
+    ImageResource cropMoveIcon();
+
+    @Source("com/project/website/shared/client/resources/images/bitmaps/cropCutIcon_16.png")
+    ImageResource cropCutIcon();
+
+    @Source("com/project/website/shared/client/resources/images/bitmaps/cropAcceptIcon_16.png")
+    ImageResource cropAcceptIcon();
+
+    @Source("com/project/website/shared/client/resources/images/bitmaps/closeIcon.png")
+    ImageResource cropCancelIcon();
 }

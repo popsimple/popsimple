@@ -49,8 +49,8 @@ public class SiteFrameSelectionManager {
 		Handler<Point2D> stopHandler = new Handler<Point2D>() {
 			@Override
 			public void onFire(Point2D arg) {
-			    _completeHandler.onFire(ElementUtils.getElementOffsetRectangle(_selectionPanel.getElement()));
-			    hideSelectionPanel();
+//			    _completeHandler.onFire(ElementUtils.getElementOffsetRectangle(_selectionPanel.getElement()));
+//			    hideSelectionPanel();
 			}
 		};
 		Handler<Void> cancelHandler = new Handler<Void>() {
