@@ -25,15 +25,8 @@ public class DynamicSourceLoader
         this.handler = handler;
         String normalizedSource = source.toLowerCase().trim();
         Element elem = null;
-        if (normalizedSource.endsWith(".js"))
-        {
-            ScriptElement scriptElem = Document.get().createScriptElement();
-            scriptElem.setSrc(source);
-            // scriptElem.setLang("javascript"); // lang is deprecated?
-            scriptElem.setType("text/javascript");
-            elem = scriptElem;
-        }
-        else if (normalizedSource.endsWith(".css"))
+        // TODO: replace the endsWith heuristic with a parameter that tells what type of element to create or a function that creates the proper element
+        if (normalizedSource.endsWith(".css"))
         {
             LinkElement linkElem = Document.get().createLinkElement();
             linkElem.setHref(source);
@@ -42,7 +35,12 @@ public class DynamicSourceLoader
             elem = linkElem;
         }
         else {
-            throw new UnsupportedOperationException("Don't know how to load non-js/css source: '" + source + "'");
+            // If it isn't css, assume it's javascript (sometimes javascript urls don't end with .js because they are queries that dynamically generate js)
+            ScriptElement scriptElem = Document.get().createScriptElement();
+            scriptElem.setSrc(source);
+            // scriptElem.setLang("javascript"); // lang is deprecated?
+            scriptElem.setType("text/javascript");
+            elem = scriptElem;
         }
         this.registerLoadedHandler(elem);
         Document.get().getElementsByTagName("head").getItem(0).appendChild(elem);
