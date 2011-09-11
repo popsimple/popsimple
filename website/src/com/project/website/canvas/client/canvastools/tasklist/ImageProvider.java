@@ -15,17 +15,17 @@ public class ImageProvider {
     }
 
     private void initializeImages() {
-        this.images.put("robot", CanvasResources.INSTANCE.robotIcon32().getURL()); 
-        this.images.put("fix", CanvasResources.INSTANCE.fixIcon32().getURL());
-        this.images.put("bike", CanvasResources.INSTANCE.bicycleIcon32().getURL());
-        this.images.put("bank", CanvasResources.INSTANCE.bankIcon32().getURL());
-        this.images.put("phone", CanvasResources.INSTANCE.phoneIcon32().getURL());
-        this.images.put("call", CanvasResources.INSTANCE.phoneIcon32().getURL());
-        this.images.put("gay", CanvasResources.INSTANCE.rainbowIcon32().getURL());
+        this.images.put("robot", CanvasResources.INSTANCE.robotIcon32().getSafeUri().asString());
+        this.images.put("fix", CanvasResources.INSTANCE.fixIcon32().getSafeUri().asString());
+        this.images.put("bike", CanvasResources.INSTANCE.bicycleIcon32().getSafeUri().asString());
+        this.images.put("bank", CanvasResources.INSTANCE.bankIcon32().getSafeUri().asString());
+        this.images.put("phone", CanvasResources.INSTANCE.phoneIcon32().getSafeUri().asString());
+        this.images.put("call", CanvasResources.INSTANCE.phoneIcon32().getSafeUri().asString());
+        this.images.put("gay", CanvasResources.INSTANCE.rainbowIcon32().getSafeUri().asString());
     }
 
     public String getDefaultImageUrl() {
-        return CanvasResources.INSTANCE.taskDefaultIcon().getURL();
+        return CanvasResources.INSTANCE.taskDefaultIcon().getSafeUri().asString();
     }
 
     public String getImageUrl(String imageTag) {

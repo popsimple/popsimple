@@ -51,7 +51,7 @@ public class BingSearchProvider implements ImageSearchProvider
 
     @Override
     public String getIconUrl() {
-        return CanvasResources.INSTANCE.bingLogo16().getURL();
+        return CanvasResources.INSTANCE.bingLogo16().getSafeUri().asString();
     }
 
 }

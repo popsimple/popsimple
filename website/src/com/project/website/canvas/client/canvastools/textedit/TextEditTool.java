@@ -2,7 +2,6 @@ package com.project.website.canvas.client.canvastools.textedit;
 
 import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.project.shared.client.events.SimpleEvent;

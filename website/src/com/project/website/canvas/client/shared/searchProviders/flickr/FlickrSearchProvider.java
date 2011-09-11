@@ -64,6 +64,6 @@ public class FlickrSearchProvider implements ImageSearchProvider
 
     @Override
     public String getIconUrl() {
-        return CanvasResources.INSTANCE.flickrLogo16().getURL();
+        return CanvasResources.INSTANCE.flickrLogo16().getSafeUri().asString();
     }
 }

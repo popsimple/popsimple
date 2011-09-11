@@ -8,23 +8,23 @@ import com.project.website.canvas.client.shared.searchProviders.interfaces.Media
 import com.project.website.canvas.client.shared.searchProviders.interfaces.VideoSearchProvider;
 import com.project.website.canvas.client.shared.searchProviders.youtube.adapters.YouTubeResultAdapter;
 
-public class YouTubeSearchProvider implements VideoSearchProvider 
+public class YouTubeSearchProvider implements VideoSearchProvider
 {
-    private YouTubeSearchRequest searchRequest = new YouTubeSearchRequest(); 
-    
+    private YouTubeSearchRequest searchRequest = new YouTubeSearchRequest();
+
     @Override
     public void search(String query, final AsyncCallback<MediaSearchResult> callback) {
         searchRequest.search(query, new AsyncCallback<YouTubeResult>() {
-            
+
             @Override
             public void onSuccess(YouTubeResult result) {
                 callback.onSuccess(new YouTubeResultAdapter(result));
             }
-            
+
             @Override
             public void onFailure(Throwable caught) {
                 callback.onFailure(caught);
-                
+
             }
         });
     }
@@ -36,7 +36,7 @@ public class YouTubeSearchProvider implements VideoSearchProvider
 
     @Override
     public String getIconUrl() {
-        return CanvasResources.INSTANCE.youtubeLogo32().getURL();
+        return CanvasResources.INSTANCE.youtubeLogo32().getSafeUri().asString();
     }
 
 }

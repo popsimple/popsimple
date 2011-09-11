@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.project.shared.data.funcs.AsyncFunc;
 import com.project.shared.data.funcs.Func;
 
 public class SimpleEvent<T> {

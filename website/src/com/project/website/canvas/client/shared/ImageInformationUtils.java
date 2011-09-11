@@ -41,7 +41,7 @@ public class ImageInformationUtils
         final Style style = widget.getElement().getStyle();
 
         WidgetUtils.setBackgroundImageAsync(widget, imageInformation.url,
-                CanvasResources.INSTANCE.imageUnavailable().getURL(), autoSizeElement,
+                CanvasResources.INSTANCE.imageUnavailable().getSafeUri().asString(), autoSizeElement,
                 CanvasResources.INSTANCE.main().imageLoadingStyle(), new SimpleEvent.Handler<Void>() {
                     @Override
                     public void onFire(Void arg) {
