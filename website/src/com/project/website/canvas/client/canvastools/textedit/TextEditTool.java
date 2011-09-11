@@ -13,58 +13,40 @@ import com.project.shared.data.Point2D;
 import com.project.shared.data.funcs.Func;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
 import com.project.website.canvas.client.canvastools.base.CanvasToolCommon;
+import com.project.website.canvas.client.canvastools.textedit.aloha.Aloha;
+import com.project.website.canvas.client.canvastools.textedit.aloha.Editable;
 import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.shared.data.ElementData;
 import com.project.website.canvas.shared.data.TextData;
 
 public class TextEditTool extends FlowPanel implements CanvasTool<TextData>
 {
-    protected AsyncCallback<Void> editorReady = new AsyncCallback<Void>() {
-        @Override
-        public void onSuccess(Void result) {
-            nicEditorReady = true;
-            registerHandlers();
-            if (null != data) {
-                //nicEditor.setContent(data.text);
-            }
-            setActive(_isActive);
-        }
-
-        @Override
-        public void onFailure(Throwable caught) {
-            // TODO Auto-generated method stub
-
-        }
-    };
-
-    private final HTML viewBox = new HTML();
-    private final FlowPanel editorPanel = new FlowPanel();
+    //private final FlowPanel editorPanel = new FlowPanel();
     private final SimpleEvent<String> killRequestEvent = new SimpleEvent<String>();
     private final SimpleEvent<Point2D> moveRequestEvent = new SimpleEvent<Point2D>();
 
     private TextData data;
-    private boolean nicEditorReady = false;
+    private boolean editorReady = false;
     private boolean _isActive = false;
     private boolean activeStateSet = false;
     private Point2D editSize;
 
+    protected Editable alohaEditable;
+
     public TextEditTool() {
         CanvasToolCommon.initCanvasToolWidget(this);
         this.addStyleName(CanvasResources.INSTANCE.main().textEdit());
-        this.add(viewBox);
-        this.add(editorPanel);
-        ElementUtils.generateId("textedit", editorPanel.getElement());
-        WidgetUtils.getOnAttachAsyncFunc(editorPanel).then(new Func.VoidAction() {
+        final TextEditTool that = this;
+        ElementUtils.generateId("textedit", this.getElement());
+        WidgetUtils.getOnAttachAsyncFunc(this).then(new Func.VoidAction() {
                     @Override
                     public void exec()
                     {
-                        AlohaEditor.registerElementById(editorPanel.getElement());
+                        that.initEditable();
                     }
                 })
             .run(null);
-        //this.editorPanel.add(editTextArea);
-        this.editorPanel.addStyleName(CanvasResources.INSTANCE.main().textEditBox());
-        this.viewBox.addStyleName(CanvasResources.INSTANCE.main().textEditViewBox());
+        this.addStyleName(CanvasResources.INSTANCE.main().textEditBox());
     }
 
     @Override
@@ -84,8 +66,7 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData>
 
     @Override
     public TextData getValue() {
-
-        //this.data.text = this.nicEditorReady ? this.nicEditor.getContent() : "";
+        this.data.text = this.editorReady ? this.alohaEditable.getContents() : "";
         return this.data;
     }
 
@@ -108,9 +89,9 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData>
     @Override
     public void setValue(TextData data) {
         this.data = data;
-//        if (nicEditorReady) {
-//            //this.nicEditor.setContent(this.data.text);
-//        }
+        if (editorReady) {
+            this.alohaEditable.setContents(this.data.text);
+        }
     }
 
     private void registerHandlers() {
@@ -123,13 +104,13 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData>
 //        });
     }
 
-    private void setLooksActive(boolean isActive, boolean k1illIfEmpty) {
+    private void setLooksActive(boolean isActive, boolean killIfEmpty) {
         // this.isActive is used for remembering what state to get into when
         // ready event occurs.
         // and also for determining whether we need to do anything at all
         // (specifically to prevent multiple
         // moveRequestEvent dispatching)
-        if (false == nicEditorReady) {
+        if (false == editorReady) {
             this._isActive = isActive;
             return;
         }
@@ -147,7 +128,7 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData>
 
             this.addStyleName(CanvasResources.INSTANCE.main().textEditFocused());
             this.removeStyleName(CanvasResources.INSTANCE.main().textEditNotFocused());
-            //nicEditor.getEditorElement().focus();
+            this.alohaEditable.activate();
         }
         else {
             this.editSize = ElementUtils.getElementOffsetSize(this.getElement());
@@ -156,12 +137,12 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData>
             this.removeStyleName(CanvasResources.INSTANCE.main().textEditFocused());
             this.addStyleName(CanvasResources.INSTANCE.main().textEditNotFocused());
 
-            //String text = new HTML(this.nicEditor.getContent()).getText().replace((char) 160, ' ');
-//            if (k1illIfEmpty) {
-//                if (text.trim().isEmpty()) {
-//                    this.killRequestEvent.dispatch("Empty");
-//                }
-//            }
+            String text = new HTML(this.alohaEditable.getContents()).getText().replace((char) 160, ' ');
+            if (killIfEmpty) {
+                if (text.trim().isEmpty()) {
+                    this.killRequestEvent.dispatch("Empty");
+                }
+            }
         }
     }
 
@@ -173,18 +154,13 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData>
     @Override
     public void setViewMode(boolean isViewMode)
     {
+        // TODO: Deactivate or hide the floating menu
         if (isViewMode) {
-            //this.viewBox.setHTML(this.nicEditor.getContent());
-            // Completely detach the editor from us (and the document)
-            this.remove(this.editorPanel);
+            this.alohaEditable.disable();
         }
         else {
-            if (false == this.getChildren().contains(this.editorPanel)) {
-                this.add(this.editorPanel);
-            }
+            this.alohaEditable.enable();
         }
-        this.viewBox.setVisible(isViewMode);
-        this.editorPanel.setVisible(false == isViewMode);
     }
 
     @Override
@@ -196,5 +172,18 @@ public class TextEditTool extends FlowPanel implements CanvasTool<TextData>
     @Override
     public void onResize() {
         // TODO Auto-generated method stub
+    }
+
+    private void initEditable()
+    {
+        this.alohaEditable = Aloha.registerElementById(this.getElement());
+        this.alohaEditable.enable();
+        this.alohaEditable.activate();
+        this.editorReady = true;
+        this.registerHandlers();
+        if (null != this.data) {
+            this.alohaEditable.setContents(this.data.text);
+        }
+        this.setActive(this._isActive);
     }
 }

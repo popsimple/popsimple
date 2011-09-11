@@ -118,11 +118,11 @@ public interface MainStyles extends CssResource {
 
     String textEditNotFocused();
 
-    String textEditNoToolbars();
-
-    String textEditToolbar();
-
-    String textEditViewBox();
+//    String textEditNoToolbars();
+//
+//    String textEditToolbar();
+//
+//    String textEditViewBox();
 
     String toolbox();
 

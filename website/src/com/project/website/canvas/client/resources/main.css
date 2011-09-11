@@ -6,6 +6,7 @@
 @def toolboxWidth 90px;
 @def imageToolDefaultWidth 200px;
 @def imageToolDefaultHeight 200px;
+@def textEditInitialWidth 150px;
 
 @external gwt-RadioButton;
 .monospace {
@@ -247,9 +248,9 @@
 
 
 .textEdit {
-	cursor: text;
-	padding: 4px 4px 10px;
+	padding: 0 0 8px;
 	min-height: 15px;
+	width: textEditInitialWidth;
 }
 
 .textEditFocused  {
@@ -257,51 +258,40 @@
 	border-color: #CCCCCC;
 	border-style: solid;
 	border-width: 1px;
-	overflow: auto;
+    margin-top: -1px;
+    margin-left: -2px;
+    padding: 2px;
 }
 
 .textEditNotFocused  {
 	background-color: transparent;
 	border-style: none;
-	overflow: hidden;
 }
 
 
 
 .textEditBox {
-	width: 100%;
-	height: 100%;
-	border-style: none;
-	background: transparent;
+	cursor: text;
 	resize: none;
 }
 
-.textEditViewBox {
-	display: none;
-}
+/* .textEditViewBox { */
+/* 	display: none; */
+/* } */
 
-.worksheetModeViewOnly .textEditViewBox {
-    display: inline-block;
-    background-color: transparent;
-}
+/* .worksheetModeViewOnly .textEditViewBox { */
+/*     display: inline-block; */
+/*     background-color: transparent; */
+/* } */
 
-.textEditFocused {
-	margin-top: -1px;
-	margin-left: -2px;
-	padding: 2px;
-}
 
-.textEditNotFocused {
+/* .textEditNoToolbars { */
 
-}
+/* } */
 
-.textEditNoToolbars {
+/* .textEditToolbar { margin-top:-80px; */
 
-}
-
-.textEditToolbar { /*margin-top:-80px;*/
-
-}
+/* } */
 
 .textBoxCreateModeCanvasStyle {
 	cursor: text;
@@ -452,7 +442,7 @@
 	border-radius: 5px;
 	border-color: #ccc;
 	background-color: #ccc;
-	background-color: rgba(232, 232, 232, 0.9);
+	background-color: rgba(250, 250, 250, 0.9);
 	/*	-sand-transform:rotate(0deg);*/
 }
 
@@ -571,7 +561,7 @@
 
 .toolFramePanel.selected {
 	border-style: dotted; /* !important; */
-	border-color: black; /* !important; */
+	border-color: #aaa; /* !important; */
 	border-radius: 5px;
 	border-width: 1px;
 	padding: 0;
