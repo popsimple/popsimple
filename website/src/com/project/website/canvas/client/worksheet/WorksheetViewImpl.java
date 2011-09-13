@@ -47,6 +47,7 @@ import com.project.shared.client.utils.HandlerUtils;
 import com.project.shared.data.Point2D;
 import com.project.shared.utils.CloneableUtils;
 import com.project.website.canvas.client.canvastools.CursorToolboxItem;
+import com.project.website.canvas.client.canvastools.MoveToolboxItem;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
 import com.project.website.canvas.client.canvastools.base.CanvasToolFactory;
 import com.project.website.canvas.client.canvastools.base.CanvasToolFrame;
@@ -55,6 +56,7 @@ import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.client.shared.ImageInformationUtils;
 import com.project.website.canvas.client.shared.ImageOptionTypes;
 import com.project.website.canvas.client.shared.ImageOptionsProviderUtils;
+import com.project.website.canvas.client.shared.ZIndexAllocator;
 import com.project.website.canvas.client.shared.dialogs.SelectImageDialog;
 import com.project.website.canvas.client.shared.searchProviders.SearchProviders;
 import com.project.website.canvas.client.shared.widgets.DialogWithZIndex;
@@ -372,6 +374,8 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         this.activeToolboxItem = toolboxItem;
         this.worksheetPanel.addStyleName(toolboxItem.getCanvasStyleInCreateMode());
 
+
+
         CanvasToolFactory<? extends CanvasTool<? extends ElementData>> factory = toolboxItem.getToolFactory();
         if (null == factory) {
             return;
@@ -462,6 +466,9 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
                 if (type.equals(KeyDownEvent.getType().getName())){
                     onPreviewKeyDown(nativeEvent);
                 }
+                else if (type.equals(MouseDownEvent.getType().getName())) {
+                    MouseDownEvent.fireNativeEvent(nativeEvent, worksheetPanel);
+                }
             }
         });
     }
@@ -471,8 +478,14 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         this.editModeRegistrations.add(this.worksheetPanel.addDomHandler(new MouseDownHandler() {
             @Override
             public void onMouseDown(MouseDownEvent event) {
+                if (event.getRelativeX(worksheetPanel.getElement()) < 0 || event.getRelativeY(worksheetPanel.getElement()) < 0) {
+                    return;
+                }
                 if (overToolFrames.isEmpty()) {
                     onClearAreaClicked(event);
+                }
+                else {
+                    onOverToolFrameAreaClicked(event);
                 }
             }
         }, MouseDownEvent.getType()));
@@ -542,11 +555,36 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         if (null == this.activeToolboxItem) {
             return;
         }
-        // TODO: should be handled by the CursorTool.
-        if (this.activeToolboxItem.getClass() == CursorToolboxItem.class) {
+        // TODO: should be handled by a tool outside the worksheet class?
+        if (isSelectorActiveTool()) {
             this._toolFrameSelectionManager.startSelectionDrag(event);
         }
     }
+
+    private boolean isSelectorActiveTool()
+    {
+        return (this.activeToolboxItem instanceof CursorToolboxItem) || (this.activeToolboxItem instanceof MoveToolboxItem);
+    }
+
+    private void onOverToolFrameAreaClicked(MouseDownEvent event)
+    {
+        if (this.activeToolboxItem instanceof MoveToolboxItem) {
+            CanvasToolFrame highestToolUnderMouse = null;
+            int highestZIndex = -1;
+            for (CanvasToolFrame frame : this.overToolFrames) {
+                int zIndex = ZIndexAllocator.getElementZIndex(frame.getElement());
+                if (zIndex > highestZIndex) {
+                    highestToolUnderMouse = frame;
+                    highestZIndex = zIndex;
+                }
+            }
+            this._toolFrameSelectionManager.forceToolFrameSelection(highestToolUnderMouse);
+            this._toolFrameTransformer.startDragCanvasToolFrames(this.selectedTools, event);
+            event.stopPropagation();
+            event.preventDefault();
+        }
+    }
+
 
     private void changeStatusLabel(Button button, OperationStatus status, String pendingText, String doneText) {
         switch (status) {

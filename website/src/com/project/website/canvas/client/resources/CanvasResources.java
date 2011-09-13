@@ -17,6 +17,9 @@ public interface CanvasResources extends ClientBundle {
     @Source("com/project/website/shared/client/resources/images/bitmaps/cursor_48.png")
     ImageResource toolboxCursorIcon();
 
+    @Source("com/project/website/shared/client/resources/images/bitmaps/move-icon_48.png")
+    ImageResource toolboxMoveIcon();
+
     @Source("com/project/website/shared/client/resources/images/bitmaps/tasklist_2_48.png")
     ImageResource toolboxTaskListIcon();
 
@@ -121,4 +124,5 @@ public interface CanvasResources extends ClientBundle {
 
     @Source("com/project/website/shared/client/resources/images/bitmaps/closeIcon.png")
     ImageResource cropCancelIcon();
+
 }

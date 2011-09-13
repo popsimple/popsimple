@@ -6,6 +6,18 @@ public interface MainStyles extends CssResource {
 
     String canvasContainer();
 
+    String cropAcceptIcon();
+
+    String cropBrowseButton();
+
+    String cropCancelIcon();
+
+    String cropCutButton();
+
+    String cropMoveButton();
+
+    String cropSelectButton();
+
     String cropSiteBox();
 
     String cropSiteCreateModeCanvasStyle();
@@ -82,6 +94,8 @@ public interface MainStyles extends CssResource {
 
     String monospace();
 
+    String moveCreateModeCanvasStyle();
+
     String outOfBounds();
 
     String selected();
@@ -104,6 +118,12 @@ public interface MainStyles extends CssResource {
 
     String taskListHeader();
 
+//    String textEditNoToolbars();
+//
+//    String textEditToolbar();
+//
+//    String textEditViewBox();
+
     String taskListTextChecked();
 
     String taskRemoveImage();
@@ -118,12 +138,6 @@ public interface MainStyles extends CssResource {
 
     String textEditNotFocused();
 
-//    String textEditNoToolbars();
-//
-//    String textEditToolbar();
-//
-//    String textEditViewBox();
-
     String toolbox();
 
     String toolboxCommonIconStyle();
@@ -134,13 +148,15 @@ public interface MainStyles extends CssResource {
 
     String toolboxCursorIconStyle();
 
-    String toolboxHeader();
+	String toolboxHeader();
 
-    String toolboxImageIconStyle();
+	String toolboxImageIconStyle();
 
     String toolboxInnerIconStyle();
 
     String toolboxMapIconStyle();
+
+    String toolboxMoveIconStyle();
 
     String toolboxSketchIconStyle();
 
@@ -148,9 +164,9 @@ public interface MainStyles extends CssResource {
 
     String toolboxTextIconStyle();
 
-	String toolboxTools();
+    String toolboxTools();
 
-	String toolboxVideoIconStyle();
+    String toolboxVideoIconStyle();
 
     String toolFrameBackLink();
 
@@ -178,7 +194,7 @@ public interface MainStyles extends CssResource {
 
     String toolOptionsBar();
 
-    String toolOptionsBarContainer();
+	String toolOptionsBarContainer();
 
     String toolOptionsLabel();
 
@@ -194,7 +210,7 @@ public interface MainStyles extends CssResource {
 
     String videoToolSet();
 
-	String worksheet();
+    String worksheet();
 
     String worksheetBackground();
 
@@ -223,17 +239,5 @@ public interface MainStyles extends CssResource {
     String worksheetSaveButton();
 
     String worksheetWelcomeLabelHolder();
-
-    String cropSelectButton();
-
-    String cropBrowseButton();
-
-    String cropMoveButton();
-
-    String cropCutButton();
-
-    String cropAcceptIcon();
-
-    String cropCancelIcon();
 }
 

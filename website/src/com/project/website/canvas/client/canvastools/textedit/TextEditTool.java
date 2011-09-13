@@ -2,7 +2,7 @@ package com.project.website.canvas.client.canvastools.textedit;
 
 import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.events.SimpleEvent.Handler;
@@ -18,7 +18,7 @@ import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.shared.data.ElementData;
 import com.project.website.canvas.shared.data.TextData;
 
-public class TextEditTool extends FlowPanel implements CanvasTool<TextData>
+public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
 {
     //private final FlowPanel editorPanel = new FlowPanel();
     private final SimpleEvent<String> killRequestEvent = new SimpleEvent<String>();

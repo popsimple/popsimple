@@ -192,6 +192,9 @@
 @sprite .toolboxCursorIconStyle {
     gwt-image: "toolboxCursorIcon";
 }
+@sprite .toolboxMoveIconStyle {
+    gwt-image: "toolboxMoveIcon";
+}
 @sprite .toolboxTaskListIconStyle {
     gwt-image: "toolboxTaskListIcon";
 }
@@ -300,6 +303,11 @@
 
 .cursorCreateModeCanvasStyle {
 	cursor: default;
+}
+
+
+.moveCreateModeCanvasStyle {
+    cursor: default !important; /*move !important;*/
 }
 
 
