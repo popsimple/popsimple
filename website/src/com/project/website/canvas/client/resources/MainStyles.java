@@ -182,6 +182,8 @@ public interface MainStyles extends CssResource {
 
     String toolFrameCloseLink();
 
+    String toolFrameDragOverlayPanel();
+
     String toolFrameFrontLink();
 
     String toolFrameHeader();
@@ -192,9 +194,9 @@ public interface MainStyles extends CssResource {
 
     String toolFramePanel();
 
-    String toolOptionsBar();
+	String toolOptionsBar();
 
-	String toolOptionsBarContainer();
+    String toolOptionsBarContainer();
 
     String toolOptionsLabel();
 

@@ -277,13 +277,13 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         regs.add(toolFrame.asWidget().addDomHandler(new MouseOverHandler() {
             @Override
             public void onMouseOver(MouseOverEvent event) {
-                overToolFrames.add(toolFrame);
+                addOverToolFrame(toolFrame);
             }
         }, MouseOverEvent.getType()));
         regs.add(toolFrame.asWidget().addDomHandler(new MouseOutHandler() {
             @Override
             public void onMouseOut(MouseOutEvent event) {
-                overToolFrames.remove(toolFrame);
+                removeOverToolFrame(toolFrame);
             }
         }, MouseOutEvent.getType()));
         regs.add(toolFrame.addMouseUpHandler(new MouseUpHandler() {
@@ -708,5 +708,21 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         this.linkInvite.setVisible(canInvite);
         this.userWelcomeLabel.setText(publicName);
         this.userWelcomeLabel.setTitle(email);
+    }
+
+    private void addOverToolFrame(final CanvasToolFrame toolFrame)
+    {
+        overToolFrames.add(toolFrame);
+        if (activeToolboxItem instanceof MoveToolboxItem) {
+            toolFrame.addStyleName(CanvasResources.INSTANCE.main().drag());
+        }
+    }
+
+    private void removeOverToolFrame(final CanvasToolFrame toolFrame)
+    {
+        overToolFrames.remove(toolFrame);
+        if (activeToolboxItem instanceof MoveToolboxItem) {
+            toolFrame.removeStyleName(CanvasResources.INSTANCE.main().drag());
+        }
     }
 }
