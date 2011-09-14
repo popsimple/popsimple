@@ -466,11 +466,13 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
                 if (type.equals(KeyDownEvent.getType().getName())){
                     onPreviewKeyDown(nativeEvent);
                 }
-                else if (type.equals(MouseDownEvent.getType().getName())) {
-                    MouseDownEvent.fireNativeEvent(nativeEvent, worksheetPanel);
-                }
-                else if (type.equals(MouseUpEvent.getType().getName())) {
-                    MouseUpEvent.fireNativeEvent(nativeEvent, worksheetPanel);
+                else if (that.activeToolboxItem instanceof MoveToolboxItem) {
+                    if (type.equals(MouseDownEvent.getType().getName())) {
+                        MouseDownEvent.fireNativeEvent(nativeEvent, worksheetPanel);
+                    }
+                    else if (type.equals(MouseUpEvent.getType().getName())) {
+                        MouseUpEvent.fireNativeEvent(nativeEvent, worksheetPanel);
+                    }
                 }
             }
         });
