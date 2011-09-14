@@ -153,6 +153,8 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
             this.alohaEditable.getElement().focus();
         }
         else {
+            this.alohaEditable.getElement().blur();
+
             //this.editSize = ElementUtils.getElementOffsetSize(this.getElement());
 
             // Must be done AFTER saving size and move offset
