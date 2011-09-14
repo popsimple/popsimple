@@ -3,8 +3,10 @@ package com.project.website.canvas.client.canvastools.tasklist;
 import java.util.ArrayList;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -185,5 +187,19 @@ public class TaskListTool extends Composite implements CanvasTool<TaskListData>,
     @Override
     public void onResize() {
         // TODO Auto-generated method stub
+    }
+
+    @Override
+    public HandlerRegistration addFocusHandler(FocusHandler handler)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public HandlerRegistration addBlurHandler(BlurHandler handler)
+    {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

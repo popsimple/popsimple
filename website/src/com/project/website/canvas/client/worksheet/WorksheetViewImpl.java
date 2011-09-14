@@ -550,13 +550,14 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     }
 
     private void onClearAreaClicked(MouseDownEvent event) {
-        toolFrameClickEvent.dispatch(null);
+        // TODO: why was this here?
+        // toolFrameClickEvent.dispatch(null);
 
         if (null == this.activeToolboxItem) {
             return;
         }
         // TODO: should be handled by a tool outside the worksheet class?
-        if (isSelectorActiveTool()) {
+        if (this.isSelectorActiveTool()) {
             this._toolFrameSelectionManager.startSelectionDrag(event);
         }
     }

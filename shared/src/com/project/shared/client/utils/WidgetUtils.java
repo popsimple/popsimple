@@ -99,7 +99,7 @@ public class WidgetUtils {
     }
 
 	/**
-	 * Returns an AsyncFunc that waits until the widget is attached to the DOM, and the completes.
+	 * Returns an AsyncFunc that waits until the widget is attached to the DOM, and the completes (runs once).
 	 * If the widget is already attached, it will complete immediately.
 	 * @param widget
 	 * @return

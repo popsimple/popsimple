@@ -6,8 +6,10 @@ import java.util.Collection;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
@@ -240,5 +242,17 @@ public class ImageTool  extends Composite implements CanvasTool<ImageData>
 
     @Override
     public void onResize() {
+    }
+
+    @Override
+    public HandlerRegistration addFocusHandler(FocusHandler handler)
+    {
+        return null;
+    }
+
+    @Override
+    public HandlerRegistration addBlurHandler(BlurHandler handler)
+    {
+        return null;
     }
 }

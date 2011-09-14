@@ -6,8 +6,10 @@ import java.util.Collection;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.gwt.event.dom.client.LoadHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
@@ -283,6 +285,20 @@ public class VideoTool extends Composite implements CanvasTool<VideoData>
     @Override
     public void onResize() {
         // TODO Auto-generated method stub
+    }
+
+    @Override
+    public HandlerRegistration addFocusHandler(FocusHandler handler)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public HandlerRegistration addBlurHandler(BlurHandler handler)
+    {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

@@ -304,12 +304,18 @@ public class CanvasToolFrame extends Composite implements Focusable, HasFocusHan
 
 	@Override
 	public HandlerRegistration addBlurHandler(BlurHandler handler) {
-		return this.focusPanel.addBlurHandler(handler);
+	    RegistrationsManager regs = new RegistrationsManager();
+        regs.add(tool.addBlurHandler(handler));
+		regs.add(this.focusPanel.addBlurHandler(handler));
+		return regs.asSingleRegistration();
 	}
 
 	@Override
 	public HandlerRegistration addFocusHandler(FocusHandler handler) {
-		return this.focusPanel.addFocusHandler(handler);
+        RegistrationsManager regs = new RegistrationsManager();
+        regs.add(tool.addFocusHandler(handler));
+        regs.add(this.focusPanel.addFocusHandler(handler));
+        return regs.asSingleRegistration();
 	}
 
 	private void toolSelfMoveRequest(Point2D offset) {

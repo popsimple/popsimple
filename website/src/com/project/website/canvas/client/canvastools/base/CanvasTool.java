@@ -1,5 +1,7 @@
 package com.project.website.canvas.client.canvastools.base;
 
+import com.google.gwt.event.dom.client.HasBlurHandlers;
+import com.google.gwt.event.dom.client.HasFocusHandlers;
 import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.TakesValue;
@@ -9,7 +11,7 @@ import com.project.shared.data.Point2D;
 import com.project.website.canvas.shared.data.ElementData;
 
 // TODO change getvalue to updateValue to reflect the fact that it mutates the instance of data that was given in the setValue?
-public interface CanvasTool<T extends ElementData> extends IsWidget, TakesValue<T> {
+public interface CanvasTool<T extends ElementData> extends IsWidget, TakesValue<T>, HasFocusHandlers, HasBlurHandlers {
 
 	public enum ResizeMode {
 		BOTH,
@@ -26,6 +28,8 @@ public interface CanvasTool<T extends ElementData> extends IsWidget, TakesValue<
 
     // Tool wants to move an offset
     HandlerRegistration addSelfMoveRequestEventHandler(SimpleEvent.Handler<Point2D> handler);
+
+
 
     void setElementData(ElementData data); // non-generic version of setValue
 

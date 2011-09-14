@@ -4,8 +4,10 @@ import java.util.HashMap;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
@@ -394,6 +396,20 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
         };
         finder.find(this.mapstraction.getMap(), query);
         //bingLocationsQuery(query);
+    }
+
+    @Override
+    public HandlerRegistration addFocusHandler(FocusHandler handler)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public HandlerRegistration addBlurHandler(BlurHandler handler)
+    {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 //    private void bingLocationsQuery(String query)

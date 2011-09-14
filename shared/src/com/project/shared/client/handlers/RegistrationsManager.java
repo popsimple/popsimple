@@ -40,4 +40,16 @@ public class RegistrationsManager {
     {
         return this._regs;
     }
+
+    public HandlerRegistration asSingleRegistration()
+    {
+        final RegistrationsManager that = this;
+        return new HandlerRegistration() {
+            @Override
+            public void removeHandler()
+            {
+                that.clear();
+            }
+        };
+    }
 }

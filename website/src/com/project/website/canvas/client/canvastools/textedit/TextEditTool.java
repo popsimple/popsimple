@@ -1,15 +1,21 @@
 package com.project.website.canvas.client.canvastools.textedit;
 
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.BlurHandler;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.events.SimpleEvent.Handler;
+import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.WidgetUtils;
 import com.project.shared.data.Point2D;
 import com.project.shared.data.funcs.Func;
+import com.project.shared.utils.loggers.Logger;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
 import com.project.website.canvas.client.canvastools.base.CanvasToolCommon;
 import com.project.website.canvas.client.canvastools.textedit.aloha.Aloha;
@@ -24,11 +30,13 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
     private final SimpleEvent<String> killRequestEvent = new SimpleEvent<String>();
     private final SimpleEvent<Point2D> moveRequestEvent = new SimpleEvent<Point2D>();
 
+    private final RegistrationsManager registrationsManager = new RegistrationsManager();
+
     private TextData data;
     private boolean editorReady = false;
     private boolean _isActive = false;
     private boolean activeStateSet = false;
-    private Point2D editSize;
+    //private Point2D editSize;
 
     protected Editable alohaEditable;
 
@@ -60,7 +68,20 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
 
     @Override
     public void bind() {
-
+        registrationsManager.add(this.addFocusHandler(new FocusHandler() {
+            @Override
+            public void onFocus(FocusEvent event)
+            {
+                setLooksActive(true, false);
+            }
+        }));
+        registrationsManager.add(this.addBlurHandler(new BlurHandler() {
+            @Override
+            public void onBlur(BlurEvent event)
+            {
+                setLooksActive(false, false);
+            }
+        }));
     }
 
     @Override
@@ -104,6 +125,7 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
     }
 
     private void setLooksActive(boolean isActive, boolean killIfEmpty) {
+        Logger.log("TextEditTool - Setting active: " + isActive);
         // this.isActive is used for remembering what state to get into when
         // ready event occurs.
         // and also for determining whether we need to do anything at all
@@ -119,18 +141,19 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
         this._isActive = isActive;
         this.activeStateSet = true;
         if (isActive) {
-            if (null != this.editSize) {
-                // Set only the width - the height depends on the contents
-                this.setWidth(this.editSize.getX() + "px");
-                this.editSize = null;
-            }
+//            if (null != this.editSize) {
+//                // Set only the width - the height depends on the contents
+//                this.setWidth(this.editSize.getX() + "px");
+//                this.editSize = null;
+//            }
 
             this.addStyleName(CanvasResources.INSTANCE.main().textEditFocused());
             this.removeStyleName(CanvasResources.INSTANCE.main().textEditNotFocused());
             this.alohaEditable.activate();
+            this.alohaEditable.getElement().focus();
         }
         else {
-            this.editSize = ElementUtils.getElementOffsetSize(this.getElement());
+            //this.editSize = ElementUtils.getElementOffsetSize(this.getElement());
 
             // Must be done AFTER saving size and move offset
             this.removeStyleName(CanvasResources.INSTANCE.main().textEditFocused());
