@@ -27,18 +27,17 @@ import com.project.website.canvas.shared.data.TextData;
 public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
 {
     //private final FlowPanel editorPanel = new FlowPanel();
-    private final SimpleEvent<String> killRequestEvent = new SimpleEvent<String>();
-    private final SimpleEvent<Point2D> moveRequestEvent = new SimpleEvent<Point2D>();
+    private final SimpleEvent<String> _killRequestEvent = new SimpleEvent<String>();
+    private final SimpleEvent<Point2D> _moveRequestEvent = new SimpleEvent<Point2D>();
 
-    private final RegistrationsManager registrationsManager = new RegistrationsManager();
+    private final RegistrationsManager _registrationsManager = new RegistrationsManager();
 
-    private TextData data;
-    private boolean editorReady = false;
+    private TextData _data;
+    private boolean _editorReady = false;
     private boolean _isActive = false;
-    private boolean activeStateSet = false;
+    private boolean _activeStateSet = false;
     //private Point2D editSize;
-
-    protected Editable alohaEditable;
+    private Editable _alohaEditable;
 
     public TextEditTool() {
         CanvasToolCommon.initCanvasToolWidget(this);
@@ -58,7 +57,7 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
 
     @Override
     public HandlerRegistration addSelfMoveRequestEventHandler(Handler<Point2D> handler) {
-        return this.moveRequestEvent.addHandler(handler);
+        return this._moveRequestEvent.addHandler(handler);
     }
 
     @Override
@@ -68,14 +67,14 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
 
     @Override
     public void bind() {
-        registrationsManager.add(this.addFocusHandler(new FocusHandler() {
+        _registrationsManager.add(this.addFocusHandler(new FocusHandler() {
             @Override
             public void onFocus(FocusEvent event)
             {
                 setLooksActive(true, false);
             }
         }));
-        registrationsManager.add(this.addBlurHandler(new BlurHandler() {
+        _registrationsManager.add(this.addBlurHandler(new BlurHandler() {
             @Override
             public void onBlur(BlurEvent event)
             {
@@ -86,8 +85,8 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
 
     @Override
     public TextData getValue() {
-        this.data.text = this.editorReady ? this.alohaEditable.getContents() : "";
-        return this.data;
+        this._data.text = this._editorReady ? this._alohaEditable.getContents() : "";
+        return this._data;
     }
 
 	@Override
@@ -108,9 +107,9 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
 
     @Override
     public void setValue(TextData data) {
-        this.data = data;
-        if (editorReady) {
-            this.alohaEditable.setContents(this.data.text);
+        this._data = data;
+        if (_editorReady) {
+            this._alohaEditable.setContents(this._data.text);
         }
     }
 
@@ -125,21 +124,20 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
     }
 
     private void setLooksActive(boolean isActive, boolean killIfEmpty) {
-        Logger.log("TextEditTool - Setting active: " + isActive);
+        Logger.log("TextEditTool - Setting active: " + isActive + ", text = " + this.getElement().getInnerText());
         // this.isActive is used for remembering what state to get into when
         // ready event occurs.
         // and also for determining whether we need to do anything at all
-        // (specifically to prevent multiple
-        // moveRequestEvent dispatching)
-        if (false == editorReady) {
+        // (specifically to prevent multiple moveRequestEvent dispatching)
+        if (false == this._editorReady) {
             this._isActive = isActive;
             return;
         }
-        else if (activeStateSet && (isActive == this._isActive)) {
+        else if (this._activeStateSet && (isActive == this._isActive)) {
             return;
         }
         this._isActive = isActive;
-        this.activeStateSet = true;
+        this._activeStateSet = true;
         if (isActive) {
 //            if (null != this.editSize) {
 //                // Set only the width - the height depends on the contents
@@ -149,11 +147,11 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
 
             this.addStyleName(CanvasResources.INSTANCE.main().textEditFocused());
             this.removeStyleName(CanvasResources.INSTANCE.main().textEditNotFocused());
-            this.alohaEditable.activate();
-            this.alohaEditable.getElement().focus();
+
+            this.setFocus(true);
         }
         else {
-            this.alohaEditable.getElement().blur();
+            this.setFocus(false);
 
             //this.editSize = ElementUtils.getElementOffsetSize(this.getElement());
 
@@ -161,10 +159,10 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
             this.removeStyleName(CanvasResources.INSTANCE.main().textEditFocused());
             this.addStyleName(CanvasResources.INSTANCE.main().textEditNotFocused());
 
-            String text = new HTML(this.alohaEditable.getContents()).getText().replace((char) 160, ' ');
+            String text = new HTML(this._alohaEditable.getContents()).getText().replace((char) 160, ' ');
             if (killIfEmpty) {
                 if (text.trim().isEmpty()) {
-                    this.killRequestEvent.dispatch("Empty");
+                    this._killRequestEvent.dispatch("Empty");
                 }
             }
         }
@@ -180,17 +178,17 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
     {
         // TODO: Deactivate or hide the floating menu
         if (isViewMode) {
-            this.alohaEditable.disable();
+            this._alohaEditable.disable();
         }
         else {
-            this.alohaEditable.enable();
+            this._alohaEditable.enable();
         }
     }
 
     @Override
     public HandlerRegistration addKillRequestEventHandler(Handler<String> handler)
     {
-        return this.killRequestEvent.addHandler(handler);
+        return this._killRequestEvent.addHandler(handler);
     }
 
     @Override
@@ -200,13 +198,13 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
 
     private void initEditable()
     {
-        this.alohaEditable = Aloha.registerElementById(this.getElement());
-        this.alohaEditable.enable();
-        this.alohaEditable.activate();
-        this.editorReady = true;
+        this._alohaEditable = Aloha.registerElementById(this.getElement());
+        this._alohaEditable.enable();
+        this._alohaEditable.activate();
+        this._editorReady = true;
         this.registerHandlers();
-        if (null != this.data) {
-            this.alohaEditable.setContents(this.data.text);
+        if (null != this._data) {
+            this._alohaEditable.setContents(this._data.text);
         }
         this.setActive(this._isActive);
     }

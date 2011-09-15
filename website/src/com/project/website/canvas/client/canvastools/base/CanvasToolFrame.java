@@ -33,6 +33,7 @@ import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.NativeUtils;
 import com.project.shared.client.utils.WidgetUtils;
 import com.project.shared.data.Point2D;
+import com.project.shared.utils.loggers.Logger;
 import com.project.website.canvas.client.canvastools.base.CanvasTool.ResizeMode;
 import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.shared.data.ElementData;
@@ -76,7 +77,6 @@ public class CanvasToolFrame extends Composite implements Focusable, HasFocusHan
 
     protected final CanvasTool<?> tool;
 
-    private int draggingStackDepth = 0;
 
     protected final SimpleEvent<Void> closeRequest = new SimpleEvent<Void>();
     protected final SimpleEvent<Void> moveBackRequest = new SimpleEvent<Void>();
@@ -88,8 +88,10 @@ public class CanvasToolFrame extends Composite implements Focusable, HasFocusHan
 
     protected final RegistrationsManager frameRegs = new RegistrationsManager();
 
-	protected Integer rotation;
-	private boolean viewMode = false;
+	protected Integer _rotation = null;
+    private int draggingStackDepth = 0;
+	private boolean _viewMode = false;
+    private boolean _isActive = false;
 
     public CanvasToolFrame(CanvasTool<?> canvasTool) {
         initWidget(uiBinder.createAndBindUi(this));
@@ -189,17 +191,17 @@ public class CanvasToolFrame extends Composite implements Focusable, HasFocusHan
     }
 
     public void setViewMode(boolean inViewMode) {
-    	if (inViewMode == this.viewMode) {
+    	if (inViewMode == this._viewMode) {
     		return;
     	}
-    	this.viewMode = inViewMode;
-    	if (this.viewMode) {
+    	this._viewMode = inViewMode;
+    	if (this._viewMode) {
     		frameRegs.clear();
     	}
     	else {
     		this.reRegisterFrameHandlers();
     	}
-    	this.tool.setViewMode(this.viewMode);
+    	this.tool.setViewMode(this._viewMode);
     }
 
     public CanvasTool<? extends ElementData> getTool() {
@@ -321,23 +323,55 @@ public class CanvasToolFrame extends Composite implements Focusable, HasFocusHan
         return regs.asSingleRegistration();
 	}
 
+	/**
+	 * Notifies the CanvasToolFrame that it is being dragged / not being dragged.
+	 * The dragged state is actually a stack, so that if several different mechanisms
+	 * want the frame to think it's being dragged, it will prevent one of them from
+	 * turning off the drag state by mistake while the frame is still being considered dragged
+	 * by another mechanism.
+	 * This is used for knowing whether we should pass setActive commands in to the CanvasTool.
+	 * @param isDragging
+	 */
+    public void setDragging(boolean isDragging)
+    {
+        this.draggingStackDepth += isDragging ? 1 : -1;
+        this.draggingStackDepth = Math.max(this.draggingStackDepth, 0);
+        if (this.draggingStackDepth > 0) {
+            this.addStyleName(CanvasResources.INSTANCE.main().drag());
+        }
+        else {
+            this.removeStyleName(CanvasResources.INSTANCE.main().drag());
+            this.updateToolActive();
+        }
+    }
+
+    /**
+     * Wraps CanvasTool.setActive so that if the tool frame is being dragged,
+     * it will not be set active until the operation ends.
+     * This is REQUIRED: because if the tool steals focus when it becomes active,
+     * the drag manager in the worksheet may receive a stop event immediately.
+     * @param isActive
+     */
+    public void setActive(boolean isActive)
+    {
+        Logger.log(this.getClass().getName() + ": setActive = " + isActive + ", draggingStackDepth = " + this.draggingStackDepth);
+        this._isActive = isActive;
+        this.updateToolActive();
+    }
+
 	private void toolSelfMoveRequest(Point2D offset) {
 		// TODO find a more global way of handling view mode.
-		if (this.viewMode) {
+		if (this._viewMode) {
 			return;
 		}
 		Point2D newPos = ElementUtils.getElementOffsetPosition(getElement()).plus(offset);
 		ElementUtils.setElementPosition(getElement(), newPos);
 	}
 
-    public void setDragging(boolean isDragging)
+    private void updateToolActive()
     {
-        this.draggingStackDepth += isDragging ? 1 : -1;
-        if (this.draggingStackDepth > 0) {
-            this.addStyleName(CanvasResources.INSTANCE.main().drag());
-        }
-        else {
-            this.removeStyleName(CanvasResources.INSTANCE.main().drag());
+        if (0 >= this.draggingStackDepth) {
+            this.tool.setActive(this._isActive);
         }
     }
 }

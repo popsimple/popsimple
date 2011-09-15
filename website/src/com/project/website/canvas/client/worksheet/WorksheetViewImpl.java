@@ -46,6 +46,7 @@ import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.HandlerUtils;
 import com.project.shared.data.Point2D;
 import com.project.shared.utils.CloneableUtils;
+import com.project.shared.utils.loggers.Logger;
 import com.project.website.canvas.client.canvastools.CursorToolboxItem;
 import com.project.website.canvas.client.canvastools.MoveToolboxItem;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
@@ -139,7 +140,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     private final SimpleEvent<ArrayList<CanvasToolFrame>> copyToolsRequest = new SimpleEvent<ArrayList<CanvasToolFrame>>();
     private final SimpleEvent<Void> pasteToolsRequest = new SimpleEvent<Void>();
     private final SimpleEvent<ToolCreationRequest> toolCreationRequestEvent = new SimpleEvent<ToolCreationRequest>();
-    private final SimpleEvent<CanvasToolFrame> toolFrameClickEvent = new SimpleEvent<CanvasToolFrame>();
+    private final SimpleEvent<CanvasToolFrame> activeToolFrameChangedEvent = new SimpleEvent<CanvasToolFrame>();
 
     private HashSet<CanvasToolFrame> selectedTools = new HashSet<CanvasToolFrame>();
 
@@ -219,8 +220,8 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     }
 
     @Override
-    public HandlerRegistration addToolFrameClickHandler(Handler<CanvasToolFrame> handler) {
-        return this.toolFrameClickEvent.addHandler(handler);
+    public HandlerRegistration addActiveToolFrameChangedHandler(Handler<CanvasToolFrame> handler) {
+        return this.activeToolFrameChangedEvent.addHandler(handler);
     }
 
     @Override
@@ -246,6 +247,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         regs.add(toolFrame.addMoveStartRequestHandler(new SimpleEvent.Handler<MouseEvent<?>>() {
             @Override
             public void onFire(MouseEvent<?> arg) {
+                Logger.log("Move request for: " + toolFrame.getElement());
                 _toolFrameSelectionManager.forceToolFrameSelection(toolFrame);
                 _toolFrameTransformer.startDragCanvasToolFrames(selectedTools, arg);
             }
@@ -269,7 +271,8 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         regs.add(toolFrame.addFocusHandler(new FocusHandler() {
             @Override
             public void onFocus(FocusEvent event) {
-                toolFrameClickEvent.dispatch(toolFrame);
+                Logger.log("Focus handled for: " + toolFrame.getElement());
+                activeToolFrameChangedEvent.dispatch(toolFrame);
             }
         }));
         regs.add(toolFrame.asWidget().addDomHandler(new MouseOverHandler() {
@@ -380,6 +383,11 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         this.clearActiveToolboxItem();
         this.activeToolboxItem = toolboxItem;
         this.worksheetPanel.addStyleName(toolboxItem.getCanvasStyleInCreateMode());
+
+        if (toolboxItem instanceof MoveToolboxItem) {
+            // De-activate any active tools when entering Move mode
+            this.activeToolFrameChangedEvent.dispatch(null);
+        }
 
         CanvasToolFactory<? extends CanvasTool<? extends ElementData>> factory = toolboxItem.getToolFactory();
         if (null == factory) {

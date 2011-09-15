@@ -269,7 +269,7 @@ public class WorksheetImpl implements Worksheet
             }
         });
         tool.bind();
-        this.setActiveToolInstance(tool);
+        this.setActiveToolInstance(toolFrame);
         return toolFrame;
     }
 
@@ -278,7 +278,7 @@ public class WorksheetImpl implements Worksheet
         CanvasToolFactory<? extends CanvasTool<? extends ElementData>> factory = ToolFactories.INSTANCE.get(newElement.factoryUniqueId);
         CanvasToolFrame toolFrame = this.createToolInstance(newElement.transform, factory, false);
         toolFrame.getTool().setElementData(newElement);
-        toolFrame.getTool().setActive(false);
+        toolFrame.setActive(false);
         return toolFrame;
     }
 
@@ -293,7 +293,7 @@ public class WorksheetImpl implements Worksheet
             		return;
             	}
                 CanvasToolFrame toolFrame = createToolInstance(arg.getPosition(), factory);
-                toolFrame.getTool().setActive(true);
+                toolFrame.setActive(true);
                 if (arg.getFactory().isOneShot()) {
                     _defaultToolRequestEvent.dispatch(null);
                 }
@@ -376,11 +376,10 @@ public class WorksheetImpl implements Worksheet
                 escapeOperation();
             }
         });
-        view.addToolFrameClickHandler(new Handler<CanvasToolFrame>() {
+        view.addActiveToolFrameChangedHandler(new Handler<CanvasToolFrame>() {
 			@Override
 			public void onFire(CanvasToolFrame frame) {
-			    CanvasTool<?> tool = frame != null ? frame.getTool() : null;
-		    	setActiveToolInstance(tool);
+		    	setActiveToolInstance(frame);
 			}
 		});
         view.addRemoveToolsRequest(new Handler<ArrayList<CanvasToolFrame>>() {
@@ -435,18 +434,23 @@ public class WorksheetImpl implements Worksheet
         }
     }
 
-	private void setActiveToolInstance(CanvasTool<?> tool)
+	private void setActiveToolInstance(CanvasToolFrame toolFrame)
 	{
+        CanvasTool<?> tool = toolFrame != null ? toolFrame.getTool() : null;
 		if (tool == this.activeToolInstance) {
 			return;
 		}
 		if (null != this.activeToolInstance) {
-			this.activeToolInstance.setActive(false);
+		    ToolInstanceInfo toolInfo = this.toolInfoMap.get(this.activeToolInstance);
+		    if (null != toolInfo)
+		    {
+		        toolInfo.toolFrame.setActive(false);
+		    }
 		}
 		this.activeToolInstance = tool;
-		if (null != tool) {
-		    tool.setActive(true);
-		}
+		if (null != toolFrame) {
+		    toolFrame.setActive(true);
+	    }
 	}
 
 	private void clearActiveToolboxItem()

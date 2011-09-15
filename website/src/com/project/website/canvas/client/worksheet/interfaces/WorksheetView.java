@@ -75,7 +75,7 @@ public interface WorksheetView extends IsWidget
      * @param handler
      * @return
      */
-    HandlerRegistration addToolFrameClickHandler(SimpleEvent.Handler<CanvasToolFrame> handler);
+    HandlerRegistration addActiveToolFrameChangedHandler(SimpleEvent.Handler<CanvasToolFrame> handler);
 
     HandlerRegistration addRemoveToolsRequest(SimpleEvent.Handler<ArrayList<CanvasToolFrame>> handler);
 
