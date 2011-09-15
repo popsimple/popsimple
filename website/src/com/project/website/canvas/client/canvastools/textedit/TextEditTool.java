@@ -148,10 +148,13 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
             this.addStyleName(CanvasResources.INSTANCE.main().textEditFocused());
             this.removeStyleName(CanvasResources.INSTANCE.main().textEditNotFocused());
 
+            this._alohaEditable.activate();
             this.setFocus(true);
+            Aloha.floatingMenuDoLayout();
         }
         else {
             this.setFocus(false);
+            Aloha.floatingMenuDoLayout();
 
             //this.editSize = ElementUtils.getElementOffsetSize(this.getElement());
 

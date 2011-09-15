@@ -41,7 +41,7 @@ public class CanvasContainer extends Composite {
                 worksheet.setActiveToolboxItem(arg);
             }
         });
-        this.worksheet.addDefaultToolRequestHandler(new SimpleEvent.Handler<Void>() {
+        this.worksheet.addDefaultToolboxItemRequestHandler(new SimpleEvent.Handler<Void>() {
             @Override
             public void onFire(Void arg) {
                 toolbox.setActiveTool(defaultTool);

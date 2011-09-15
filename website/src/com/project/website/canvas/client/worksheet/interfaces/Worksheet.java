@@ -6,7 +6,7 @@ import com.project.website.canvas.client.canvastools.base.ToolboxItem;
 
 public interface Worksheet {
 
-    HandlerRegistration addDefaultToolRequestHandler(SimpleEvent.Handler<Void> handler);
+    HandlerRegistration addDefaultToolboxItemRequestHandler(SimpleEvent.Handler<Void> handler);
 
     HandlerRegistration addViewModeChangedHandler(SimpleEvent.Handler<Boolean> handler);
 

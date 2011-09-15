@@ -24,6 +24,31 @@ public class Aloha
     }-*/;
 
 
+//    public static native void setFloatingMenuVisible(boolean isVisible)
+//    /*-{
+//        if (isVisible) {
+//            $wnd.jQuery('.GENTICS_floatingmenu').show();
+//            $wnd.jQuery('#GENTICS_floatingmenu_shadow').show();
+//        }
+//        else {
+//            $wnd.jQuery('.GENTICS_floatingmenu').hide();
+//            $wnd.jQuery('#GENTICS_floatingmenu_shadow').hide();
+//        }
+//    }-*/;
+
+    /**
+     * This was supposed to force the floating menu appear/disappear, but it doesn't work.
+     */
+    public static native void floatingMenuDoLayout()
+    /*-{
+        //$wnd.GENTICS.Aloha.FloatingMenu.doLayout();
+        // HACK
+        //$wnd.GENTICS.Aloha.FloatingMenu.setScope("GENTICS.Aloha.continuoustext");
+        //$wnd.GENTICS.Aloha.FloatingMenu.doLayout();
+        //var rangeObject = $wnd.GENTICS.Aloha.Selection.getRangeObject();
+        //if (rangeObject.select) { rangeObject.select(); }
+    }-*/;
+
     // TODO: Doesn't work - aloha can't load dynamically?
 //  private static final String ALOHA_CORE_SCRIPT_URL = "aloha/aloha.js";
 //  private static final String[] ALOHA_SCRIPT_URLS = new String[] { "aloha/plugins/com.gentics.aloha.plugins.Format/plugin.js",
