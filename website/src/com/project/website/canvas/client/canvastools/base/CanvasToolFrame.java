@@ -34,6 +34,7 @@ import com.project.shared.client.utils.NativeUtils;
 import com.project.shared.client.utils.WidgetUtils;
 import com.project.shared.data.Point2D;
 import com.project.website.canvas.client.canvastools.base.CanvasTool.ResizeMode;
+import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.shared.data.ElementData;
 
 public class CanvasToolFrame extends Composite implements Focusable, HasFocusHandlers, HasBlurHandlers {
@@ -74,6 +75,8 @@ public class CanvasToolFrame extends Composite implements Focusable, HasFocusHan
     HTMLPanel rotatePanel;
 
     protected final CanvasTool<?> tool;
+
+    private int draggingStackDepth = 0;
 
     protected final SimpleEvent<Void> closeRequest = new SimpleEvent<Void>();
     protected final SimpleEvent<Void> moveBackRequest = new SimpleEvent<Void>();
@@ -326,4 +329,15 @@ public class CanvasToolFrame extends Composite implements Focusable, HasFocusHan
 		Point2D newPos = ElementUtils.getElementOffsetPosition(getElement()).plus(offset);
 		ElementUtils.setElementPosition(getElement(), newPos);
 	}
+
+    public void setDragging(boolean isDragging)
+    {
+        this.draggingStackDepth += isDragging ? 1 : -1;
+        if (this.draggingStackDepth > 0) {
+            this.addStyleName(CanvasResources.INSTANCE.main().drag());
+        }
+        else {
+            this.removeStyleName(CanvasResources.INSTANCE.main().drag());
+        }
+    }
 }

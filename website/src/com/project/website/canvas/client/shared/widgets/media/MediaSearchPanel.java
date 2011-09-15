@@ -40,9 +40,9 @@ import com.project.website.canvas.client.shared.widgets.RadioButtonPanel;
 
 public class MediaSearchPanel extends Composite {
 
-    private static MediaPickerUiBinder uiBinder = GWT.create(MediaPickerUiBinder.class);
+    private static MediaSearchPanelUiBinder uiBinder = GWT.create(MediaSearchPanelUiBinder.class);
 
-    interface MediaPickerUiBinder extends UiBinder<Widget, MediaSearchPanel> {
+    interface MediaSearchPanelUiBinder extends UiBinder<Widget, MediaSearchPanel> {
     }
 
     @UiField
@@ -204,7 +204,7 @@ public class MediaSearchPanel extends Composite {
         }
         final InlineLabel image = new InlineLabel();
         image.setTitle(imageResult.getTitle());
-        image.addStyleName(CanvasResources.INSTANCE.main().imagePickerResultImage());
+        image.addStyleName(CanvasResources.INSTANCE.main().mediaSearchPanelResultImage());
         image.getElement().getStyle()
                 .setBackgroundImage("url(" + imageResult.getThumbnailUrl() + ")");
         this.registrationsManager.add(image.addClickHandler(new ClickHandler() {

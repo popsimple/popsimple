@@ -37,9 +37,9 @@ import com.project.website.canvas.shared.data.ImageInformation;
 
 public class SelectImageDialog extends Composite implements TakesValue<ImageInformation>, Focusable {
 
-    private static MediaToolOptionsUiBinder uiBinder = GWT.create(MediaToolOptionsUiBinder.class);
+    private static SelectImageDialogUiBinder uiBinder = GWT.create(SelectImageDialogUiBinder.class);
 
-    interface MediaToolOptionsUiBinder extends UiBinder<Widget, SelectImageDialog> {
+    interface SelectImageDialogUiBinder extends UiBinder<Widget, SelectImageDialog> {
     }
 
     @UiField

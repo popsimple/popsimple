@@ -619,7 +619,7 @@
 
 
 /*---------------------------------------------*/
-.imagePickerResultImage {
+.mediaSearchPanelResultImage {
 	background-color: #FFFFFF;
 	background-position: center center;
 	background-repeat: no-repeat;
@@ -634,12 +634,12 @@
 	width: 100px;
 }
 
- .imagePickerResultImage:hover, .imagePickerResultImage.hover
-	{
+.mediaSearchPanelResultImage:hover, .mediaSearchPanelResultImage.hover
+{
 	border-color: #ccc;
 }
 
-.imagePickerResultImage.selected {
+.mediaSearchPanelResultImage.selected {
 	border-color: #000;
 	background-color: #eee;
 }

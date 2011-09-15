@@ -61,6 +61,7 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
     public void startDragCanvasToolFrame(final CanvasToolFrame toolFrame, final MouseEvent<?> startEvent)
     {
         final Point2D initialPos = ElementUtils.getElementOffsetPosition(toolFrame.getElement());
+        toolFrame.setDragging(true);
         final SimpleEvent.Handler<Point2D> dragHandler = new SimpleEvent.Handler<Point2D>() {
             @Override
             public void onFire(Point2D pos)
@@ -72,12 +73,20 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
             @Override
             public void onFire(Void arg)
             {
+                toolFrame.setDragging(false);
                 setToolFramePosition(toolFrame, initialPos);
             }
         };
 
+        Handler<Point2D> stopHandler = new Handler<Point2D>() {
+            @Override
+            public void onFire(Point2D arg)
+            {
+                toolFrame.setDragging(false);
+            }
+        };
         _elementDragManager.startMouseMoveOperation(toolFrame.getElement(), _container.getElement(),
-                ElementUtils.relativePosition(startEvent, toolFrame.getElement()), dragHandler, null,
+                ElementUtils.relativePosition(startEvent, toolFrame.getElement()), dragHandler, stopHandler,
                 cancelMoveHandler, ElementDragManager.StopCondition.STOP_CONDITION_MOUSE_UP);
     }
 

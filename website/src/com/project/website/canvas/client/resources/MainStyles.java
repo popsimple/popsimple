@@ -56,7 +56,7 @@ public interface MainStyles extends CssResource {
 
     String imageLoadingStyle();
 
-    String imagePickerResultImage();
+    String mediaSearchPanelResultImage();
 
     String imageToolContentPanel();
 

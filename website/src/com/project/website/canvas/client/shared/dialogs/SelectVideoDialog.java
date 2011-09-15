@@ -33,9 +33,9 @@ import com.project.website.canvas.shared.data.VideoInformation;
 
 public class SelectVideoDialog extends Composite implements TakesValue<VideoInformation>, Focusable {
 
-    private static MediaToolOptionsUiBinder uiBinder = GWT.create(MediaToolOptionsUiBinder.class);
+    private static SelectVideoDialogUiBinder uiBinder = GWT.create(SelectVideoDialogUiBinder.class);
 
-    interface MediaToolOptionsUiBinder extends UiBinder<Widget, SelectVideoDialog> {
+    interface SelectVideoDialogUiBinder extends UiBinder<Widget, SelectVideoDialog> {
     }
 
     @UiField

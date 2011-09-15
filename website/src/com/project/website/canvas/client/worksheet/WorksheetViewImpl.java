@@ -151,12 +151,10 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
         this.createDefaultPageOptions();
 
-        this._toolFrameTransformer = new ToolFrameTransformerImpl(worksheetPanel, dragPanel,
-                stopOperationEvent);
+        this._toolFrameTransformer = new ToolFrameTransformerImpl(worksheetPanel, dragPanel, stopOperationEvent);
         this.dragPanel.setVisible(false);
 
-        this._toolFrameSelectionManager = new ToolFrameSelectionManager(this, worksheetPanel, dragPanel,
-                selectionPanel, stopOperationEvent);
+        this._toolFrameSelectionManager = new ToolFrameSelectionManager(this, worksheetPanel, dragPanel, selectionPanel, stopOperationEvent);
         this.selectionPanel.setVisible(false);
 
         this._floatingWidgetDragManager = new ElementDragManagerImpl(
@@ -325,6 +323,15 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     @Override
     public void clearActiveToolboxItem() {
         clearFloatingWidget();
+
+        if (this.activeToolboxItem instanceof MoveToolboxItem)
+        {
+            for (CanvasToolFrame toolFrame : this.overToolFrames)
+            {
+                toolFrame.removeStyleName(CanvasResources.INSTANCE.main().drag());
+            }
+        }
+
         if (null != this.activeToolboxItem) {
             this.worksheetPanel.removeStyleName(this.activeToolboxItem.getCanvasStyleInCreateMode());
             this.activeToolboxItem = null;
@@ -360,7 +367,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     @Override
     public void removeToolInstanceWidget(CanvasToolFrame toolFrame) {
         this.worksheetPanel.remove(toolFrame);
-        this.overToolFrames.remove(toolFrame);
+        this.removeOverToolFrame(toolFrame);
         this.selectedTools.remove(toolFrame);
         RegistrationsManager regs = toolFrameRegistrations.remove(toolFrame);
         if (null != regs) {
@@ -373,8 +380,6 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         this.clearActiveToolboxItem();
         this.activeToolboxItem = toolboxItem;
         this.worksheetPanel.addStyleName(toolboxItem.getCanvasStyleInCreateMode());
-
-
 
         CanvasToolFactory<? extends CanvasTool<? extends ElementData>> factory = toolboxItem.getToolFactory();
         if (null == factory) {
@@ -720,7 +725,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     {
         overToolFrames.add(toolFrame);
         if (activeToolboxItem instanceof MoveToolboxItem) {
-            toolFrame.addStyleName(CanvasResources.INSTANCE.main().drag());
+            toolFrame.setDragging(true);
         }
     }
 
@@ -728,7 +733,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     {
         overToolFrames.remove(toolFrame);
         if (activeToolboxItem instanceof MoveToolboxItem) {
-            toolFrame.removeStyleName(CanvasResources.INSTANCE.main().drag());
+            toolFrame.setDragging(false);
         }
     }
 }
