@@ -83,6 +83,7 @@ public class ImageTool  extends Composite implements CanvasTool<ImageData>
     }
 
     private void reRegisterHandlers() {
+        WidgetUtils.stopClickPropagation(this.optionsLabel);
         registrationsManager.clear();
 
         registrationsManager.add(this.optionsLabel.addClickHandler(new ClickHandler() {
