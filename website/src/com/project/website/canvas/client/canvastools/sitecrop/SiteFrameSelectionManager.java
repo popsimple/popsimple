@@ -17,15 +17,13 @@ public class SiteFrameSelectionManager {
 	private ElementDragManagerImpl _selectionDragManager = null;
 	private Widget _selectionPanel = null;
 	private Widget _container = null;
-	private Handler<Rectangle> _completeHandler = null;
-
+	
 	public SiteFrameSelectionManager(Widget container, Widget dragPanel, Widget selectionPanel,
 			SimpleEvent<Void> stopOperationEvent, Handler<Rectangle> completeHandler) {
 		this._container = container;
 		this._selectionPanel = selectionPanel;
 		this._selectionDragManager = new ElementDragManagerImpl(container,
 				dragPanel, stopOperationEvent);
-		_completeHandler = completeHandler;
 	}
 
 	public void startSelectionDrag(MouseDownEvent event) {

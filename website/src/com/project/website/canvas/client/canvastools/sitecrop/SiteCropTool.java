@@ -81,8 +81,6 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
     @UiField
     Label urlLabel;
 
-    private final int FRAME_STEP = 20;
-
     private int _frameLeft = 0;
     private int _frameTop = 0;
     private Point2D _lastPoint = Point2D.zero;
