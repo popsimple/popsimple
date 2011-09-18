@@ -15,7 +15,6 @@ import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.WidgetUtils;
 import com.project.shared.data.Point2D;
 import com.project.shared.data.funcs.Func;
-import com.project.shared.utils.loggers.Logger;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
 import com.project.website.canvas.client.canvastools.base.CanvasToolCommon;
 import com.project.website.canvas.client.canvastools.textedit.aloha.Aloha;
@@ -124,7 +123,7 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
     }
 
     private void setLooksActive(boolean isActive, boolean killIfEmpty) {
-        Logger.log("TextEditTool - Setting active: " + isActive + ", text = " + this.getElement().getInnerText());
+        //Logger.log("TextEditTool - Setting active: " + isActive + ", text = " + this.getElement().getInnerText());
         // this.isActive is used for remembering what state to get into when
         // ready event occurs.
         // and also for determining whether we need to do anything at all
