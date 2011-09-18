@@ -29,7 +29,9 @@ public class HttpAuthentication
 
         if ((null != userName) && (null != userHash)) {
             user = AuthenticationUtils.loadUser(userName);
-            valid = getUserHash(user, httpRequest, response).equals(userHash);
+            if (null != user) {
+                valid = getUserHash(user, httpRequest, response).equals(userHash);
+            }
         }
 
         if (valid) {
