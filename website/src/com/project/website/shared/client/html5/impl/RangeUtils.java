@@ -1,6 +1,8 @@
 package com.project.website.shared.client.html5.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
@@ -20,7 +22,10 @@ public class RangeUtils
         final Node endNode = range.getEndContainer();
 
         ArrayList<Node> descendants = new ArrayList<Node>();
-        addNodeChildren(commonAncestor, descendants);
+        descendants.add(commonAncestor);
+
+        HashMap<Node, Integer> nodeInclusionMap = new HashMap<Node, Integer>();
+
         while (descendants.size() > 0) {
             for (Node descendant : descendants.toArray(new Node[0]))
             {
@@ -36,12 +41,16 @@ public class RangeUtils
                 Logger.log("offsetCompare: " + startOffsetCompare  + " -  " + descendant.toString() + " : " + descendant.getNodeValue());
                 logNode("Checking descendant: ", descendant);
 
-                Element elem = wrapIncludedPart(range, startNode, endNode, descendant, startOffsetCompare);
+                // If we change the DOM while iterating here, the range.comparePoint method may return wrong results?
+                nodeInclusionMap.put(descendant, startOffsetCompare);
+            }
+        }
 
-                if (null != elem) {
-                    func.call(elem);
-                }
-
+        for (Map.Entry<Node, Integer> entry : nodeInclusionMap.entrySet())
+        {
+            Element elem = wrapIncludedPart(range, startNode, endNode, entry.getKey(), entry.getValue());
+            if (null != elem) {
+                func.call(elem);
             }
         }
     }
@@ -116,7 +125,7 @@ public class RangeUtils
     {
         com.google.gwt.user.client.Element wrapperSpan = DOM.createSpan();
         String text = textNode.getNodeValue();
-        boolean endOffsetBeyondLength = text.length() >= endOffset;
+        boolean endOffsetBeyondLength = text.length() <= endOffset;
 
         com.google.gwt.user.client.Element prePartSpan = null;
         com.google.gwt.user.client.Element midPartSpan = null;
