@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
+import com.google.gwt.dom.client.Style.FontStyle;
 import com.google.gwt.dom.client.Style.FontWeight;
+import com.google.gwt.dom.client.Style.TextDecoration;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -40,26 +42,35 @@ public class TextEditToolbar extends Composite
     public TextEditToolbar()
     {
         initWidget(uiBinder.createAndBindUi(this));
+        initButtons();
+    }
 
-        this.addButton(new Button("Bold"), new Func<Element,Boolean>(){
-            @Override
-            public Boolean call(Element arg)
-            {
-                return arg.getStyle().getFontWeight().toLowerCase().equals("bold");
+    private void initButtons() {
+        setSimpleCssValueButton("font-weight", "bold", "bold");
+        setSimpleCssValueButton("font-style", "italic", "italic");
+        setSimpleCssValueButton("font-style", "italic", "italic");
+    }
+
+    private void setSimpleCssValueButton(final String cssAttribute,
+            final String cssValue, final String title) {
+        this.addButton(new Button(title), new Func<Element,Boolean>() { @Override
+            public Boolean call(Element arg) {
+                return arg.getStyle().getProperty(cssAttribute).contains(cssValue);
             }},
-            new Action<Element>(){
-                @Override
-                public void exec(Element arg)
-                {
-                    arg.getStyle().setFontWeight(FontWeight.BOLD);
-                }},
-            new Action<Element>(){
-
-                @Override
-                public void exec(Element arg)
-                {
-                    arg.getStyle().setFontWeight(FontWeight.NORMAL);
-                }});
+            new Action<Element>(){ @Override public void exec(Element arg) {
+                String currentPropValue = arg.getStyle().getProperty(cssAttribute);
+                boolean hasValue = currentPropValue.contains(cssValue);
+                if (false == hasValue) {
+                    arg.getStyle().setProperty(cssAttribute, currentPropValue + " " + cssValue);
+                }
+            }},
+            new Action<Element>(){ @Override public void exec(Element arg) {
+                String currentPropValue = arg.getStyle().getProperty(cssAttribute);
+                boolean hasValue = currentPropValue.contains(cssValue);
+                if (hasValue) {
+                    arg.getStyle().setProperty(cssAttribute, currentPropValue.replace(cssValue, ""));
+                }
+            }});
     }
 
     public void setEditedElement(Element element)

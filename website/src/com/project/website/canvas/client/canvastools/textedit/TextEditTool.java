@@ -198,7 +198,9 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
             this.removeStyleName(CanvasResources.INSTANCE.main().textEditNotFocused());
 
             TextEditTool._toolbar.setEditedElement(this.getElement());
-            this.setFocus(true);
+            
+            // This causes infinite recursion / looping:
+            //this.setFocus(true);
 
         } else {
 
@@ -211,7 +213,7 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
             this.removeStyleName(CanvasResources.INSTANCE.main().textEditFocused());
             this.addStyleName(CanvasResources.INSTANCE.main().textEditNotFocused());
 
-            String text = new HTML(this.getContents()).getText().replace((char) 160, ' ');
+            String text = this.getContents().replace((char) 160, ' ');
             if (killIfEmpty) {
                 if (text.trim().isEmpty()) {
                     this._killRequestEvent.dispatch("Empty");
