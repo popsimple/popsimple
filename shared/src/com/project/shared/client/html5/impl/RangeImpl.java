@@ -1,9 +1,9 @@
-package com.project.website.shared.client.html5.impl;
+package com.project.shared.client.html5.impl;
 
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Node;
-import com.project.website.shared.client.html5.Range;
+import com.project.shared.client.html5.Range;
 
 public class RangeImpl extends JavaScriptObject implements Range
 {
@@ -144,7 +144,7 @@ public class RangeImpl extends JavaScriptObject implements Range
     }-*/;
 
     @Override
-    public final native com.project.website.shared.client.html5.Range cloneRange()
+    public final native Range cloneRange()
     /*-{
         return this.cloneRange();
     }-*/;

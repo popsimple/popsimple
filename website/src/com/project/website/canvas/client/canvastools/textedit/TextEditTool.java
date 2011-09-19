@@ -18,6 +18,8 @@ import com.google.gwt.user.client.ui.HTML;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.handlers.RegistrationsManager;
+import com.project.shared.client.html5.impl.RangeUtils;
+import com.project.shared.client.html5.impl.SelectionImpl;
 import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.WidgetUtils;
 import com.project.shared.data.Point2D;
@@ -27,8 +29,6 @@ import com.project.website.canvas.client.canvastools.base.CanvasToolCommon;
 import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.shared.data.ElementData;
 import com.project.website.canvas.shared.data.TextData;
-import com.project.website.shared.client.html5.impl.RangeUtils;
-import com.project.website.shared.client.html5.impl.SelectionImpl;
 
 public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
 {

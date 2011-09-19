@@ -1,4 +1,4 @@
-package com.project.website.shared.client.html5.impl;
+package com.project.shared.client.html5.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,9 +8,9 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.user.client.DOM;
+import com.project.shared.client.html5.Range;
 import com.project.shared.data.Pair;
 import com.project.shared.data.funcs.Func;
-import com.project.website.shared.client.html5.Range;
 
 public class RangeUtils
 {

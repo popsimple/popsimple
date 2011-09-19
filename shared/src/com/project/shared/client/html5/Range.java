@@ -1,4 +1,4 @@
-package com.project.website.shared.client.html5;
+package com.project.shared.client.html5;
 
 import com.google.gwt.dom.client.Node;
 

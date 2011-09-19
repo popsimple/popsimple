@@ -1,4 +1,4 @@
-package com.project.website.shared.client.html5;
+package com.project.shared.client.html5;
 
 /* DocumentType IDL from http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#documentfragment
  * interface DocumentType : Node {

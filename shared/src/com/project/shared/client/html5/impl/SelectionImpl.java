@@ -1,10 +1,10 @@
-package com.project.website.shared.client.html5.impl;
+package com.project.shared.client.html5.impl;
 
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Node;
-import com.project.website.shared.client.html5.Range;
-import com.project.website.shared.client.html5.Selection;
+import com.project.shared.client.html5.Range;
+import com.project.shared.client.html5.Selection;
 
 public class SelectionImpl extends JavaScriptObject implements Selection
 {
