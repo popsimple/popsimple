@@ -40,12 +40,19 @@ public class RangeUtils
 
                 int startOffsetCompare = range.comparePoint(descendant, 0);
                 int endOffsetCompare = range.comparePoint(descendant, descendant.getNodeValue().length() - 1);
-                boolean isFullyContained = (0 == startOffsetCompare) && (0 == endOffsetCompare);
 
-                logNode("Checking descendant with offset compare value: " + startOffsetCompare, descendant);
+                boolean startContained = 0 == startOffsetCompare;
+                boolean endContained = 0 == endOffsetCompare;
+                boolean midContained = (-1 == startOffsetCompare) && (1 == endOffsetCompare);
+                boolean isFullyContained = startContained && endContained;
+                boolean isPartiallyContained = startContained || endContained || midContained;
 
-                // If we change the DOM while iterating here, the range.comparePoint method may return wrong results?
-                nodeInclusionMap.put(descendant, isFullyContained);
+                if (isPartiallyContained) {
+                    logNode("Checking descendant with offset compare value: " + startOffsetCompare, descendant);
+                    // If we change the DOM while iterating here, the range.comparePoint method may return wrong results?
+                    // that's why we add to a map and later split the elements appropriately
+                    nodeInclusionMap.put(descendant, isFullyContained);
+                }
             }
         }
 
@@ -139,29 +146,22 @@ public class RangeUtils
         com.google.gwt.user.client.Element midPartSpan = null;
         com.google.gwt.user.client.Element postPartSpan = null;
 
-        if (((0 == startOffset) && endOffsetBeyondLength)
-            || (text.length() == startOffset))
-        {
-            wrapperSpan.setInnerText(textNode.getNodeValue());
-        }
-        else {
-
+        if (startOffset > 0) {
             prePartSpan = DOM.createSpan();
             prePartSpan.setInnerText(text.substring(0, startOffset));
             wrapperSpan.appendChild(prePartSpan);
+        }
 
-            midPartSpan = DOM.createSpan();
-            midPartSpan.setInnerText(text.substring(startOffset, endOffset));
-            wrapperSpan.appendChild(midPartSpan);
+        midPartSpan = DOM.createSpan();
+        midPartSpan.setInnerText(text.substring(startOffset, endOffset));
+        wrapperSpan.appendChild(midPartSpan);
 
-            if (false == endOffsetBeyondLength) {
-                postPartSpan = DOM.createSpan();
-                postPartSpan.setInnerText(text.substring(endOffset));
-                wrapperSpan.appendChild(postPartSpan);
-            }
+        if (false == endOffsetBeyondLength) {
+            postPartSpan = DOM.createSpan();
+            postPartSpan.setInnerText(text.substring(endOffset));
+            wrapperSpan.appendChild(postPartSpan);
         }
         textNode.getParentNode().replaceChild(wrapperSpan, textNode);
-
         return new SplitElement(wrapperSpan, prePartSpan, midPartSpan, postPartSpan);
     }
 }
