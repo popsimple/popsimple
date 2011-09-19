@@ -1,11 +1,11 @@
 package com.project.shared.client.utils;
 
-import java.util.ArrayList;
+import com.project.shared.data.funcs.Func;
 
-import com.google.gwt.dom.client.Node;
 
 public class DomNodeUtils
 {
+    /* Untested, and unused.
     public static Node getCommonAncestor(Node a, Node b)
     {
         if (a == b) {
@@ -38,5 +38,5 @@ public class DomNodeUtils
             }
             result.add(parent);
         }
-    }
+    }*/
 }

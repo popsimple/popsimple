@@ -96,5 +96,11 @@ public interface Range
     void detach();
     boolean isPointInRange(Node parent, int offset);
     short comparePoint(Node parent, int offset);
+
+    @Deprecated
+    /**
+     * Although it appears in: http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-range-intersectsnode
+     * It is not included in Gecko 1.9 and higher. https://developer.mozilla.org/en/DOM/range.intersectsNode
+     */
     boolean intersectsNode(Node node);
 }

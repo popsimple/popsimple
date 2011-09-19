@@ -42,7 +42,9 @@ public class RangeImpl extends JavaScriptObject implements Range
     @Override
     public final native Node getCommonAncestorContainer()
     /*-{
-        return this.commonAncestorContainer;
+        var res = this.commonAncestorContainer;
+        console.dir(res);
+        return res;
     }-*/;
 
     @Override
