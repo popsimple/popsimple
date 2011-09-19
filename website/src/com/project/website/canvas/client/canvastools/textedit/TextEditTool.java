@@ -1,7 +1,6 @@
 package com.project.website.canvas.client.canvastools.textedit;
 
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.Style.FontWeight;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
@@ -12,9 +11,9 @@ import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.handlers.RegistrationsManager;
@@ -39,6 +38,8 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
 
     private final RegistrationsManager _registrationsManager = new RegistrationsManager();
 
+    private static TextEditToolbar _toolbar = null;
+
     private TextData _data;
     private boolean _editorReady = false;
     private boolean _isActive = false;
@@ -47,6 +48,12 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
     public TextEditTool()
     {
         CanvasToolCommon.initCanvasToolWidget(this);
+
+        if (null == TextEditTool._toolbar) {
+            TextEditTool._toolbar = new TextEditToolbar();
+            RootPanel.get().add(TextEditTool._toolbar);
+        }
+
         this.addStyleName(CanvasResources.INSTANCE.main().textEdit());
         this.setViewMode(false);
         final TextEditTool that = this;
@@ -150,18 +157,6 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
                 // TODO replace this with key bindings manager?
                 else if (event.getNativeKeyCode() == KeyCodes.KEY_PAGEDOWN) {
                         SelectionImpl selection = SelectionImpl.getWindowSelection();
-                        Window.alert("ranges: " + selection.getRangeCount());
-                        Node parentNode;
-//                      parentNode = DomNodeUtils.getCommonAncestor(selection.getFocusNode(), selection.getAnchorNode());
-//                      if (null == parentNode) {
-//                          if (null != selection.getFocusNode()) {
-//                              parentNode = selection.getFocusNode();
-//                          }
-//                          else {
-//                              parentNode = selection.getAnchorNode();
-//                          }
-//                      }
-//                      if (null != parentNode) {
                         if (0 < selection.getRangeCount()) {
                             RangeUtils.applyToNodesInRange(selection.getRangeAt(0), new Func.Action<Element>(){
                                 @Override
@@ -169,11 +164,6 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
                                 {
                                     arg.getStyle().setFontWeight(FontWeight.BOLD);
                                 }});
-//                            parentNode = selection.getRangeAt(0).getCommonAncestorContainer();
-//                            Element parentElem = parentNode.getParentElement();
-//                            if (null != parentElem) {
-//                                parentElem.getStyle().setFontWeight(FontWeight.BOLD);
-//                            }
                         }
                 }
 
@@ -207,8 +197,11 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
             this.addStyleName(CanvasResources.INSTANCE.main().textEditFocused());
             this.removeStyleName(CanvasResources.INSTANCE.main().textEditNotFocused());
 
+            TextEditTool._toolbar.setEditedElement(this.getElement());
             this.setFocus(true);
+
         } else {
+
             this.setFocus(false);
 
             // this.editSize =

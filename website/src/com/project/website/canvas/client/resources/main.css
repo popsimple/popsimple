@@ -275,6 +275,13 @@
 	resize: none;
 }
 
+.textEditToolbar {
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+
 /* .textEditViewBox { */
 /* 	display: none; */
 /* } */

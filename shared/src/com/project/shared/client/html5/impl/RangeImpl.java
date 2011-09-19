@@ -9,6 +9,11 @@ public class RangeImpl extends JavaScriptObject implements Range
 {
     protected RangeImpl() {}
 
+    public final native static RangeImpl create()
+    /*-{
+        return $wnd.document.createRange();
+    }-*/;
+
     @Override
     public final native Node getStartContainer()
     /*-{

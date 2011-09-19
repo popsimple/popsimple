@@ -56,8 +56,6 @@ public interface MainStyles extends CssResource {
 
     String imageLoadingStyle();
 
-    String mediaSearchPanelResultImage();
-
     String imageToolContentPanel();
 
     String imageToolDefault();
@@ -91,6 +89,8 @@ public interface MainStyles extends CssResource {
     String mapToolMapHolder();
 
     String mapToolMapWidget();
+
+    String mediaSearchPanelResultImage();
 
     String monospace();
 
@@ -138,6 +138,8 @@ public interface MainStyles extends CssResource {
 
     String textEditNotFocused();
 
+    String textEditToolbar();
+
     String toolbox();
 
     String toolboxCommonIconStyle();
@@ -146,11 +148,11 @@ public interface MainStyles extends CssResource {
 
     String toolboxCropSiteIconStyle();
 
-    String toolboxCursorIconStyle();
+	String toolboxCursorIconStyle();
 
 	String toolboxHeader();
 
-	String toolboxImageIconStyle();
+    String toolboxImageIconStyle();
 
     String toolboxInnerIconStyle();
 
@@ -192,9 +194,9 @@ public interface MainStyles extends CssResource {
 
     String toolFrameHoverVisibleElement();
 
-    String toolFramePanel();
+	String toolFramePanel();
 
-	String toolOptionsBar();
+    String toolOptionsBar();
 
     String toolOptionsBarContainer();
 

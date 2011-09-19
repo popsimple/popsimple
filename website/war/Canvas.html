@@ -24,7 +24,9 @@
         <script type="text/javascript" src="Canvas/Canvas.nocache.js"></script>
 
         <!-- http://code.google.com/p/ierange/ -->
-        <script type="text/javascript" src="js/ierange-m2.js"></script>
+        <!--[if lte IE 9]>
+            <script type="text/javascript" src="js/ierange-m2.js"></script>
+        <![endif]-->
     </head>
 
     <!--                                           -->
@@ -39,9 +41,9 @@
 
         <!-- RECOMMENDED if your web app will not function without JavaScript enabled -->
         <noscript>
-            <div style="width: 22em; position: absolute; left: 50%; margin-left: -11em; color: red; background-color: white; border: 1px solid red; padding: 4px; font-family: sans-serif">
-                Your web browser must have JavaScript enabled in order for this application to display correctly.
-            </div>
+            <div
+                style="width: 22em; position: absolute; left: 50%; margin-left: -11em; color: red; background-color: white; border: 1px solid red; padding: 4px; font-family: sans-serif">
+                Your web browser must have JavaScript enabled in order for this application to display correctly.</div>
         </noscript>
 
         <div id="root" class="root"></div>

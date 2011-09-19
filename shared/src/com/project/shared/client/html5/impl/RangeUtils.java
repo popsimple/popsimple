@@ -14,7 +14,7 @@ import com.project.shared.data.funcs.Func;
 
 public class RangeUtils
 {
-    public static void applyToNodesInRange(Range range, Func.Action<Element> func)
+    public static RangeImpl applyToNodesInRange(Range range, Func.Action<Element> func)
     {
         Node commonAncestor = range.getCommonAncestorContainer();
 
@@ -55,13 +55,32 @@ public class RangeUtils
             }
         }
 
+        Element startElem = null;
+        Element endElem = null;
+
+        // Now modify the tree in-place, and at the same time remember the elements that define the range
+        // after the modification.
         for (Map.Entry<Node, Boolean> entry : nodeInclusionMap.entrySet())
         {
             Element elem = wrapIncludedPart(startPoint, endPoint, entry.getKey(), entry.getValue());
             if (null != elem) {
                 func.call(elem);
             }
+            if (startPoint.getA() == entry.getKey()) {
+                startElem = elem;
+            }
+            if (endPoint.getA() == entry.getKey()) {
+                endElem = elem;
+            }
         }
+
+        RangeImpl updatedRange = RangeImpl.create();
+        if ((null != startElem) && (null != endElem)) {
+            updatedRange.setStartBefore(startElem);
+            updatedRange.setEndAfter(endElem);
+        }
+        return updatedRange;
+
     }
 
     private static Element wrapIncludedPart(Pair<Node, Integer> startPoint, Pair<Node, Integer> endPoint, Node descendant, boolean fullyContained)
