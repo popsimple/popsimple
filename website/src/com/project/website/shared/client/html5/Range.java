@@ -5,14 +5,14 @@ import com.google.gwt.dom.client.Node;
 /* Range IDL from http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#range
  * interface Range {
  readonly attribute Node startContainer;
- readonly attribute unsigned long startOffset;
+ readonly attribute unsigned int startOffset;
  readonly attribute Node endContainer;
- readonly attribute unsigned long endOffset;
+ readonly attribute unsigned int endOffset;
  readonly attribute boolean collapsed;
  readonly attribute Node commonAncestorContainer;
 
- void setStart(Node refNode, unsigned long offset);
- void setEnd(Node refNode, unsigned long offset);
+ void setStart(Node refNode, unsigned int offset);
+ void setEnd(Node refNode, unsigned int offset);
  void setStartBefore(Node refNode);
  void setStartAfter(Node refNode);
  void setEndBefore(Node refNode);
@@ -37,8 +37,8 @@ import com.google.gwt.dom.client.Node;
  Range cloneRange();
  void detach();
 
- boolean isPointInRange(Node parent, unsigned long offset);
- short comparePoint(Node parent, unsigned long offset);
+ boolean isPointInRange(Node parent, unsigned int offset);
+ short comparePoint(Node parent, unsigned int offset);
 
  boolean intersectsNode(Node node);
 
@@ -47,16 +47,16 @@ import com.google.gwt.dom.client.Node;
 public interface Range
 {
     Node getStartContainer();
-    long getStartOffset();
+    int getStartOffset();
     Node getEndContainer();
-    long getEndOffset();
+    int getEndOffset();
 
     boolean getCollapsed();
 
     Node getCommonAncestorContainer();
 
-    void setStart(Node refNode, long offset);
-    void setEnd(Node refNode, long offset);
+    void setStart(Node refNode, int offset);
+    void setEnd(Node refNode, int offset);
     void setStartBefore(Node refNode);
     void setStartAfter(Node refNode);
     void setEndBefore(Node refNode);
@@ -94,7 +94,7 @@ public interface Range
     void surroundContents(Node newParent);
     Range cloneRange();
     void detach();
-    boolean isPointInRange(Node parent, long offset);
-    short comparePoint(Node parent, long offset);
+    boolean isPointInRange(Node parent, int offset);
+    short comparePoint(Node parent, int offset);
     boolean intersectsNode(Node node);
 }

@@ -1,6 +1,5 @@
 package com.project.website.shared.client.html5.impl;
 
-import org.apache.commons.lang.NotImplementedException;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Node;
@@ -8,6 +7,7 @@ import com.project.website.shared.client.html5.Range;
 
 public class RangeImpl extends JavaScriptObject implements Range
 {
+    protected RangeImpl() {}
 
     @Override
     public final native Node getStartContainer()
@@ -16,7 +16,7 @@ public class RangeImpl extends JavaScriptObject implements Range
     }-*/;
 
     @Override
-    public final native long getStartOffset()
+    public final native int getStartOffset()
     /*-{
         return this.startOffset;
     }-*/;
@@ -28,7 +28,7 @@ public class RangeImpl extends JavaScriptObject implements Range
     }-*/;
 
     @Override
-    public final native long getEndOffset()
+    public final native int getEndOffset()
     /*-{
         return this.endOffset;
     }-*/;
@@ -46,13 +46,13 @@ public class RangeImpl extends JavaScriptObject implements Range
     }-*/;
 
     @Override
-    public final native void setStart(Node refNode, long offset)
+    public final native void setStart(Node refNode, int offset)
     /*-{
         this.setStart(refNode, offset);
     }-*/;
 
     @Override
-    public final native void setEnd(Node refNode, long offset)
+    public final native void setEnd(Node refNode, int offset)
     /*-{
         this.setEnd(refNode, offset);
     }-*/;
@@ -100,12 +100,12 @@ public class RangeImpl extends JavaScriptObject implements Range
     }-*/;
 
     @Override
-    public short compareBoundaryPoints(CompareHow how, Range sourceRange)
+    public final short compareBoundaryPoints(CompareHow how, Range sourceRange)
     {
         if (sourceRange instanceof RangeImpl) {
             return this.compareBoundaryPointsNative(how, (RangeImpl)sourceRange);
         }
-        throw new NotImplementedException("Only implemented for Range class: " + RangeImpl.class.getCanonicalName());
+        throw new RuntimeException("Only implemented for Range class: " + RangeImpl.class.getName());
     }
 
     public final native short compareBoundaryPointsNative(CompareHow how, RangeImpl sourceRange)
@@ -156,13 +156,13 @@ public class RangeImpl extends JavaScriptObject implements Range
     }-*/;
 
     @Override
-    public final native boolean isPointInRange(Node parent, long offset)
+    public final native boolean isPointInRange(Node parent, int offset)
     /*-{
         return this.isPointInRange(parent, offset);
     }-*/;
 
     @Override
-    public final native short comparePoint(Node parent, long offset)
+    public final native short comparePoint(Node parent, int offset)
     /*-{
         return this.comparePoint(parent, offset);
     }-*/;

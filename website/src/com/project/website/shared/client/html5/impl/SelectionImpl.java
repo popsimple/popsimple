@@ -1,6 +1,5 @@
 package com.project.website.shared.client.html5.impl;
 
-import org.apache.commons.lang.NotImplementedException;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Node;
@@ -9,43 +8,45 @@ import com.project.website.shared.client.html5.Selection;
 
 public class SelectionImpl extends JavaScriptObject implements Selection
 {
-    public native final SelectionImpl getWindowSelection()
+    protected SelectionImpl() {}
+
+    public native final static SelectionImpl getWindowSelection()
     /*-{
-        return window.getSelection();
+        return $wnd.getSelection();
     }-*/;
 
     @Override
     public final native Node getAnchorNode()
     /*-{
-        return this.getAnchorNode();
+        return this.anchorNode;
     }-*/;
 
     @Override
-    public final native long getAnchorOffset()
+    public final native int getAnchorOffset()
     /*-{
-        return this.getAnchorOffset();
+        return this.anchorOffset;
     }-*/;
 
     @Override
     public final native Node getFocusNode()
     /*-{
-        return this.getFocusNode();
+        return this.focusNode;
     }-*/;
 
     @Override
-    public final native long getFocusOffset()
+    public final native int getFocusOffset()
     /*-{
-        return this.getFocusOffset();
+        return this.focusOffset;
     }-*/;
 
     @Override
     public final native boolean isCollapsed()
     /*-{
-        return this.isCollapsed();
+        return this.isCollapsed;
     }-*/;
 
     @Override
-    public final native void collapse(Node parentNode, long offset)
+    public final native void collapse(Node parentNode, int offset)
     /*-{
         this.collapse(parentNode, offset);
     }-*/;
@@ -63,7 +64,7 @@ public class SelectionImpl extends JavaScriptObject implements Selection
     }-*/;
 
     @Override
-    public final native void extend(Node parentNode, long offset)
+    public final native void extend(Node parentNode, int offset)
     /*-{
         this.extend(parentNode, offset);
     }-*/;
@@ -87,24 +88,24 @@ public class SelectionImpl extends JavaScriptObject implements Selection
     }-*/;
 
     @Override
-    public final native long getRangeCount()
+    public final native int getRangeCount()
     /*-{
-        return this.getRangeCount();
+        return this.rangeCount;
     }-*/;
 
     @Override
-    public final native Range getRangeAt(long index)
+    public final native Range getRangeAt(int index)
     /*-{
         return this.getRangeAt(index);
     }-*/;
 
     @Override
-    public void addRange(Range range)
+    public final void addRange(Range range)
     {
         if (range instanceof RangeImpl) {
             this.addRangeNative((RangeImpl)range);
         }
-        throw new NotImplementedException("Implemented only for Range class: " + RangeImpl.class.getCanonicalName());
+        throw new RuntimeException("Implemented only for Range class: " + RangeImpl.class.getName());
     }
 
     public final native void addRangeNative(RangeImpl range)
@@ -113,12 +114,12 @@ public class SelectionImpl extends JavaScriptObject implements Selection
     }-*/;
 
     @Override
-    public void removeRange(Range range)
+    public final void removeRange(Range range)
     {
         if (range instanceof RangeImpl) {
             this.removeRangeNative((RangeImpl)range);
         }
-        throw new NotImplementedException("Implemented only for Range class: " + RangeImpl.class.getCanonicalName());
+        throw new RuntimeException("Implemented only for Range class: " + RangeImpl.class.getName());
     }
 
     public final native void removeRangeNative(RangeImpl range)
