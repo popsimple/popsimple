@@ -8,6 +8,7 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.user.client.DOM;
+import com.project.shared.data.Pair;
 import com.project.shared.data.funcs.Func;
 import com.project.shared.utils.loggers.Logger;
 import com.project.website.shared.client.html5.Range;
@@ -18,13 +19,14 @@ public class RangeUtils
     {
         Node commonAncestor = range.getCommonAncestorContainer();
 
-        final Node startNode = range.getStartContainer();
-        final Node endNode = range.getEndContainer();
+        Pair<Node, Integer> startPoint = new Pair<Node,Integer>(range.getStartContainer(), range.getStartOffset());
+        Pair<Node, Integer> endPoint = new Pair<Node,Integer>(range.getEndContainer(), range.getEndOffset());
 
         ArrayList<Node> descendants = new ArrayList<Node>();
+
         descendants.add(commonAncestor);
 
-        HashMap<Node, Integer> nodeInclusionMap = new HashMap<Node, Integer>();
+        HashMap<Node, Boolean> nodeInclusionMap = new HashMap<Node, Boolean>();
 
         while (descendants.size() > 0) {
             for (Node descendant : descendants.toArray(new Node[0]))
@@ -32,49 +34,55 @@ public class RangeUtils
                 descendants.remove(descendant);
                 addNodeChildren(descendant, descendants);
 
-                // Node is partially contained.
-                // Assumption: only start and end containers need to be split,
-                // all other nodes will either be fully contained, or partially
-                // contained with the selection ending inside one of their
-                // descendants.
+                if (descendant.getNodeType() != Node.TEXT_NODE) {
+                    continue;
+                }
+
                 int startOffsetCompare = range.comparePoint(descendant, 0);
-                Logger.log("offsetCompare: " + startOffsetCompare  + " -  " + descendant.toString() + " : " + descendant.getNodeValue());
-                logNode("Checking descendant: ", descendant);
+                int endOffsetCompare = range.comparePoint(descendant, descendant.getNodeValue().length() - 1);
+                boolean isFullyContained = (0 == startOffsetCompare) && (0 == endOffsetCompare);
+
+                logNode("Checking descendant with offset compare value: " + startOffsetCompare, descendant);
 
                 // If we change the DOM while iterating here, the range.comparePoint method may return wrong results?
-                nodeInclusionMap.put(descendant, startOffsetCompare);
+                nodeInclusionMap.put(descendant, isFullyContained);
             }
         }
 
-        for (Map.Entry<Node, Integer> entry : nodeInclusionMap.entrySet())
+        for (Map.Entry<Node, Boolean> entry : nodeInclusionMap.entrySet())
         {
-            Element elem = wrapIncludedPart(range, startNode, endNode, entry.getKey(), entry.getValue());
+            Element elem = wrapIncludedPart(startPoint, endPoint, entry.getKey(), entry.getValue());
             if (null != elem) {
                 func.call(elem);
             }
         }
     }
 
-    private static Element wrapIncludedPart(Range range, final Node startNode, final Node endNode, Node descendant, int startOffsetCompare)
+    private static Element wrapIncludedPart(Pair<Node, Integer> startPoint, Pair<Node, Integer> endPoint, Node descendant, boolean fullyContained)
     {
         Element elem = null;
+        Node startNode = startPoint.getA();
+        Node endNode = endPoint.getA();
+        int startOffset = startPoint.getB();
+        int endOffset = endPoint.getB();
+
         if (startNode == descendant) {
             if (startNode == endNode) {
-                elem = wrapSplitTextNode(startNode, range.getStartOffset(), range.getEndOffset()).mid;
+                elem = wrapSplitTextNode(startNode, startOffset, endOffset).mid;
             }
             else {
-                elem = wrapSplitTextNode(startNode, range.getStartOffset(), startNode.getNodeValue().length()).post;
+                elem = wrapSplitTextNode(startNode, startOffset, startNode.getNodeValue().length()).mid;
             }
         }
         else if (endNode == descendant) {
             if (startNode != endNode) {
-                elem = wrapSplitTextNode(endNode, range.getEndOffset(), endNode.getNodeValue().length()).pre;
+                elem = wrapSplitTextNode(endNode, endOffset, endNode.getNodeValue().length()).pre;
             }
             else {
                 elem = null;
             }
         }
-        else if (0 == startOffsetCompare) {
+        else if (fullyContained) {
             if (descendant.getNodeType() == Node.TEXT_NODE) {
                 elem = wrapSplitTextNode(descendant, 0, descendant.getNodeValue().length()).parent;
             }
@@ -131,7 +139,9 @@ public class RangeUtils
         com.google.gwt.user.client.Element midPartSpan = null;
         com.google.gwt.user.client.Element postPartSpan = null;
 
-        if ((0 == startOffset) && endOffsetBeyondLength) {
+        if (((0 == startOffset) && endOffsetBeyondLength)
+            || (text.length() == startOffset))
+        {
             wrapperSpan.setInnerText(textNode.getNodeValue());
         }
         else {
@@ -152,11 +162,6 @@ public class RangeUtils
         }
         textNode.getParentNode().replaceChild(wrapperSpan, textNode);
 
-        if (null != postPartSpan) {
-            return new SplitElement(wrapperSpan, prePartSpan, midPartSpan, postPartSpan);
-        }
-        else {
-            return new SplitElement(wrapperSpan, prePartSpan, null, midPartSpan);
-        }
+        return new SplitElement(wrapperSpan, prePartSpan, midPartSpan, postPartSpan);
     }
 }
