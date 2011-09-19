@@ -42,9 +42,7 @@ public class RangeImpl extends JavaScriptObject implements Range
     @Override
     public final native Node getCommonAncestorContainer()
     /*-{
-        var res = this.commonAncestorContainer;
-        console.dir(res);
-        return res;
+        return this.commonAncestorContainer;
     }-*/;
 
     @Override
@@ -166,6 +164,25 @@ public class RangeImpl extends JavaScriptObject implements Range
     @Override
     public final native short comparePoint(Node parent, int offset)
     /*-{
+        if (!this.comparePoint) {
+            // IE 9 /  IERange doesn't implement this.
+            var tempRange = $wnd.document.createRange();
+            tempRange.setStart(parent, offset);
+            tempRange.setEnd(parent, offset+1);
+            var startToStart = this.compareBoundaryPoints($wnd.Range.START_TO_START, tempRange);
+            var startToEnd = this.compareBoundaryPoints($wnd.Range.START_TO_END, tempRange);
+            var onStartOrAfter = 0 >= startToStart;
+            var onEndOrBefore = 0 <= startToEnd;
+            if (onStartOrAfter) {
+                if (onEndOrBefore) {
+                    return 0;
+                }
+                return 1;
+            }
+            else  {
+                return -1;
+            }
+        }
         return this.comparePoint(parent, offset);
     }-*/;
 

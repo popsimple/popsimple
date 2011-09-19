@@ -271,7 +271,6 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         regs.add(toolFrame.addFocusHandler(new FocusHandler() {
             @Override
             public void onFocus(FocusEvent event) {
-                Logger.log("Focus handled for: " + toolFrame.getElement());
                 activeToolFrameChangedEvent.dispatch(toolFrame);
             }
         }));

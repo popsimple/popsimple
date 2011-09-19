@@ -10,7 +10,6 @@ import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.user.client.DOM;
 import com.project.shared.data.Pair;
 import com.project.shared.data.funcs.Func;
-import com.project.shared.utils.loggers.Logger;
 import com.project.website.shared.client.html5.Range;
 
 public class RangeUtils
@@ -48,7 +47,7 @@ public class RangeUtils
                 boolean isPartiallyContained = startContained || endContained || midContained;
 
                 if (isPartiallyContained) {
-                    logNode("Checking descendant with offset compare value: " + startOffsetCompare, descendant);
+                    //logNode("Checking descendant with offset compare value: " + startOffsetCompare, descendant);
                     // If we change the DOM while iterating here, the range.comparePoint method may return wrong results?
                     // that's why we add to a map and later split the elements appropriately
                     nodeInclusionMap.put(descendant, isFullyContained);
@@ -106,19 +105,19 @@ public class RangeUtils
         for (int i = 0 ; i < ancestorChildren.getLength(); i++)
         {
             Node item = ancestorChildren.getItem(i);
-            logNode("Adding child: ", item);
+            //logNode("Adding child: ", item);
             descendants.add(item);
         }
     }
 
-    private static void logNode(String message, Node item)
-    {
-        Logger.log(message + " - Node: " + item.toString() + " : " + item.getNodeValue());
-        if (item.getNodeType() == Node.ELEMENT_NODE) {
-            Element elem = Element.as(item);
-            Logger.log("   Node is an Element:" + elem.getString());
-        }
-    }
+//    private static void logNode(String message, Node item)
+//    {
+//        Logger.log(message + " - Node: " + item.toString() + " : " + item.getNodeValue());
+//        if (item.getNodeType() == Node.ELEMENT_NODE) {
+//            Element elem = Element.as(item);
+//            Logger.log("   Node is an Element:" + elem.getString());
+//        }
+//    }
 
     public static class SplitElement {
         public SplitElement(Element parent, Element pre, Element mid, Element post)
