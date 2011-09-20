@@ -1,9 +1,6 @@
 [submodule "submodules/mapstraction"]
 	path = submodules/mapstraction
 	url = git@github.com:mapstraction/mxn.git
-[submodule "submodules/Aloha-Editor"]
-	path = submodules/Aloha-Editor
-	url = git@github.com:popsimple/Aloha-Editor.git
 [submodule "submodules/Dolomite"]
 	path = submodules/Dolomite
 	url = git@github.com:sinelaw/Dolomite.git
