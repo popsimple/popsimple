@@ -9,6 +9,30 @@ import com.google.gwt.user.client.DOM;
 
 public class StyleUtils
 {
+    public static boolean areEquivalent(Style a, Style b)
+    {
+//        Logger.log("Comparing styles: a = " + StyleUtils.getCssText(a));
+//        Logger.log("                  b = " + StyleUtils.getCssText(b));
+        return StyleUtils.isSubsetOf(a, b) && StyleUtils.isSubsetOf(b, a);
+    }
+
+    /**
+     * Compares two styles, checking if one is a subset of the other.
+     * @return true if every property of the "subsetCandidate" exists in set and has the same value. Otherwise, returns false.
+     */
+    public static native final boolean isSubsetOf(Style subsetCandidate, Style set)
+    /*-{
+        for (var i = 0; i < subsetCandidate.length; i++)
+        {
+            var name = subsetCandidate[i];
+            if (subsetCandidate.getPropertyValue(name) !== set.getPropertyValue(name))
+            {
+                return false;
+            }
+        }
+        return true;
+    }-*/;
+
     /**
      * See https://developer.mozilla.org/en/DOM/window.getComputedStyle
      * @param elem The element for which to get the computed style object
@@ -33,10 +57,16 @@ public class StyleUtils
         return value;
     }
 
+    public static final native String getCssText(Style style)
+    /*-{
+        return style.cssText;
+    }-*/;
+
     /**
      * Wraps all the text node descendants with span elements and moves all text-decoration
      * style declarations down into the text-node wrappers.
      * If an element contains only text nodes, it does not wrap the text.
+     * If any descendant of elem is an empty span, it removes it from the tree.
      *
      * There reason we need this, is that there's a general problem with text-decoration,
      * that a child element can never override that value if a parent has set it.
@@ -69,6 +99,12 @@ public class StyleUtils
             }
             else if (Node.ELEMENT_NODE == childNode.getNodeType()) {
                 Element childElem = Element.as(childNode);
+                if (ElementUtils.isSpanElement(childElem) && (false == childElem.hasChildNodes()))
+                {
+                    // trim empty spans
+                    childElem.removeFromParent();
+                    continue;
+                }
                 StyleUtils.copyStyle(childElem, elem, false);
                 pushStylesDownToTextNodes(childElem);
             }

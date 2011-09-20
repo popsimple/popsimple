@@ -3,6 +3,8 @@ package com.project.website.canvas.client.canvastools.textedit;
 import java.util.ArrayList;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -19,6 +21,7 @@ import com.project.shared.client.html5.Range;
 import com.project.shared.client.html5.impl.RangeImpl;
 import com.project.shared.client.html5.impl.RangeUtils;
 import com.project.shared.client.html5.impl.SelectionImpl;
+import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.StyleUtils;
 import com.project.shared.data.funcs.Func;
 import com.project.shared.data.funcs.Func.Action;
@@ -116,11 +119,11 @@ public class TextEditToolbar extends Composite
 
         ArrayList<RangeImpl> updatedRanges = new ArrayList<RangeImpl>();
         SelectionImpl selection = SelectionImpl.getWindowSelection();
-        Node focusNode = selection.getFocusNode();
-        if (null == focusNode) {
+        Node anchorNode = selection.getAnchorNode();
+        if (null == anchorNode) {
             return;
         }
-        Element elem = focusNode.getParentElement();
+        Element elem = anchorNode.getParentElement();
         boolean isSetInFocusNode = null == elem ? false : isSet.call(elem);
         for (int i = 0 ; i < selection.getRangeCount(); i++) {
             Range range = selection.getRangeAt(i);
@@ -140,8 +143,8 @@ public class TextEditToolbar extends Composite
 //        }
 //
         // TODO this kills the range's validity...
-        StyleUtils.pushStylesDownToTextNodes(this._element);
-
+        StyleUtils.pushStylesDownToTextNodes(_element);
+        ElementUtils.mergeSpans(_element);
         this._element.focus();
     }
 

@@ -226,31 +226,132 @@ public abstract class ElementUtils {
         elem.setId(prefix + "_" + String.valueOf(Random.nextInt()));
     }
 
-    public static void mergeSpans(Element _element)
+    /**
+     * Merges or removes redundant span elements from the hierarchy rooted at rootElem.
+     * The merges that are done are:
+     * <el>
+     * <li>If two adjacent siblings are spans and have the same style, they are merged.</li>
+     * <li>If an element has only a single child and it is a span, it is merged with the child.</li>
+     * </el>
+     * @param rootElem
+     * @return True if the tree was changed; false otherwise.
+     */
+    public static boolean mergeSpans(Element rootElem)
     {
-        for (Node childNode : ElementUtils.getChildNodes(_element))
-        {
-            // TODO: implement...
-        }
+        boolean anyChangeOccured = false;
+        boolean hasChanged = false;
+        do {
+            // first, merge any adjacent child spans that have identical styles
+            hasChanged = ElementUtils.mergeSiblingSpans(rootElem);
+
+            while (true)
+            {
+                // repeat until current element doesn't have a single child to be merged with
+                if (ElementUtils.mergeUpSingleChildSpan(rootElem))
+                {
+                    hasChanged = true;
+                    continue;
+                }
+                break;
+            }
+
+            // Perform the same on all element children
+            for (Node childNode : ElementUtils.getChildNodes(rootElem))
+            {
+                if (Node.ELEMENT_NODE == childNode.getNodeType())
+                {
+                    hasChanged |= ElementUtils.mergeSpans(Element.as(childNode));
+                }
+            }
+            anyChangeOccured |= hasChanged;
+
+        } while (hasChanged);
+
+        return anyChangeOccured;
     }
 
-    public static void mergeSingleChildSpans(Element _element)
+    private static boolean mergeSiblingSpans(Element _element)
+    {
+        boolean hasChanged = false;
+        Element previousChild = null;
+        for (Node childNode : ElementUtils.getChildNodes(_element))
+        {
+            if (Node.ELEMENT_NODE != childNode.getNodeType())
+            {
+                previousChild = null;
+                continue;
+            }
+
+            Element childElem = Element.as(childNode);
+            if (false == ElementUtils.isSpanElement(childElem))
+            {
+                previousChild = null;
+                continue;
+            }
+
+            if (null == previousChild)
+            {
+                previousChild = childElem;
+                continue;
+            }
+
+            if (false == StyleUtils.areEquivalent(previousChild.getStyle(), childElem.getStyle()))
+            {
+                // can't unify.
+                previousChild = childElem;
+                continue;
+            }
+
+            // Unify the spans.
+            for (Node grandChildNode : ElementUtils.getChildNodes(childElem))
+            {
+                grandChildNode.removeFromParent();
+                previousChild.appendChild(grandChildNode);
+            }
+            childElem.removeFromParent();
+            hasChanged = true;
+        }
+        return hasChanged;
+    }
+
+    public static boolean isSpanElement(Element childElem)
+    {
+        return childElem.getTagName().toLowerCase().equals("span");
+    }
+
+    /**
+     * Checks if the given element has a single child which is a <span>
+     * if yes, it moves all the grand children (the children of the <span>)
+     * to become children of this element, and then removes the empty <span>.
+     * Also, the style of the span is moved up to the element.
+     * @param _element The element for which to perform the operation, if there's a single span child.
+     */
+    public static boolean mergeUpSingleChildSpan(Element _element)
     {
         if (1 != _element.getChildCount()) {
-            return;
+            return false;
         }
         Node childNode = _element.getChild(0);
         if (Node.ELEMENT_NODE != childNode.getNodeType()) {
-            return;
+            return false;
         }
         Element childElem = Element.as(childNode);
-        if (childElem.getTagName().toLowerCase() != "span")
+        if (false == ElementUtils.isSpanElement(childElem))
         {
-            return;
+            return false;
         }
 
         StyleUtils.copyStyle(childElem, _element, false);
-        _element.getParentNode().replaceChild(childElem, _element);
+        StyleUtils.copyStyle(_element, childElem, true);
+
+        for (Node node : ElementUtils.getChildNodes(childElem))
+        {
+            node.removeFromParent();
+            _element.appendChild(node);
+        }
+
+        childElem.removeFromParent();
+        return true;
     }
 
 }
