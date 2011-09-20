@@ -79,7 +79,7 @@ public class StyleUtils
 
 
 
-    private static native final void copyStyle(Element to, Element from, boolean overrideExistingPropertiesInTarget)
+    public static native final void copyStyle(Element to, Element from, boolean overrideExistingPropertiesInTarget)
     /*-{
         if (overrideExistingPropertiesInTarget)
         {
@@ -97,7 +97,7 @@ public class StyleUtils
         }
     }-*/;
 
-    private static native final void deleteStyle(Element target)
+    public static native final void deleteStyle(Element target)
     /*-{
         target.style.cssText = '';
     }-*/;

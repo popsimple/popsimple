@@ -14,7 +14,7 @@ import com.project.shared.data.funcs.Func;
 
 public class RangeUtils
 {
-    public static RangeImpl applyToNodesInRange(Range range, Func.Action<Element> func)
+    public static void applyToNodesInRange(Range range, Func.Action<Element> func)
     {
         Node commonAncestor = range.getCommonAncestorContainer();
 
@@ -74,13 +74,16 @@ public class RangeUtils
             }
         }
 
-        RangeImpl updatedRange = RangeImpl.create();
+//        RangeImpl updatedRange = RangeImpl.create();
+//        if ((null != startElem) && (null != endElem)) {
+//            updatedRange.setStartBefore(startElem);
+//            updatedRange.setEndAfter(endElem);
+//        }
+//        return updatedRange;
         if ((null != startElem) && (null != endElem)) {
-            updatedRange.setStartBefore(startElem);
-            updatedRange.setEndAfter(endElem);
+            range.setStartBefore(startElem);
+            range.setEndAfter(endElem);
         }
-        return updatedRange;
-
     }
 
     private static Element wrapIncludedPart(Pair<Node, Integer> startPoint, Pair<Node, Integer> endPoint, Node descendant, boolean fullyContained)

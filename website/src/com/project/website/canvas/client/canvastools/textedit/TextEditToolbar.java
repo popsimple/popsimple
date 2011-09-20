@@ -131,13 +131,14 @@ public class TextEditToolbar extends Composite
             else {
                 action = setFunc;
             }
-            updatedRanges.add(RangeUtils.applyToNodesInRange(range, action));
+            RangeUtils.applyToNodesInRange(range, action);
+            //updatedRanges.add();
         }
-        selection.removeAllRanges();
-        for (RangeImpl range : updatedRanges) {
-            selection.addRangeNative(range);
-        }
-
+//        selection.removeAllRanges();
+//        for (RangeImpl range : updatedRanges) {
+//            selection.addRangeNative(range);
+//        }
+//
         // TODO this kills the range's validity...
         StyleUtils.pushStylesDownToTextNodes(this._element);
 

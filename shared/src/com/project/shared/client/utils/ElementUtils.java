@@ -226,4 +226,31 @@ public abstract class ElementUtils {
         elem.setId(prefix + "_" + String.valueOf(Random.nextInt()));
     }
 
+    public static void mergeSpans(Element _element)
+    {
+        for (Node childNode : ElementUtils.getChildNodes(_element))
+        {
+            // TODO: implement...
+        }
+    }
+
+    public static void mergeSingleChildSpans(Element _element)
+    {
+        if (1 != _element.getChildCount()) {
+            return;
+        }
+        Node childNode = _element.getChild(0);
+        if (Node.ELEMENT_NODE != childNode.getNodeType()) {
+            return;
+        }
+        Element childElem = Element.as(childNode);
+        if (childElem.getTagName().toLowerCase() != "span")
+        {
+            return;
+        }
+
+        StyleUtils.copyStyle(childElem, _element, false);
+        _element.getParentNode().replaceChild(childElem, _element);
+    }
+
 }
