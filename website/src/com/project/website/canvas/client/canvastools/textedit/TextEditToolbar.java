@@ -5,9 +5,6 @@ import java.util.ArrayList;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
-import com.google.gwt.dom.client.Style.FontStyle;
-import com.google.gwt.dom.client.Style.FontWeight;
-import com.google.gwt.dom.client.Style.TextDecoration;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -22,6 +19,7 @@ import com.project.shared.client.html5.Range;
 import com.project.shared.client.html5.impl.RangeImpl;
 import com.project.shared.client.html5.impl.RangeUtils;
 import com.project.shared.client.html5.impl.SelectionImpl;
+import com.project.shared.client.utils.StyleUtils;
 import com.project.shared.data.funcs.Func;
 import com.project.shared.data.funcs.Func.Action;
 
@@ -46,30 +44,49 @@ public class TextEditToolbar extends Composite
     }
 
     private void initButtons() {
-        setSimpleCssValueButton("font-weight", "bold", "bold");
-        setSimpleCssValueButton("font-style", "italic", "italic");
-        setSimpleCssValueButton("font-style", "italic", "italic");
+        //setSimpleCssValueButton("fontWeight", "bold", "Bold");
+        this.addSimpleIntegerCssValueButton("fontWeight", 400, 700, "Bold");
+        this.setSimpleStringCssValueButton("fontStyle", "normal", "italic", "Italic");
+
+        this.setSimpleStringCssValueButton("textDecoration", "none", "underline", "Underline");
     }
 
-    private void setSimpleCssValueButton(final String cssAttribute,
-            final String cssValue, final String title) {
+    private void addSimpleIntegerCssValueButton(final String cssAttribute, final int unsetValue, final int setValue, String title)
+    {
         this.addButton(new Button(title), new Func<Element,Boolean>() { @Override
             public Boolean call(Element arg) {
-                return arg.getStyle().getProperty(cssAttribute).contains(cssValue);
+                Integer currentValue = getNumericalComputedCssProperty(cssAttribute, arg);
+                if ((null == currentValue) || (setValue != currentValue)) {
+                    return false;
+                }
+                return true;
             }},
             new Action<Element>(){ @Override public void exec(Element arg) {
-                String currentPropValue = arg.getStyle().getProperty(cssAttribute);
-                boolean hasValue = currentPropValue.contains(cssValue);
-                if (false == hasValue) {
-                    arg.getStyle().setProperty(cssAttribute, currentPropValue + " " + cssValue);
-                }
+                arg.getStyle().setProperty(cssAttribute, String.valueOf(setValue));
             }},
             new Action<Element>(){ @Override public void exec(Element arg) {
-                String currentPropValue = arg.getStyle().getProperty(cssAttribute);
-                boolean hasValue = currentPropValue.contains(cssValue);
-                if (hasValue) {
-                    arg.getStyle().setProperty(cssAttribute, currentPropValue.replace(cssValue, ""));
+                arg.getStyle().setProperty(cssAttribute, String.valueOf(unsetValue));
+            }});
+    }
+
+    private void setSimpleStringCssValueButton(final String cssAttribute, final String unsetValue, final String cssValue, final String title)
+    {
+        this.addButton(new Button(title), new Func<Element,Boolean>() { @Override
+            public Boolean call(Element arg) {
+                String currentValue = null;
+                if (cssAttribute.equals("textDecoration")) {
+                    currentValue = StyleUtils.getInheritedTextDecoration(arg);
                 }
+                else {
+                    currentValue = StyleUtils.getComputedStyle(arg, null).getProperty(cssAttribute);
+                }
+                return currentValue.contains(cssValue);
+            }},
+            new Action<Element>(){ @Override public void exec(Element arg) {
+                arg.getStyle().setProperty(cssAttribute, cssValue);
+            }},
+            new Action<Element>(){ @Override public void exec(Element arg) {
+                arg.getStyle().setProperty(cssAttribute, unsetValue);
             }});
     }
 
@@ -96,6 +113,7 @@ public class TextEditToolbar extends Composite
         if (null == this._element) {
             return;
         }
+
         ArrayList<RangeImpl> updatedRanges = new ArrayList<RangeImpl>();
         SelectionImpl selection = SelectionImpl.getWindowSelection();
         Node focusNode = selection.getFocusNode();
@@ -119,7 +137,23 @@ public class TextEditToolbar extends Composite
         for (RangeImpl range : updatedRanges) {
             selection.addRangeNative(range);
         }
+
+        // TODO this kills the range's validity...
+        StyleUtils.pushStylesDownToTextNodes(this._element);
+
         this._element.focus();
+    }
+
+    private Integer getNumericalComputedCssProperty(final String cssAttribute, Element arg)
+    {
+        String currentValueStr = StyleUtils.getComputedStyle(arg, null).getProperty(cssAttribute);
+        try {
+            return Integer.parseInt(currentValueStr);
+        }
+        catch (NumberFormatException e)
+        {
+            return null;
+        }
     }
 
 }
