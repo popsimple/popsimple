@@ -17,7 +17,6 @@ import com.project.shared.data.KeyValue;
 import com.project.shared.data.Point2D;
 import com.project.shared.data.Rectangle;
 import com.project.shared.utils.IterableUtils;
-import com.project.shared.utils.ListUtils;
 import com.project.shared.utils.StringUtils;
 
 public abstract class ElementUtils {
