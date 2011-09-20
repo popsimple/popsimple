@@ -3,8 +3,6 @@ package com.project.website.canvas.client.canvastools.textedit;
 import java.util.ArrayList;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.event.dom.client.ClickEvent;

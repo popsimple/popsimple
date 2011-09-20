@@ -16,6 +16,8 @@ import com.project.shared.client.net.ImageLoader;
 import com.project.shared.data.KeyValue;
 import com.project.shared.data.Point2D;
 import com.project.shared.data.Rectangle;
+import com.project.shared.utils.IterableUtils;
+import com.project.shared.utils.ListUtils;
 import com.project.shared.utils.StringUtils;
 
 public abstract class ElementUtils {
@@ -232,7 +234,9 @@ public abstract class ElementUtils {
      * <el>
      * <li>If two adjacent siblings are spans and have the same style, they are merged.</li>
      * <li>If an element has only a single child and it is a span, it is merged with the child.</li>
+     * <li>If a span has no style properties (it completely inherits parent styles) - replace it with its children (move the children to the parent and remove the span).</li>
      * </el>
+     * <p>TODO: Merge adjacent text nodes.</p>
      * @param rootElem
      * @return True if the tree was changed; false otherwise.
      */
@@ -258,9 +262,21 @@ public abstract class ElementUtils {
             // Perform the same on all element children
             for (Node childNode : ElementUtils.getChildNodes(rootElem))
             {
-                if (Node.ELEMENT_NODE == childNode.getNodeType())
+                if (Node.ELEMENT_NODE != childNode.getNodeType())
                 {
-                    hasChanged |= ElementUtils.mergeSpans(Element.as(childNode));
+                    continue;
+                }
+                Element childElem = Element.as(childNode);
+                if (ElementUtils.isSpanElement(childElem) && StyleUtils.hasCompletelyInheritedStyle(childElem)) {
+                    for (Node grandChildNode : IterableUtils.reverse(ElementUtils.getChildNodes(childElem))) {
+                        grandChildNode.removeFromParent();
+                        rootElem.insertAfter(grandChildNode, childElem);
+                    }
+                    rootElem.removeChild(childElem);
+                    hasChanged = true;
+                }
+                else {
+                    hasChanged |= ElementUtils.mergeSpans(childElem);
                 }
             }
             anyChangeOccured |= hasChanged;
@@ -295,7 +311,7 @@ public abstract class ElementUtils {
                 continue;
             }
 
-            if (false == StyleUtils.areEquivalent(previousChild.getStyle(), childElem.getStyle()))
+            if (false == StyleUtils.areComputedStylesEquivalent(previousChild, childElem))
             {
                 // can't unify.
                 previousChild = childElem;

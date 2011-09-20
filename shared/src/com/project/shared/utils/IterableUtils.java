@@ -20,4 +20,13 @@ public class IterableUtils
         }
         return res;
     }
+    public static <T> ArrayList<T> reverse(Iterable<T> elems)
+    {
+        ArrayList<T> res = new ArrayList<T>();
+        for (T elem : elems)
+        {
+            res.add(0, elem);
+        }
+        return res;
+    }
 }

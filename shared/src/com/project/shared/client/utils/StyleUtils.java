@@ -16,6 +16,16 @@ public class StyleUtils
         return StyleUtils.isSubsetOf(a, b) && StyleUtils.isSubsetOf(b, a);
     }
 
+    public static boolean areComputedStylesEquivalent(Element a, Element b)
+    {
+        return StyleUtils.areEquivalent(StyleUtils.getComputedStyle(a, null), StyleUtils.getComputedStyle(b, null));
+    }
+
+    public static boolean hasCompletelyInheritedStyle(Element childElem)
+    {
+        return StyleUtils.areComputedStylesEquivalent(childElem, childElem.getParentElement());
+    }
+
     /**
      * Compares two styles, checking if one is a subset of the other.
      * @return true if every property of the "subsetCandidate" exists in set and has the same value. Otherwise, returns false.
