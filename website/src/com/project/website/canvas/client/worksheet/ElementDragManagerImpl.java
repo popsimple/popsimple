@@ -99,7 +99,7 @@ public class ElementDragManagerImpl implements ElementDragManager
         regs.add(dragHandler.addDragStartedHandler(new SimpleEvent.Handler<Void>() {
             @Override
             public void onFire(Void arg) {
-                ElementUtils.addStyleName(targetElement, _targetDragStyleName);
+                ElementUtils.addClassName(targetElement, _targetDragStyleName);
                 _dragPanel.setVisible(true);
             }
         }));
@@ -176,7 +176,7 @@ public class ElementDragManagerImpl implements ElementDragManager
 
     private void stopMouseMoveOperation(Element targetElement, RegistrationsManager regs)
     {
-        ElementUtils.removeStyleName(targetElement, this._targetDragStyleName);
+        ElementUtils.removeClassName(targetElement, this._targetDragStyleName);
         NativeUtils.disableTextSelectInternal(_container.getElement(), false);
         _dragPanel.setVisible(false);
         regs.clear();

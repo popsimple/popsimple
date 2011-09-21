@@ -83,7 +83,7 @@ public class WidgetUtils {
     {
 	    widget.getElement().getStyle().clearBackgroundImage();
 	    widget.addStyleName(loadingStyleName);
-	    ElementUtils.SetBackgroundImageAsync(widget.getElement(), imageUrl, errorImageUrl, autoSize,
+	    ElementUtils.setBackgroundImageAsync(widget.getElement(), imageUrl, errorImageUrl, autoSize,
             new SimpleEvent.Handler<Void>() {
                 @Override
                 public void onFire(Void arg) {

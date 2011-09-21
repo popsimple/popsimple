@@ -19,8 +19,11 @@ import com.project.shared.data.Rectangle;
 import com.project.shared.utils.IterableUtils;
 import com.project.shared.utils.StringUtils;
 
-public abstract class ElementUtils {
-
+public abstract class ElementUtils
+{
+    /**
+     * A wrapper for the native {@link Element#getChildNodes()} that returns a java ArrayList.
+     */
     public static ArrayList<Node> getChildNodes(Element element)
     {
         ArrayList<Node> res = new ArrayList<Node>();
@@ -169,7 +172,7 @@ public abstract class ElementUtils {
 		setElementSize(element, rectangle.getSize());
     }
 
-    public static void SetBackgroundImage(Element element, Image image, boolean autoSize)
+    public static void setBackgroundImage(Element element, Image image, boolean autoSize)
     {
         if (autoSize)
         {
@@ -183,7 +186,7 @@ public abstract class ElementUtils {
                 StyleUtils.buildBackgroundUrl(image.getUrl()));
     }
 
-    public static void SetBackgroundImageAsync(final Element element,
+    public static void setBackgroundImageAsync(final Element element,
             String imageUrl, String errorImageUrl, final boolean autoSize,
             final SimpleEvent.Handler<Void> loadHandler, final SimpleEvent.Handler<Void> errorHandler)
     {
@@ -191,7 +194,7 @@ public abstract class ElementUtils {
         imageLoader.addLoadHandler(new SimpleEvent.Handler<KeyValue<Integer,Image>>() {
             @Override
             public void onFire(KeyValue<Integer, Image> arg) {
-                ElementUtils.SetBackgroundImage(element, arg.getValue(), autoSize);
+                ElementUtils.setBackgroundImage(element, arg.getValue(), autoSize);
                 loadHandler.onFire(null);
             };
         });
@@ -204,22 +207,22 @@ public abstract class ElementUtils {
         imageLoader.load(new String[]{imageUrl, errorImageUrl});
     }
 
-    public static void addStyleName(Element element, String styleName)
+    public static void addClassName(Element element, String className)
     {
-        if (StringUtils.isEmptyOrNull(styleName))
+        if (StringUtils.isEmptyOrNull(className))
         {
             return;
         }
-        element.addClassName(styleName);
+        element.addClassName(className);
     }
 
-    public static void removeStyleName(Element element, String styleName)
+    public static void removeClassName(Element element, String className)
     {
-        if (StringUtils.isEmptyOrNull(styleName))
+        if (StringUtils.isEmptyOrNull(className))
         {
             return;
         }
-        element.removeClassName(styleName);
+        element.removeClassName(className);
     }
 
     public static void generateId(String prefix, Element elem)
@@ -285,11 +288,16 @@ public abstract class ElementUtils {
         return anyChangeOccured;
     }
 
-    private static boolean mergeSiblingSpans(Element _element)
+    /**
+     * Merges every two adjacent span children of the given <code>element</code> if they have equivalent styles.
+     * @param element
+     * @return True if any change was made to the tree; false otherwise.
+     */
+    private static boolean mergeSiblingSpans(Element element)
     {
         boolean hasChanged = false;
         Element previousChild = null;
-        for (Node childNode : ElementUtils.getChildNodes(_element))
+        for (Node childNode : ElementUtils.getChildNodes(element))
         {
             if (Node.ELEMENT_NODE != childNode.getNodeType())
             {
@@ -339,14 +347,14 @@ public abstract class ElementUtils {
      * if yes, it moves all the grand children (the children of the <span>)
      * to become children of this element, and then removes the empty <span>.
      * Also, the style of the span is moved up to the element.
-     * @param _element The element for which to perform the operation, if there's a single span child.
+     * @param element The element for which to perform the operation, if there's a single span child.
      */
-    public static boolean mergeUpSingleChildSpan(Element _element)
+    public static boolean mergeUpSingleChildSpan(Element element)
     {
-        if (1 != _element.getChildCount()) {
+        if (1 != element.getChildCount()) {
             return false;
         }
-        Node childNode = _element.getChild(0);
+        Node childNode = element.getChild(0);
         if (Node.ELEMENT_NODE != childNode.getNodeType()) {
             return false;
         }
@@ -356,13 +364,13 @@ public abstract class ElementUtils {
             return false;
         }
 
-        StyleUtils.copyStyle(childElem, _element, false);
-        StyleUtils.copyStyle(_element, childElem, true);
+        StyleUtils.copyStyle(childElem, element, false);
+        StyleUtils.copyStyle(element, childElem, true);
 
         for (Node node : ElementUtils.getChildNodes(childElem))
         {
             node.removeFromParent();
-            _element.appendChild(node);
+            element.appendChild(node);
         }
 
         childElem.removeFromParent();

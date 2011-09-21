@@ -9,18 +9,26 @@ import com.google.gwt.user.client.DOM;
 
 public class StyleUtils
 {
+    /**
+     * @return True if the given style objects are equivalent - every property set in <code>a</code> is also set in <code>b</code> and has the same value, and vice verse.
+     */
     public static boolean areEquivalent(Style a, Style b)
     {
-//        Logger.log("Comparing styles: a = " + StyleUtils.getCssText(a));
-//        Logger.log("                  b = " + StyleUtils.getCssText(b));
         return StyleUtils.isSubsetOf(a, b) && StyleUtils.isSubsetOf(b, a);
     }
 
+    /**
+     * @return True if two elements have equivalent computed styles (more accurately: "used styles"). False otherwise.
+     * <p>Note: Having equivalent computed styles does not guarantee that they look the same on the screen - due to text-decoration's weird specification.</p>
+     */
     public static boolean areComputedStylesEquivalent(Element a, Element b)
     {
         return StyleUtils.areEquivalent(StyleUtils.getComputedStyle(a, null), StyleUtils.getComputedStyle(b, null));
     }
 
+    /**
+     * @return True if the element has a style equivalent to it's direct parent.
+     */
     public static boolean hasCompletelyInheritedStyle(Element childElem)
     {
         return StyleUtils.areComputedStylesEquivalent(childElem, childElem.getParentElement());
@@ -45,6 +53,7 @@ public class StyleUtils
 
     /**
      * See https://developer.mozilla.org/en/DOM/window.getComputedStyle
+     * <p><strong>Warning</strong>: for the text-decoration css property, consider using {@link #getInheritedTextDecoration(Element)}.</p>
      * @param elem The element for which to get the computed style object
      * @param pseudoElement can be null for most purposes, may work with ":after" or ":before" - I couldn't get it to work.
      * @return The "final" style of the element
@@ -54,7 +63,13 @@ public class StyleUtils
         return $wnd.getComputedStyle(elem, pseudoElement);
     }-*/;
 
-
+    /**
+     * <p>This method is neccesary because getComputedStyle will not return what you expect in the case of text-decoration - because no matter what value
+     * the element has in text-decoration, it will always actually be displayed with the top-most ancestor that sets this property.</p>
+     * @see <a href="http://stackoverflow.com/questions/4481318/css-text-decoration-property-cannot-be-overridden-by-ancestor-element">Question in stackoverflow.com</a>
+     * @param elem
+     * @return The inherited value for the css text-decoration property.
+     */
     public static String getInheritedTextDecoration(Element elem)
     {
         if (null == elem) {
@@ -67,20 +82,23 @@ public class StyleUtils
         return value;
     }
 
+    /**
+     * @return The native <code>cssText</code> property of a style object.
+     */
     public static final native String getCssText(Style style)
     /*-{
         return style.cssText;
     }-*/;
 
     /**
-     * Wraps all the text node descendants with span elements and moves all text-decoration
-     * style declarations down into the text-node wrappers.
-     * If an element contains only text nodes, it does not wrap the text.
-     * If any descendant of elem is an empty span, it removes it from the tree.
-     *
+     * <p>Wraps all the text node descendants with span elements and moves all text-decoration
+     * style declarations down into the text-node wrappers.</p>
+     * <ul><li>If an element contains only text nodes, it does not wrap the text.</li>
+     * <li>If any descendant of elem is an empty span, it removes it from the tree.</li></ul>
+     * <p>
      * There reason we need this, is that there's a general problem with text-decoration,
-     * that a child element can never override that value if a parent has set it.
-     * http://stackoverflow.com/questions/4481318/css-text-decoration-property-cannot-be-overridden-by-ancestor-element
+     * that a child element can never override that value if a parent has set it.</p>
+     * @see <a href="http://stackoverflow.com/questions/4481318/css-text-decoration-property-cannot-be-overridden-by-ancestor-element">Question in stackoverflow.com</a>
      *
      * @param elem
      */
@@ -125,7 +143,14 @@ public class StyleUtils
     }
 
 
-
+    /**
+     * Copies the element style (not computed style!) from one element to another.
+     * @param to
+     * @param from
+     * @param overrideExistingPropertiesInTarget
+     * <ul><li>True - will override the target element's style completely</li>
+     * <li>False - will only copy those css properties which are set on the source, but not set on the target.</li></ul>
+     */
     public static native final void copyStyle(Element to, Element from, boolean overrideExistingPropertiesInTarget)
     /*-{
         if (overrideExistingPropertiesInTarget) {

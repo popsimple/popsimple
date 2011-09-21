@@ -60,7 +60,7 @@ public class TextEditToolbar extends Composite
     /**
      * Creates a button that toggles a css property between two states. It will use the first value in each of the given arrays (see below) to set the property,
      * and will use the arrays themselves for testing the current value of the property to decide if it is currently set or unset.
-     * @param cssProperty Name of property to toggle
+     * @param cssProperty Name of property to toggle, in camel case format ("fontStyle", not "font-style")
      * @param unsetValues An array, with at least one element, of equivalent values for the unset state
      * @param setValues An array, with at least one element, of equivalent values for the set state
      * @param title Of the button
