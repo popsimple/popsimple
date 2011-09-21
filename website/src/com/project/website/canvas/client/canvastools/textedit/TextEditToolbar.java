@@ -48,31 +48,25 @@ public class TextEditToolbar extends Composite
 
     private void initButtons() {
         //setSimpleCssValueButton("fontWeight", "bold", "Bold");
-        this.addCssStringValueToggleButton("fontWeight", new String[] {"400", "normal"}, new String[] { "700", "bold" }, "Bold");
-        this.addCssStringValueToggleButton("fontStyle", "normal", "italic", "Italic");
-        this.addCssStringValueToggleButton("textDecoration", "none", "underline", "Underline");
+        this.addCssStringValueToggleButton("fontWeight", new String[] {"400", "normal"}, new String[] { "700", "bold" }, "Bold", false);
+        this.addCssStringValueToggleButton("fontStyle", "normal", "italic", "Italic", false);
+        this.addCssStringValueToggleButton("textDecoration", "none", "underline", "Underline", false);
         this.addCssStringValueListBox("fontFamily", "Font:", getFontFamilies());
         this.addCssStringValueListBox("fontSize", "Size:", getFontSizes());
+        this.addCssStringValueListBox("color", "Color:", getColors());
+        this.addCssStringValueListBox("backgroundColor", "Background:", getColors());
+        this.addCssStringValueToggleButton("direction", "ltr", "rtl", "Direction", true);
+    }
+
+    private ArrayList<String> getColors()
+    {
+        return ListUtils.create("transparent","black","purple","blue","cyan","green","yellow","orange","red","pink","beige","white");
     }
 
     private Iterable<String> getFontSizes()
     {
         int[] sizes = new int[] {
-            8,
-            10,
-            12,
-            14,
-            16,
-            18,
-            20,
-            24,
-            28,
-            32,
-            36,
-            48,
-            72,
-            96,
-            144
+            8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 48, 72, 96, 144
         };
         ArrayList<String> values = new ArrayList<String>();
         for (int size : sizes) {
@@ -87,8 +81,8 @@ public class TextEditToolbar extends Composite
             "arial",
             "georgia",
             "monospace",
-            "times",
-            "verdana"
+            "verdana",
+            "times"
         );
     }
 
@@ -131,10 +125,9 @@ public class TextEditToolbar extends Composite
         final Action<Element> unsetFunc = Action.empty();
 
         listBox.addChangeHandler(new ChangeHandler() {
-            @Override
-            public void onChange(ChangeEvent event)
+            @Override public void onChange(ChangeEvent event)
             {
-                that.buttonPressed(isSet, setFunc, unsetFunc);
+                that.buttonPressed(isSet, setFunc, unsetFunc, false);
             }
         });
     }
@@ -143,9 +136,9 @@ public class TextEditToolbar extends Composite
      * A wrapper for {@link #addCssStringValueToggleButton(String, String[], String[], String)},
      * that create arrays with a single value for unset and set value arrays.
      */
-    private void addCssStringValueToggleButton(final String cssProperty, final String unsetValue, final String setValue, final String title)
+    private void addCssStringValueToggleButton(final String cssProperty, final String unsetValue, final String setValue, final String title, boolean onRootElemOnly)
     {
-        this.addCssStringValueToggleButton(cssProperty, new String[] { unsetValue },  new String[] { setValue}, title);
+        this.addCssStringValueToggleButton(cssProperty, new String[] { unsetValue },  new String[] { setValue}, title, onRootElemOnly);
     }
 
     /**
@@ -156,7 +149,7 @@ public class TextEditToolbar extends Composite
      * @param setValues An array, with at least one element, of equivalent values for the set state
      * @param title Of the button
      */
-    private void addCssStringValueToggleButton(final String cssProperty, final String[] unsetValues, final String[] setValues, final String title)
+    private void addCssStringValueToggleButton(final String cssProperty, final String[] unsetValues, final String[] setValues, final String title, boolean onRootElemOnly)
     {
         assert (unsetValues.length >= 1);
         assert (setValues.length >= 1);
@@ -166,7 +159,8 @@ public class TextEditToolbar extends Composite
         this.addButton(buttonWidget,
             this.getIsCssPropertySetFunc(cssProperty, setValues),
             this.getCssPropertySetterFunc(cssProperty, setValues[0]),
-            this.getCssPropertySetterFunc(cssProperty, unsetValues[0]));
+            this.getCssPropertySetterFunc(cssProperty, unsetValues[0]),
+            onRootElemOnly);
     }
 
     private Action<Element> getCssPropertySetterFunc(final String cssProperty, final String value)
@@ -195,7 +189,7 @@ public class TextEditToolbar extends Composite
         return buttonWidget;
     }
 
-    private void addButton(Widget widget, final Func<Element, Boolean> isSet, final Func.Action<Element> setFunc, final Func.Action<Element> unsetFunc)
+    private void addButton(Widget widget, final Func<Element, Boolean> isSet, final Func.Action<Element> setFunc, final Func.Action<Element> unsetFunc, final boolean onRootElemOnly)
     {
         final TextEditToolbar that = this;
         this.rootPanel.add(widget);
@@ -203,15 +197,27 @@ public class TextEditToolbar extends Composite
             @Override
             public void onClick(ClickEvent event)
             {
-                that.buttonPressed(isSet, setFunc, unsetFunc);
+                that.buttonPressed(isSet, setFunc, unsetFunc, onRootElemOnly);
             }
         }, ClickEvent.getType());
     }
 
-    private void buttonPressed(Func<Element, Boolean> isSet, Action<Element> setFunc, Action<Element> unsetFunc)
+    private void buttonPressed(Func<Element, Boolean> isSet, Action<Element> setFunc, Action<Element> unsetFunc, boolean onRootElemOnly)
     {
         if (null == this.getEditedElement()) {
             return;
+        }
+
+        if (onRootElemOnly)
+        {
+           if (isSet.call(this.getEditedElement()))
+           {
+               unsetFunc.call(this.getEditedElement());
+           }
+           else {
+               setFunc.call(this.getEditedElement());
+           }
+           return;
         }
 
         SelectionImpl selection = SelectionImpl.getWindowSelection();
