@@ -46,6 +46,7 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
     public void setToolFramePosition(final CanvasToolFrameImpl toolFrame, Point2D pos)
     {
         ElementUtils.setElementPosition(toolFrame.getElement(), limitPosToContainer(pos, toolFrame));
+        toolFrame.onTransformed();
     }
 
     @Override
@@ -156,6 +157,7 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
             {
                 int rotation = (int) Math.toDegrees(posRelativeToCenter.radians()) - bottomLeftAngle;
                 ElementUtils.setRotation(toolFrame.getElement(), roundedAngle(rotation));
+                toolFrame.onTransformed();
             }
         };
         final SimpleEvent.Handler<Void> cancelHandler = new SimpleEvent.Handler<Void>() {
@@ -163,6 +165,7 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
             public void onFire(Void arg)
             {
                 ElementUtils.setRotation(toolFrame.getElement(), startAngle);
+                toolFrame.onTransformed();
             }
         };
         _elementDragManager.startMouseMoveOperation(toolFrame.getElement(),

@@ -51,8 +51,8 @@ public class TextEditToolbar extends Composite
         this.addCssStringValueToggleButton("fontWeight", new String[] {"400", "normal"}, new String[] { "700", "bold" }, "Bold");
         this.addCssStringValueToggleButton("fontStyle", "normal", "italic", "Italic");
         this.addCssStringValueToggleButton("textDecoration", "none", "underline", "Underline");
-        this.addCssStringValueListBox("fontFamily", "Font", getFontFamilies());
-        this.addCssStringValueListBox("fontSize", "Size", getFontSizes());
+        this.addCssStringValueListBox("fontFamily", "Font:", getFontFamilies());
+        this.addCssStringValueListBox("fontSize", "Size:", getFontSizes());
     }
 
     private Iterable<String> getFontSizes()
@@ -97,6 +97,8 @@ public class TextEditToolbar extends Composite
         final TextEditToolbar that = this;
 
         final ListBox listBox = new ListBox();
+        listBox.addStyleName(CanvasResources.INSTANCE.main().textEditToolbarListBox());
+
         for (String item : values)
         {
             listBox.addItem(item);
@@ -104,7 +106,12 @@ public class TextEditToolbar extends Composite
         }
 
         FlowPanel listBoxWrapper = new FlowPanel();
-        listBoxWrapper.add(new InlineLabel(title));
+        listBoxWrapper.addStyleName(CanvasResources.INSTANCE.main().textEditToolbarListWrapper());
+
+        InlineLabel titleLabel = new InlineLabel(title);
+        titleLabel.addStyleName(CanvasResources.INSTANCE.main().textEditToolbarListTitle());
+
+        listBoxWrapper.add(titleLabel);
         listBoxWrapper.add(listBox);
 
         this.rootPanel.add(listBoxWrapper);
@@ -226,11 +233,28 @@ public class TextEditToolbar extends Composite
             RangeUtils.applyToNodesInRange(range, action);
         }
 
-
         // TODO this kills the range's validity...
-        StyleUtils.pushStylesDownToTextNodes(getEditedElement());
-        ElementUtils.mergeSpans(getEditedElement());
+        this.pushStylesInChildren();
+        ElementUtils.mergeSpans(this.getEditedElement());
+
         this.getEditedElement().focus();
+    }
+
+    private void pushStylesInChildren()
+    {
+        // We really should have run pushStylesDownToTextNodes on the edited
+        // element itself rather than iterating and running the code on the
+        // children.
+        // But in TextEdit that would mean moving properties such as Width and
+        // Height down into the children, which isn't what we want.
+        for (Node node : ElementUtils.getChildNodes(this.getEditedElement()))
+        {
+            if (Node.ELEMENT_NODE != node.getNodeType()) {
+                continue;
+            }
+            Element childElem = Element.as(node);
+            StyleUtils.pushStylesDownToTextNodes(childElem);
+        }
     }
 
     private Element getEditedElement()

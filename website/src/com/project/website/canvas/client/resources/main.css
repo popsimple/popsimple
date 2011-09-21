@@ -297,6 +297,20 @@
 	margin: 0 1px;
 }
 
+.textEditToolbarListWrapper {
+    display: inline-block;
+    margin:0 3px;
+}
+
+.textEditToolbarListBox {
+
+}
+
+.textEditToolbarListTitle {
+	margin-right: 3px;
+}
+
+
 
 /* .textEditViewBox { */
 /* 	display: none; */

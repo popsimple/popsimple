@@ -2,6 +2,8 @@ package com.project.website.canvas.client.shared.widgets;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.KeyDownEvent;
@@ -11,6 +13,8 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.utils.ElementUtils;
@@ -88,9 +92,15 @@ public class FloatingToolbar extends FlowPanel
         if (null == this._editedWidget) {
             return;
         }
-        Rectangle elementRect = ElementUtils.getElementAbsoluteRectangle(this._editedWidget.getElement());
-        Point2D targetPos = new Point2D(elementRect.getLeft(), elementRect.getBottom() + 10);
+        Element element = this._editedWidget.getElement();
+        Rectangle elementRect = ElementUtils.getElementAbsoluteRectangle(element);
+        Point2D targetPos = elementRect.getCenter();
+        Point2D[] corners = elementRect.getCorners().asArray();
+        for (int i = 0 ; i < corners.length; i++)
+        {
+            targetPos.setX(Math.min(targetPos.getX(), corners[i].getX()));
+            targetPos.setY(Math.max(targetPos.getY(), corners[i].getY()));
+        }
         ElementUtils.setElementPosition(this.getElement(), targetPos, 300);
     }
-
 }

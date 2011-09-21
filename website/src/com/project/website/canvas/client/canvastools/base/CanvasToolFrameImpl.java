@@ -14,6 +14,7 @@ import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
+import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -99,10 +100,12 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
         //WidgetUtils.stopClickPropagation(this);
         this.tool = canvasTool;
         this.toolPanel.add(canvasTool);
+
+        this.initToolbar();
+
         this.reRegisterFrameHandlers();
         this.registerTransformHandlers();
 
-        this.initToolbar();
 
         WidgetUtils.stopClickPropagation(this.closeLink.asWidget());
         WidgetUtils.stopClickPropagation(this.moveBackLink.asWidget());
@@ -121,68 +124,77 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
             return;
         }
         this.floatingToolbar = new FloatingToolbar();
-        RootPanel.get().add(this.floatingToolbar);
         this.floatingToolbar.setEditedWidget(this);
         this.floatingToolbar.add(toolbar);
+        if (this.isAttached()) {
+            RootPanel.get().add(this.floatingToolbar);
+        }
     }
 
 	private void reRegisterFrameHandlers() {
+	    final CanvasToolFrameImpl that = this;
+
 		frameRegs.clear();
+
+		frameRegs.add(this.addAttachHandler(new AttachEvent.Handler() {
+            @Override public void onAttachOrDetach(AttachEvent event) {
+                if (null == that.floatingToolbar) {
+                    return;
+                }
+                if (event.isAttached()) {
+                    RootPanel.get().add(that.floatingToolbar);
+                }
+                else {
+                    that.floatingToolbar.removeFromParent();
+                }
+        }}));
+
 		frameRegs.add(this.toolPanel. addDomHandler(new KeyDownHandler(){
-            @Override
-            public void onKeyDown(KeyDownEvent event) {
+            @Override public void onKeyDown(KeyDownEvent event) {
                 //Stop propogation of KeyDown events from the toolframe so that the worksheet
                 //won't get any keydown that was already handled by the tool.
                 event.stopPropagation();
-            }}, KeyDownEvent.getType()));
+        }}, KeyDownEvent.getType()));
+
 		frameRegs.add(this.closeLink.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
+            @Override public void onClick(ClickEvent event) {
                 closeRequest.dispatch(null);
-            }
-        }));
+        }}));
+
 		frameRegs.add(this.moveBackLink.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
+            @Override public void onClick(ClickEvent event) {
                 moveBackRequest.dispatch(null);
-            }
-        }));
+        }}));
+
 		frameRegs.add(this.moveFrontLink.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
+            @Override public void onClick(ClickEvent event) {
                 moveFrontRequest.dispatch(null);
-            }
-        }));
+        }}));
+
 		frameRegs.add(this.resizePanel.addDomHandler(new MouseDownHandler() {
-            @Override
-            public void onMouseDown(MouseDownEvent event) {
+            @Override public void onMouseDown(MouseDownEvent event) {
                 resizeStartRequest.dispatch(event);
-            }
-        }, MouseDownEvent.getType()));
+        }}, MouseDownEvent.getType()));
+
 		frameRegs.add(this.rotatePanel.addDomHandler(new MouseDownHandler() {
-            @Override
-            public void onMouseDown(MouseDownEvent event) {
+            @Override public void onMouseDown(MouseDownEvent event) {
                 rotateStartRequest.dispatch(event);
-            }
-        }, MouseDownEvent.getType()));
+        }}, MouseDownEvent.getType()));
 
 		frameRegs.add(this.frameHeader.addDomHandler(new MouseDownHandler() {
-            @Override
-            public void onMouseDown(final MouseDownEvent event) {
+            @Override public void onMouseDown(final MouseDownEvent event) {
                 onHeaderMouseDown(event);
-            }
-        }, MouseDownEvent.getType()));
+        }}, MouseDownEvent.getType()));
+
 		frameRegs.add(tool.addSelfMoveRequestEventHandler(new Handler<Point2D>() {
-			@Override
-			public void onFire(Point2D offset) {
+			@Override public void onFire(Point2D offset) {
 				toolSelfMoveRequest(offset);
-			}
-		}));
+		}}));
+
 		frameRegs.add(this.addDomHandler(new MouseDownHandler(){
-			@Override
-			public void onMouseDown(MouseDownEvent event) {
+			@Override public void onMouseDown(MouseDownEvent event) {
 			    onToolFrameSelected(event);
-			}}, MouseDownEvent.getType()));
+		}}, MouseDownEvent.getType()));
 	}
 
 	private void onToolFrameSelected(MouseDownEvent event)
@@ -311,10 +323,10 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
     	    default:
     	        return;
     	}
-    	tool.onResize();
+        this.onResize();
     }
 
-	@Override
+    @Override
 	public int getTabIndex() {
 		return this.focusPanel.getTabIndex();
 	}
@@ -374,7 +386,7 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
             this.updateToolActive();
 
             // heuristic - we assume we have just finished moving.
-            this.onPositionChanged();
+            this.onTransformed();
         }
     }
 
@@ -417,10 +429,17 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
         }
     }
 
-    private void onPositionChanged()
+    @Override
+    public void onTransformed()
     {
         if (null != this.floatingToolbar) {
             this.floatingToolbar.updatePosition();
         }
     }
+
+    private void onResize()
+    {
+        this.onTransformed();
+    }
+
 }

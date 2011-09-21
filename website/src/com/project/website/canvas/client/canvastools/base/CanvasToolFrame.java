@@ -62,4 +62,5 @@ public interface CanvasToolFrame extends Focusable, HasFocusHandlers, HasBlurHan
      */
      void setActive(boolean isActive);
 
+     void onTransformed();
 }
