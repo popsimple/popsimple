@@ -15,6 +15,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.data.Point2D;
@@ -198,6 +199,13 @@ public class TaskListTool extends Composite implements CanvasTool<TaskListData>,
 
     @Override
     public HandlerRegistration addBlurHandler(BlurHandler handler)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public IsWidget getToolbar()
     {
         // TODO Auto-generated method stub
         return null;

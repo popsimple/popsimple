@@ -12,7 +12,7 @@ import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.FocusPanel;
-import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.handlers.RegistrationsManager;
@@ -38,7 +38,7 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
 
     private final Element _editElement;
 
-    private static TextEditToolbar _toolbar;
+    private final TextEditToolbar _toolbar;
 
     private TextData _data = null;
     private boolean _editorReady = false;
@@ -48,10 +48,11 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
     public TextEditTool()
     {
         CanvasToolCommon.initCanvasToolWidget(this);
-        TextEditTool.initStaticToolbar();
 
         //this.add(this._editPanel);
         this._editElement = this.getElement();
+        this._toolbar = new TextEditToolbar();
+        this._toolbar.setEditedElement(this._editElement);
 
         this.addStyleName(CanvasResources.INSTANCE.main().textEdit());
         this.setViewMode(false);
@@ -67,14 +68,6 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
         this.addStyleName(CanvasResources.INSTANCE.main().textEditBox());
     }
 
-    private static void initStaticToolbar()
-    {
-        if (null == TextEditTool._toolbar)
-        {
-            TextEditTool._toolbar = new TextEditToolbar();
-            RootPanel.get().add(TextEditTool._toolbar);
-        }
-    }
 
     @Override
     public HandlerRegistration addSelfMoveRequestEventHandler(Handler<Point2D> handler)
@@ -196,8 +189,6 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
         this._initialized = true;
 
         if (isActive) {
-            TextEditTool._toolbar.setEditedWidget(this);
-
             // if (null != this.editSize) {
             // // Set only the width - the height depends on the contents
             // this.setWidth(this.editSize.getX() + "px");
@@ -211,8 +202,6 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
             //this._editPanel.setFocus(true);
 
         } else {
-            TextEditTool._toolbar.setEditedWidget(null);
-
             this.setFocus(false);
 
             // this.editSize =
@@ -265,6 +254,12 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
             this.setContents(this._data.text);
         }
         this.setActive(this._isActive);
+    }
+
+    @Override
+    public IsWidget getToolbar()
+    {
+        return this._toolbar;
     }
 
 }

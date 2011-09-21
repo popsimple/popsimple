@@ -10,6 +10,7 @@ import com.project.shared.data.Point2D;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
 import com.project.website.canvas.client.canvastools.base.CanvasToolFactory;
 import com.project.website.canvas.client.canvastools.base.CanvasToolFrame;
+import com.project.website.canvas.client.canvastools.base.CanvasToolFrameImpl;
 import com.project.website.canvas.client.canvastools.base.ToolboxItem;
 import com.project.website.canvas.shared.data.CanvasPageOptions;
 import com.project.website.canvas.shared.data.ElementData;
@@ -75,11 +76,11 @@ public interface WorksheetView extends IsWidget
      * @param handler
      * @return
      */
-    HandlerRegistration addActiveToolFrameChangedHandler(SimpleEvent.Handler<CanvasToolFrame> handler);
+    HandlerRegistration addActiveToolFrameChangedHandler(SimpleEvent.Handler<CanvasToolFrameImpl> handler);
 
-    HandlerRegistration addRemoveToolsRequest(SimpleEvent.Handler<ArrayList<CanvasToolFrame>> handler);
+    HandlerRegistration addRemoveToolsRequest(SimpleEvent.Handler<ArrayList<CanvasToolFrameImpl>> handler);
 
-    HandlerRegistration addCopyToolHandler(SimpleEvent.Handler<ArrayList<CanvasToolFrame>> handler);
+    HandlerRegistration addCopyToolHandler(SimpleEvent.Handler<ArrayList<CanvasToolFrameImpl>> handler);
 
     HandlerRegistration addPasteToolHandler(SimpleEvent.Handler<Void> handler);
 
@@ -89,7 +90,7 @@ public interface WorksheetView extends IsWidget
      * @param transform
      * @param additionalOffset
      */
-    void addToolInstanceWidget(final CanvasToolFrame toolFrame, Transform2D transform, Point2D additionalOffset);
+    void addToolInstanceWidget(final CanvasToolFrameImpl toolFrame, Transform2D transform, Point2D additionalOffset);
 
     HandlerRegistration addViewHandler(SimpleEvent.Handler<Void> handler);
 
@@ -99,7 +100,7 @@ public interface WorksheetView extends IsWidget
 
     void onSaveOperationChange(OperationStatus status, String reason);
 
-    void removeToolInstanceWidget(CanvasToolFrame widget);
+    void removeToolInstanceWidget(CanvasToolFrameImpl widget);
 
     void setActiveToolboxItem(ToolboxItem toolboxItem);
 
@@ -107,11 +108,11 @@ public interface WorksheetView extends IsWidget
 
     void setViewMode(boolean isViewMode);
 
-    void setToolFrameTransform(CanvasToolFrame toolFrame, Transform2D transform, Point2D additionalOffset);
+    void setToolFrameTransform(CanvasToolFrameImpl toolFrame, Transform2D transform, Point2D additionalOffset);
 
-    void selectToolFrame(CanvasToolFrame widget);
+    void selectToolFrame(CanvasToolFrameImpl widget);
 
-    void unSelectToolFrame(CanvasToolFrame widget);
+    void unSelectToolFrame(CanvasToolFrameImpl widget);
 
     boolean isToolFrameSelected(CanvasToolFrame toolFrame);
 
@@ -119,6 +120,6 @@ public interface WorksheetView extends IsWidget
 
     void setUserProfile(UserProfile result);
 
-    ArrayList<CanvasToolFrame> getToolFrames();
+    ArrayList<CanvasToolFrameImpl> getToolFrames();
 
 }

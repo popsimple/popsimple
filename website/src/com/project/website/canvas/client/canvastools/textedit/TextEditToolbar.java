@@ -3,49 +3,34 @@ package com.project.website.canvas.client.canvastools.textedit;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
-import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.FocusEvent;
-import com.google.gwt.event.dom.client.FocusHandler;
-import com.google.gwt.event.dom.client.KeyDownEvent;
-import com.google.gwt.event.dom.client.KeyDownHandler;
-import com.google.gwt.event.dom.client.MouseDownEvent;
-import com.google.gwt.event.dom.client.MouseDownHandler;
-import com.google.gwt.event.dom.client.MouseUpEvent;
-import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.html5.Range;
 import com.project.shared.client.html5.impl.RangeUtils;
 import com.project.shared.client.html5.impl.SelectionImpl;
 import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.StyleUtils;
-import com.project.shared.data.Rectangle;
 import com.project.shared.data.funcs.Func;
 import com.project.shared.data.funcs.Func.Action;
 import com.project.website.canvas.client.resources.CanvasResources;
 
 public class TextEditToolbar extends Composite
 {
-
     private static TextEditToolbarUiBinder uiBinder = GWT.create(TextEditToolbarUiBinder.class);
 
     interface TextEditToolbarUiBinder extends UiBinder<Widget, TextEditToolbar>
     {
     }
 
-    private final RegistrationsManager registrationsManager = new RegistrationsManager();
-
     @UiField
     HTMLPanel rootPanel;
-
-    private Widget _editedWidget = null;
+    private Element _editedElement;
 
     public TextEditToolbar()
     {
@@ -58,47 +43,6 @@ public class TextEditToolbar extends Composite
         this.setCssStringValueToggleButton("fontWeight", new String[] {"400", "normal"}, new String[] { "700", "bold" }, "Bold");
         this.setCssStringValueToggleButton("fontStyle", "normal", "italic", "Italic");
         this.setCssStringValueToggleButton("textDecoration", "none", "underline", "Underline");
-    }
-
-    public void setEditedWidget(Widget widget)
-    {
-        if (this._editedWidget == widget)
-        {
-            return;
-        }
-        this._editedWidget = widget;
-        this.setVisible(null != this._editedWidget);
-        this.registrationsManager.clear();
-
-        if (null == this._editedWidget)
-        {
-            return;
-        }
-
-        final TextEditToolbar that = this;
-        this.registrationsManager.add(this._editedWidget.addDomHandler(new MouseDownHandler() {
-            @Override public void onMouseDown(MouseDownEvent event) {
-                that.updatePosition();
-            }}, MouseDownEvent.getType()));
-        this.registrationsManager.add(this._editedWidget.addDomHandler(new MouseUpHandler() {
-            @Override public void onMouseUp(MouseUpEvent event) {
-                that.updatePosition();
-            }}, MouseUpEvent.getType()));
-        this.registrationsManager.add(this._editedWidget.addDomHandler(new KeyDownHandler() {
-            @Override public void onKeyDown(KeyDownEvent event) {
-                that.updatePosition();
-            }}, KeyDownEvent.getType()));
-        this.registrationsManager.add(this._editedWidget.addDomHandler(new FocusHandler() {
-            @Override public void onFocus(FocusEvent event) {
-                that.updatePosition();
-            }}, FocusEvent.getType()));
-    }
-
-    protected void updatePosition()
-    {
-        Rectangle elementRect = ElementUtils.getElementAbsoluteRectangle(this._editedWidget.getElement());
-        this.getElement().getStyle().setTop(elementRect.getBottom() + 10, Unit.PX);
-        this.getElement().getStyle().setLeft(elementRect.getLeft(), Unit.PX);
     }
 
     /**
@@ -161,7 +105,7 @@ public class TextEditToolbar extends Composite
         return buttonWidget;
     }
 
-    protected void addButton(Widget widget, final Func<Element, Boolean> isSet, final Func.Action<Element> setFunc, final Func.Action<Element> unsetFunc)
+    private void addButton(Widget widget, final Func<Element, Boolean> isSet, final Func.Action<Element> setFunc, final Func.Action<Element> unsetFunc)
     {
         final TextEditToolbar that = this;
         this.rootPanel.add(widget);
@@ -174,9 +118,9 @@ public class TextEditToolbar extends Composite
         }, ClickEvent.getType());
     }
 
-    protected void buttonPressed(Func<Element, Boolean> isSet, Action<Element> setFunc, Action<Element> unsetFunc)
+    private void buttonPressed(Func<Element, Boolean> isSet, Action<Element> setFunc, Action<Element> unsetFunc)
     {
-        if (null == this._editedWidget) {
+        if (null == this.getEditedElement()) {
             return;
         }
 
@@ -201,8 +145,18 @@ public class TextEditToolbar extends Composite
 
 
         // TODO this kills the range's validity...
-        StyleUtils.pushStylesDownToTextNodes(_editedWidget.getElement());
-        ElementUtils.mergeSpans(_editedWidget.getElement());
-        this._editedWidget.getElement().focus();
+        StyleUtils.pushStylesDownToTextNodes(getEditedElement());
+        ElementUtils.mergeSpans(getEditedElement());
+        this.getEditedElement().focus();
+    }
+
+    private Element getEditedElement()
+    {
+        return this._editedElement;
+    }
+
+    public void setEditedElement(Element elem)
+    {
+        this._editedElement = elem;
     }
 }

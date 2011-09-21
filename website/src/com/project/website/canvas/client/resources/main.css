@@ -1,12 +1,21 @@
+@charset "UTF-8";
+
 @def initialMapSize 300px;
+
 @def emptyToolBackgroundColor #e5e3df;
+
 @def toolboxIconSize 48px;
 @def toolboxIconExpandedSize 48px;
 @def toolboxIconExpandedSizeWithPadding 58px;
 @def toolboxWidth 90px;
+
 @def imageToolDefaultWidth 200px;
 @def imageToolDefaultHeight 200px;
+
 @def textEditInitialWidth 150px;
+
+@def zIndexOverAllToolFrames 100;
+
 
 @external gwt-RadioButton;
 .monospace {
@@ -276,9 +285,8 @@
 }
 
 .textEditToolbar {
-	position: absolute;
-	background-color: lightgray;
-	padding: 3px;
+    background-color: lightgray;
+    padding: 3px;
 }
 
 .textEditToolbarToggleButton {
@@ -445,6 +453,12 @@
 	z-index: 999;
 	position: absolute;
 	opacity: 0.4;
+}
+
+
+.floatingToolbar {
+    position: absolute;
+    z-index: zIndexOverAllToolFrames;
 }
 
 /* ToolFrame Styles */

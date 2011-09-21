@@ -44,6 +44,8 @@ public interface MainStyles extends CssResource {
 
     String drag();
 
+    String floatingToolbar();
+
     String floatingToolStyle();
 
     String hover();
@@ -116,13 +118,13 @@ public interface MainStyles extends CssResource {
 
     String taskListFooter();
 
-    String taskListHeader();
-
 //    String textEditNoToolbars();
 //
 //    String textEditToolbar();
 //
 //    String textEditViewBox();
+
+    String taskListHeader();
 
     String taskListTextChecked();
 
@@ -146,11 +148,11 @@ public interface MainStyles extends CssResource {
 
     String toolboxCommonIconStyle();
 
-    String toolboxCommonSelectedIconStyle();
+	String toolboxCommonSelectedIconStyle();
 
 	String toolboxCropSiteIconStyle();
 
-	String toolboxCursorIconStyle();
+    String toolboxCursorIconStyle();
 
     String toolboxHeader();
 
@@ -192,9 +194,9 @@ public interface MainStyles extends CssResource {
 
     String toolFrameHeader();
 
-    String toolFrameHoverDisplayBlockElement();
+	String toolFrameHoverDisplayBlockElement();
 
-	String toolFrameHoverVisibleElement();
+    String toolFrameHoverVisibleElement();
 
     String toolFramePanel();
 

@@ -46,4 +46,6 @@ public interface CanvasTool<T extends ElementData> extends IsWidget, TakesValue<
 
     //TODO: Replace with a custom Resize event.
     void onResize();
+
+    IsWidget getToolbar();
 }

@@ -25,6 +25,7 @@ import com.project.website.canvas.client.ToolFactories;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
 import com.project.website.canvas.client.canvastools.base.CanvasToolFactory;
 import com.project.website.canvas.client.canvastools.base.CanvasToolFrame;
+import com.project.website.canvas.client.canvastools.base.CanvasToolFrameImpl;
 import com.project.website.canvas.client.canvastools.base.ToolboxItem;
 import com.project.website.canvas.client.shared.ZIndexAllocator;
 import com.project.website.canvas.client.shared.widgets.DialogWithZIndex;
@@ -120,7 +121,7 @@ public class WorksheetImpl implements Worksheet
         return id;
     }
 
-    protected ElementData updateToolData(CanvasToolFrame toolFrame){
+    protected ElementData updateToolData(CanvasToolFrameImpl toolFrame){
         ElementData toolData = toolFrame.getTool().getValue();
         Element frameElement = toolFrame.getElement();
         toolData.zIndex = ZIndexAllocator.getElementZIndex(frameElement);
@@ -238,11 +239,11 @@ public class WorksheetImpl implements Worksheet
         return this.createToolInstance(new Transform2D(relativePos, null, 0), toolFactory, true);
     }
 
-    private CanvasToolFrame createToolInstance(final Transform2D transform,
+    private CanvasToolFrameImpl createToolInstance(final Transform2D transform,
             CanvasToolFactory<? extends CanvasTool<? extends ElementData>> toolFactory, boolean useCreationOffset)
     {
         final CanvasTool<? extends ElementData> tool = toolFactory.create();
-        final CanvasToolFrame toolFrame = new CanvasToolFrame(tool);
+        final CanvasToolFrameImpl toolFrame = new CanvasToolFrameImpl(tool);
 
         ToolInstanceInfo toolInfo = new ToolInstanceInfo(toolFactory, toolFrame, null);
         this.toolInfoMap.put(tool, toolInfo);
@@ -273,10 +274,10 @@ public class WorksheetImpl implements Worksheet
         return toolFrame;
     }
 
-    private CanvasToolFrame createToolInstanceFromData(ElementData newElement)
+    private CanvasToolFrameImpl createToolInstanceFromData(ElementData newElement)
     {
         CanvasToolFactory<? extends CanvasTool<? extends ElementData>> factory = ToolFactories.INSTANCE.get(newElement.factoryUniqueId);
-        CanvasToolFrame toolFrame = this.createToolInstance(newElement.transform, factory, false);
+        CanvasToolFrameImpl toolFrame = this.createToolInstance(newElement.transform, factory, false);
         toolFrame.getTool().setElementData(newElement);
         toolFrame.setActive(false);
         return toolFrame;
@@ -350,9 +351,9 @@ public class WorksheetImpl implements Worksheet
                 }));
             }
         });
-        view.addCopyToolHandler(new Handler<ArrayList<CanvasToolFrame>>() {
+        view.addCopyToolHandler(new Handler<ArrayList<CanvasToolFrameImpl>>() {
             @Override
-            public void onFire(ArrayList<CanvasToolFrame> arg) {
+            public void onFire(ArrayList<CanvasToolFrameImpl> arg) {
                 copyToolsToClipboard(arg);
             }
         });
@@ -376,15 +377,15 @@ public class WorksheetImpl implements Worksheet
                 escapeOperation();
             }
         });
-        view.addActiveToolFrameChangedHandler(new Handler<CanvasToolFrame>() {
+        view.addActiveToolFrameChangedHandler(new Handler<CanvasToolFrameImpl>() {
 			@Override
-			public void onFire(CanvasToolFrame frame) {
+			public void onFire(CanvasToolFrameImpl frame) {
 		    	setActiveToolInstance(frame);
 			}
 		});
-        view.addRemoveToolsRequest(new Handler<ArrayList<CanvasToolFrame>>() {
+        view.addRemoveToolsRequest(new Handler<ArrayList<CanvasToolFrameImpl>>() {
 			@Override
-			public void onFire(ArrayList<CanvasToolFrame> arg) {
+			public void onFire(ArrayList<CanvasToolFrameImpl> arg) {
 				removeToolInstances(arg);
 			}
 		});
@@ -407,10 +408,10 @@ public class WorksheetImpl implements Worksheet
         this.load(idStr);
     }
 
-    private void copyToolsToClipboard(Collection<CanvasToolFrame> toolFrames)
+    private void copyToolsToClipboard(Collection<CanvasToolFrameImpl> toolFrames)
     {
         this._toolClipboard.clear();
-        for (CanvasToolFrame toolFrame : toolFrames)
+        for (CanvasToolFrameImpl toolFrame : toolFrames)
         {
             this._toolClipboard.add((ElementData)CloneableUtils.clone(
                     updateToolData(toolFrame)));
@@ -502,7 +503,7 @@ public class WorksheetImpl implements Worksheet
         }
     }
 
-    private RegistrationsManager registerToolInstanceHandlers(final CanvasToolFrame toolFrame,
+    private RegistrationsManager registerToolInstanceHandlers(final CanvasToolFrameImpl toolFrame,
             ToolInstanceInfo toolInfo)
     {
         RegistrationsManager regs = toolInfo.registrations;
@@ -532,15 +533,15 @@ public class WorksheetImpl implements Worksheet
         return regs;
     }
 
-    private void removeToolInstances(ArrayList<CanvasToolFrame> toolFrames)
+    private void removeToolInstances(ArrayList<CanvasToolFrameImpl> toolFrames)
     {
-    	for (CanvasToolFrame toolFrame : toolFrames)
+    	for (CanvasToolFrameImpl toolFrame : toolFrames)
     	{
     		this.removeToolInstance(toolFrame);
     	}
     }
 
-    private void removeToolInstance(CanvasToolFrame toolFrame)
+    private void removeToolInstance(CanvasToolFrameImpl toolFrame)
     {
         ZIndexAllocator.deallocateZIndex(toolFrame.getElement());
         ToolInstanceInfo info = this.toolInfoMap.remove(toolFrame.getTool());

@@ -52,6 +52,7 @@ import com.project.website.canvas.client.canvastools.MoveToolboxItem;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
 import com.project.website.canvas.client.canvastools.base.CanvasToolFactory;
 import com.project.website.canvas.client.canvastools.base.CanvasToolFrame;
+import com.project.website.canvas.client.canvastools.base.CanvasToolFrameImpl;
 import com.project.website.canvas.client.canvastools.base.ToolboxItem;
 import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.client.shared.ImageInformationUtils;
@@ -128,21 +129,21 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
     private final DialogBox optionsDialog = new DialogWithZIndex(false, true);
     private final SelectImageDialog selectImageDialog = new SelectImageDialog();
-    private final HashMap<CanvasToolFrame, RegistrationsManager> toolFrameRegistrations = new HashMap<CanvasToolFrame, RegistrationsManager>();
+    private final HashMap<CanvasToolFrameImpl, RegistrationsManager> toolFrameRegistrations = new HashMap<CanvasToolFrameImpl, RegistrationsManager>();
 
-    private final HashSet<CanvasToolFrame> overToolFrames = new HashSet<CanvasToolFrame>();
+    private final HashSet<CanvasToolFrameImpl> overToolFrames = new HashSet<CanvasToolFrameImpl>();
     private final RegistrationsManager editModeRegistrations = new RegistrationsManager();
     private final RegistrationsManager allModesRegistrations = new RegistrationsManager();
 
     private final SimpleEvent<CanvasPageOptions> optionsUpdatedEvent = new SimpleEvent<CanvasPageOptions>();
     private final SimpleEvent<Void> stopOperationEvent = new SimpleEvent<Void>();
-    private final SimpleEvent<ArrayList<CanvasToolFrame>> removeToolsRequest = new SimpleEvent<ArrayList<CanvasToolFrame>>();
-    private final SimpleEvent<ArrayList<CanvasToolFrame>> copyToolsRequest = new SimpleEvent<ArrayList<CanvasToolFrame>>();
+    private final SimpleEvent<ArrayList<CanvasToolFrameImpl>> removeToolsRequest = new SimpleEvent<ArrayList<CanvasToolFrameImpl>>();
+    private final SimpleEvent<ArrayList<CanvasToolFrameImpl>> copyToolsRequest = new SimpleEvent<ArrayList<CanvasToolFrameImpl>>();
     private final SimpleEvent<Void> pasteToolsRequest = new SimpleEvent<Void>();
     private final SimpleEvent<ToolCreationRequest> toolCreationRequestEvent = new SimpleEvent<ToolCreationRequest>();
-    private final SimpleEvent<CanvasToolFrame> activeToolFrameChangedEvent = new SimpleEvent<CanvasToolFrame>();
+    private final SimpleEvent<CanvasToolFrameImpl> activeToolFrameChangedEvent = new SimpleEvent<CanvasToolFrameImpl>();
 
-    private HashSet<CanvasToolFrame> selectedTools = new HashSet<CanvasToolFrame>();
+    private HashSet<CanvasToolFrameImpl> selectedTools = new HashSet<CanvasToolFrameImpl>();
 
     private boolean viewMode;
     private boolean viewModeSet = false;
@@ -220,17 +221,17 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     }
 
     @Override
-    public HandlerRegistration addActiveToolFrameChangedHandler(Handler<CanvasToolFrame> handler) {
+    public HandlerRegistration addActiveToolFrameChangedHandler(Handler<CanvasToolFrameImpl> handler) {
         return this.activeToolFrameChangedEvent.addHandler(handler);
     }
 
     @Override
-    public HandlerRegistration addRemoveToolsRequest(Handler<ArrayList<CanvasToolFrame>> handler) {
+    public HandlerRegistration addRemoveToolsRequest(Handler<ArrayList<CanvasToolFrameImpl>> handler) {
         return this.removeToolsRequest.addHandler(handler);
     }
 
     @Override
-    public void addToolInstanceWidget(final CanvasToolFrame toolFrame, final Transform2D transform,
+    public void addToolInstanceWidget(final CanvasToolFrameImpl toolFrame, final Transform2D transform,
             final Point2D additionalOffset) {
         RegistrationsManager regs = new RegistrationsManager();
         toolFrameRegistrations.put(toolFrame, regs);
@@ -296,12 +297,12 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         this.worksheetPanel.add(toolFrame);
     }
 
-    public void selectToolFrame(CanvasToolFrame toolFrame) {
+    public void selectToolFrame(CanvasToolFrameImpl toolFrame) {
         this.selectedTools.add(toolFrame);
         toolFrame.addStyleName(CanvasResources.INSTANCE.main().selected());
     }
 
-    public void unSelectToolFrame(CanvasToolFrame toolFrame) {
+    public void unSelectToolFrame(CanvasToolFrameImpl toolFrame) {
         this.selectedTools.remove(toolFrame);
         toolFrame.removeStyleName(CanvasResources.INSTANCE.main().selected());
     }
@@ -311,8 +312,8 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     }
 
     public void clearToolFrameSelection() {
-        ArrayList<CanvasToolFrame> framesToClear = new ArrayList<CanvasToolFrame>(this.selectedTools);
-        for (CanvasToolFrame toolFrame : framesToClear) {
+        ArrayList<CanvasToolFrameImpl> framesToClear = new ArrayList<CanvasToolFrameImpl>(this.selectedTools);
+        for (CanvasToolFrameImpl toolFrame : framesToClear) {
             this.unSelectToolFrame(toolFrame);
         }
     }
@@ -328,7 +329,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
         if (this.activeToolboxItem instanceof MoveToolboxItem)
         {
-            for (CanvasToolFrame toolFrame : this.overToolFrames)
+            for (CanvasToolFrameImpl toolFrame : this.overToolFrames)
             {
                 toolFrame.removeStyleName(CanvasResources.INSTANCE.main().drag());
             }
@@ -367,7 +368,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     }
 
     @Override
-    public void removeToolInstanceWidget(CanvasToolFrame toolFrame) {
+    public void removeToolInstanceWidget(CanvasToolFrameImpl toolFrame) {
         this.worksheetPanel.remove(toolFrame);
         this.removeOverToolFrame(toolFrame);
         this.selectedTools.remove(toolFrame);
@@ -521,7 +522,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
     private void onCopyToolsRequest()
     {
-    	this.copyToolsRequest.dispatch(new ArrayList<CanvasToolFrame>(selectedTools));
+    	this.copyToolsRequest.dispatch(new ArrayList<CanvasToolFrameImpl>(selectedTools));
     }
 
     private void onPasteToolsRequest()
@@ -548,7 +549,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
                 }
                 break;
             case KeyCodes.KEY_DELETE:
-                this.removeToolsRequest.dispatch(new ArrayList<CanvasToolFrame>(this.selectedTools));
+                this.removeToolsRequest.dispatch(new ArrayList<CanvasToolFrameImpl>(this.selectedTools));
                 break;
             default:
                 break;
@@ -567,12 +568,12 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     }
 
     private void onClearAreaClicked(MouseDownEvent event) {
-        // TODO: why was this here?
-        // toolFrameClickEvent.dispatch(null);
+        this.activeToolFrameChangedEvent.dispatch(null);
 
         if (null == this.activeToolboxItem) {
             return;
         }
+
         // TODO: should be handled by a tool outside the worksheet class?
         if (this.isSelectorActiveTool()) {
             this._toolFrameSelectionManager.startSelectionDrag(event);
@@ -587,9 +588,9 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     private void onOverToolFrameAreaClicked(MouseDownEvent event)
     {
         if (this.activeToolboxItem instanceof MoveToolboxItem) {
-            CanvasToolFrame highestToolUnderMouse = null;
+            CanvasToolFrameImpl highestToolUnderMouse = null;
             int highestZIndex = -1;
-            for (CanvasToolFrame frame : this.overToolFrames) {
+            for (CanvasToolFrameImpl frame : this.overToolFrames) {
                 int zIndex = ZIndexAllocator.getElementZIndex(frame.getElement());
                 if (zIndex > highestZIndex) {
                     highestToolUnderMouse = frame;
@@ -686,7 +687,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     }
 
     @Override
-    public void setToolFrameTransform(final CanvasToolFrame toolFrame, final Transform2D transform,
+    public void setToolFrameTransform(final CanvasToolFrameImpl toolFrame, final Transform2D transform,
             final Point2D additionalOffset) {
         if (toolFrame.getTool().canRotate()) {
             ElementUtils.setRotation(toolFrame.getElement(), transform.rotation);
@@ -698,12 +699,12 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     }
 
     @Override
-    public ArrayList<CanvasToolFrame> getToolFrames() {
-        return new ArrayList<CanvasToolFrame>(this.toolFrameRegistrations.keySet());
+    public ArrayList<CanvasToolFrameImpl> getToolFrames() {
+        return new ArrayList<CanvasToolFrameImpl>(this.toolFrameRegistrations.keySet());
     }
 
     @Override
-    public HandlerRegistration addCopyToolHandler(Handler<ArrayList<CanvasToolFrame>> handler) {
+    public HandlerRegistration addCopyToolHandler(Handler<ArrayList<CanvasToolFrameImpl>> handler) {
         return this.copyToolsRequest.addHandler(handler);
     }
 
@@ -728,7 +729,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         this.userWelcomeLabel.setTitle(email);
     }
 
-    private void addOverToolFrame(final CanvasToolFrame toolFrame)
+    private void addOverToolFrame(final CanvasToolFrameImpl toolFrame)
     {
         overToolFrames.add(toolFrame);
         if (activeToolboxItem instanceof MoveToolboxItem) {

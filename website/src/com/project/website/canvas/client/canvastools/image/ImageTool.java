@@ -20,6 +20,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.events.SimpleEvent.Handler;
@@ -41,7 +42,7 @@ import com.project.website.canvas.shared.data.ElementData;
 import com.project.website.canvas.shared.data.ImageData;
 import com.project.website.canvas.shared.data.ImageInformation;
 
-public class ImageTool  extends Composite implements CanvasTool<ImageData>
+public class ImageTool extends Composite implements CanvasTool<ImageData>
 {
     interface ImageToolUiBinder extends UiBinder<Widget, ImageTool> {}
 
@@ -254,6 +255,13 @@ public class ImageTool  extends Composite implements CanvasTool<ImageData>
     @Override
     public HandlerRegistration addBlurHandler(BlurHandler handler)
     {
+        return null;
+    }
+
+    @Override
+    public IsWidget getToolbar()
+    {
+        // TODO Auto-generated method stub
         return null;
     }
 }
