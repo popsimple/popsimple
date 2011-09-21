@@ -277,8 +277,16 @@
 
 .textEditToolbar {
 	position: absolute;
-	top: 0;
-	left: 0;
+	background-color: lightgray;
+	padding: 3px;
+}
+
+.textEditToolbarToggleButton {
+	display: inline;
+    font-size: 0.9em;
+	padding: 2px 3px;
+	cursor: default;
+	margin: 0 1px;
 }
 
 

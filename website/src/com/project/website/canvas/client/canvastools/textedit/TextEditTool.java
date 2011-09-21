@@ -30,28 +30,28 @@ import com.project.website.canvas.shared.data.TextData;
 
 public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
 {
-    private static final String CONTENTEDITABLE = "contenteditable";
     // private final FlowPanel editorPanel = new FlowPanel();
     private final SimpleEvent<String> _killRequestEvent = new SimpleEvent<String>();
     private final SimpleEvent<Point2D> _moveRequestEvent = new SimpleEvent<Point2D>();
 
     private final RegistrationsManager _registrationsManager = new RegistrationsManager();
 
-    private static TextEditToolbar _toolbar = null;
+    private final Element _editElement;
 
-    private TextData _data;
+    private static TextEditToolbar _toolbar;
+
+    private TextData _data = null;
     private boolean _editorReady = false;
     private boolean _isActive = false;
-    private boolean _activeStateSet = false;
+    private boolean _initialized = false;
 
     public TextEditTool()
     {
         CanvasToolCommon.initCanvasToolWidget(this);
+        TextEditTool.initStaticToolbar();
 
-        if (null == TextEditTool._toolbar) {
-            TextEditTool._toolbar = new TextEditToolbar();
-            RootPanel.get().add(TextEditTool._toolbar);
-        }
+        //this.add(this._editPanel);
+        this._editElement = this.getElement();
 
         this.addStyleName(CanvasResources.INSTANCE.main().textEdit());
         this.setViewMode(false);
@@ -65,6 +65,15 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
             }
         }).run(null);
         this.addStyleName(CanvasResources.INSTANCE.main().textEditBox());
+    }
+
+    private static void initStaticToolbar()
+    {
+        if (null == TextEditTool._toolbar)
+        {
+            TextEditTool._toolbar = new TextEditToolbar();
+            RootPanel.get().add(TextEditTool._toolbar);
+        }
     }
 
     @Override
@@ -134,14 +143,13 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
 
     private String getContents()
     {
-        // TODO: sanitize
-        return this.getElement().getInnerHTML();
+        return _editElement.getInnerHTML();
     }
 
     private void setContents(String text)
     {
         // TODO: sanitize
-        this.getElement().setInnerHTML(text);
+        this._editElement.setInnerHTML(text);
     }
 
     private void registerHandlers()
@@ -181,12 +189,15 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
         if (false == this._editorReady) {
             this._isActive = isActive;
             return;
-        } else if (this._activeStateSet && (isActive == this._isActive)) {
+        } else if (this._initialized && (isActive == this._isActive)) {
             return;
         }
         this._isActive = isActive;
-        this._activeStateSet = true;
+        this._initialized = true;
+
         if (isActive) {
+            TextEditTool._toolbar.setEditedWidget(this);
+
             // if (null != this.editSize) {
             // // Set only the width - the height depends on the contents
             // this.setWidth(this.editSize.getX() + "px");
@@ -196,12 +207,11 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
             this.addStyleName(CanvasResources.INSTANCE.main().textEditFocused());
             this.removeStyleName(CanvasResources.INSTANCE.main().textEditNotFocused());
 
-            TextEditTool._toolbar.setEditedElement(this.getElement());
-            
             // This causes infinite recursion / looping:
-            //this.setFocus(true);
+            //this._editPanel.setFocus(true);
 
         } else {
+            TextEditTool._toolbar.setEditedWidget(null);
 
             this.setFocus(false);
 
@@ -218,6 +228,7 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
                     this._killRequestEvent.dispatch("Empty");
                 }
             }
+
         }
     }
 
@@ -230,12 +241,9 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
     @Override
     public void setViewMode(boolean isViewMode)
     {
-        if (isViewMode) {
-            this.getElement().removeAttribute(CONTENTEDITABLE);
-        } else {
-            this.getElement().setAttribute(CONTENTEDITABLE, "true");
-        }
+        ElementUtils.setContentEditable(this._editElement, isViewMode);
     }
+
 
     @Override
     public HandlerRegistration addKillRequestEventHandler(Handler<String> handler)
@@ -258,4 +266,5 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
         }
         this.setActive(this._isActive);
     }
+
 }

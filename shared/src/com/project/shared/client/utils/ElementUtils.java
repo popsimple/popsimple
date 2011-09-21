@@ -21,6 +21,8 @@ import com.project.shared.utils.StringUtils;
 
 public abstract class ElementUtils
 {
+    private static final String CONTENTEDITABLE = "contenteditable";
+
     /**
      * A wrapper for the native {@link Element#getChildNodes()} that returns a java ArrayList.
      */
@@ -375,6 +377,16 @@ public abstract class ElementUtils
 
         childElem.removeFromParent();
         return true;
+    }
+
+
+    public static void setContentEditable(Element element, boolean isContentEditable)
+    {
+        if (isContentEditable) {
+            element.removeAttribute(CONTENTEDITABLE);
+        } else {
+            element.setAttribute(CONTENTEDITABLE, "true");
+        }
     }
 
 }

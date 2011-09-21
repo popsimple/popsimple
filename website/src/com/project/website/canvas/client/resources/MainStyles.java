@@ -140,17 +140,19 @@ public interface MainStyles extends CssResource {
 
     String textEditToolbar();
 
+    String textEditToolbarToggleButton();
+
     String toolbox();
 
     String toolboxCommonIconStyle();
 
     String toolboxCommonSelectedIconStyle();
 
-    String toolboxCropSiteIconStyle();
+	String toolboxCropSiteIconStyle();
 
 	String toolboxCursorIconStyle();
 
-	String toolboxHeader();
+    String toolboxHeader();
 
     String toolboxImageIconStyle();
 
@@ -192,9 +194,9 @@ public interface MainStyles extends CssResource {
 
     String toolFrameHoverDisplayBlockElement();
 
-    String toolFrameHoverVisibleElement();
+	String toolFrameHoverVisibleElement();
 
-	String toolFramePanel();
+    String toolFramePanel();
 
     String toolOptionsBar();
 
