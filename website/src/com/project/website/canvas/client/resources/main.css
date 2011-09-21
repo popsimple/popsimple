@@ -285,8 +285,15 @@
 }
 
 .textEditToolbar {
-    background-color: lightgray;
+    background-color: #E0E0E0;
+    border-radius: 3px 3px 3px 3px;
+    box-shadow: 1px 1px 2px #444444;
+    cursor: default;
+    opacity: 0.95;
     padding: 3px;
+    /*     -moz-border-radius: 3px; */
+/*     -webkit-border-radius: 3px; */
+/*     -ms-border-radius: 3px; */
 }
 
 .textEditToolbarToggleButton {
@@ -473,6 +480,8 @@
 .floatingToolbar {
     position: absolute;
     z-index: zIndexOverAllToolFrames;
+    background-color: transparent;
+    margin-top: 10px;
 }
 
 /* ToolFrame Styles */
