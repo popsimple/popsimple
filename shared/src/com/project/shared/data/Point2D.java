@@ -124,4 +124,10 @@ public class Point2D implements Serializable, IsSerializable, ICloneable {
         copy._x = this._x;
         copy._y = this._y;
     }
+
+    @Override
+    public String toString()
+    {
+        return "Point2D(x=" + this.getX() +  ", y=" + this.getY() + ")";
+    }
 }

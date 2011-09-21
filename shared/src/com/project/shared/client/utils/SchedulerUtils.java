@@ -1,5 +1,7 @@
 package com.project.shared.client.utils;
 
+import java.util.HashSet;
+
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.project.shared.data.funcs.AsyncFunc;
@@ -18,5 +20,34 @@ public class SchedulerUtils {
 				});
 			}
 		};
+	}
+
+	public static class OneTimeScheduler
+	{
+	    private static OneTimeScheduler INSTANCE;
+        private HashSet<ScheduledCommand> _pendingCommands = new HashSet<ScheduledCommand>();
+
+	    public static OneTimeScheduler get() {
+	        if (null == INSTANCE) {
+	            INSTANCE = new OneTimeScheduler();
+	        }
+	        return INSTANCE;
+	    }
+
+	    public void scheduleDeferredOnce(final ScheduledCommand command)
+	    {
+            if (_pendingCommands.contains(command)) {
+                return;
+            }
+            _pendingCommands.add(command);
+            Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+                @Override
+                public void execute()
+                {
+                    _pendingCommands.remove(command);
+                    command.execute();
+                }
+            });
+	    }
 	}
 }

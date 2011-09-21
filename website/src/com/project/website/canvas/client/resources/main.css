@@ -481,7 +481,7 @@
     position: absolute;
     z-index: zIndexOverAllToolFrames;
     background-color: transparent;
-    margin-top: 10px;
+    padding-top: 10px;
 }
 
 /* ToolFrame Styles */

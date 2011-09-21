@@ -1,6 +1,7 @@
 package com.project.website.canvas.client.canvastools.base;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.BlurHandler;
@@ -31,6 +32,7 @@ import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.NativeUtils;
+import com.project.shared.client.utils.SchedulerUtils;
 import com.project.shared.client.utils.WidgetUtils;
 import com.project.shared.data.Point2D;
 import com.project.shared.utils.loggers.Logger;
@@ -94,6 +96,8 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
     private int draggingStackDepth = 0;
 	private boolean _viewMode = false;
     private boolean _isActive = false;
+
+    private boolean _pendingTransformHandling;
 
     public CanvasToolFrameImpl(CanvasTool<?> canvasTool) {
         initWidget(uiBinder.createAndBindUi(this));
@@ -432,14 +436,23 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
     @Override
     public void onTransformed()
     {
-        if (null != this.floatingToolbar) {
-            this.floatingToolbar.updatePosition();
-        }
+        SchedulerUtils.OneTimeScheduler.get().scheduleDeferredOnce(new ScheduledCommand() {
+            @Override public void execute() {
+                handleOnTransform();
+            }
+        });
     }
 
     private void onResize()
     {
         this.onTransformed();
+    }
+
+    private void handleOnTransform()
+    {
+        if (null != this.floatingToolbar) {
+            this.floatingToolbar.updatePosition();
+        }
     }
 
 }

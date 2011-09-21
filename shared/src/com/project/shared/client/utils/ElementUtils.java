@@ -18,6 +18,7 @@ import com.project.shared.data.Point2D;
 import com.project.shared.data.Rectangle;
 import com.project.shared.utils.IterableUtils;
 import com.project.shared.utils.StringUtils;
+import com.project.shared.utils.loggers.Logger;
 
 public abstract class ElementUtils
 {
@@ -127,12 +128,22 @@ public abstract class ElementUtils
         @Override
         protected void onUpdate(double progress)
         {
-            Point2D curPos = pos.minus(oldPos).mul(progress).plus(oldPos);
+            Point2D curPos = pos.minus(oldPos).mul(Math.max(0, progress)).plus(oldPos);
             setElementPosition(element, curPos);
         }
     };
 
+    /**
+     * TODO: For animation to work without glitches, the element must not have
+     * margins, because getElementOffsetPosition does not take them into
+     * account, but setElementPosition does.
+     */
     public static void setElementPosition(final Element element, final Point2D pos, int animationDuration) {
+        Logger.log("element: " + element.toString() + ": position: " + pos.toString());
+        if (0 == animationDuration)
+        {
+            ElementUtils.setElementPosition(element, pos);
+        }
         final Point2D oldPos = getElementOffsetPosition(element);
         PositionAnimation anim = new PositionAnimation(oldPos, pos, element);
         anim.run(animationDuration);
