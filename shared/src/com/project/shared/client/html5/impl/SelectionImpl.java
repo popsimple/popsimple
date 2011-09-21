@@ -104,6 +104,7 @@ public class SelectionImpl extends JavaScriptObject implements Selection
     {
         if (range instanceof RangeImpl) {
             this.addRangeNative((RangeImpl)range);
+            return;
         }
         throw new RuntimeException("Implemented only for Range class: " + RangeImpl.class.getName());
     }
@@ -118,6 +119,7 @@ public class SelectionImpl extends JavaScriptObject implements Selection
     {
         if (range instanceof RangeImpl) {
             this.removeRangeNative((RangeImpl)range);
+            return;
         }
         throw new RuntimeException("Implemented only for Range class: " + RangeImpl.class.getName());
     }

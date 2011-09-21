@@ -117,6 +117,7 @@ public class StyleUtils
                 }
                 StyleUtils.copyStyle(childElem, elem, false);
                 pushStylesDownToTextNodes(childElem);
+
             }
             // Ignore Node.DOCUMENT_NODE
         }
@@ -127,19 +128,25 @@ public class StyleUtils
 
     public static native final void copyStyle(Element to, Element from, boolean overrideExistingPropertiesInTarget)
     /*-{
-        if (overrideExistingPropertiesInTarget)
-        {
+        if (overrideExistingPropertiesInTarget) {
             to.style.cssText = from.style.cssText;
             return;
         }
 
-        for (var i = from.style.length; i-->0;)
-        {
+        var existingPropertiesInTarget = [];
+        for (var i = 0; i < from.style.length; i++) {
             var name = from.style[i];
-            var existingValue = to.style.getPropertyValue(name);
-            if ('' === existingValue) {
-                to.style.setProperty(name, from.style.getPropertyValue(name), priority = from.style.getPropertyPriority(name));
+            var existsInTarget = false;
+            for (i = 0; i < to.style.length; i++) {
+                if (name === to.style[i]) {
+                    existsInTarget = true;
+                    break;
+                }
             }
+            if (existsInTarget) {
+                continue;
+            }
+            to.style.setProperty(name, from.style.getPropertyValue(name), from.style.getPropertyPriority(name));
         }
     }-*/;
 
