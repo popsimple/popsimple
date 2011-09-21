@@ -1,5 +1,7 @@
 package com.project.website.canvas.client.canvastools.textedit;
 
+import java.util.ArrayList;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
@@ -23,6 +25,7 @@ import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.StyleUtils;
 import com.project.shared.data.funcs.Func;
 import com.project.shared.data.funcs.Func.Action;
+import com.project.shared.utils.ListUtils;
 import com.project.website.canvas.client.resources.CanvasResources;
 
 public class TextEditToolbar extends Composite
@@ -48,17 +51,48 @@ public class TextEditToolbar extends Composite
         this.addCssStringValueToggleButton("fontWeight", new String[] {"400", "normal"}, new String[] { "700", "bold" }, "Bold");
         this.addCssStringValueToggleButton("fontStyle", "normal", "italic", "Italic");
         this.addCssStringValueToggleButton("textDecoration", "none", "underline", "Underline");
-        this.addCssStringValueListBox("fontFamily", "Font", new String[] {
-                "",
-                "serif",
-                "sans-serif",
-                "cursive",
-                "fantasy",
-                "monospace"
-        });
+        this.addCssStringValueListBox("fontFamily", "Font", getFontFamilies());
+        this.addCssStringValueListBox("fontSize", "Size", getFontSizes());
     }
 
-    private void addCssStringValueListBox(final String cssProperty, String title, String[] values)
+    private Iterable<String> getFontSizes()
+    {
+        int[] sizes = new int[] {
+            8,
+            10,
+            12,
+            14,
+            16,
+            18,
+            20,
+            24,
+            28,
+            32,
+            36,
+            48,
+            72,
+            96,
+            144
+        };
+        ArrayList<String> values = new ArrayList<String>();
+        for (int size : sizes) {
+            values.add(String.valueOf(size) + "px");
+        }
+        return values;
+    }
+
+    private Iterable<String> getFontFamilies()
+    {
+        return ListUtils.create(
+            "arial",
+            "georgia",
+            "monospace",
+            "times",
+            "verdana"
+        );
+    }
+
+    private void addCssStringValueListBox(final String cssProperty, String title, Iterable<String> values)
     {
         final TextEditToolbar that = this;
 

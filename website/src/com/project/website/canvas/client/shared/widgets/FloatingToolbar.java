@@ -85,6 +85,9 @@ public class FloatingToolbar extends FlowPanel
 
     public void updatePosition()
     {
+        if (null == this._editedWidget) {
+            return;
+        }
         Rectangle elementRect = ElementUtils.getElementAbsoluteRectangle(this._editedWidget.getElement());
         Point2D targetPos = new Point2D(elementRect.getLeft(), elementRect.getBottom() + 10);
         ElementUtils.setElementPosition(this.getElement(), targetPos, 300);
