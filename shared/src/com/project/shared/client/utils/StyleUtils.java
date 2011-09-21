@@ -137,8 +137,8 @@ public class StyleUtils
         for (var i = 0; i < from.style.length; i++) {
             var name = from.style[i];
             var existsInTarget = false;
-            for (i = 0; i < to.style.length; i++) {
-                if (name === to.style[i]) {
+            for (var j = 0; j < to.style.length; j++) {
+                if (name === to.style[j]) {
                     existsInTarget = true;
                     break;
                 }
