@@ -97,7 +97,7 @@ public class Point2D implements Serializable, IsSerializable, ICloneable {
 	public Point2D rotate(double radians, Point2D axisOffset, boolean toRotated)
 	{
 		int direction = toRotated ? 1 : -1;
-		return this.minus(axisOffset.rotate(radians).minus(axisOffset).mul(direction));
+		return this.minus(axisOffset).rotate(radians * direction).plus(axisOffset);
 	}
 
     public static Point2D fromPolar(double radius, double radians)
