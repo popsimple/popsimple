@@ -8,5 +8,9 @@ public interface ToolbarButtonInfo
     void set(Element elem);
     void unset(Element elem);
     boolean isOnRootElemOnly();
+    
+    /**
+     * @param testedElement may be null, indicating no element is focused
+     */
     void updateButtonStatus(Element testedElement);
 }

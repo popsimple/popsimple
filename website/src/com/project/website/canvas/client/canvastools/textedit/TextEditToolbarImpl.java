@@ -1,6 +1,7 @@
 package com.project.website.canvas.client.canvastools.textedit;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
@@ -39,24 +40,6 @@ import com.project.website.canvas.client.resources.CanvasResources;
 public class TextEditToolbarImpl extends Composite implements TextEditToolbar
 {
     private static TextEditToolbarImplUiBinder uiBinder = GWT.create(TextEditToolbarImplUiBinder.class);
-
-    private final class IsSetAction extends Action<Element> {
-        private final ToolbarButtonInfo buttonInfo;
-        private boolean isSet = false;
-
-        private IsSetAction(ToolbarButtonInfo buttonInfo) {
-            this.buttonInfo = buttonInfo;
-        }
-
-        @Override
-        public void exec(Element arg) {
-            this.isSet |= buttonInfo.isSet(arg);
-        }
-
-        public boolean isSet() {
-            return isSet;
-        }
-    }
 
     interface TextEditToolbarImplUiBinder extends UiBinder<Widget, TextEditToolbarImpl>
     {}
@@ -374,28 +357,37 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
             return;
         }
 
-        SelectionImpl selection = SelectionImpl.getWindowSelection();
-
+        Element testElement = getTestElementFromSelection(SelectionImpl.getWindowSelection());
         for (ToolbarButtonInfo buttonInfo : this.buttonInfos)
         {
-            Element testedElement = editedElement;
-            if (false == buttonInfo.isOnRootElemOnly()) {
-                if (null != selection.getAnchorNode()) {
-                    testedElement = selection.getAnchorNode().getParentElement();
-                }
-                else if (null != selection.getFocusNode()) {
-                    testedElement = selection.getFocusNode().getParentElement();
-                }
-                else {
+            buttonInfo.updateButtonStatus(testElement);
+        }
+    }
+
+    private static Element getTestElementFromSelection(SelectionImpl selection) 
+    {
+        for (int i = 0; i < selection.getRangeCount(); i++) {
+            Range range = selection.getRangeAt(i);
+            HashMap<Node, Boolean> nodeContainmentMap = RangeUtils.getNodeContainmentMap(range);
+            for (Node node : nodeContainmentMap.keySet()) {
+                if (Node.TEXT_NODE != node.getNodeType()) {
                     continue;
                 }
+                Element firstElementWithInnerText = node.getParentElement();
+                if (firstElementWithInnerText.getInnerText().isEmpty()) {
+                    continue;
+                }
+                return firstElementWithInnerText;
             }
-
-            if (null == testedElement) {
-                continue;
-            }
-            buttonInfo.updateButtonStatus(testedElement);
         }
+
+        if (null != selection.getAnchorNode()) {
+            return selection.getAnchorNode().getParentElement();
+        }
+        if (null != selection.getFocusNode()) {
+            return selection.getFocusNode().getParentElement();
+        }
+        return null;
     }
 
 
@@ -421,15 +413,12 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
             return;
         }
         
-        IsSetAction isSetAction = new IsSetAction(buttonInfo);
-        RangeUtils.applyToNodesInRange(selection.getRangeAt(0), isSetAction);
-        
-        boolean isSetInFocusNode = isSetAction.isSet();
+        boolean isSetResult = this.isSetInSelection(buttonInfo, selection);
 
         for (int i = 0; i < selection.getRangeCount(); i++) {
             Range range = selection.getRangeAt(i);
             Action<Element> action = null;
-            if (isSetInFocusNode) {
+            if (isSetResult) {
                 action = new Action<Element>() {
                     @Override
                     public void exec(Element arg)
@@ -454,6 +443,12 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
         ElementUtils.mergeSpans(editedElement);
 
         editedElement.focus();
+    }
+
+    private boolean isSetInSelection(final ToolbarButtonInfo buttonInfo, SelectionImpl selection) 
+    {
+        Element testElement = getTestElementFromSelection(SelectionImpl.getWindowSelection());
+        return testElement == null ? false : buttonInfo.isSet(testElement);
     }
 
     private void applyButtonOnRootElement(final ToolbarButtonInfo buttonInfo, final Element editedElement)

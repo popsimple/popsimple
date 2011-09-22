@@ -16,15 +16,48 @@ public class RangeUtils
 {
     public static void applyToNodesInRange(Range range, Func.Action<Element> func)
     {
-        Node commonAncestor = range.getCommonAncestorContainer();
+        HashMap<Node, Boolean> nodeContainmentMap = getNodeContainmentMap(range);
+
+        Element startElem = null;
+        Element endElem = null;
 
         Pair<Node, Integer> startPoint = new Pair<Node,Integer>(range.getStartContainer(), range.getStartOffset());
         Pair<Node, Integer> endPoint = new Pair<Node,Integer>(range.getEndContainer(), range.getEndOffset());
+        // Now modify the tree in-place, and at the same time remember the elements that define the range
+        // after the modification.
+        for (Map.Entry<Node, Boolean> entry : nodeContainmentMap.entrySet())
+        {
+            Element elem = wrapIncludedPart(startPoint, endPoint, entry.getKey(), entry.getValue());
+            if (null != elem) {
+                func.call(elem);
+            }
+            if (startPoint.getA() == entry.getKey()) {
+                startElem = elem;
+            }
+            if (endPoint.getA() == entry.getKey()) {
+                endElem = elem;
+            }
+        }
 
+//        RangeImpl updatedRange = RangeImpl.create();
+//        if ((null != startElem) && (null != endElem)) {
+//            updatedRange.setStartBefore(startElem);
+//            updatedRange.setEndAfter(endElem);
+//        }
+//        return updatedRange;
+        if ((null != startElem) && (null != endElem)) {
+            range.setStartBefore(startElem);
+            range.setEndAfter(endElem);
+        }
+    }
+
+    /**
+     * Returns the set of nodes that are covered by the given range. For each node key, the boolean value indicates
+     * whether the node is fully (true) or partially (false) contained in the range. 
+     */
+    public static HashMap<Node, Boolean> getNodeContainmentMap(Range range) {
         ArrayList<Node> descendants = new ArrayList<Node>();
-
-        descendants.add(commonAncestor);
-
+        descendants.add(range.getCommonAncestorContainer());
         HashMap<Node, Boolean> nodeInclusionMap = new HashMap<Node, Boolean>();
 
         while (descendants.size() > 0) {
@@ -54,36 +87,7 @@ public class RangeUtils
                 }
             }
         }
-
-        Element startElem = null;
-        Element endElem = null;
-
-        // Now modify the tree in-place, and at the same time remember the elements that define the range
-        // after the modification.
-        for (Map.Entry<Node, Boolean> entry : nodeInclusionMap.entrySet())
-        {
-            Element elem = wrapIncludedPart(startPoint, endPoint, entry.getKey(), entry.getValue());
-            if (null != elem) {
-                func.call(elem);
-            }
-            if (startPoint.getA() == entry.getKey()) {
-                startElem = elem;
-            }
-            if (endPoint.getA() == entry.getKey()) {
-                endElem = elem;
-            }
-        }
-
-//        RangeImpl updatedRange = RangeImpl.create();
-//        if ((null != startElem) && (null != endElem)) {
-//            updatedRange.setStartBefore(startElem);
-//            updatedRange.setEndAfter(endElem);
-//        }
-//        return updatedRange;
-        if ((null != startElem) && (null != endElem)) {
-            range.setStartBefore(startElem);
-            range.setEndAfter(endElem);
-        }
+        return nodeInclusionMap;
     }
 
     private static Element wrapIncludedPart(Pair<Node, Integer> startPoint, Pair<Node, Integer> endPoint, Node descendant, boolean fullyContained)
