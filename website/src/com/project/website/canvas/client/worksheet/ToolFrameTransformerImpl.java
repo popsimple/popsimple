@@ -11,6 +11,7 @@ import com.project.shared.data.Point2D;
 import com.project.shared.data.Rectangle;
 import com.project.shared.utils.PointUtils;
 import com.project.shared.utils.PointUtils.TransformationMode;
+import com.project.shared.utils.loggers.Logger;
 import com.project.website.canvas.client.canvastools.base.CanvasToolFrame;
 import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.client.worksheet.interfaces.ElementDragManager;
@@ -45,7 +46,7 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
     @Override
     public void setToolFramePosition(final CanvasToolFrame toolFrame, Point2D pos)
     {
-        ElementUtils.setElementPosition(toolFrame.asWidget().getElement(), limitPosToContainer(pos, toolFrame.asWidget()));
+        ElementUtils.setElementCSSPosition(toolFrame.asWidget().getElement(), limitPosToContainer(pos, toolFrame.asWidget()));
         toolFrame.onTransformed();
     }
 
@@ -61,13 +62,24 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
     @Override
     public void startDragCanvasToolFrame(final CanvasToolFrame toolFrame, final MouseEvent<?> startEvent)
     {
-        final Point2D initialPos = ElementUtils.getElementOffsetPosition(toolFrame.asWidget().getElement());
+        Element toolFrameElement = toolFrame.asWidget().getElement();
+        Point2D relativeEventPos = ElementUtils.getElementCSSPosition(toolFrameElement);
+        if (null == relativeEventPos) {
+            // Less good..
+            // Fallback in case the css left+top is not set.
+            relativeEventPos = ElementUtils.getRelativePosition(startEvent, toolFrameElement);
+        }
+        final Point2D initialPos = relativeEventPos;
+        final Point2D originalOffsetFromFramePos = ElementUtils.getRelativePosition(startEvent, toolFrameElement);
         toolFrame.setDragging(true);
+
         final SimpleEvent.Handler<Point2D> dragHandler = new SimpleEvent.Handler<Point2D>() {
             @Override
             public void onFire(Point2D pos)
             {
-                setToolFramePosition(toolFrame, pos); //transformMovement(pos, initialPos, false));
+                Point2D targetPos = pos.minus(originalOffsetFromFramePos);
+                Logger.log("Initial pos " + initialPos + " originalOffset: " + originalOffsetFromFramePos + " pos: " + pos + " targetPos: " + targetPos);
+                setToolFramePosition(toolFrame, transformMovement(targetPos, initialPos, false));
             }
         };
         Handler<Void> cancelMoveHandler = new Handler<Void>() {
@@ -86,7 +98,7 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
                 toolFrame.setDragging(false);
             }
         };
-        _elementDragManager.startMouseMoveOperation(toolFrame.asWidget().getElement(), _container.getElement(),
+        _elementDragManager.startMouseMoveOperation(toolFrameElement, _container.getElement(),
                 Point2D.zero, dragHandler, stopHandler,
                 cancelMoveHandler, ElementDragManager.StopCondition.STOP_CONDITION_MOUSE_UP);
     }
@@ -110,9 +122,9 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
         final Element toolFrameElement = toolFrame.asWidget().getElement();
         final double angle = Math.toRadians(ElementUtils.getRotation(toolFrameElement));
         final Point2D initialSize = toolFrame.getToolSize();
-        final Point2D startDragPos = ElementUtils.relativePosition(startEvent, _container.getElement());
+        final Point2D startDragPos = ElementUtils.getRelativePosition(startEvent, _container.getElement());
 
-        final Point2D startPos = startDragPos.minus(ElementUtils.relativePosition(startEvent, toolFrameElement));
+        final Point2D startPos = startDragPos.minus(ElementUtils.getRelativePosition(startEvent, toolFrameElement));
 
         final Rectangle initialToolFrameRect = ElementUtils.getElementOffsetRectangle(toolFrameElement);
         final Point2D initialTopLeft = initialToolFrameRect.getCorners().topLeft;
@@ -203,13 +215,6 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
         Point2D sizeOffset = rotatedSizeOffset.rotate(-angle);
         Point2D size = Point2D.max(initialSize.plus(sizeOffset), Point2D.zero);
         return size;
-    }
-
-    private Point2D toolCenterRelativeToToolUnrotatedTopLeft(final Widget widget)
-    {
-        Point2D frameSize = new Point2D(widget.getOffsetWidth(), widget.getOffsetHeight());
-        Point2D toolCenterPos = frameSize.mul(0.5); // relative to tool top-left
-        return toolCenterPos;
     }
 
     private Point2D limitPosToContainer(Point2D pos, Widget elem)

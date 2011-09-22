@@ -113,8 +113,16 @@ public abstract class ElementUtils
         element.style['-ms-' + name] = value;
     }-*/;
 
-	public static Point2D relativePosition(MouseEvent<?> event, Element elem) {
-	    return new Point2D(event.getRelativeX(elem), event.getRelativeY(elem));
+    /**
+     * Calculates the position of the mouse event relative to a given element.
+     * <strong>Don't use event.getRelativeX/Y!</strong>, because Firefox and IE/Chrome have different results for when the element is rotated.
+     * @param event
+     * @param elem
+     * @return
+     */
+	public static Point2D getRelativePosition(MouseEvent<?> event, Element elem) {
+	    Point2D eventPos = new Point2D(event.getClientX(), event.getClientY());
+	    return eventPos.minus(ElementUtils.getElementAbsolutePosition(elem));
 	}
 
     private static class PositionAnimation extends Animation {
@@ -133,7 +141,7 @@ public abstract class ElementUtils
         protected void onUpdate(double progress)
         {
             Point2D curPos = pos.minus(oldPos).mul(Math.max(0, progress)).plus(oldPos);
-            setElementPosition(element, curPos);
+            setElementCSSPosition(element, curPos);
         }
     };
 
@@ -142,26 +150,66 @@ public abstract class ElementUtils
      * margins, because getElementOffsetPosition does not take them into
      * account, but setElementPosition does.
      */
-    public static void setElementPosition(final Element element, final Point2D pos, int animationDuration) {
+    public static void setElementCSSPosition(final Element element, final Point2D pos, int animationDuration) {
         Logger.log("element: " + element.toString() + ": position: " + pos.toString());
         if (0 == animationDuration)
         {
-            ElementUtils.setElementPosition(element, pos);
+            ElementUtils.setElementCSSPosition(element, pos);
         }
         final Point2D oldPos = getElementOffsetPosition(element);
         PositionAnimation anim = new PositionAnimation(oldPos, pos, element);
         anim.run(animationDuration);
     }
 
-	public static void setElementPosition(Element element, Point2D pos) {
+    /**
+     * Sets the element's style's top and left css properties, in PX units, to the given coordinates.
+     * @param element
+     * @param pos
+     */
+	public static void setElementCSSPosition(Element element, Point2D pos) {
 		element.getStyle().setLeft(pos.getX(), Unit.PX);
 		element.getStyle().setTop(pos.getY(), Unit.PX);
     }
 
-	public static Point2D getElementOffsetPosition(Element element) {
+	public static Point2D getElementCSSPosition(Element element)
+	{
+	    String leftStr = element.getStyle().getLeft();
+	    String topStr = element.getStyle().getTop();
+	    Integer left = fromPXUnitString(leftStr);
+	    Integer top = fromPXUnitString(topStr);
+	    if (null == left || null == top) {
+	        return null;
+	    }
+	    return new Point2D(left, top);
+	}
+
+	private static Integer fromPXUnitString(String cssPxUnitNumStr)
+    {
+	    String PX_SUFFIX = "px";
+	    String trimmedStr = cssPxUnitNumStr.trim();
+	    if (false == trimmedStr.toLowerCase().endsWith(PX_SUFFIX))
+	    {
+	        return null;
+	    }
+	    try {
+	        Double value = Double.valueOf(trimmedStr.substring(0, trimmedStr.length() - PX_SUFFIX.length()));
+	        return (int)Math.round(value);
+	    }
+	    catch (NumberFormatException e) {
+	        return null;
+	    }
+    }
+
+    public static Point2D getElementOffsetPosition(Element element) {
     	return new Point2D(element.getOffsetLeft(), element.getOffsetTop());
     }
 
+	/**
+	 * TODO: Seems to return different results between firefox and other browsers if the element is rotated.
+	 * Need to fix it so it corrects that problem.
+	 * @param element
+	 * @return
+	 */
     public static Point2D getElementAbsolutePosition(Element element) {
     	return new Point2D(element.getAbsoluteLeft(), element.getAbsoluteTop());
     }
@@ -185,7 +233,7 @@ public abstract class ElementUtils
     }
 
     public static void setElementRectangle(Element element, Rectangle rectangle) {
-		setElementPosition(element, new Point2D(rectangle.getLeft(), rectangle.getTop()));
+		setElementCSSPosition(element, new Point2D(rectangle.getLeft(), rectangle.getTop()));
 		setElementSize(element, rectangle.getSize());
     }
 

@@ -108,6 +108,6 @@ public class FloatingToolbar extends FlowPanel
             targetPos.setX(Math.min(targetPos.getX(), corners[i].getX()));
             targetPos.setY(Math.max(targetPos.getY(), corners[i].getY()));
         }
-        ElementUtils.setElementPosition(this.getElement(), targetPos, 300);
+        ElementUtils.setElementCSSPosition(this.getElement(), targetPos, 300);
     }
 }

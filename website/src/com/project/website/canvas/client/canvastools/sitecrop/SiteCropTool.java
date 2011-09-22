@@ -132,7 +132,7 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
 
         this._selfMoveEvent.dispatch(new Point2D(rect.getLeft(), rect.getTop()));
 
-        ElementUtils.setElementPosition(this.coverPanel.getElement(),
+        ElementUtils.setElementCSSPosition(this.coverPanel.getElement(),
                 Point2D.zero.minus(new Point2D(rect.getLeft(), rect.getTop())));
         ElementUtils.setElementSize(this.getElement(), rect.getSize());
     }
@@ -182,7 +182,7 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
 
                 _lastPoint = Point2D.zero;
                 _frameDragManager.startMouseMoveOperation(blockPanel.getElement(),
-                        ElementUtils.relativePosition(event, blockPanel.getElement()),
+                        ElementUtils.getRelativePosition(event, blockPanel.getElement()),
                         moveHandler, null, null, StopCondition.STOP_CONDITION_MOUSE_UP);
 
             }

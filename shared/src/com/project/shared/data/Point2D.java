@@ -54,7 +54,7 @@ public class Point2D implements Serializable, IsSerializable, ICloneable {
 
     @Override
     public int hashCode() {
-    	return (this._x + this._y + 37) * 13;
+    	return (this._x * 51 + this._y * 37) * 13;
     }
 
     public Point2D minus(Point2D other) {

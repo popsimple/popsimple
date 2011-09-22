@@ -30,7 +30,7 @@ public class SiteFrameSelectionManager {
 	    NativeUtils.disableTextSelectInternal(_container.getElement(), true);
 
 		final Point2D initialPosition =
-			ElementUtils.relativePosition(event, this._container.getElement());
+			ElementUtils.getRelativePosition(event, this._container.getElement());
 		ElementUtils.setElementRectangle(this._selectionPanel.getElement(),
 				new Rectangle(initialPosition.getX(), initialPosition.getY(), 0));
 

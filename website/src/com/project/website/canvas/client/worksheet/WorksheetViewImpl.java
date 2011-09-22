@@ -497,6 +497,9 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         this.editModeRegistrations.add(this.worksheetPanel.addDomHandler(new MouseDownHandler() {
             @Override
             public void onMouseDown(MouseDownEvent event) {
+                /**
+                 * TODO: don't use getRelativeX/Y, see ElementUtils.relativePosition
+                 * */
                 if (event.getRelativeX(worksheetPanel.getElement()) < 0 || event.getRelativeY(worksheetPanel.getElement()) < 0) {
                     return;
                 }
@@ -639,7 +642,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
             @Override
             public void onClick(ClickEvent event) {
                 if (overToolFrames.isEmpty()) {
-                    Point2D position = ElementUtils.relativePosition(event, worksheetPanel.getElement());
+                    Point2D position = ElementUtils.getRelativePosition(event, worksheetPanel.getElement());
                     toolCreationRequestEvent.dispatch(new ToolCreationRequest(position, toolboxItem
                             .getToolFactory()));
                 }
@@ -665,7 +668,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         if (null != event) {
             Point2D relativeToWorksheet = new Point2D(event.getClientX(), event.getClientY());
             Point2D worksheetPos = ElementUtils.getElementAbsolutePosition(worksheetPanel.getElement());
-            ElementUtils.setElementPosition(floatingWidget.getElement(),
+            ElementUtils.setElementCSSPosition(floatingWidget.getElement(),
                     Point2D.max(Point2D.zero, relativeToWorksheet.minus(worksheetPos)));
         }
     }
@@ -675,7 +678,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         Handler<Point2D> floatingWidgetMoveHandler = new Handler<Point2D>() {
             @Override
             public void onFire(Point2D arg) {
-                ElementUtils.setElementPosition(that.floatingWidget.getElement(), arg);
+                ElementUtils.setElementCSSPosition(that.floatingWidget.getElement(), arg);
             }
         };
         Handler<Point2D> floatingWidgetStop = new Handler<Point2D>() {

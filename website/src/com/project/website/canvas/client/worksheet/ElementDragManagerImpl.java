@@ -106,7 +106,7 @@ public class ElementDragManagerImpl implements ElementDragManager
         regs.add(dragHandler.addDragHandler(new SimpleEvent.Handler<MouseMoveEvent>() {
             @Override
             public void onFire(MouseMoveEvent arg) {
-                Point2D pos = ElementUtils.relativePosition(arg, referenceElem);
+                Point2D pos = ElementUtils.getRelativePosition(arg, referenceElem);
                 handleMouseMove(referenceElem, referenceOffset, moveHandler, pos);
             }
         }));
@@ -141,7 +141,7 @@ public class ElementDragManagerImpl implements ElementDragManager
     {
         stopMouseMoveOperation(targetElement, regs);
         if (null != floatingWidgetStop) {
-            floatingWidgetStop.onFire(ElementUtils.relativePosition(event, referenceElem));
+            floatingWidgetStop.onFire(ElementUtils.getRelativePosition(event, referenceElem));
         }
     }
 
