@@ -19,6 +19,7 @@
 @def topBarHeight 25px;
 @def topBarPadding 5px;
 @def topBarTitleFontSize 1.3em;
+@def topBarTitleTextColor #aaa;
 @def topBarBackgroundColor #222;
 @def topBarTextColor #ddd;
 
@@ -105,6 +106,7 @@
 {
     font-size: topBarTitleFontSize;
     cursor: default;
+    color: topBarTitleTextColor;
 }
 
 
@@ -211,7 +213,8 @@
     font-size: topBarTitleFontSize;
 
     background-color: toolboxHeaderBackgroundColor;
-    color: toolboxHeaderTextColor;
+    /*color: toolboxHeaderTextColor;*/
+    color: topBarTitleTextColor;
 
 	text-align: center;
 }
