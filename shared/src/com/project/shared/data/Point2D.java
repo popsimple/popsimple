@@ -61,11 +61,13 @@ public class Point2D implements Serializable, IsSerializable, ICloneable {
         return new Point2D(this._x - other._x, this._y - other._y);
     }
 
+    public Point2D mulCoords(double xMul, double yMul)
+    {
+        return new Point2D((int) (this._x * xMul), (int) (this._y * yMul));
+    }
+
     public Point2D mul(double scalar) {
         return new Point2D((int) (this._x * scalar), (int) (this._y * scalar));
-    }
-    public Point2D mul(int scalar) {
-        return new Point2D(this._x * scalar, this._y * scalar);
     }
 
     public Point2D plus(Point2D other) {

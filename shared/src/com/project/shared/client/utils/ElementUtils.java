@@ -7,6 +7,7 @@ import com.google.gwt.animation.client.Animation;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.NodeList;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.user.client.Random;
@@ -63,9 +64,9 @@ public abstract class ElementUtils
 
 
     // TODO: warning, this may keep element objects alive after not being used!
-    private static HashMap<Element, Integer> rotations = new HashMap<Element, Integer>();
+    private static HashMap<Element, Double> rotations = new HashMap<Element, Double>();
 
-    public static void setRotation(Element element, int degrees) {
+    public static void setRotation(Element element, double degrees) {
         cssSetRotation(element, degrees);
         if (0 == degrees) {
             rotations.remove(element);
@@ -79,10 +80,11 @@ public abstract class ElementUtils
     }
 
 	private static void setTransformOrigin(Element element, String originValue) {
-		element.getStyle().setProperty("transformOrigin", originValue);
-        element.getStyle().setProperty("MozTransformOrigin", originValue);
-        element.getStyle().setProperty("WebkitTransformOrigin", originValue);
-        element.getStyle().setProperty("MsTransformOrigin", originValue);
+		final Style style = element.getStyle();
+        style.setProperty("transformOrigin", originValue);
+        style.setProperty("MozTransformOrigin", originValue);
+        style.setProperty("WebkitTransformOrigin", originValue);
+        style.setProperty("MsTransformOrigin", originValue);
         cssSetMSProperty(element, "transform-origin", originValue);
 	}
 
@@ -91,19 +93,21 @@ public abstract class ElementUtils
     }
 
 
-    public static int getRotation(Element element) {
-        Integer rotation = rotations.get(element);
+    public static double getRotation(Element element) {
+        Double rotation = rotations.get(element);
         return rotation != null ? rotation.intValue() : 0;
     }
 
-    private static void cssSetRotation(Element element, int degrees) {
-    	String transformValue = "rotate(" + degrees + "deg)";
-	   element.getStyle().setProperty("transform", transformValue);
-	   element.getStyle().setProperty("MozTransform", transformValue);
-	   element.getStyle().setProperty("WebkitTransform", transformValue);
-	   element.getStyle().setProperty("MsTransform", transformValue);
-	   cssSetMSProperty(element, "transform", transformValue);
-   	}
+    private static void cssSetRotation(Element element, double degrees)
+    {
+        String transformValue = "rotate(" + degrees + "deg)";
+        final Style style = element.getStyle();
+        style.setProperty("transform", transformValue);
+        style.setProperty("MozTransform", transformValue);
+        style.setProperty("WebkitTransform", transformValue);
+        style.setProperty("MsTransform", transformValue);
+        cssSetMSProperty(element, "transform", transformValue);
+    }
 
     private static final native void cssSetMSProperty(Element element, String name, String value) /*-{
         element.style['-ms-' + name] = value;

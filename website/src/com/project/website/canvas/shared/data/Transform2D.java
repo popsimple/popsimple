@@ -14,9 +14,10 @@ public class Transform2D implements Serializable, IsSerializable, ICloneable {
     public Point2D translation = new Point2D();
     @Embedded
 	public Point2D size; // could be "null" which means no specific size is set.
-    public int rotation; // degrees, around the center of the object
 
-    public Transform2D(Point2D translation, Point2D size, int rotation) {
+    public double rotation; // degrees, around the center of the object
+
+    public Transform2D(Point2D translation, Point2D size, double rotation) {
 		this.translation = translation;
 		this.size = size;
 		this.rotation = rotation;

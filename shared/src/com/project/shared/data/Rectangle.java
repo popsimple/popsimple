@@ -7,7 +7,7 @@ public class Rectangle {
     private int right = 0;
     private int bottom = 0;
     /* Rotation axis is center */
-    private int rotation = 0;
+    private double rotation = 0;
 
     public Rectangle() {
     	this(0, 0, 0, 0);
@@ -21,7 +21,7 @@ public class Rectangle {
         this(left, top, left + size, top + size);
     }
 
-    public Rectangle(int left, int top, int right, int bottom, int rotation) {
+    public Rectangle(int left, int top, int right, int bottom, double rotation) {
         this.left = left;
         this.top = top;
         this.right = right;

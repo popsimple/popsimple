@@ -33,8 +33,8 @@ public interface ElementDragManager
 
     /**
      * Starts a mouse move/drag operation. Takes care of placing a drag panel on top of all others to capture events, etc.
-     * @param targetElement The element that initially started the operation
-     * @param referenceOffset An additional constant offset added to the position
+     * @param targetElement The element that initially started the operation. The position will be calculated relative to this element's position.
+     * @param referenceOffset A constant offset added to the position
      * @param moveHandler Called when the mouse moves
      * @param stopHandler Called when the operation ends
      * @param cancelHandler Called when the operation is cancelled
