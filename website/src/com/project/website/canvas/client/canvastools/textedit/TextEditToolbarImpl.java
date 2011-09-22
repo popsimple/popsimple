@@ -40,6 +40,24 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
 {
     private static TextEditToolbarImplUiBinder uiBinder = GWT.create(TextEditToolbarImplUiBinder.class);
 
+    private final class IsSetAction extends Action<Element> {
+        private final ToolbarButtonInfo buttonInfo;
+        private boolean isSet = false;
+
+        private IsSetAction(ToolbarButtonInfo buttonInfo) {
+            this.buttonInfo = buttonInfo;
+        }
+
+        @Override
+        public void exec(Element arg) {
+            this.isSet |= buttonInfo.isSet(arg);
+        }
+
+        public boolean isSet() {
+            return isSet;
+        }
+    }
+
     interface TextEditToolbarImplUiBinder extends UiBinder<Widget, TextEditToolbarImpl>
     {}
 
@@ -399,12 +417,14 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
     private void applyButtonOnSelectedRange(final ToolbarButtonInfo buttonInfo, final Element editedElement)
     {
         SelectionImpl selection = SelectionImpl.getWindowSelection();
-        Node anchorNode = selection.getAnchorNode();
-        if (null == anchorNode) {
+        if (0 >= selection.getRangeCount()) {
             return;
         }
-        Element elem = anchorNode.getParentElement();
-        boolean isSetInFocusNode = null == elem ? false : buttonInfo.isSet(elem);
+        
+        IsSetAction isSetAction = new IsSetAction(buttonInfo);
+        RangeUtils.applyToNodesInRange(selection.getRangeAt(0), isSetAction);
+        
+        boolean isSetInFocusNode = isSetAction.isSet();
 
         for (int i = 0; i < selection.getRangeCount(); i++) {
             Range range = selection.getRangeAt(i);

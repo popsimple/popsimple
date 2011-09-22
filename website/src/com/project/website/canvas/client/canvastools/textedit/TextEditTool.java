@@ -2,7 +2,6 @@ package com.project.website.canvas.client.canvastools.textedit;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.dom.client.Style.FontWeight;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.FocusEvent;
@@ -17,8 +16,6 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.handlers.RegistrationsManager;
-import com.project.shared.client.html5.impl.RangeUtils;
-import com.project.shared.client.html5.impl.SelectionImpl;
 import com.project.shared.client.utils.CssProperties;
 import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.StyleUtils;
@@ -273,18 +270,6 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
         boolean isEscape = (event.getNativeKeyCode() == KeyCodes.KEY_ESCAPE);
         if (isEscape) {
             setActive(false);
-        }
-        // TODO replace this with key bindings manager?
-        else if (event.getNativeKeyCode() == KeyCodes.KEY_PAGEDOWN) {
-                SelectionImpl selection = SelectionImpl.getWindowSelection();
-                if (0 < selection.getRangeCount()) {
-                    RangeUtils.applyToNodesInRange(selection.getRangeAt(0), new Func.Action<Element>(){
-                        @Override
-                        public void exec(Element arg)
-                        {
-                            arg.getStyle().setFontWeight(FontWeight.BOLD);
-                        }});
-                }
         }
     }
 
