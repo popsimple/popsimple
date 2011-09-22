@@ -97,8 +97,6 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
 	private boolean _viewMode = false;
     private boolean _isActive = false;
 
-    private boolean _pendingTransformHandling;
-
     public CanvasToolFrameImpl(CanvasTool<?> canvasTool) {
         initWidget(uiBinder.createAndBindUi(this));
         //WidgetUtils.stopClickPropagation(this);

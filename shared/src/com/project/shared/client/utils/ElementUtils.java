@@ -47,7 +47,7 @@ public abstract class ElementUtils
     public static Rectangle getElementAbsoluteRectangle(Element element) {
         // remember that css coordinates are from top-left of screen
         // and css rotation is clockwise
-        return new Rectangle(ElementUtils.getAbsoluteLeftWithoutTransforms(element), ElementUtils.getAbsoluteLeftWithoutTransforms(element),
+        return new Rectangle(ElementUtils.getAbsoluteLeftWithoutTransforms(element), ElementUtils.getAbsoluteTopWithoutTransforms(element),
                              ElementUtils.getAbsoluteRightWithoutTransforms(element), ElementUtils.getAbsoluteBottomWithoutTransforms(element),
                              getRotation(element));
     }
