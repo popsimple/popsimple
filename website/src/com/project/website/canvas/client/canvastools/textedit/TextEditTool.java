@@ -38,7 +38,7 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
 
     private final Element _editElement;
 
-    private final TextEditToolbar _toolbar;
+    private final TextEditToolbarImpl _toolbar;
 
     private TextData _data = null;
     private boolean _editorReady = false;
@@ -51,7 +51,7 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
 
         //this.add(this._editPanel);
         this._editElement = this.getElement();
-        this._toolbar = new TextEditToolbar();
+        this._toolbar = new TextEditToolbarImpl();
         this._toolbar.setEditedElement(this._editElement);
 
         this.addStyleName(CanvasResources.INSTANCE.main().textEdit());

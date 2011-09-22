@@ -26,7 +26,7 @@ import com.project.website.canvas.client.resources.CanvasResources;
 
 public class FloatingToolbar extends FlowPanel
 {
-    private static final int VERTICAL_MARGIN = 10;
+    private static final int TOOLBAR_MARGIN = 10;
 
     private final RegistrationsManager registrationsManager = new RegistrationsManager();
 
@@ -123,15 +123,15 @@ public class FloatingToolbar extends FlowPanel
         }
         Point2D mySize = ElementUtils.getElementOffsetSize(this.getElement());
         Point2D windowSize = WindowUtils.getClientSize();
-        Point2D maxToolbarPosInWindow = windowSize.minus(mySize);
+        Point2D maxToolbarPosInWindow = windowSize.minus(mySize).minus(new Point2D(TOOLBAR_MARGIN, TOOLBAR_MARGIN));
 
-        Point2D targetPos = minCorner.minus(new Point2D(0, mySize.getY() + VERTICAL_MARGIN));
+        Point2D targetPos = minCorner.minus(new Point2D(0, mySize.getY() + TOOLBAR_MARGIN));
 
         Point2D fixedTargetPos = targetPos.limitTo(Point2D.zero, maxToolbarPosInWindow);
         if (fixedTargetPos.getY() > minCorner.getY())
         {
             // The toolbar will be inside the element, move it to below it instead of trying to fit it above.
-            fixedTargetPos.setY(maxCorner.getY() + VERTICAL_MARGIN);
+            fixedTargetPos.setY(maxCorner.getY() + TOOLBAR_MARGIN);
             fixedTargetPos = fixedTargetPos.limitTo(Point2D.zero, maxToolbarPosInWindow);
         }
 

@@ -35,7 +35,6 @@ import com.project.shared.client.utils.NativeUtils;
 import com.project.shared.client.utils.SchedulerUtils;
 import com.project.shared.client.utils.WidgetUtils;
 import com.project.shared.data.Point2D;
-import com.project.shared.utils.loggers.Logger;
 import com.project.website.canvas.client.canvastools.base.CanvasTool.ResizeMode;
 import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.client.shared.widgets.FloatingToolbar;
@@ -90,23 +89,20 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
     protected final SimpleEvent<MouseEvent<?>> rotateStartRequest = new SimpleEvent<MouseEvent<?>>();
     protected final SimpleEvent<Void> selectRequest = new SimpleEvent<Void>();
 
-    protected final RegistrationsManager frameRegs = new RegistrationsManager();
+    private final RegistrationsManager frameRegs = new RegistrationsManager();
+    private final RegistrationsManager toolRegs = new RegistrationsManager();
 
 	protected Integer _rotation = null;
     private int draggingStackDepth = 0;
 	private boolean _viewMode = false;
     private boolean _isActive = false;
 
+
     public CanvasToolFrameImpl(CanvasTool<?> canvasTool) {
         initWidget(uiBinder.createAndBindUi(this));
         //WidgetUtils.stopClickPropagation(this);
         this.tool = canvasTool;
         this.toolPanel.add(canvasTool);
-
-        this.initToolbar();
-
-        this.reRegisterFrameHandlers();
-        this.registerTransformHandlers();
 
 
         WidgetUtils.stopClickPropagation(this.closeLink.asWidget());
@@ -117,6 +113,25 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
 
         this.rotatePanel.setVisible(tool.canRotate());
         this.resizePanel.setVisible(tool.getResizeMode() != ResizeMode.NONE);
+    }
+
+    @Override
+    protected void onLoad()
+    {
+        super.onLoad();
+        this.initToolbar();
+        this.reRegisterFrameHandlers();
+        this.registerTransformHandlers();
+    }
+
+    @Override
+    protected void onUnload()
+    {
+        super.onUnload();
+        this.frameRegs.clear();
+        this.toolRegs.clear();
+        this.floatingToolbar.setEditedWidget(null);
+        this.floatingToolbar.removeFromParent();
     }
 
     private void initToolbar()
@@ -211,12 +226,12 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
 	}
 
     protected void registerTransformHandlers() {
-        this.tool.addMoveStartEventHandler(new SimpleEvent.Handler<MouseEvent<?>>() {
+        this.toolRegs.add(this.tool.addMoveStartEventHandler(new SimpleEvent.Handler<MouseEvent<?>>() {
             @Override
             public void onFire(MouseEvent<?> arg) {
                 moveStartRequest.dispatch(arg);
             }
-        });
+        }));
     }
 
     @Override
@@ -340,7 +355,6 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
 
     @Override
 	public void setFocus(boolean focused) {
-	    Logger.log(this.tool.getClass().getName() + ": setFocus = " + focused);
         setFloatingToolbarVisible(focused);
 		this.focusPanel.setFocus(focused);
 	}
@@ -402,7 +416,6 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
     @Override
     public void setActive(boolean isActive)
     {
-        Logger.log(this.tool.getClass().getName() + ": setActive = " + isActive + ", draggingStackDepth = " + this.draggingStackDepth);
         this._isActive = isActive;
         this.updateToolActive();
     }

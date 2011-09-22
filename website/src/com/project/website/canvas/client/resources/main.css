@@ -331,7 +331,7 @@
 }
 
 .textEditToolbarToggleButton {
-	display: inline;
+	display: inline-block;
     font-size: 0.9em;
 	padding: 2px 3px;
 	cursor: default;

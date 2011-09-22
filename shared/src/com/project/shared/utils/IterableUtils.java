@@ -39,4 +39,15 @@ public class IterableUtils
         }
         return res;
     }
+    public static <T> boolean contains(Iterable<T> values, T value)
+    {
+        for (T elem : values)
+        {
+            if ((elem == value) || ((null != elem) && (elem.equals(value))))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 }
