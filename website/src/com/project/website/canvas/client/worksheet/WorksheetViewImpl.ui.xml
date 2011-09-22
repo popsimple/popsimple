@@ -4,20 +4,24 @@
     <ui:with field='res' type='com.project.website.canvas.client.resources.CanvasResources'/>
    	<g:HTMLPanel ui:field="worksheetContainer" addStyleNames="{res.main.worksheet}">
        	<g:HTMLPanel addStyleNames="{res.main.worksheetHeader}" ui:field="worksheetHeader">
-       		<g:HTMLPanel addStyleNames="{res.main.worksheetButtons}">
-		        <g:Button  ui:field="saveButton" addStyleNames="{res.main.worksheetRightButton} {res.main.worksheetSaveButton}">Save</g:Button>
-	            <g:Button  ui:field="viewButton" addStyleNames="{res.main.worksheetRightButton}">Preview</g:Button>
-            </g:HTMLPanel>
-            <g:Anchor ui:field="linkLogout" href="javascript:;" addStyleNames="{res.main.worksheetHeaderRightElement}">Logout</g:Anchor>
-            <g:Anchor ui:field="linkInvite" href="javascript:;" addStyleNames="{res.main.worksheetHeaderRightElement}">Invite a friend</g:Anchor>
-            <div class="{res.main.worksheetHeaderRightElement} {res.main.worksheetWelcomeLabelHolder}">
-                <g:InlineLabel ui:field="userWelcomeLabel"/>
+            <div class="{res.main.worksheetHeaderLeft}">
+    			<span class="{res.main.worksheetHeaderTitle}">Worksheet</span>
+                <g:HTMLPanel addStyleNames="{res.main.worksheetOptions}">
+                	<g:Anchor ui:field="optionsBackground">Change background</g:Anchor>
+                </g:HTMLPanel>
             </div>
-            <g:InlineLabel ui:field="statusLabel" addStyleNames="{res.main.worksheetHeaderRightElement}"/>
-			Worksheet
-            <g:HTMLPanel addStyleNames="{res.main.worksheetOptions}">
-            	<g:Anchor ui:field="optionsBackground">Change background</g:Anchor>
-            </g:HTMLPanel>
+            <div class="{res.main.worksheetHeaderRight}">
+                <g:InlineLabel ui:field="statusLabel"/>
+                <div class="{res.main.worksheetWelcomeLabelHolder}">
+                    <g:InlineLabel ui:field="userWelcomeLabel"/>
+                </div>
+                <g:Anchor ui:field="linkInvite" href="javascript:;">Invite a friend</g:Anchor>
+                <g:Anchor ui:field="linkLogout" href="javascript:;">Logout</g:Anchor>
+                <g:HTMLPanel addStyleNames="{res.main.worksheetButtons}">
+                    <g:Button  ui:field="saveButton">Save</g:Button>
+                    <g:Button  ui:field="viewButton">Preview</g:Button>
+                </g:HTMLPanel>
+            </div>
 		</g:HTMLPanel>
 		<g:FocusPanel ui:field="focusPanel" addStyleNames="{res.main.worksheetFocusPanel}">
 			<g:FlowPanel ui:field="worksheetPanel" addStyleNames="{res.main.worksheetPanel}" >

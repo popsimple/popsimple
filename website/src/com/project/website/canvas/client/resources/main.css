@@ -16,6 +16,14 @@
 
 @def zIndexOverAllToolFrames 100;
 
+@def topBarHeight 25px;
+@def topBarPadding 5px;
+@def topBarTitleFontSize 1.3em;
+@def topBarBackgroundColor #222;
+@def topBarTextColor #ddd;
+
+@def toolboxHeaderBackgroundColor #222;
+@def toolboxHeaderTextColor #ddd;
 
 @external gwt-RadioButton;
 .monospace {
@@ -85,21 +93,30 @@
 }
 
 .worksheetHeader {
-	margin-left: 10px;
-	font-size: 1.3em;
-	padding: 5px;
-	height: 25px;
+    height: topBarHeight;
+    padding: topBarPadding;
+    padding-left: 10px;
+    background-color: topBarBackgroundColor;
+    color: topBarTextColor;
+    font-size: 1em;
 }
+
+.worksheetHeaderTitle
+{
+    font-size: topBarTitleFontSize;
+    cursor: default;
+}
+
 
 .worksheetOptions {
 	margin-left: 4px;
-	font-size: 14px;
 	display: inline-block;
 }
 
-.worksheetOptions a {
+.worksheetHeader a {
 	cursor: pointer;
 	text-decoration: underline;
+	color:#aaaaff;
 }
 
 .worksheetFocusPanel {
@@ -127,13 +144,21 @@
 }
 
 .worksheetButtons {
-	float: right;
+	display: inline-block;
 }
 
-.worksheetHeaderRightElement {
-	font-size: 14px;
-	float: right;
-	margin: 5px 10px 5px 5px;
+.worksheetHeaderLeft
+{
+    float: left;
+}
+
+.worksheetHeaderRight
+{
+    float: right;
+}
+
+.worksheetHeaderRight a, .worksheetHeaderRight span, .worksheetHeaderRight div {
+	margin: 0 5px;
 }
 
 @sprite .worksheetWelcomeLabelHolder {
@@ -144,17 +169,18 @@
     background-position: 0 4px;
     background-repeat: no-repeat;
     background-size: 12px 12px;
-    color: #555;
+    color: topBarTextColor;
     cursor: default;
+    vertical-align: text-top;
 }
 
 .worksheetSaveButton {
-	min-width: 6em;
 }
 
 
-.worksheetRightButton {
-
+.worksheetHeaderRight button {
+    padding: 1px 2px;
+    min-width: 5em;
 }
 
 .worksheetModeEditable {
@@ -179,10 +205,15 @@
 }
 
 .toolboxHeader {
-	font-size: 1.3em;
-	padding: 5px;
+	cursor: default;
+	height: topBarHeight;
+    padding: topBarPadding;
+    font-size: topBarTitleFontSize;
+
+    background-color: toolboxHeaderBackgroundColor;
+    color: toolboxHeaderTextColor;
+
 	text-align: center;
-	margin-bottom: 10px;
 }
 
 .toolboxTools {

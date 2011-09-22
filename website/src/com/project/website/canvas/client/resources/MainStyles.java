@@ -238,7 +238,11 @@ public interface MainStyles extends CssResource {
 
     String worksheetHeader();
 
-    String worksheetHeaderRightElement();
+    String worksheetHeaderLeft();
+
+    String worksheetHeaderRight();
+
+    String worksheetHeaderTitle();
 
     String worksheetModeEditable();
 
@@ -247,8 +251,6 @@ public interface MainStyles extends CssResource {
     String worksheetOptions();
 
     String worksheetPanel();
-
-    String worksheetRightButton();
 
     String worksheetSaveButton();
 
