@@ -343,8 +343,16 @@
     margin:0 3px;
 }
 
-.textEditToolbarListBox {
+.textEditToolbarListBox
+{
+	vertical-align: middle;
+}
 
+/* this exists because the list box can set styles on its options, we don't want it to eat-up the whole box */
+.textEditToolbarListBox, .textEditToolbarListBox option {
+    max-width: 200px;
+    overflow: hidden;
+    max-height: 20px;
 }
 
 .textEditToolbarListTitle {

@@ -1,4 +1,4 @@
-package com.project.shared.client.utils;
+package com.project.shared.client.utils.widgets;
 
 import com.google.gwt.user.client.ui.TextBox;
 

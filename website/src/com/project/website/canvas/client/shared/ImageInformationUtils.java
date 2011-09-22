@@ -5,7 +5,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.utils.HandlerUtils;
 import com.project.shared.client.utils.StyleUtils;
-import com.project.shared.client.utils.WidgetUtils;
+import com.project.shared.client.utils.widgets.WidgetUtils;
 import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.shared.data.ImageInformation;
 import com.project.website.canvas.shared.data.ImageOptions;

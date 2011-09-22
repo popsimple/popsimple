@@ -33,7 +33,7 @@ import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.NativeUtils;
 import com.project.shared.client.utils.SchedulerUtils;
-import com.project.shared.client.utils.WidgetUtils;
+import com.project.shared.client.utils.widgets.WidgetUtils;
 import com.project.shared.data.Point2D;
 import com.project.website.canvas.client.canvastools.base.CanvasTool.ResizeMode;
 import com.project.website.canvas.client.resources.CanvasResources;

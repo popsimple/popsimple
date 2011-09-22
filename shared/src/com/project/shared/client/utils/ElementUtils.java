@@ -6,7 +6,6 @@ import java.util.HashMap;
 import com.google.gwt.animation.client.Animation;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
-import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.MouseEvent;
@@ -29,14 +28,9 @@ public abstract class ElementUtils
      */
     public static ArrayList<Node> getChildNodes(Element element)
     {
-        ArrayList<Node> res = new ArrayList<Node>();
-        NodeList<Node> childNodes = element.getChildNodes();
-        for (int i = 0 ; i < childNodes.getLength(); i++)
-        {
-            res.add(childNodes.getItem(i));
-        }
-        return res;
+        return NodeUtils.fromNodeList(element.getChildNodes());
     }
+
 
     public static boolean areOverlappingElements(Element element1, Element element2) {
         // TODO: fix bugs in Rectangle and use isOverlapping instead of isExternalCircleOverlapping

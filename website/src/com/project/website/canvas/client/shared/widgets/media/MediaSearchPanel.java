@@ -30,7 +30,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.utils.NativeUtils;
-import com.project.shared.client.utils.TextBoxUtils;
+import com.project.shared.client.utils.widgets.TextBoxUtils;
 import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.client.shared.searchProviders.interfaces.MediaInfo;
 import com.project.website.canvas.client.shared.searchProviders.interfaces.MediaResult;

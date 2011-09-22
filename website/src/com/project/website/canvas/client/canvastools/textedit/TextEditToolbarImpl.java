@@ -5,10 +5,9 @@ import java.util.ArrayList;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
+import com.google.gwt.dom.client.OptionElement;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseUpEvent;
@@ -32,6 +31,7 @@ import com.project.shared.client.html5.impl.RangeUtils;
 import com.project.shared.client.html5.impl.SelectionImpl;
 import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.StyleUtils;
+import com.project.shared.client.utils.widgets.ListBoxUtils;
 import com.project.shared.data.funcs.Func.Action;
 import com.project.shared.utils.ListUtils;
 import com.project.website.canvas.client.resources.CanvasResources;
@@ -108,10 +108,13 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
                 new String[] { "700", "bold" }, "Bold", false);
         this.addCssStringValueToggleButton("fontStyle", "normal", "italic", "Italic", false);
         this.addCssStringValueToggleButton("textDecoration", "none", "underline", "Underline", false);
-        this.addCssStringValueListBox("fontFamily", "Font:", getFontFamilies());
-        this.addCssStringValueListBox("fontSize", "Size:", getFontSizes());
-        this.addCssStringValueListBox("color", "Color:", getColors());
-        this.addCssStringValueListBox("backgroundColor", "Background:", getColors());
+        this.addCssStringValueListBox("fontFamily", "Font:", true, getFontFamilies());
+        this.addCssStringValueListBox("fontSize", "Size:", false, getFontSizes());
+
+        // TODO replace these two with color-pickers:
+        this.addCssStringValueListBox("color", "Color:", false, getColors());
+        this.addCssStringValueListBox("backgroundColor", "Background:", false, getColors());
+
         this.addCssStringValueToggleButton("direction", "ltr", "rtl", "Direction", true);
     }
 
@@ -136,7 +139,7 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
         return ListUtils.create("arial", "georgia", "monospace", "verdana", "times");
     }
 
-    private void addCssStringValueListBox(final String cssProperty, String title, final Iterable<String> values)
+    private void addCssStringValueListBox(final String cssProperty, String title, final boolean setOptionsStyles, final Iterable<String> values)
     {
         final TextEditToolbarImpl that = this;
 
@@ -145,7 +148,10 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
 
         for (String item : values) {
             listBox.addItem(item);
-            // TODO: apply the style on each OptionElement within the list box
+            if (setOptionsStyles) {
+                OptionElement optionElement = ListBoxUtils.getOptionElement(listBox, listBox.getItemCount() - 1);
+                optionElement.getStyle().setProperty(cssProperty, item);
+            }
         }
 
         FlowPanel listBoxWrapper = new FlowPanel();
@@ -192,19 +198,21 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
             {
                 String value = getCssPropertyValue(cssProperty, testedElement);
                 boolean found = false;
+                int selectedIndex = 0;
                 for (int i = 0;  i < listBox.getItemCount(); i++)
                 {
                     if (listBox.getValue(i).equals(value)) {
-                        listBox.setSelectedIndex(i);
+                        selectedIndex = i;
                         found = true;
                         break;
                     }
                 }
-                if (found) {
-                    return;
+                if (false == found) {
+                    selectedIndex = listBox.getItemCount() - 1;
+                    listBox.addItem(value);
                 }
-                listBox.addItem(value);
-                listBox.setSelectedIndex(listBox.getItemCount() - 1);
+                listBox.setSelectedIndex(selectedIndex);
+                updateListBoxSelectItemStyle(setOptionsStyles, listBox);
             }
 
             private String getCssPropertyValue(final String cssProperty, Element testedElement)
@@ -232,8 +240,11 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
             public void onChange(ChangeEvent event)
             {
                 that.buttonPressed(buttonInfo);
+                updateListBoxSelectItemStyle(setOptionsStyles, listBox);
             }
         });
+        updateListBoxSelectItemStyle(setOptionsStyles, listBox);
+
         this.addButtonInfo(buttonInfo);
     }
 
@@ -471,5 +482,13 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
             }
         }
         return false;
+    }
+
+    private void updateListBoxSelectItemStyle(final boolean setOptionsStyles, final ListBox listBox)
+    {
+        if (setOptionsStyles) {
+            int selectedIndex = listBox.getSelectedIndex();
+            StyleUtils.copyStyle(listBox.getElement(), ListBoxUtils.getOptionElement(listBox, selectedIndex), true);
+        }
     }
 }
