@@ -46,6 +46,7 @@ import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.HandlerUtils;
 import com.project.shared.data.Point2D;
 import com.project.shared.utils.CloneableUtils;
+import com.project.shared.utils.IterableUtils;
 import com.project.shared.utils.loggers.Logger;
 import com.project.website.canvas.client.canvastools.CursorToolboxItem;
 import com.project.website.canvas.client.canvastools.MoveToolboxItem;
@@ -250,7 +251,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
             public void onFire(MouseEvent<?> arg) {
                 Logger.log("Move request for: " + toolFrame.getElement());
                 _toolFrameSelectionManager.forceToolFrameSelection(toolFrame);
-                _toolFrameTransformer.startDragCanvasToolFrames(selectedTools, arg);
+                startDraggingSelectedToolFrames(arg);
             }
         }));
         regs.add(toolFrame.addResizeStartRequestHandler(new SimpleEvent.Handler<MouseEvent<?>>() {
@@ -540,16 +541,19 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
                 if (event.isControlKeyDown())
                 {
                     this.onCopyToolsRequest();
+                    event.preventDefault();
                 }
                 break;
             case (int)'V':
                 if (event.isControlKeyDown())
                 {
                     this.onPasteToolsRequest();
+                    event.preventDefault();
                 }
                 break;
             case KeyCodes.KEY_DELETE:
                 this.removeToolsRequest.dispatch(new ArrayList<CanvasToolFrameImpl>(this.selectedTools));
+                event.preventDefault();
                 break;
             default:
                 break;
@@ -587,21 +591,22 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
     private void onOverToolFrameAreaClicked(MouseDownEvent event)
     {
-        if (this.activeToolboxItem instanceof MoveToolboxItem) {
-            CanvasToolFrameImpl highestToolUnderMouse = null;
-            int highestZIndex = -1;
-            for (CanvasToolFrameImpl frame : this.overToolFrames) {
-                int zIndex = ZIndexAllocator.getElementZIndex(frame.getElement());
-                if (zIndex > highestZIndex) {
-                    highestToolUnderMouse = frame;
-                    highestZIndex = zIndex;
-                }
-            }
-            this._toolFrameSelectionManager.forceToolFrameSelection(highestToolUnderMouse);
-            this._toolFrameTransformer.startDragCanvasToolFrames(this.selectedTools, event);
-            event.stopPropagation();
-            event.preventDefault();
+        if (false == (this.activeToolboxItem instanceof MoveToolboxItem)) {
+            return;
         }
+        CanvasToolFrameImpl highestToolUnderMouse = null;
+        int highestZIndex = -1;
+        for (CanvasToolFrameImpl frame : this.overToolFrames) {
+            int zIndex = ZIndexAllocator.getElementZIndex(frame.getElement());
+            if (zIndex > highestZIndex) {
+                highestToolUnderMouse = frame;
+                highestZIndex = zIndex;
+            }
+        }
+        this._toolFrameSelectionManager.forceToolFrameSelection(highestToolUnderMouse);
+        this.startDraggingSelectedToolFrames(event);
+        event.stopPropagation();
+        event.preventDefault();
     }
 
 
@@ -743,5 +748,10 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         if (activeToolboxItem instanceof MoveToolboxItem) {
             toolFrame.setDragging(false);
         }
+    }
+
+    private void startDraggingSelectedToolFrames(MouseEvent<?> arg)
+    {
+        _toolFrameTransformer.startDragCanvasToolFrames(IterableUtils.<CanvasToolFrame, CanvasToolFrameImpl>upCast(selectedTools), arg);
     }
 }

@@ -1,7 +1,5 @@
 package com.project.website.canvas.client.worksheet;
 
-import java.util.Collection;
-
 import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
@@ -11,7 +9,7 @@ import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.data.Point2D;
 import com.project.shared.utils.PointUtils;
 import com.project.shared.utils.PointUtils.TransformationMode;
-import com.project.website.canvas.client.canvastools.base.CanvasToolFrameImpl;
+import com.project.website.canvas.client.canvastools.base.CanvasToolFrame;
 import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.client.worksheet.interfaces.ElementDragManager;
 import com.project.website.canvas.client.worksheet.interfaces.ToolFrameTransformer;
@@ -43,25 +41,25 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
 
 
     @Override
-    public void setToolFramePosition(final CanvasToolFrameImpl toolFrame, Point2D pos)
+    public void setToolFramePosition(final CanvasToolFrame toolFrame, Point2D pos)
     {
-        ElementUtils.setElementPosition(toolFrame.getElement(), limitPosToContainer(pos, toolFrame));
+        ElementUtils.setElementPosition(toolFrame.asWidget().getElement(), limitPosToContainer(pos, toolFrame.asWidget()));
         toolFrame.onTransformed();
     }
 
     @Override
-    public void startDragCanvasToolFrames(Collection<CanvasToolFrameImpl> toolFrames, MouseEvent<?> startEvent)
+    public void startDragCanvasToolFrames(Iterable<CanvasToolFrame> toolFrames, MouseEvent<?> startEvent)
     {
-    	for (CanvasToolFrameImpl toolFrame : toolFrames)
+    	for (CanvasToolFrame toolFrame : toolFrames)
     	{
     		startDragCanvasToolFrame(toolFrame, startEvent);
     	}
     }
 
     @Override
-    public void startDragCanvasToolFrame(final CanvasToolFrameImpl toolFrame, final MouseEvent<?> startEvent)
+    public void startDragCanvasToolFrame(final CanvasToolFrame toolFrame, final MouseEvent<?> startEvent)
     {
-        final Point2D initialPos = ElementUtils.getElementOffsetPosition(toolFrame.getElement());
+        final Point2D initialPos = ElementUtils.getElementOffsetPosition(toolFrame.asWidget().getElement());
         toolFrame.setDragging(true);
         final SimpleEvent.Handler<Point2D> dragHandler = new SimpleEvent.Handler<Point2D>() {
             @Override
@@ -86,24 +84,35 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
                 toolFrame.setDragging(false);
             }
         };
-        _elementDragManager.startMouseMoveOperation(toolFrame.getElement(), _container.getElement(),
-                ElementUtils.relativePosition(startEvent, toolFrame.getElement()), dragHandler, stopHandler,
+        _elementDragManager.startMouseMoveOperation(toolFrame.asWidget().getElement(), _container.getElement(),
+                ElementUtils.relativePosition(startEvent, toolFrame.asWidget().getElement()), dragHandler, stopHandler,
                 cancelMoveHandler, ElementDragManager.StopCondition.STOP_CONDITION_MOUSE_UP);
     }
 
 
+    /**
+     * Starts (and handles) a resize operation on a CanvasToolFrame. Implementation logic:
+     * <el>
+     * <li>If we change the size of an element when it's rotated around it's center (transform-origin: "") then
+     *     it's position changes with the size (to keep the center in place).
+     * </li>
+     * <li>We must therefore switch the element's transform-origin to the top-left corner during resize.</li>
+     * <li>Switching the transformation origin while the element is rotate causes the position to jump.</li>
+     * </el>
+     */
     @Override
-    public void startResizeCanvasToolFrame(final CanvasToolFrameImpl toolFrame, final MouseEvent<?> startEvent)
+    public void startResizeCanvasToolFrame(final CanvasToolFrame toolFrame, final MouseEvent<?> startEvent)
     {
-        final double angle = Math.toRadians(ElementUtils.getRotation(toolFrame.getElement()));
+        final double angle = Math.toRadians(ElementUtils.getRotation(toolFrame.asWidget().getElement()));
         final Point2D initialSize = toolFrame.getToolSize();
-        final Point2D initialFrameSize = ElementUtils.getElementOffsetSize(toolFrame.getElement());
+        final Point2D initialFrameSize = ElementUtils.getElementOffsetSize(toolFrame.asWidget().getElement());
         final Point2D startDragPos = ElementUtils.relativePosition(startEvent, _container.getElement());
-        final Point2D startPos = startDragPos.minus(ElementUtils.relativePosition(startEvent, toolFrame.getElement()));
+
+        final Point2D startPos = startDragPos.minus(ElementUtils.relativePosition(startEvent, toolFrame.asWidget().getElement()));
         Point2D initialCenter = initialFrameSize.mul(0.5);
         final Point2D tempPos = startPos.rotate(angle, initialCenter, true);
 
-        ElementUtils.setTransformOriginTopLeft(toolFrame.getElement());
+        ElementUtils.setTransformOriginTopLeft(toolFrame.asWidget().getElement());
         setToolFramePosition(toolFrame, tempPos);
 
         final SimpleEvent.Handler<Point2D> resizeHandler = new SimpleEvent.Handler<Point2D>() {
@@ -120,8 +129,8 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
             {
                 Point2D size = sizeFromRotatedSizeOffset(angle, initialSize, startDragPos, pos);
                 toolFrame.setToolSize(transformMovement(size, initialSize));
-                ElementUtils.resetTransformOrigin(toolFrame.getElement());
-                Point2D frameSize = ElementUtils.getElementOffsetSize(toolFrame.getElement());
+                ElementUtils.resetTransformOrigin(toolFrame.asWidget().getElement());
+                Point2D frameSize = ElementUtils.getElementOffsetSize(toolFrame.asWidget().getElement());
                 Point2D center = frameSize.mul(0.5);
                 // Move the element back to the origin position, taking the new
                 // size into account.
@@ -133,30 +142,30 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
             public void onFire(Void arg)
             {
                 toolFrame.setToolSize(initialSize);
-                ElementUtils.resetTransformOrigin(toolFrame.getElement());
+                ElementUtils.resetTransformOrigin(toolFrame.asWidget().getElement());
                 setToolFramePosition(toolFrame, startPos);
             }
         };
-        _elementDragManager.startMouseMoveOperation(toolFrame.getElement(),
+        _elementDragManager.startMouseMoveOperation(toolFrame.asWidget().getElement(),
                 _container.getElement(), Point2D.zero, resizeHandler, stopHandler,
                 cancelHandler, ElementDragManager.StopCondition.STOP_CONDITION_MOUSE_UP);
     }
 
 
     @Override
-    public void startRotateCanvasToolFrame(final CanvasToolFrameImpl toolFrame, MouseEvent<?> startEvent)
+    public void startRotateCanvasToolFrame(final CanvasToolFrame toolFrame, MouseEvent<?> startEvent)
     {
-        Point2D toolCenterPos = toolCenterRelativeToToolTopLeft(toolFrame);
+        Point2D toolCenterPos = toolCenterRelativeToToolTopLeft(toolFrame.asWidget());
         Point2D bottomLeftRelativeToCenter = new Point2D(-toolCenterPos.getX(), toolCenterPos.getY());
         final int bottomLeftAngle = (int) Math.toDegrees(bottomLeftRelativeToCenter.radians());
-        final int startAngle = ElementUtils.getRotation(toolFrame.getElement());
+        final int startAngle = ElementUtils.getRotation(toolFrame.asWidget().getElement());
 
         final SimpleEvent.Handler<Point2D> rotateHandler = new SimpleEvent.Handler<Point2D>() {
             @Override
             public void onFire(Point2D posRelativeToCenter)
             {
                 int rotation = (int) Math.toDegrees(posRelativeToCenter.radians()) - bottomLeftAngle;
-                ElementUtils.setRotation(toolFrame.getElement(), roundedAngle(rotation));
+                ElementUtils.setRotation(toolFrame.asWidget().getElement(), roundedAngle(rotation));
                 toolFrame.onTransformed();
             }
         };
@@ -164,11 +173,11 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
             @Override
             public void onFire(Void arg)
             {
-                ElementUtils.setRotation(toolFrame.getElement(), startAngle);
+                ElementUtils.setRotation(toolFrame.asWidget().getElement(), startAngle);
                 toolFrame.onTransformed();
             }
         };
-        _elementDragManager.startMouseMoveOperation(toolFrame.getElement(),
+        _elementDragManager.startMouseMoveOperation(toolFrame.asWidget().getElement(),
                 toolCenterPos, rotateHandler, null,
                 cancelHandler, ElementDragManager.StopCondition.STOP_CONDITION_MOUSE_UP);
     }

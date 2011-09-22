@@ -7,40 +7,33 @@ import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Focusable;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.data.Point2D;
 import com.project.website.canvas.shared.data.ElementData;
 
-public interface CanvasToolFrame extends Focusable, HasFocusHandlers, HasBlurHandlers
+public interface CanvasToolFrame extends Focusable, HasFocusHandlers, HasBlurHandlers, IsWidget
 {
+    HandlerRegistration addCloseRequestHandler(SimpleEvent.Handler<Void> handler);
+    HandlerRegistration addMoveStartRequestHandler(SimpleEvent.Handler<MouseEvent<?>> handler);
+    HandlerRegistration addMoveBackRequestHandler(SimpleEvent.Handler<Void> handler);
+    HandlerRegistration addMoveFrontRequestHandler(SimpleEvent.Handler<Void> handler);
+    HandlerRegistration addResizeStartRequestHandler(SimpleEvent.Handler<MouseEvent<?>> handler);
+    HandlerRegistration addRotateStartRequestHandler(SimpleEvent.Handler<MouseEvent<?>> handler);
+    HandlerRegistration addMouseDownHandler(MouseDownHandler handler);
+    HandlerRegistration addMouseUpHandler(MouseUpHandler handler);
 
-     void setViewMode(boolean inViewMode);
+    void setViewMode(boolean inViewMode);
 
-     CanvasTool<? extends ElementData> getTool();
-
-     HandlerRegistration addCloseRequestHandler(SimpleEvent.Handler<Void> handler);
-
-     HandlerRegistration addMoveStartRequestHandler(SimpleEvent.Handler<MouseEvent<?>> handler);
-
-     HandlerRegistration addMoveBackRequestHandler(SimpleEvent.Handler<Void> handler);
-
-     HandlerRegistration addMoveFrontRequestHandler(SimpleEvent.Handler<Void> handler);
-
-     HandlerRegistration addResizeStartRequestHandler(SimpleEvent.Handler<MouseEvent<?>> handler);
-
-     HandlerRegistration addRotateStartRequestHandler(SimpleEvent.Handler<MouseEvent<?>> handler);
-
-     HandlerRegistration addMouseDownHandler(MouseDownHandler handler);
-
-     HandlerRegistration addMouseUpHandler(MouseUpHandler handler);
-
-     Point2D getToolSize();
+    CanvasTool<? extends ElementData> getTool();
 
     /**
-     * Note: make sure the size here does NOT include padding/margin/border of the tool, otherwise
-     * getToolSize and setToolSize will not be compatible (will be using different values.)
+     * Note: When setting the size, make sure the it does NOT include
+     * padding/margin/border of the tool, otherwise getToolSize and setToolSize
+     * will not be compatible (will be using different values.)
      */
-     void setToolSize(Point2D size);
+    void setToolSize(Point2D size);
+    Point2D getToolSize();
 
     /**
      * Notifies the CanvasToolFrame that it is being dragged / not being dragged.
@@ -51,7 +44,7 @@ public interface CanvasToolFrame extends Focusable, HasFocusHandlers, HasBlurHan
      * This is used for knowing whether we should pass setActive commands in to the CanvasTool.
      * @param isDragging
      */
-     void setDragging(boolean isDragging);
+    void setDragging(boolean isDragging);
 
     /**
      * Wraps CanvasTool.setActive so that if the tool frame is being dragged,
@@ -60,7 +53,7 @@ public interface CanvasToolFrame extends Focusable, HasFocusHandlers, HasBlurHan
      * the drag manager in the worksheet may receive a stop event immediately.
      * @param isActive
      */
-     void setActive(boolean isActive);
+    void setActive(boolean isActive);
 
-     void onTransformed();
+    void onTransformed();
 }

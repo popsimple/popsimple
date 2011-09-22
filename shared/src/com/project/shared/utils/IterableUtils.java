@@ -29,4 +29,14 @@ public class IterableUtils
         }
         return res;
     }
+
+    public static <U, T extends U> ArrayList<U> upCast(Iterable<T> elems)
+    {
+        ArrayList<U> res = new ArrayList<U>();
+        for (T elem : elems)
+        {
+            res.add((U)elem);
+        }
+        return res;
+    }
 }
