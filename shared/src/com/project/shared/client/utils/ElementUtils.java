@@ -166,32 +166,17 @@ public abstract class ElementUtils
 
 	public static Point2D getElementCSSPosition(Element element)
 	{
-	    String leftStr = element.getStyle().getLeft();
-	    String topStr = element.getStyle().getTop();
-	    Integer left = fromPXUnitString(leftStr);
-	    Integer top = fromPXUnitString(topStr);
+	    Style style = element.getStyle();
+        Integer left = StyleUtils.getLeftPx(style);
+        Integer top = StyleUtils.getTopPx(style);
 	    if (null == left || null == top) {
 	        return null;
 	    }
 	    return new Point2D(left, top);
 	}
 
-	private static Integer fromPXUnitString(String cssPxUnitNumStr)
-    {
-	    String PX_SUFFIX = "px";
-	    String trimmedStr = cssPxUnitNumStr.trim();
-	    if (false == trimmedStr.toLowerCase().endsWith(PX_SUFFIX))
-	    {
-	        return null;
-	    }
-	    try {
-	        Double value = Double.valueOf(trimmedStr.substring(0, trimmedStr.length() - PX_SUFFIX.length()));
-	        return (int)Math.round(value);
-	    }
-	    catch (NumberFormatException e) {
-	        return null;
-	    }
-    }
+
+
 
     public static Point2D getElementOffsetPosition(Element element) {
     	return new Point2D(element.getOffsetLeft(), element.getOffsetTop());

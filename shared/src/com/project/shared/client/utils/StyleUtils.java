@@ -9,6 +9,20 @@ import com.google.gwt.user.client.DOM;
 
 public class StyleUtils
 {
+    public static Integer getTopPx(Style style) {
+        String topStr = style.getTop();
+        Integer top = fromPXUnitString(topStr);
+        return top;
+    }
+
+
+    public static Integer getLeftPx(Style style) {
+        String leftStr = style.getLeft();
+        Integer left = fromPXUnitString(leftStr);
+        return left;
+    }
+
+
     /**
      * @return True if the given style objects are equivalent - every property set in <code>a</code> is also set in <code>b</code> and has the same value, and vice verse.
      */
@@ -83,11 +97,17 @@ public class StyleUtils
     }
 
     /**
-     * @return The native <code>cssText</code> property of a style object.
+     * Returns the native <code>cssText</code> property of a style object.
      */
     public static final native String getCssText(Style style)
     /*-{
         return style.cssText;
+    }-*/;
+
+    
+    public static native void setCssText(Style style, String cssText) 
+    /*-{
+        style.cssText = cssText;
     }-*/;
 
     /**
@@ -236,4 +256,23 @@ public class StyleUtils
         }
         style.setProperty(CssProperties.BACKGROUND_SIZE, width + " " + height);
     }
+
+    
+    public static Integer fromPXUnitString(String cssPxUnitNumStr)
+    {
+        String PX_SUFFIX = "px";
+        String trimmedStr = cssPxUnitNumStr.trim();
+        if (false == trimmedStr.toLowerCase().endsWith(PX_SUFFIX))
+        {
+            return null;
+        }
+        try {
+            Double value = Double.valueOf(trimmedStr.substring(0, trimmedStr.length() - PX_SUFFIX.length()));
+            return (int)Math.round(value);
+        }
+        catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
 }

@@ -1,6 +1,7 @@
 package com.project.website.canvas.client.canvastools.textedit;
 
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.FontWeight;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
@@ -19,6 +20,7 @@ import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.html5.impl.RangeUtils;
 import com.project.shared.client.html5.impl.SelectionImpl;
 import com.project.shared.client.utils.ElementUtils;
+import com.project.shared.client.utils.StyleUtils;
 import com.project.shared.client.utils.widgets.WidgetUtils;
 import com.project.shared.data.Point2D;
 import com.project.shared.data.funcs.Func;
@@ -103,7 +105,8 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
     @Override
     public TextData getValue()
     {
-        this._data.text = this._editorReady ? this.getContents() : "";
+        this._data.innerHtml = this._editorReady ? this.getContents() : "";
+        this._data.cssText = StyleUtils.getCssText(this._editElement.getStyle());
         return this._data;
     }
 
@@ -129,14 +132,22 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
     public void setValue(TextData data)
     {
         this._data = data;
-        if (_editorReady) {
-            this.setContents(this._data.text);
+        if (false == _editorReady) {
+            return;
         }
+        this.setContents(this._data.innerHtml);
+        Style style = this._editElement.getStyle();
+        StyleUtils.setCssText(style, this._data.cssText);
     }
 
+    /**
+     * Returns the HTML that represents the content that the user sees. This
+     * includes both the innerHtml of the element, and also the styles applied
+     * on the element.
+     */
     private String getContents()
     {
-        return _editElement.getInnerHTML();
+        return this._editElement.getInnerHTML();
     }
 
     private void setContents(String text)
@@ -148,25 +159,10 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
     private void registerHandlers()
     {
         this.addKeyDownHandler(new KeyDownHandler() {
+            @Override
             public void onKeyDown(KeyDownEvent event)
             {
-                boolean isEscape = (event.getNativeKeyCode() == KeyCodes.KEY_ESCAPE);
-                if (isEscape) {
-                    setActive(false);
-                }
-                // TODO replace this with key bindings manager?
-                else if (event.getNativeKeyCode() == KeyCodes.KEY_PAGEDOWN) {
-                        SelectionImpl selection = SelectionImpl.getWindowSelection();
-                        if (0 < selection.getRangeCount()) {
-                            RangeUtils.applyToNodesInRange(selection.getRangeAt(0), new Func.Action<Element>(){
-                                @Override
-                                public void exec(Element arg)
-                                {
-                                    arg.getStyle().setFontWeight(FontWeight.BOLD);
-                                }});
-                        }
-                }
-
+                handleKeyDown(event);
             }
         });
     }
@@ -251,7 +247,7 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
         this._editorReady = true;
         this.registerHandlers();
         if (null != this._data) {
-            this.setContents(this._data.text);
+            this.setContents(this._data.innerHtml);
         }
         this.setActive(this._isActive);
     }
@@ -260,6 +256,26 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
     public IsWidget getToolbar()
     {
         return this._toolbar;
+    }
+
+
+    private void handleKeyDown(KeyDownEvent event) {
+        boolean isEscape = (event.getNativeKeyCode() == KeyCodes.KEY_ESCAPE);
+        if (isEscape) {
+            setActive(false);
+        }
+        // TODO replace this with key bindings manager?
+        else if (event.getNativeKeyCode() == KeyCodes.KEY_PAGEDOWN) {
+                SelectionImpl selection = SelectionImpl.getWindowSelection();
+                if (0 < selection.getRangeCount()) {
+                    RangeUtils.applyToNodesInRange(selection.getRangeAt(0), new Func.Action<Element>(){
+                        @Override
+                        public void exec(Element arg)
+                        {
+                            arg.getStyle().setFontWeight(FontWeight.BOLD);
+                        }});
+                }
+        }
     }
 
 }

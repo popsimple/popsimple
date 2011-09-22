@@ -16,9 +16,9 @@ public class TextData extends ElementData
     }
 
     @Type(Text.class)
-    public String text;
-
-    public int width; // height is determined by text contents.
+    public String innerHtml;
+    
+    public String cssText;
 
     @Override
     public Object createInstance() {
@@ -29,7 +29,7 @@ public class TextData extends ElementData
     public void copyTo(Object object) {
     	super.copyTo(object);
     	TextData copy = (TextData)object;
-    	copy.text = this.text;
-    	copy.width = this.width;
+    	copy.innerHtml = this.innerHtml;
+    	copy.cssText = this.cssText;
     }
 }
