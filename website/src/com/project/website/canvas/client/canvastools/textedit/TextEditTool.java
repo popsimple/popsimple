@@ -19,6 +19,7 @@ import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.html5.impl.RangeUtils;
 import com.project.shared.client.html5.impl.SelectionImpl;
+import com.project.shared.client.utils.CssProperties;
 import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.StyleUtils;
 import com.project.shared.client.utils.widgets.WidgetUtils;
@@ -137,7 +138,16 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
         }
         this.setContents(this._data.innerHtml);
         Style style = this._editElement.getStyle();
+        
+        // Never override the element's width/height with cssText data.
+        
+        String width = style.getWidth();
+        String height = style.getHeight();
+        
         StyleUtils.setCssText(style, this._data.cssText);
+        
+        style.setProperty(CssProperties.WIDTH, width);
+        style.setProperty(CssProperties.HEIGHT, height);
     }
 
     /**

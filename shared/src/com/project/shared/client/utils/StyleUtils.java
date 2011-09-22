@@ -10,16 +10,19 @@ import com.google.gwt.user.client.DOM;
 public class StyleUtils
 {
     public static Integer getTopPx(Style style) {
-        String topStr = style.getTop();
-        Integer top = fromPXUnitString(topStr);
-        return top;
+        return fromPXUnitString(style.getTop());
     }
 
-
     public static Integer getLeftPx(Style style) {
-        String leftStr = style.getLeft();
-        Integer left = fromPXUnitString(leftStr);
-        return left;
+        return fromPXUnitString(style.getLeft());
+    }
+
+    public static Integer getHeightPx(Style style) {
+        return fromPXUnitString(style.getHeight());
+    }
+
+    public static Integer getWidthPx(Style style) {
+        return fromPXUnitString(style.getWidth());
     }
 
 

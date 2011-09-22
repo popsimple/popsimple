@@ -3,6 +3,7 @@ package com.project.website.canvas.client.canvastools.base;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -33,6 +34,7 @@ import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.NativeUtils;
 import com.project.shared.client.utils.SchedulerUtils;
+import com.project.shared.client.utils.StyleUtils;
 import com.project.shared.client.utils.widgets.WidgetUtils;
 import com.project.shared.data.Point2D;
 import com.project.website.canvas.client.canvastools.base.CanvasTool.ResizeMode;
@@ -300,7 +302,19 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
 
     @Override
     public Point2D getToolSize() {
-        return ElementUtils.getElementClientSize(this.tool.asWidget().getElement());
+        Element toolElement = this.tool.asWidget().getElement();
+        Style toolStyle = toolElement.getStyle();
+        Integer width = StyleUtils.getWidthPx(toolStyle);
+        Integer height = StyleUtils.getHeightPx(toolStyle);
+        // Client size is not what we want, but we use it as a fallback (it includes padding, we want without)
+        Point2D size = ElementUtils.getElementClientSize(toolElement);
+        if (null != width) {
+            size.setX(width);
+        }
+        if (null != height) {
+            size.setY(height);
+        }
+        return size;
     }
 
 

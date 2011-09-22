@@ -250,12 +250,15 @@ public abstract class ElementUtils
 
     /**
      * Note: this size includes padding, scroll bars (and margin?) of the element.
-     * See https://developer.mozilla.org/en/Determining_the_dimensions_of_elements
+     * @See <a href="https://developer.mozilla.org/en/Determining_the_dimensions_of_elements">Mozilla article about dimensions</a>
      */
 	public static Point2D getElementOffsetSize(Element element) {
 		return new Point2D(element.getOffsetWidth(), element.getOffsetHeight());
 	}
 
+	/**
+	 * Returns the size including padding but not margin, scrollbars, etc.
+	 */
     public static Point2D getElementClientSize(Element element) {
         return new Point2D(element.getClientWidth(), element.getClientHeight());
     }

@@ -2,7 +2,10 @@ package com.project.shared.client.utils;
 
 public class CssProperties
 {
-    public static String BACKGROUND_REPEAT = "backgroundRepeat";
-    public static String BACKGROUND_POSITION = "backgroundPosition";
-    public static String BACKGROUND_SIZE = "backgroundSize";
+    public static final String WIDTH = "width";
+    public static final String HEIGHT = "height";
+    
+    public static final String BACKGROUND_REPEAT = "backgroundRepeat";
+    public static final String BACKGROUND_POSITION = "backgroundPosition";
+    public static final String BACKGROUND_SIZE = "backgroundSize";
 }
