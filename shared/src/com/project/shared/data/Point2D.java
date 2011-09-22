@@ -115,6 +115,15 @@ public class Point2D implements Serializable, IsSerializable, ICloneable {
         return new Point2D(Math.min(first._x, other._x), Math.min(first._y, other._y));
     }
 
+    /**
+     * Returns a new point which is this point's coordinates limited to be at least <code>min</code> and at most
+     * <code>max</code>, with priority to being more than <code>min</code>
+     */
+    public Point2D limitTo(Point2D min, Point2D max)
+    {
+        return Point2D.max(min, Point2D.min(this, max));
+    }
+
     @Override
     public Object createInstance() {
         return new Point2D();

@@ -8,20 +8,26 @@ import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Event.NativePreviewHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.SchedulerUtils;
+import com.project.shared.client.utils.WindowUtils;
 import com.project.shared.data.Point2D;
 import com.project.shared.data.Rectangle;
 import com.project.website.canvas.client.resources.CanvasResources;
 
 public class FloatingToolbar extends FlowPanel
 {
+    private static final int VERTICAL_MARGIN = 10;
+
     private final RegistrationsManager registrationsManager = new RegistrationsManager();
 
     protected Widget _editedWidget = null;
@@ -46,6 +52,7 @@ public class FloatingToolbar extends FlowPanel
             return;
         }
         this.setRegistrations();
+        this.updatePosition();
     }
 
     private void setRegistrations()
@@ -67,6 +74,11 @@ public class FloatingToolbar extends FlowPanel
             @Override public void onFocus(FocusEvent event) {
                 that.updatePosition();
             }}, FocusEvent.getType()));
+        this.registrationsManager.add(Window.addResizeHandler(new ResizeHandler() {
+            @Override public void onResize(ResizeEvent event) {
+                that.updatePosition();
+            }
+        }));
         this.registrationsManager.add(Event.addNativePreviewHandler(new NativePreviewHandler() {
             @Override
             public void onPreviewNativeEvent(NativePreviewEvent event)
@@ -101,13 +113,28 @@ public class FloatingToolbar extends FlowPanel
         }
         Element element = this._editedWidget.getElement();
         Rectangle elementRect = ElementUtils.getElementAbsoluteRectangle(element);
-        Point2D targetPos = elementRect.getCenter();
+        Point2D minCorner = elementRect.getCenter();
+        Point2D maxCorner = elementRect.getCenter();
         Point2D[] corners = elementRect.getCorners().asArray();
         for (int i = 0 ; i < corners.length; i++)
         {
-            targetPos.setX(Math.min(targetPos.getX(), corners[i].getX()));
-            targetPos.setY(Math.max(targetPos.getY(), corners[i].getY()));
+            minCorner = Point2D.min(minCorner, corners[i]);
+            maxCorner = Point2D.max(maxCorner, corners[i]);
         }
-        ElementUtils.setElementCSSPosition(this.getElement(), targetPos, 300);
+        Point2D mySize = ElementUtils.getElementOffsetSize(this.getElement());
+        Point2D windowSize = WindowUtils.getClientSize();
+        Point2D maxToolbarPosInWindow = windowSize.minus(mySize);
+
+        Point2D targetPos = minCorner.minus(new Point2D(0, mySize.getY() + VERTICAL_MARGIN));
+
+        Point2D fixedTargetPos = targetPos.limitTo(Point2D.zero, maxToolbarPosInWindow);
+        if (fixedTargetPos.getY() > minCorner.getY())
+        {
+            // The toolbar will be inside the element, move it to below it instead of trying to fit it above.
+            fixedTargetPos.setY(maxCorner.getY() + VERTICAL_MARGIN);
+            fixedTargetPos = fixedTargetPos.limitTo(Point2D.zero, maxToolbarPosInWindow);
+        }
+
+        ElementUtils.setElementCSSPosition(this.getElement(), fixedTargetPos, 300);
     }
 }
