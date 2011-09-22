@@ -12,6 +12,8 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseUpEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Event;
@@ -223,6 +225,8 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
             }
         };
 
+        // Deliberately not added to this.registrationsManager
+        // because after onUnload+onLoad we currently won't be restoring these registrations properly
         listBox.addChangeHandler(new ChangeHandler() {
             @Override
             public void onChange(ChangeEvent event)
@@ -317,14 +321,14 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
     {
         final TextEditToolbarImpl that = this;
         this.rootPanel.add(widget);
-        registrationsManager.add(widget.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event)
+        // Deliberately not added to this.registrationsManager
+        // because after onUnload+onLoad we currently won't be restoring these registrations properly
+        widget.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+            @Override public void onValueChange(ValueChangeEvent<Boolean> event)
             {
                 that.buttonPressed(buttonInfo);
             }
-        }));
-
+        });
         this.addButtonInfo(buttonInfo);
     }
 
@@ -342,18 +346,25 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
         }
 
         SelectionImpl selection = SelectionImpl.getWindowSelection();
-        Node anchorNode = selection.getAnchorNode();
 
         for (ToolbarButtonInfo buttonInfo : this.buttonInfos)
         {
             Element testedElement = editedElement;
             if (false == buttonInfo.isOnRootElemOnly()) {
-                if (null == anchorNode) {
-                    return;
+                if (null != selection.getAnchorNode()) {
+                    testedElement = selection.getAnchorNode().getParentElement();
                 }
-                testedElement = anchorNode.getParentElement();
+                else if (null != selection.getFocusNode()) {
+                    testedElement = selection.getFocusNode().getParentElement();
+                }
+                else {
+                    continue;
+                }
             }
 
+            if (null == testedElement) {
+                continue;
+            }
             buttonInfo.updateButtonStatus(testedElement);
         }
     }
