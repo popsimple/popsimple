@@ -63,14 +63,9 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
     public void startDragCanvasToolFrame(final CanvasToolFrame toolFrame, final MouseEvent<?> startEvent)
     {
         Element toolFrameElement = toolFrame.asWidget().getElement();
-        Point2D relativeEventPos = ElementUtils.getElementCSSPosition(toolFrameElement);
-        if (null == relativeEventPos) {
-            // Less good..
-            // Fallback in case the css left+top is not set.
-            relativeEventPos = ElementUtils.getRelativePosition(startEvent, toolFrameElement);
-        }
-        final Point2D initialPos = relativeEventPos;
+        final Point2D initialPos = getElementCSSPositionFallback(startEvent, toolFrameElement);
         final Point2D originalOffsetFromFramePos = ElementUtils.getRelativePosition(startEvent, toolFrameElement);
+        Logger.log("originalOffsetFromFramePos " + originalOffsetFromFramePos);
         toolFrame.setDragging(true);
 
         final SimpleEvent.Handler<Point2D> dragHandler = new SimpleEvent.Handler<Point2D>() {
@@ -101,6 +96,18 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
         _elementDragManager.startMouseMoveOperation(toolFrameElement, _container.getElement(),
                 Point2D.zero, dragHandler, stopHandler,
                 cancelMoveHandler, ElementDragManager.StopCondition.STOP_CONDITION_MOUSE_UP);
+    }
+
+
+    private Point2D getElementCSSPositionFallback(final MouseEvent<?> startEvent, Element toolFrameElement)
+    {
+        Point2D pos = ElementUtils.getElementCSSPosition(toolFrameElement);
+        if (null == pos) {
+            // Less good..
+            // Fallback in case the css left+top is not set.
+            pos = ElementUtils.getRelativePosition(startEvent, toolFrameElement);
+        }
+        return pos;
     }
 
 

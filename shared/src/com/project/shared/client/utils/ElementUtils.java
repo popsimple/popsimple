@@ -48,8 +48,8 @@ public abstract class ElementUtils
     public static Rectangle getElementAbsoluteRectangle(Element element) {
         // remember that css coordinates are from top-left of screen
         // and css rotation is clockwise
-        return new Rectangle(element.getAbsoluteLeft(),  element.getAbsoluteTop(),
-                             element.getAbsoluteRight(), element.getAbsoluteBottom(),
+        return new Rectangle(ElementUtils.getAbsoluteLeftWithoutTransforms(element), ElementUtils.getAbsoluteLeftWithoutTransforms(element),
+                             ElementUtils.getAbsoluteRightWithoutTransforms(element), ElementUtils.getAbsoluteBottomWithoutTransforms(element),
                              getRotation(element));
     }
 
@@ -122,7 +122,9 @@ public abstract class ElementUtils
      */
 	public static Point2D getRelativePosition(MouseEvent<?> event, Element elem) {
 	    Point2D eventPos = new Point2D(event.getClientX(), event.getClientY());
-	    return eventPos.minus(ElementUtils.getElementAbsolutePosition(elem));
+	    final Point2D elementAbsolutePosition = ElementUtils.getElementAbsolutePosition(elem);
+	    Logger.log("Absolute pos: " + elementAbsolutePosition);
+        return eventPos.minus(elementAbsolutePosition);
 	}
 
     private static class PositionAnimation extends Animation {
@@ -204,15 +206,71 @@ public abstract class ElementUtils
     	return new Point2D(element.getOffsetLeft(), element.getOffsetTop());
     }
 
-	/**
-	 * TODO: Seems to return different results between firefox and other browsers if the element is rotated.
-	 * Need to fix it so it corrects that problem.
-	 * @param element
-	 * @return
-	 */
+    /**
+     * Returns the element's absolute position <strong>disregarding css transforms</strong> (as if no transforms are applied)
+     * @param element
+     */
     public static Point2D getElementAbsolutePosition(Element element) {
-    	return new Point2D(element.getAbsoluteLeft(), element.getAbsoluteTop());
+    	return new Point2D(ElementUtils.getAbsoluteLeftWithoutTransforms(element), ElementUtils.getAbsoluteTopWithoutTransforms(element));
     }
+
+    /**
+     * An alternative to GWT's own implementation of getAbsoluteLeft/Top which is inconsistent among browsers.
+     *
+     * TODO: Force GWT to use this function instead of <code>getAbsoluteLeft</code> using deferred binding.
+     *
+     * @See <a href="http://code.google.com/p/google-web-toolkit/issues/detail?id=5645">GWT issue 5645</a>
+     * @param elem
+     */
+    public static native int getAbsoluteLeftWithoutTransforms(Element elem)
+    /*-{
+        var left = 0;
+        var curr = elem;
+        // This intentionally excludes body which has a null offsetParent.
+        while (curr.offsetParent) {
+          left -= curr.scrollLeft;
+          curr = curr.parentNode;
+        }
+        while (elem) {
+          left += elem.offsetLeft;
+          elem = elem.offsetParent;
+        }
+        return left;
+    }-*/;
+
+    /**
+     * See {@link #getAbsoluteLeftWithoutTransforms(Element)}
+     */
+    public static native int getAbsoluteTopWithoutTransforms(Element elem)
+    /*-{
+        var top = 0;
+        var curr = elem;
+        // This intentionally excludes body which has a null offsetParent.
+        while (curr.offsetParent) {
+            top -= curr.scrollTop;
+            curr = curr.parentNode;
+        }
+        while (elem) {
+            top += elem.offsetTop;
+            elem = elem.offsetParent;
+        }
+        return top;
+    }-*/;
+
+    /**
+     * See {@link #getAbsoluteLeftWithoutTransforms(Element)}
+     */
+    public static int getAbsoluteBottomWithoutTransforms(Element elem) {
+        return getAbsoluteTopWithoutTransforms(elem) + elem.getOffsetHeight();
+    }
+
+    /**
+     * See {@link #getAbsoluteLeftWithoutTransforms(Element)}
+     */
+    public static int getAbsoluteRightWithoutTransforms(Element elem) {
+        return getAbsoluteLeftWithoutTransforms(elem) + elem.getOffsetWidth();
+    }
+
 
     /**
      * Note: this size includes padding, scroll bars (and margin?) of the element.
