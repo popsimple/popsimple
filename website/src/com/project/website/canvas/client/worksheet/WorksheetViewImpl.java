@@ -47,7 +47,6 @@ import com.project.shared.client.utils.HandlerUtils;
 import com.project.shared.data.Point2D;
 import com.project.shared.utils.CloneableUtils;
 import com.project.shared.utils.IterableUtils;
-import com.project.shared.utils.loggers.Logger;
 import com.project.website.canvas.client.canvastools.CursorToolboxItem;
 import com.project.website.canvas.client.canvastools.MoveToolboxItem;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
@@ -249,7 +248,6 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         regs.add(toolFrame.addMoveStartRequestHandler(new SimpleEvent.Handler<MouseEvent<?>>() {
             @Override
             public void onFire(MouseEvent<?> arg) {
-                Logger.log("Move request for: " + toolFrame.getElement());
                 _toolFrameSelectionManager.forceToolFrameSelection(toolFrame);
                 startDraggingSelectedToolFrames(arg);
             }

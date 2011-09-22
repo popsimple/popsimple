@@ -11,7 +11,6 @@ import com.project.shared.data.Point2D;
 import com.project.shared.data.Rectangle;
 import com.project.shared.utils.PointUtils;
 import com.project.shared.utils.PointUtils.TransformationMode;
-import com.project.shared.utils.loggers.Logger;
 import com.project.website.canvas.client.canvastools.base.CanvasToolFrame;
 import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.client.worksheet.interfaces.ElementDragManager;
@@ -65,7 +64,6 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
         Element toolFrameElement = toolFrame.asWidget().getElement();
         final Point2D initialPos = getElementCSSPositionFallback(startEvent, toolFrameElement);
         final Point2D originalOffsetFromFramePos = ElementUtils.getRelativePosition(startEvent, toolFrameElement);
-        Logger.log("originalOffsetFromFramePos " + originalOffsetFromFramePos);
         toolFrame.setDragging(true);
 
         final SimpleEvent.Handler<Point2D> dragHandler = new SimpleEvent.Handler<Point2D>() {
@@ -73,7 +71,6 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
             public void onFire(Point2D pos)
             {
                 Point2D targetPos = pos.minus(originalOffsetFromFramePos);
-                Logger.log("Initial pos " + initialPos + " originalOffset: " + originalOffsetFromFramePos + " pos: " + pos + " targetPos: " + targetPos);
                 setToolFramePosition(toolFrame, transformMovement(targetPos, initialPos, false));
             }
         };

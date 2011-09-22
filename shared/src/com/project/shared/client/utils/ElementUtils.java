@@ -19,7 +19,6 @@ import com.project.shared.data.Point2D;
 import com.project.shared.data.Rectangle;
 import com.project.shared.utils.IterableUtils;
 import com.project.shared.utils.StringUtils;
-import com.project.shared.utils.loggers.Logger;
 
 public abstract class ElementUtils
 {
@@ -123,7 +122,6 @@ public abstract class ElementUtils
 	public static Point2D getRelativePosition(MouseEvent<?> event, Element elem) {
 	    Point2D eventPos = new Point2D(event.getClientX(), event.getClientY());
 	    final Point2D elementAbsolutePosition = ElementUtils.getElementAbsolutePosition(elem);
-	    Logger.log("Absolute pos: " + elementAbsolutePosition);
         return eventPos.minus(elementAbsolutePosition);
 	}
 
@@ -153,7 +151,6 @@ public abstract class ElementUtils
      * account, but setElementPosition does.
      */
     public static void setElementCSSPosition(final Element element, final Point2D pos, int animationDuration) {
-        Logger.log("element: " + element.toString() + ": position: " + pos.toString());
         if (0 == animationDuration)
         {
             ElementUtils.setElementCSSPosition(element, pos);
