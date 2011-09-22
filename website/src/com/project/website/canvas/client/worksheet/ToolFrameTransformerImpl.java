@@ -169,14 +169,16 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
     {
         Rectangle initialRect = ElementUtils.getElementOffsetRectangle(toolFrame.asWidget().getElement());
 
+        final Point2D initialCenter = initialRect.getCenter();
         Point2D unrotatedBottomLeftRelativeToCenter = initialRect.getSize().mulCoords(-0.5, 0.5);
         final double unrotatedBottomLeftAngle = Math.toDegrees(unrotatedBottomLeftRelativeToCenter.radians());
         final double startAngle = ElementUtils.getRotation(toolFrame.asWidget().getElement());
 
         final SimpleEvent.Handler<Point2D> rotateHandler = new SimpleEvent.Handler<Point2D>() {
             @Override
-            public void onFire(Point2D posRelativeToCenter)
+            public void onFire(Point2D pos)
             {
+                Point2D posRelativeToCenter = pos.minus(initialCenter);
                 double rotation = Math.toDegrees(posRelativeToCenter.radians()) - unrotatedBottomLeftAngle;
                 ElementUtils.setRotation(toolFrame.asWidget().getElement(), roundedAngle(rotation));
                 toolFrame.onTransformed();
@@ -190,10 +192,8 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
                 toolFrame.onTransformed();
             }
         };
-        _elementDragManager.startMouseMoveOperation(toolFrame.asWidget().getElement(),
-                // add a constant so that events' positions will be relative to the element's center
-                toolCenterRelativeToToolUnrotatedTopLeft(toolFrame.asWidget()),
-                rotateHandler, null, cancelHandler, ElementDragManager.StopCondition.STOP_CONDITION_MOUSE_UP);
+        _elementDragManager.startMouseMoveOperation(toolFrame.asWidget().getElement(), _container.getElement(),
+                Point2D.zero, rotateHandler, null, cancelHandler, ElementDragManager.StopCondition.STOP_CONDITION_MOUSE_UP);
     }
 
     private Point2D sizeFromRotatedSizeOffset(final double angle, final Point2D initialSize,
