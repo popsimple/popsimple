@@ -439,6 +439,11 @@ public class WorksheetImpl implements Worksheet
 	{
         CanvasTool<?> tool = toolFrame != null ? toolFrame.getTool() : null;
 		if (tool == this.activeToolInstance) {
+		    if (null != tool) {
+    	        // Even if the current tool is already active, notify it, because
+    	        // it may need to re-capture focus.
+                toolFrame.setActive(true);
+		    }
 			return;
 		}
 		if (null != this.activeToolInstance) {
