@@ -130,8 +130,10 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
         super.onUnload();
         this.frameRegs.clear();
         this.toolRegs.clear();
-        this.floatingToolbar.setEditedWidget(null);
-        this.floatingToolbar.removeFromParent();
+        if (null != this.floatingToolbar) {
+            this.floatingToolbar.setEditedWidget(null);
+            this.floatingToolbar.removeFromParent();
+        }
     }
 
     private void initToolbar()
