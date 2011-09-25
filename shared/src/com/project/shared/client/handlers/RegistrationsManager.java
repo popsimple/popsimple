@@ -36,9 +36,10 @@ public class RegistrationsManager {
         this._regs.clear();
     }
 
-    public ArrayList<HandlerRegistration> getRegistrations()
+
+    public boolean hasRegistrations()
     {
-        return this._regs;
+        return 0 < this._regs.size();
     }
 
     public HandlerRegistration asSingleRegistration()

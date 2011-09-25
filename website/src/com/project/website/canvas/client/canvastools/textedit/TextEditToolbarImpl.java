@@ -38,7 +38,7 @@ import com.project.shared.client.utils.widgets.ListBoxUtils;
 import com.project.shared.data.funcs.Func.Action;
 import com.project.shared.utils.ListUtils;
 import com.project.shared.utils.ObjectUtils;
-import com.project.shared.utils.StringUtils;
+import com.project.shared.utils.loggers.Logger;
 import com.project.website.canvas.client.resources.CanvasResources;
 
 public class TextEditToolbarImpl extends Composite implements TextEditToolbar
@@ -72,6 +72,20 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
     @Override
     public void setEditedElement(Element elem)
     {
+        if (elem == this._editedElement) {
+            return;
+        }
+
+        // If element is cleared, or was cleared and is now set, update the registrations.
+        if (null == elem)
+        {
+            this.clearRegistrations();
+        }
+        else if (null == this._editedElement)
+        {
+            this.setRegistrations();
+        }
+
         this._editedElement = elem;
     }
 
@@ -85,12 +99,23 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
     @Override
     protected void onUnload()
     {
+        this.clearRegistrations();
         super.onUnload();
+    }
+
+    private void clearRegistrations()
+    {
+        Logger.info(this, "Clearing registrations");
         this.registrationsManager.clear();
     }
 
     private void setRegistrations()
     {
+        if (this.registrationsManager.hasRegistrations()) {
+            // already set.
+            return;
+        }
+        Logger.info(this, "Setting registrations");
         final TextEditToolbarImpl that = this;
         this.registrationsManager.add(Event.addNativePreviewHandler(new NativePreviewHandler() {
             @Override

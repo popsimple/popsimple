@@ -74,7 +74,7 @@ public class DynamicSourceLoader
             @Override
             protected <S, E> void run(Void arg, final Func<Void, S> successHandler, final Func<Throwable, E> errorHandler)
             {
-                Logger.log("actionLoad starting: " + source);
+                Logger.info("actionLoad starting: " + source);
 
                 final Handler<Void> innerHandler = HandlerUtils.fromFunc(successHandler);
 
@@ -113,7 +113,7 @@ public class DynamicSourceLoader
 
     private static void loadSource(final String source, final SimpleEvent.Handler<Void> handler)
     {
-        Logger.log("Loading source: " + source);
+        Logger.info("Loading source: " + source);
         // no entry exists for this source -
         // first load request
         SingleEvent<Void> event = scriptLoadHandlersMap.get(source);
@@ -131,7 +131,7 @@ public class DynamicSourceLoader
 
     private static void sourceLoaded(final String source)
     {
-        Logger.log("Finished loading: " + source);
+        Logger.info("Finished loading: " + source);
         scriptLoadStatusMap.put(source, true);
         scriptLoadHandlersMap.get(source).dispatch(null);
     }
