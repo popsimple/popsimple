@@ -9,22 +9,22 @@ import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.OptionElement;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseUpEvent;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Event.NativePreviewHandler;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.html5.Range;
@@ -105,10 +105,10 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
     private void initButtons()
     {
         // setSimpleCssValueButton("fontWeight", "bold", "Bold");
-        this.addCssStringValueToggleButton("fontWeight", new String[] { "400", "normal" },
+        this.addCssStringValueButton("fontWeight", new String[] { "400", "normal" },
                 new String[] { "700", "bold" }, "Bold", false);
-        this.addCssStringValueToggleButton("fontStyle", "normal", "italic", "Italic", false);
-        this.addCssStringValueToggleButton("textDecoration", "none", "underline", "Underline", false);
+        this.addCssStringValueButton("fontStyle", "normal", "italic", "Italic", false);
+        this.addCssStringValueButton("textDecoration", "none", "underline", "Underline", false);
         this.addCssStringValueListBox("fontFamily", "Font:", true, getFontFamilies());
         this.addCssStringValueListBox("fontSize", "Size:", false, getFontSizes());
 
@@ -116,7 +116,7 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
         this.addCssStringValueListBox("color", "Color:", false, getColors());
         this.addCssStringValueListBox("backgroundColor", "Background:", false, getColors());
 
-        this.addCssStringValueToggleButton("direction", "ltr", "rtl", "Direction", true);
+        this.addCssStringValueButton("direction", "ltr", "rtl", "Direction", true);
     }
 
     private ArrayList<String> getColors()
@@ -254,13 +254,13 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
     }
 
     /**
-     * A wrapper for {@link #addCssStringValueToggleButton(String, String[], String[], String)}, that create arrays with
+     * A wrapper for {@link #addCssStringValueButton(String, String[], String[], String)}, that create arrays with
      * a single value for unset and set value arrays.
      */
-    private void addCssStringValueToggleButton(final String cssProperty, final String unsetValue,
+    private void addCssStringValueButton(final String cssProperty, final String unsetValue,
             final String setValue, final String title, boolean onRootElemOnly)
     {
-        this.addCssStringValueToggleButton(cssProperty, new String[] { unsetValue }, new String[] { setValue }, title,
+        this.addCssStringValueButton(cssProperty, new String[] { unsetValue }, new String[] { setValue }, title,
                 onRootElemOnly);
     }
 
@@ -278,13 +278,13 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
      * @param title
      *            Of the button
      */
-    private void addCssStringValueToggleButton(final String cssProperty, final String[] unsetValues,
+    private void addCssStringValueButton(final String cssProperty, final String[] unsetValues,
             final String[] setValues, final String title, final boolean onRootElemOnly)
     {
         assert (unsetValues.length >= 1);
         assert (setValues.length >= 1);
 
-        final ToggleButton buttonWidget = createButtonWidget(cssProperty, setValues, title);
+        final Button buttonWidget = createButtonWidget(cssProperty, setValues, title);
 
         ToolbarButtonInfo buttonInfo = new ToolbarButtonInfo() {
             @Override
@@ -314,33 +314,42 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
             @Override
             public void updateButtonStatus(Element testedElement)
             {
-                buttonWidget.setDown(this.isSet(testedElement));
+                // TODO chang eth button style
+                if (this.isSet(testedElement)) {
+                    buttonWidget.addStyleName("gwt-ToggleButton-down");
+                    buttonWidget.removeStyleName("gwt-ToggleButton-up");
+                }
+                else {
+                    buttonWidget.removeStyleName("gwt-ToggleButton-down");
+                    buttonWidget.addStyleName("gwt-ToggleButton-up");
+                }
+
             }
         };
 
         this.addButton(buttonWidget, buttonInfo);
     }
 
-    private ToggleButton createButtonWidget(final String cssProperty, final String[] setValues, final String title)
+    private Button createButtonWidget(final String cssProperty, final String[] setValues, final String title)
     {
         // Must be a button element, otherwise when it's clicked it will remove the current selection because the
         // browser
         // will see it as clicking on text.
-        ToggleButton buttonWidget = new ToggleButton();
+        Button buttonWidget = new Button();
         buttonWidget.getElement().getStyle().setProperty(cssProperty, setValues[0]);
         buttonWidget.getElement().setInnerText(title);
         buttonWidget.addStyleName(CanvasResources.INSTANCE.main().textEditToolbarToggleButton());
         return buttonWidget;
     }
 
-    private void addButton(ToggleButton widget, final ToolbarButtonInfo buttonInfo)
+    private void addButton(Button widget, final ToolbarButtonInfo buttonInfo)
     {
         final TextEditToolbarImpl that = this;
         this.rootPanel.add(widget);
         // Deliberately not added to this.registrationsManager
         // because after onUnload+onLoad we currently won't be restoring these registrations properly
-        widget.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-            @Override public void onValueChange(ValueChangeEvent<Boolean> event)
+        widget.addClickHandler(new ClickHandler() {
+            @Override public void onClick(ClickEvent event)
             {
                 that.buttonPressed(buttonInfo);
             }
