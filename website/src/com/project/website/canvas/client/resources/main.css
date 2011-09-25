@@ -959,3 +959,14 @@
 @sprite .cropCancelIcon{
 	gwt-image: "cropCancelIcon";
 }
+
+/*---------------------------------------------------------*/
+
+.colorPickerButton {
+	height: 18px;
+    margin: 0;
+    padding: 0;
+    vertical-align: middle;
+    width: 18px;
+    background-image: none;
+}

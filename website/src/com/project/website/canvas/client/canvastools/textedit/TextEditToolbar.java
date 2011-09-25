@@ -1,9 +1,9 @@
 package com.project.website.canvas.client.canvastools.textedit;
 
-import com.google.gwt.dom.client.Element;
+import com.google.gwt.user.client.ui.Widget;
 
 public interface TextEditToolbar
 {
-    void setEditedElement(Element elem);
-    Element getEditedElement();
+    void setEditedWidget(Widget elem);
+    Widget getEditedWidget();
 }

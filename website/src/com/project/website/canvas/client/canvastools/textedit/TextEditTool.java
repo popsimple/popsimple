@@ -1,6 +1,5 @@
 package com.project.website.canvas.client.canvastools.textedit;
 
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
@@ -9,6 +8,7 @@ import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.utils.CssProperties;
@@ -29,7 +29,7 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
     private final SimpleEvent<String> _killRequestEvent = new SimpleEvent<String>();
     private final SimpleEvent<Point2D> _moveRequestEvent = new SimpleEvent<Point2D>();
 
-    private final Element _editElement;
+    private final Widget _editedWidget;
 
     private final TextEditToolbarImpl _toolbar;
 
@@ -43,7 +43,7 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
         CanvasToolCommon.initCanvasToolWidget(this);
 
         //this.add(this._editPanel);
-        this._editElement = this.getElement();
+        this._editedWidget = this;
         this._toolbar = new TextEditToolbarImpl();
 
         this.addStyleName(CanvasResources.INSTANCE.main().textEdit());
@@ -82,7 +82,7 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
     public TextData getValue()
     {
         this._data.innerHtml = this._editorReady ? this.getContents() : "";
-        this._data.cssText = StyleUtils.getCssText(this._editElement.getStyle());
+        this._data.cssText = StyleUtils.getCssText(this._editedWidget.getElement().getStyle());
         return this._data;
     }
 
@@ -112,7 +112,7 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
             return;
         }
         this.setContents(this._data.innerHtml);
-        Style style = this._editElement.getStyle();
+        Style style = this._editedWidget.getElement().getStyle();
 
         // Never override the element's width/height with cssText data.
 
@@ -132,13 +132,13 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
      */
     private String getContents()
     {
-        return this._editElement.getInnerHTML();
+        return this._editedWidget.getElement().getInnerHTML();
     }
 
     private void setContents(String text)
     {
         // TODO: sanitize
-        this._editElement.setInnerHTML(text);
+        this._editedWidget.getElement().setInnerHTML(text);
     }
 
     private void registerHandlers()
@@ -181,10 +181,10 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
 
             // This causes infinite recursion / looping:
             //this._editPanel.setFocus(true);
-            this._toolbar.setEditedElement(this._editElement);
+            this._toolbar.setEditedWidget(this._editedWidget);
 
         } else {
-            this._toolbar.setEditedElement(null);
+            this._toolbar.setEditedWidget(null);
 
             this.setFocus(false);
 
@@ -214,7 +214,7 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
     @Override
     public void setViewMode(boolean isViewMode)
     {
-        ElementUtils.setContentEditable(this._editElement, isViewMode);
+        ElementUtils.setContentEditable(this._editedWidget.getElement(), isViewMode);
     }
 
 

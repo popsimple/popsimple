@@ -6,6 +6,10 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.DOM;
+import com.project.shared.data.Rgba;
+import com.project.shared.data.funcs.Func;
+import com.project.shared.utils.IterableUtils;
+import com.project.shared.utils.StringUtils;
 
 public class StyleUtils
 {
@@ -107,8 +111,8 @@ public class StyleUtils
         return style.cssText;
     }-*/;
 
-    
-    public static native void setCssText(Style style, String cssText) 
+
+    public static native void setCssText(Style style, String cssText)
     /*-{
         style.cssText = cssText;
     }-*/;
@@ -260,7 +264,7 @@ public class StyleUtils
         style.setProperty(CssProperties.BACKGROUND_SIZE, width + " " + height);
     }
 
-    
+
     public static Integer fromPXUnitString(String cssPxUnitNumStr)
     {
         String PX_SUFFIX = "px";
@@ -277,5 +281,37 @@ public class StyleUtils
             return null;
         }
     }
+
+    public static Rgba parseRgbCssColor(String cssColor)
+    {
+        int r,g,b,a;
+        String[] splitStrings = cssColor.trim().toLowerCase().split("[, \\(\\);]");
+        String[] values = new String[4];
+
+        IterableUtils.filter(splitStrings, new Func<String,Boolean>(){
+            @Override public Boolean call(String arg) {
+                return StringUtils.isEmptyOrNull(arg);
+            }});
+
+        if (values[0].equals("rgba")) {
+            a = Integer.valueOf(values[4]);
+        }
+        else if (values[0].equals("rgb")) {
+            a = 0;
+        }
+        else {
+            // Can't parse this!
+            // TODO: perhaps just return some default color?
+            throw new RuntimeException("Can't parse css color string: " +  cssColor);
+        }
+
+        r = Integer.valueOf(values[1]);
+        g = Integer.valueOf(values[2]);
+        b = Integer.valueOf(values[3]);
+
+        return new Rgba(r,g,b,a);
+    }
+
+
 
 }

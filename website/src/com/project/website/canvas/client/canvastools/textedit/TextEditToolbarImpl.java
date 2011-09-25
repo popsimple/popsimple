@@ -2,11 +2,14 @@ package com.project.website.canvas.client.canvastools.textedit;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.OptionElement;
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -29,17 +32,21 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.html5.Range;
+import com.project.shared.client.html5.impl.RangeImpl;
 import com.project.shared.client.html5.impl.RangeUtils;
 import com.project.shared.client.html5.impl.SelectionImpl;
+import com.project.shared.client.utils.DocumentUtils;
 import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.EventUtils;
 import com.project.shared.client.utils.StyleUtils;
 import com.project.shared.client.utils.widgets.ListBoxUtils;
+import com.project.shared.data.funcs.Func;
 import com.project.shared.data.funcs.Func.Action;
 import com.project.shared.utils.ListUtils;
 import com.project.shared.utils.ObjectUtils;
 import com.project.shared.utils.loggers.Logger;
 import com.project.website.canvas.client.resources.CanvasResources;
+import com.project.website.canvas.client.shared.widgets.ColorPicker;
 
 public class TextEditToolbarImpl extends Composite implements TextEditToolbar
 {
@@ -52,9 +59,14 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
 
     @UiField
     HTMLPanel rootPanel;
-    private Element _editedElement;
+
+    private Widget _editedWidget;
 
     private ArrayList<ToolbarButtonInfo> buttonInfos = new ArrayList<ToolbarButtonInfo>();
+
+    private ArrayList<Func<Void,Void>> onUnloadFuncs = new ArrayList<Func<Void,Void>>();
+
+    private HashSet<Range> savedRanges = new HashSet<Range>();
 
     public TextEditToolbarImpl()
     {
@@ -64,49 +76,48 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
     }
 
     @Override
-    public Element getEditedElement()
+    public Widget getEditedWidget()
     {
-        return this._editedElement;
+        return this._editedWidget;
     }
 
     @Override
-    public void setEditedElement(Element elem)
+    public void setEditedWidget(Widget elem)
     {
-        if (elem == this._editedElement) {
+        if (elem == this._editedWidget) {
+            this.updateButtonStates();
             return;
         }
+        this._editedWidget = elem;
 
-        // If element is cleared, or was cleared and is now set, update the registrations.
-        if (null == elem)
-        {
-            this.clearRegistrations();
-        }
-        else if (null == this._editedElement)
-        {
+        this.clearRegistrations();
+        if (null != elem) {
             this.setRegistrations();
         }
-
-        this._editedElement = elem;
     }
 
     @Override
     protected void onLoad()
     {
         super.onLoad();
-        this.setRegistrations();
+        if (null != this._editedWidget)
+        {
+            this.setRegistrations();
+        }
     }
 
     @Override
     protected void onUnload()
     {
         this.clearRegistrations();
+        for (Func<Void,Void> func : this.onUnloadFuncs) {
+            func.call(null);
+        }
         super.onUnload();
     }
 
     private void clearRegistrations()
     {
-        Logger.info(this, "Clearing registrations");
-        Logger.printStack();
         this.registrationsManager.clear();
     }
 
@@ -116,9 +127,16 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
             // already set.
             return;
         }
-        Logger.info(this, "Setting registrations");
-        Logger.printStack();
         final TextEditToolbarImpl that = this;
+
+
+        if (null != this._editedWidget) {
+            this.registrationsManager.add(this._editedWidget.addDomHandler(new BlurHandler(){
+                @Override public void onBlur(BlurEvent event) {
+                    that.saveSelectedRanges();
+                }}, BlurEvent.getType()));
+        }
+
         this.registrationsManager.add(Event.addNativePreviewHandler(new NativePreviewHandler() {
             @Override
             public void onPreviewNativeEvent(NativePreviewEvent event)
@@ -134,6 +152,8 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
                 }
             }
         }));
+
+        this.updateButtonStates();
     }
 
     private void initButtons()
@@ -147,10 +167,69 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
         this.addCssStringValueListBox("fontSize", "Size:", false, getFontSizes());
 
         // TODO replace these two with color-pickers:
-        this.addCssStringValueListBox("color", "Color:", false, getColors());
+        this.addColorPicker("color", "Color:");
         this.addCssStringValueListBox("backgroundColor", "Background:", false, getColors());
 
         this.addCssStringValueButton("direction", "ltr", "rtl", "Direction", true);
+    }
+
+    private void addColorPicker(String cssProperty, String title)
+    {
+        final TextEditToolbarImpl that = this;
+        final ColorPicker colorPicker = new ColorPicker();
+        this.onUnloadFuncs.add(new Func.VoidAction() {
+            @Override public void exec()
+            {
+                colorPicker.setPickerVisible(false);
+            }
+        });
+        final ToolbarButtonInfo buttonInfo = new ToolbarButtonInfo() {
+            @Override
+            public void updateButtonStatus(Element testedElement)
+            {
+                String cssColorString = StyleUtils.getComputedStyle(testedElement, null).getColor();
+                colorPicker.getElement().getStyle().setBackgroundColor(cssColorString);
+                //Rgba rgba = StyleUtils.parseRgbCssColor(cssColorString);
+            }
+
+            @Override
+            public void unset(Element elem)
+            {
+                // Do nothing. TODO: Maybe add a default value for un-setting.
+            }
+
+            @Override
+            public void set(Element elem)
+            {
+                String cssColorString = StyleUtils.getComputedStyle(colorPicker.getElement(), null).getBackgroundColor();
+                elem.getStyle().setColor(cssColorString);
+            }
+
+            @Override
+            public boolean isSet(Element elem)
+            {
+                return false;
+            }
+
+            @Override
+            public boolean isOnRootElemOnly()
+            {
+                return false;
+            }
+        };
+//        colorPicker.addChangeHandler(new ChangeHandler() {
+//            @Override public void onChange(ChangeEvent event)
+//            {
+//                that.buttonPressed(buttonInfo);
+//            }
+//        });
+        colorPicker.addDomHandler(new ChangeHandler(){
+            @Override public void onChange(ChangeEvent event)
+            {
+                that.buttonPressed(buttonInfo);
+            }}, ChangeEvent.getType());
+        this.rootPanel.add(colorPicker);
+        this.addButtonInfo(buttonInfo);
     }
 
     private ArrayList<String> getColors()
@@ -174,36 +253,15 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
         return ListUtils.create("arial", "georgia", "monospace", "verdana", "times");
     }
 
-    private void addCssStringValueListBox(final String cssProperty, String title, final boolean setOptionsStyles, final Iterable<String> values)
+    private void addCssStringValueListBox(final String cssProperty, String title, final boolean setOptionsStyles, final Iterable<String> values, String... addStyleNames)
     {
         final TextEditToolbarImpl that = this;
 
-        final ListBox listBox = new ListBox();
-        listBox.addStyleName(CanvasResources.INSTANCE.main().textEditToolbarListBox());
-
-        for (String item : values) {
-            listBox.addItem(item);
-            if (setOptionsStyles) {
-                OptionElement optionElement = ListBoxUtils.getOptionElement(listBox, listBox.getItemCount() - 1);
-                optionElement.getStyle().setProperty(cssProperty, item);
-            }
-        }
-
-        FlowPanel listBoxWrapper = new FlowPanel();
-        listBoxWrapper.addStyleName(CanvasResources.INSTANCE.main().textEditToolbarListWrapper());
-
-        InlineLabel titleLabel = new InlineLabel(title);
-        titleLabel.addStyleName(CanvasResources.INSTANCE.main().textEditToolbarListTitle());
-
-        listBoxWrapper.add(titleLabel);
-        listBoxWrapper.add(listBox);
-
-        this.rootPanel.add(listBoxWrapper);
+        final ListBox listBox = addListBoxWidget(cssProperty, title, setOptionsStyles, values, addStyleNames);
 
         final ToolbarButtonInfo buttonInfo = new ToolbarButtonInfo() {
             @Override
-            public void unset(Element elem)
-            {}
+            public void unset(Element elem) {}
 
             @Override
             public void set(Element elem)
@@ -231,44 +289,12 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
             @Override
             public void updateButtonStatus(Element testedElement)
             {
-                String value = getCssPropertyValue(cssProperty, testedElement);
-                boolean found = false;
-                int selectedIndex = 0;
-                for (int i = 0;  i < listBox.getItemCount(); i++)
-                {
-                    if (ObjectUtils.areEqual(listBox.getValue(i), value)) {
-                        selectedIndex = i;
-                        found = true;
-                        break;
-                    }
-                }
-                if (false == found) {
-                    selectedIndex = listBox.getItemCount() - 1;
-                    listBox.addItem(value);
-                }
-                listBox.setSelectedIndex(selectedIndex);
-                updateListBoxSelectItemStyle(setOptionsStyles, listBox);
-            }
-
-            private String getCssPropertyValue(final String cssProperty, Element testedElement)
-            {
-                String value = StyleUtils.getComputedStyle(testedElement, null).getProperty(cssProperty);
-                if (null == value)
-                {
-                    return "";
-                }
-                if (ObjectUtils.areEqual(cssProperty, "fontFamily")) {
-                    // css heuristic: pick out only the first part of the value
-                    // (Arial Unicode MS,Arial,sans-serif --> arial
-                    value = value.split("[ ,]")[0].toLowerCase();
-                }
-                return value;
+                updateValueListBoxStatus(cssProperty, setOptionsStyles, listBox, testedElement);
             }
 
             private String getListBoxValue(final ListBox listBox)
             {
-                String selectedValue = listBox.getValue(listBox.getSelectedIndex());
-                return selectedValue;
+                return listBox.getValue(listBox.getSelectedIndex());
             }
         };
 
@@ -285,6 +311,36 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
         updateListBoxSelectItemStyle(setOptionsStyles, listBox);
 
         this.addButtonInfo(buttonInfo);
+    }
+
+    private ListBox addListBoxWidget(final String cssProperty, String title, final boolean setOptionsStyles,
+            final Iterable<String> values, String... addStyleNames)
+    {
+        final ListBox listBox = new ListBox();
+        listBox.addStyleName(CanvasResources.INSTANCE.main().textEditToolbarListBox());
+        for (String styleName : addStyleNames) {
+            listBox.addStyleName(styleName);
+        }
+
+        for (String item : values) {
+            listBox.addItem(item);
+            if (setOptionsStyles) {
+                OptionElement optionElement = ListBoxUtils.getOptionElement(listBox, listBox.getItemCount() - 1);
+                optionElement.getStyle().setProperty(cssProperty, item);
+            }
+        }
+
+        FlowPanel listBoxWrapper = new FlowPanel();
+        listBoxWrapper.addStyleName(CanvasResources.INSTANCE.main().textEditToolbarListWrapper());
+
+        InlineLabel titleLabel = new InlineLabel(title);
+        titleLabel.addStyleName(CanvasResources.INSTANCE.main().textEditToolbarListTitle());
+
+        listBoxWrapper.add(titleLabel);
+        listBoxWrapper.add(listBox);
+
+        this.rootPanel.add(listBoxWrapper);
+        return listBox;
     }
 
     /**
@@ -399,71 +455,96 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
 
     protected void updateButtonStates()
     {
-        final Element editedElement = this.getEditedElement();
+        final Widget editedElement = this.getEditedWidget();
         if (null == editedElement) {
             return;
         }
-
-        Element testElement = getTestElementFromSelection(SelectionImpl.getWindowSelection());
+        this.saveSelectedRanges();
+        Element testElement = this.getTestElementFromSelection();
         for (ToolbarButtonInfo buttonInfo : this.buttonInfos)
         {
             buttonInfo.updateButtonStatus(testElement);
         }
     }
 
-    private static Element getTestElementFromSelection(SelectionImpl selection)
+    /**
+     * Tries to find an element from within the selection range for testing whether a property is set or not in the range.
+     */
+    private Element getTestElementFromSelection()
     {
-        for (int i = 0; i < selection.getRangeCount(); i++) {
-            Range range = selection.getRangeAt(i);
+        Element testElement = null;
+        for (Range range : this.savedRanges)
+        {
             HashMap<Node, Boolean> nodeContainmentMap = RangeUtils.getNodeContainmentMap(range);
             for (Node node : nodeContainmentMap.keySet()) {
                 if (Node.TEXT_NODE != node.getNodeType()) {
                     continue;
                 }
-                Element firstElementWithInnerText = node.getParentElement();
-                if (firstElementWithInnerText.getInnerText().isEmpty()) {
+                testElement = node.getParentElement();
+                if (testElement.getInnerText().isEmpty()) {
                     continue;
                 }
-                return firstElementWithInnerText;
+                return testElement;
             }
         }
-
-        if (null != selection.getAnchorNode()) {
-            return selection.getAnchorNode().getParentElement();
+        if (null != testElement) {
+            return testElement;
         }
-        if (null != selection.getFocusNode()) {
-            return selection.getFocusNode().getParentElement();
+        if (this._editedWidget.getElement() == DocumentUtils.getActiveElement()) {
+            SelectionImpl selection = SelectionImpl.getWindowSelection();
+            Node node = selection.getAnchorNode();
+            if (null == node) {
+                node = selection.getFocusNode();
+            }
+            if (null != node) {
+                return node.getParentElement();
+            }
         }
-        return null;
+        return this._editedWidget.getElement();
     }
 
 
     private void buttonPressed(final ToolbarButtonInfo buttonInfo)
     {
-        final Element editedElement = this.getEditedElement();
+        final Widget editedElement = this.getEditedWidget();
         if (null == editedElement) {
             return;
         }
 
         if (buttonInfo.isOnRootElemOnly()) {
-            this.applyButtonOnRootElement(buttonInfo, editedElement);
+            this.applyButtonOnRootElement(buttonInfo, editedElement.getElement());
             return;
         }
 
-        this.applyButtonOnSelectedRange(buttonInfo, editedElement);
+        this.applyButtonOnSelectedRange(buttonInfo, editedElement.getElement());
     }
 
-    private void applyButtonOnSelectedRange(final ToolbarButtonInfo buttonInfo, final Element editedElement)
+    private void saveSelectedRanges()
     {
+        if (null == this._editedWidget) {
+            return;
+        }
+        if (this._editedWidget.getElement() != DocumentUtils.getActiveElement()) {
+            return;
+        }
         SelectionImpl selection = SelectionImpl.getWindowSelection();
+        this.savedRanges.clear();
         if (0 >= selection.getRangeCount()) {
             return;
         }
 
-        boolean isSetResult = this.isSetInSelection(buttonInfo, selection);
-
         for (int i = 0; i < selection.getRangeCount(); i++) {
             Range range = selection.getRangeAt(i);
+            Logger.info(this, ((RangeImpl)range).asString());
+            this.savedRanges.add(range);
+        }
+    }
+
+    private void applyButtonOnSelectedRange(final ToolbarButtonInfo buttonInfo, final Element editedElement)
+    {
+        boolean isSetResult = this.isSetInSelection(buttonInfo);
+
+        for (Range range : this.savedRanges) {
             Action<Element> action = null;
             if (isSetResult) {
                 action = new Action<Element>() {
@@ -492,9 +573,9 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
         editedElement.focus();
     }
 
-    private boolean isSetInSelection(final ToolbarButtonInfo buttonInfo, SelectionImpl selection)
+    private boolean isSetInSelection(final ToolbarButtonInfo buttonInfo)
     {
-        Element testElement = getTestElementFromSelection(SelectionImpl.getWindowSelection());
+        Element testElement = this.getTestElementFromSelection();
         return testElement == null ? false : buttonInfo.isSet(testElement);
     }
 
@@ -514,7 +595,7 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
         // children.
         // But in TextEdit that would mean moving properties such as Width and
         // Height down into the children, which isn't what we want.
-        for (Node node : ElementUtils.getChildNodes(this.getEditedElement())) {
+        for (Node node : ElementUtils.getChildNodes(this.getEditedWidget().getElement())) {
             if (Node.ELEMENT_NODE != node.getNodeType()) {
                 continue;
             }
@@ -550,11 +631,49 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
         return false;
     }
 
-    private void updateListBoxSelectItemStyle(final boolean setOptionsStyles, final ListBox listBox)
+    private static void updateListBoxSelectItemStyle(final boolean setOptionsStyles, final ListBox listBox)
     {
         if (setOptionsStyles) {
             int selectedIndex = listBox.getSelectedIndex();
             StyleUtils.copyStyle(listBox.getElement(), ListBoxUtils.getOptionElement(listBox, selectedIndex), true);
         }
+    }
+
+    private static String getCssPropertyValue(final String cssProperty, Element testedElement)
+    {
+        String value = StyleUtils.getComputedStyle(testedElement, null).getProperty(cssProperty);
+        if (null == value)
+        {
+            return "";
+        }
+        if (ObjectUtils.areEqual(cssProperty, "fontFamily")) {
+            // css heuristic: pick out only the first part of the value
+            // (Arial Unicode MS,Arial,sans-serif --> arial
+            value = value.split("[ ,]")[0].toLowerCase();
+        }
+        return value;
+    }
+
+
+    private static void updateValueListBoxStatus(final String cssProperty, final boolean setOptionsStyles,
+            final ListBox listBox, Element testedElement)
+    {
+        String value = getCssPropertyValue(cssProperty, testedElement);
+        boolean found = false;
+        int selectedIndex = 0;
+        for (int i = 0;  i < listBox.getItemCount(); i++)
+        {
+            if (ObjectUtils.areEqual(listBox.getValue(i), value)) {
+                selectedIndex = i;
+                found = true;
+                break;
+            }
+        }
+        if (false == found) {
+            selectedIndex = listBox.getItemCount() - 1;
+            listBox.addItem(value);
+        }
+        listBox.setSelectedIndex(selectedIndex);
+        updateListBoxSelectItemStyle(setOptionsStyles, listBox);
     }
 }
