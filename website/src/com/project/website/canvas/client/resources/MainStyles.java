@@ -146,9 +146,9 @@ public interface MainStyles extends CssResource {
 
     String textEditToolbarListBox();
 
-	String textEditToolbarListTitle();
+	String textEditToolbarItemTitle();
 
-	String textEditToolbarListWrapper();
+	String textEditToolbarItemWrapper();
 
     String textEditToolbarToggleButton();
 

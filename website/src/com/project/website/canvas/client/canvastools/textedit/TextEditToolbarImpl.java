@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.OptionElement;
@@ -38,6 +39,7 @@ import com.project.shared.client.html5.impl.SelectionImpl;
 import com.project.shared.client.utils.DocumentUtils;
 import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.EventUtils;
+import com.project.shared.client.utils.SchedulerUtils;
 import com.project.shared.client.utils.StyleUtils;
 import com.project.shared.client.utils.widgets.ListBoxUtils;
 import com.project.shared.data.funcs.Func;
@@ -148,7 +150,14 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
                             KeyDownEvent.getType()
                     }))
                 {
-                    that.updateButtonStates();
+                    that.saveSelectedRanges();
+                    SchedulerUtils.OneTimeScheduler.get().scheduleDeferredOnce(new ScheduledCommand() {
+                        @Override public void execute() {
+                            if (that.isActiveElementTree()) {
+                                that.updateButtonStates();
+                            }
+                        }
+                    });
                 }
             }
         }));
@@ -168,7 +177,6 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
 
         // TODO replace these two with color-pickers:
         this.addColorPicker("color", "Color:");
-        this.addCssStringValueListBox("backgroundColor", "Background:", false, getColors());
 
         this.addCssStringValueButton("direction", "ltr", "rtl", "Direction", true);
     }
@@ -177,6 +185,8 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
     {
         final TextEditToolbarImpl that = this;
         final ColorPicker colorPicker = new ColorPicker();
+        this.addTitledToolbarItem(title, colorPicker);
+
         this.onUnloadFuncs.add(new Func.VoidAction() {
             @Override public void exec()
             {
@@ -189,7 +199,8 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
             {
                 String cssColorString = StyleUtils.getComputedStyle(testedElement, null).getColor();
                 colorPicker.getElement().getStyle().setBackgroundColor(cssColorString);
-                //Rgba rgba = StyleUtils.parseRgbCssColor(cssColorString);
+                // Just to make the text invisible:
+                colorPicker.getElement().getStyle().setColor(cssColorString);
             }
 
             @Override
@@ -228,15 +239,10 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
             {
                 that.buttonPressed(buttonInfo);
             }}, ChangeEvent.getType());
-        this.rootPanel.add(colorPicker);
+
         this.addButtonInfo(buttonInfo);
     }
 
-    private ArrayList<String> getColors()
-    {
-        return ListUtils.create("transparent", "black", "purple", "blue", "cyan", "green", "yellow", "orange", "red",
-                "pink", "beige", "white");
-    }
 
     private Iterable<String> getFontSizes()
     {
@@ -330,17 +336,20 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
             }
         }
 
+        addTitledToolbarItem(title, listBox);
+        return listBox;
+    }
+
+    private void addTitledToolbarItem(String title, Widget widget)
+    {
         FlowPanel listBoxWrapper = new FlowPanel();
-        listBoxWrapper.addStyleName(CanvasResources.INSTANCE.main().textEditToolbarListWrapper());
-
+        listBoxWrapper.addStyleName(CanvasResources.INSTANCE.main().textEditToolbarItemWrapper());
         InlineLabel titleLabel = new InlineLabel(title);
-        titleLabel.addStyleName(CanvasResources.INSTANCE.main().textEditToolbarListTitle());
-
+        titleLabel.addStyleName(CanvasResources.INSTANCE.main().textEditToolbarItemTitle());
         listBoxWrapper.add(titleLabel);
-        listBoxWrapper.add(listBox);
+        listBoxWrapper.add(widget);
 
         this.rootPanel.add(listBoxWrapper);
-        return listBox;
     }
 
     /**
@@ -490,7 +499,7 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
         if (null != testElement) {
             return testElement;
         }
-        if (this._editedWidget.getElement() == DocumentUtils.getActiveElement()) {
+        if (this.isActiveElementTree()) {
             SelectionImpl selection = SelectionImpl.getWindowSelection();
             Node node = selection.getAnchorNode();
             if (null == node) {
@@ -501,6 +510,22 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
             }
         }
         return this._editedWidget.getElement();
+    }
+
+    private boolean isActiveElementTree()
+    {
+        if (null == this._editedWidget) {
+            return false;
+        }
+        Element rootElem = this._editedWidget.getElement();
+        Element element = DocumentUtils.getActiveElement();
+        while (null != element) {
+            if (rootElem == element) {
+                return true;
+            }
+            element = element.getParentElement();
+        }
+        return false;
     }
 
 
@@ -524,19 +549,19 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
         if (null == this._editedWidget) {
             return;
         }
-        if (this._editedWidget.getElement() != DocumentUtils.getActiveElement()) {
+        if (false == this.isActiveElementTree()) {
             return;
         }
         SelectionImpl selection = SelectionImpl.getWindowSelection();
-        this.savedRanges.clear();
         if (0 >= selection.getRangeCount()) {
             return;
         }
+        this.savedRanges.clear();
 
         for (int i = 0; i < selection.getRangeCount(); i++) {
             Range range = selection.getRangeAt(i);
             Logger.info(this, ((RangeImpl)range).asString());
-            this.savedRanges.add(range);
+            this.savedRanges.add(range.cloneRange());
         }
     }
 
