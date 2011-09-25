@@ -246,6 +246,7 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
     	this._viewMode = inViewMode;
     	if (this._viewMode) {
     		frameRegs.clear();
+    		this.setFloatingToolbarVisible(false);
     	}
     	else {
     		this.reRegisterFrameHandlers();
@@ -456,6 +457,7 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
     private void setFloatingToolbarVisible(boolean floatingToolbarVisible)
     {
         if (null != this.floatingToolbar) {
+        	floatingToolbarVisible &= (false == this._viewMode);
             this.floatingToolbar.setEditedWidget(floatingToolbarVisible ? this : null);
         }
     }

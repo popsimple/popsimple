@@ -7,6 +7,7 @@ import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.project.shared.client.loggers.FirebugLogger;
 import com.project.shared.client.loggers.GwtLogger;
+import com.project.shared.utils.ObjectUtils;
 import com.project.shared.utils.loggers.Logger;
 import com.project.website.canvas.client.canvastools.base.BuiltinTools;
 import com.project.website.canvas.client.canvastools.map.MapToolStaticUtils;
@@ -40,7 +41,13 @@ public class Canvas implements EntryPoint {
         History.addValueChangeHandler(new ValueChangeHandler<String>() {
             @Override
             public void onValueChange(ValueChangeEvent<String> event) {
-                canvasContainer.getWorksheet().load(event.getValue());
+            	String[] parts = event.getValue().toLowerCase().trim().split(":");
+            	String idStr = parts[0];
+            	boolean viewMode = false;
+            	if ((parts.length > 1) && (ObjectUtils.areEqual(parts[1], "view"))) {
+            		viewMode = true;
+            	}
+                canvasContainer.getWorksheet().load(idStr, viewMode);
             }
         });
 

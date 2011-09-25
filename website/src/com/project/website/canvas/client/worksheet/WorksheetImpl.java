@@ -623,5 +623,11 @@ public class WorksheetImpl implements Worksheet
     {
         return this.viewModeEvent.addHandler(handler);
     }
+
+	@Override
+	public void load(String idStr, boolean viewMode) {
+		this.view.setViewMode(viewMode);
+		this.load(idStr);
+	}
 }
 

@@ -16,4 +16,6 @@ public interface Worksheet {
 
     void load(String id);
 
+	void load(String idStr, boolean viewMode);
+
 }
