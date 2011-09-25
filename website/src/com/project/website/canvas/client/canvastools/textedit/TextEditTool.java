@@ -2,10 +2,6 @@ package com.project.website.canvas.client.canvastools.textedit;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.event.dom.client.BlurEvent;
-import com.google.gwt.event.dom.client.BlurHandler;
-import com.google.gwt.event.dom.client.FocusEvent;
-import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
@@ -15,7 +11,6 @@ import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.events.SimpleEvent.Handler;
-import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.utils.CssProperties;
 import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.StyleUtils;
@@ -34,8 +29,6 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
     private final SimpleEvent<String> _killRequestEvent = new SimpleEvent<String>();
     private final SimpleEvent<Point2D> _moveRequestEvent = new SimpleEvent<Point2D>();
 
-    private final RegistrationsManager _registrationsManager = new RegistrationsManager();
-
     private final Element _editElement;
 
     private final TextEditToolbarImpl _toolbar;
@@ -52,7 +45,6 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
         //this.add(this._editPanel);
         this._editElement = this.getElement();
         this._toolbar = new TextEditToolbarImpl();
-        this._toolbar.setEditedElement(this._editElement);
 
         this.addStyleName(CanvasResources.INSTANCE.main().textEdit());
         this.setViewMode(false);
@@ -84,20 +76,6 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
     @Override
     public void bind()
     {
-        _registrationsManager.add(this.addFocusHandler(new FocusHandler() {
-            @Override
-            public void onFocus(FocusEvent event)
-            {
-                setLooksActive(true, false);
-            }
-        }));
-        _registrationsManager.add(this.addBlurHandler(new BlurHandler() {
-            @Override
-            public void onBlur(BlurEvent event)
-            {
-                setLooksActive(false, false);
-            }
-        }));
     }
 
     @Override
@@ -135,14 +113,14 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
         }
         this.setContents(this._data.innerHtml);
         Style style = this._editElement.getStyle();
-        
+
         // Never override the element's width/height with cssText data.
-        
+
         String width = style.getWidth();
         String height = style.getHeight();
-        
+
         StyleUtils.setCssText(style, this._data.cssText);
-        
+
         style.setProperty(CssProperties.WIDTH, width);
         style.setProperty(CssProperties.HEIGHT, height);
     }
@@ -203,8 +181,11 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
 
             // This causes infinite recursion / looping:
             //this._editPanel.setFocus(true);
+            this._toolbar.setEditedElement(this._editElement);
 
         } else {
+            this._toolbar.setEditedElement(null);
+
             this.setFocus(false);
 
             // this.editSize =

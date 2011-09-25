@@ -239,7 +239,6 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
 		if (null == this.mapData) {
 			return;
 		}
-		Logger.info("Applying map data to widget: " + provider.getApiString() + " -> " + mapWidget.getElement().getId());
 		if (null == this.mapData.center) {
 			this.mapData.center = new Location();
 			this.mapData.center.latitude = DEFAULT_MAP_LATITUDE;

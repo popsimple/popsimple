@@ -106,6 +106,7 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
     private void clearRegistrations()
     {
         Logger.info(this, "Clearing registrations");
+        Logger.printStack();
         this.registrationsManager.clear();
     }
 
@@ -116,6 +117,7 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
             return;
         }
         Logger.info(this, "Setting registrations");
+        Logger.printStack();
         final TextEditToolbarImpl that = this;
         this.registrationsManager.add(Event.addNativePreviewHandler(new NativePreviewHandler() {
             @Override
