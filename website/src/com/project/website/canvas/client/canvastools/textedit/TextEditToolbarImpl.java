@@ -219,6 +219,10 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
             private String getCssPropertyValue(final String cssProperty, Element testedElement)
             {
                 String value = StyleUtils.getComputedStyle(testedElement, null).getProperty(cssProperty);
+                if (null == value)
+                {
+                    return "";
+                }
                 if (cssProperty.equals("fontFamily")) {
                     // css heuristic: pick out only the first part of the value
                     // (Arial Unicode MS,Arial,sans-serif --> arial
@@ -364,7 +368,7 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
         }
     }
 
-    private static Element getTestElementFromSelection(SelectionImpl selection) 
+    private static Element getTestElementFromSelection(SelectionImpl selection)
     {
         for (int i = 0; i < selection.getRangeCount(); i++) {
             Range range = selection.getRangeAt(i);
@@ -412,7 +416,7 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
         if (0 >= selection.getRangeCount()) {
             return;
         }
-        
+
         boolean isSetResult = this.isSetInSelection(buttonInfo, selection);
 
         for (int i = 0; i < selection.getRangeCount(); i++) {
@@ -445,7 +449,7 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
         editedElement.focus();
     }
 
-    private boolean isSetInSelection(final ToolbarButtonInfo buttonInfo, SelectionImpl selection) 
+    private boolean isSetInSelection(final ToolbarButtonInfo buttonInfo, SelectionImpl selection)
     {
         Element testElement = getTestElementFromSelection(SelectionImpl.getWindowSelection());
         return testElement == null ? false : buttonInfo.isSet(testElement);
@@ -483,6 +487,10 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
             currentValue = StyleUtils.getInheritedTextDecoration(element);
         } else {
             currentValue = StyleUtils.getComputedStyle(element, null).getProperty(cssProperty);
+        }
+        if (null == currentValue)
+        {
+            return false;
         }
         for (String setValue : setValues) {
             if (setValue.equals("")) {
