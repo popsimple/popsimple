@@ -17,6 +17,7 @@ import com.project.shared.data.KeyValue;
 import com.project.shared.data.Point2D;
 import com.project.shared.data.Rectangle;
 import com.project.shared.utils.IterableUtils;
+import com.project.shared.utils.ObjectUtils;
 import com.project.shared.utils.StringUtils;
 
 public abstract class ElementUtils
@@ -280,7 +281,7 @@ public abstract class ElementUtils
         {
             Point2D imageSize = new Point2D(image.getWidth(), image.getHeight());
             // getWidth/getHeight return zero if the image size is not known. So don't set it.
-            if (false == imageSize.equals(Point2D.zero)) {
+            if (false == ObjectUtils.areEqual(imageSize, Point2D.zero)) {
                 ElementUtils.setElementSize(element, imageSize);
             }
         }
@@ -439,9 +440,9 @@ public abstract class ElementUtils
         return hasChanged;
     }
 
-    public static boolean isSpanElement(Element childElem)
+    public static boolean isSpanElement(Element elem)
     {
-        return childElem.getTagName().toLowerCase().equals("span");
+        return (null != elem) && elem.getTagName().toLowerCase().equals("span");
     }
 
     /**

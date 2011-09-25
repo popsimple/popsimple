@@ -18,6 +18,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.utils.ElementUtils;
+import com.project.shared.client.utils.EventUtils;
 import com.project.shared.client.utils.SchedulerUtils;
 import com.project.shared.client.utils.WindowUtils;
 import com.project.shared.data.Point2D;
@@ -83,9 +84,7 @@ public class FloatingToolbar extends FlowPanel
             @Override
             public void onPreviewNativeEvent(NativePreviewEvent event)
             {
-                String eventType = event.getNativeEvent().getType();
-                if (eventType.equals(KeyDownEvent.getType().getName()))
-                {
+                if (EventUtils.nativePreviewEventTypeEquals(event, KeyDownEvent.getType())) {
                     // Update the position after the element has handled the event.
                     Scheduler.get().scheduleDeferred(new ScheduledCommand() {
                         @Override public void execute() {

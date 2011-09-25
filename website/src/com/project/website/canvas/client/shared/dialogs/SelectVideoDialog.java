@@ -174,7 +174,7 @@ public class SelectVideoDialog extends Composite implements TakesValue<VideoInfo
 
     private void setManualUrl(String url)
     {
-        if (ObjectUtils.equals(this._videoInformation.url, url))
+        if (ObjectUtils.areEqual(this._videoInformation.url, url))
         {
             return;
         }

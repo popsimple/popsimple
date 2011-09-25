@@ -30,6 +30,7 @@ import com.project.shared.client.utils.UrlUtils;
 import com.project.shared.client.utils.widgets.WidgetUtils;
 import com.project.shared.data.Point2D;
 import com.project.shared.utils.CloneableUtils;
+import com.project.shared.utils.ObjectUtils;
 import com.project.shared.utils.StringUtils;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
 import com.project.website.canvas.client.canvastools.base.CanvasToolCommon;
@@ -147,7 +148,7 @@ public class ImageTool extends Composite implements CanvasTool<ImageData>
 
 	private void setImageInformation(ImageInformation imageInformation)
 	{
-	    if (data.imageInformation.equals(imageInformation))
+	    if (ObjectUtils.areEqual(data.imageInformation, imageInformation))
         {
 	        return;
         }

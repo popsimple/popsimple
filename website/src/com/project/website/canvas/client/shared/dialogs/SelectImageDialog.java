@@ -226,7 +226,7 @@ public class SelectImageDialog extends Composite implements TakesValue<ImageInfo
 
     private void setManualUrl(String url)
     {
-        if (ObjectUtils.equals(this._imageInformation.url, url))
+        if (ObjectUtils.areEqual(this._imageInformation.url, url))
         {
             return;
         }

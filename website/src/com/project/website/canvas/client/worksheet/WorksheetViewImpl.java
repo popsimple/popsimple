@@ -43,10 +43,12 @@ import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.utils.ElementUtils;
+import com.project.shared.client.utils.EventUtils;
 import com.project.shared.client.utils.HandlerUtils;
 import com.project.shared.data.Point2D;
 import com.project.shared.utils.CloneableUtils;
 import com.project.shared.utils.IterableUtils;
+import com.project.shared.utils.ObjectUtils;
 import com.project.website.canvas.client.canvastools.CursorToolboxItem;
 import com.project.website.canvas.client.canvastools.MoveToolboxItem;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
@@ -417,29 +419,30 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         }
         this.viewMode = isViewMode;
         this.viewModeSet = true;
-        for (CanvasToolFrame frame : toolFrameRegistrations.keySet()) {
+        for (CanvasToolFrame frame : this.toolFrameRegistrations.keySet()) {
             frame.setViewMode(isViewMode);
         }
         if (isViewMode) {
             this.editModeRegistrations.clear();
 
-            worksheetHeader.addStyleName(CanvasResources.INSTANCE.main().displayNone());
-            addStyleName(CanvasResources.INSTANCE.main().worksheetFullView());
-            addStyleName(CanvasResources.INSTANCE.main().worksheetModeViewOnly());
-            removeStyleName(CanvasResources.INSTANCE.main().worksheetModeEditable());
+            this.worksheetHeader.addStyleName(CanvasResources.INSTANCE.main().displayNone());
+            this.addStyleName(CanvasResources.INSTANCE.main().worksheetFullView());
+            this.addStyleName(CanvasResources.INSTANCE.main().worksheetModeViewOnly());
+            this.removeStyleName(CanvasResources.INSTANCE.main().worksheetModeEditable());
 
         } else {
             this.addEditModeRegistrations();
 
-            worksheetHeader.removeStyleName(CanvasResources.INSTANCE.main().displayNone());
-            removeStyleName(CanvasResources.INSTANCE.main().worksheetFullView());
-            removeStyleName(CanvasResources.INSTANCE.main().worksheetModeViewOnly());
-            addStyleName(CanvasResources.INSTANCE.main().worksheetModeEditable());
+            this.worksheetHeader.removeStyleName(CanvasResources.INSTANCE.main().displayNone());
+            this.removeStyleName(CanvasResources.INSTANCE.main().worksheetFullView());
+            this.removeStyleName(CanvasResources.INSTANCE.main().worksheetModeViewOnly());
+            this.addStyleName(CanvasResources.INSTANCE.main().worksheetModeEditable());
         }
     }
 
     private void addRegistrations() {
         this.addEditModeRegistrations();
+        final WorksheetViewImpl that = this;
 
         this.allModesRegistrations.add(this.optionsBackground.addClickHandler(new ClickHandler() {
             @Override
@@ -463,35 +466,16 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
                 onBackgroundImageSelected(arg);
             }
         }));
-        final WorksheetViewImpl that = this;
         this.allModesRegistrations.add(this.focusPanel.addKeyDownHandler(new KeyDownHandler(){
             @Override
             public void onKeyDown(KeyDownEvent event) {
                 that.onKeyDown(event);
             }}));
-
-        Event.addNativePreviewHandler(new NativePreviewHandler() {
-            @Override
-            public void onPreviewNativeEvent(NativePreviewEvent event) {
-                NativeEvent nativeEvent = event.getNativeEvent();
-                String type = nativeEvent.getType();
-                if (type.equals(KeyDownEvent.getType().getName())){
-                    onPreviewKeyDown(nativeEvent);
-                }
-                else if (that.activeToolboxItem instanceof MoveToolboxItem) {
-                    if (type.equals(MouseDownEvent.getType().getName())) {
-                        MouseDownEvent.fireNativeEvent(nativeEvent, worksheetPanel);
-                    }
-                    else if (type.equals(MouseUpEvent.getType().getName())) {
-                        MouseUpEvent.fireNativeEvent(nativeEvent, worksheetPanel);
-                    }
-                }
-            }
-        });
     }
 
     private void addEditModeRegistrations()
     {
+        final WorksheetViewImpl that = this;
         this.editModeRegistrations.add(this.worksheetPanel.addDomHandler(new MouseDownHandler() {
             @Override
             public void onMouseDown(MouseDownEvent event) {
@@ -509,11 +493,35 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
                 }
             }
         }, MouseDownEvent.getType()));
+
+        this.editModeRegistrations.add(Event.addNativePreviewHandler(new NativePreviewHandler() {
+            @Override
+            public void onPreviewNativeEvent(NativePreviewEvent event) {
+                NativeEvent nativeEvent = null == event ? null : event.getNativeEvent();
+                if (null == nativeEvent) {
+                    return;
+                }
+                if (EventUtils.nativePreviewEventTypeEquals(event, KeyDownEvent.getType()))
+                {
+                    onPreviewKeyDown(nativeEvent);
+                }
+                else if (that.activeToolboxItem instanceof MoveToolboxItem) {
+                    if (EventUtils.nativePreviewEventTypeEquals(event, MouseDownEvent.getType()))
+                    {
+                        MouseDownEvent.fireNativeEvent(nativeEvent, that.worksheetPanel);
+                    }
+                    else if (EventUtils.nativePreviewEventTypeEquals(event, MouseUpEvent.getType()))
+                    {
+                        MouseUpEvent.fireNativeEvent(nativeEvent, that.worksheetPanel);
+                    }
+                }
+            }
+        }));
     }
 
     private void onBackgroundImageSelected(ImageInformation arg)
     {
-        if (this.pageOptions.backgroundImage.equals(arg))
+        if (ObjectUtils.areEqual(this.pageOptions.backgroundImage, arg))
         {
             return;
         }

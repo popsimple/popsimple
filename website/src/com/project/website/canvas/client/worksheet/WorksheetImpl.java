@@ -20,6 +20,7 @@ import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.data.Point2D;
 import com.project.shared.utils.CloneableUtils;
+import com.project.shared.utils.ObjectUtils;
 import com.project.shared.utils.ThrowableUtils;
 import com.project.website.canvas.client.ToolFactories;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
@@ -397,7 +398,7 @@ public class WorksheetImpl implements Worksheet
         if (null == id) {
         	return;
         }
-        if ((null != this.page.id) && (false == this.page.id.equals(id))) {
+        if (false == ObjectUtils.areEqual(this.page.id, id)) {
             // Page id changed.
             // Change the URL hash and trigger a history load event.
             String newURL = Window.Location.createUrlBuilder().setHash(id.toString()).buildString();

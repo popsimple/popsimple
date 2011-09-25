@@ -11,6 +11,7 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.DomEvent;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseUpEvent;
@@ -31,10 +32,13 @@ import com.project.shared.client.html5.Range;
 import com.project.shared.client.html5.impl.RangeUtils;
 import com.project.shared.client.html5.impl.SelectionImpl;
 import com.project.shared.client.utils.ElementUtils;
+import com.project.shared.client.utils.EventUtils;
 import com.project.shared.client.utils.StyleUtils;
 import com.project.shared.client.utils.widgets.ListBoxUtils;
 import com.project.shared.data.funcs.Func.Action;
 import com.project.shared.utils.ListUtils;
+import com.project.shared.utils.ObjectUtils;
+import com.project.shared.utils.StringUtils;
 import com.project.website.canvas.client.resources.CanvasResources;
 
 public class TextEditToolbarImpl extends Composite implements TextEditToolbar
@@ -92,10 +96,13 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
             @Override
             public void onPreviewNativeEvent(NativePreviewEvent event)
             {
-                String eventType = event.getNativeEvent().getType();
-                if (eventType.equals(MouseDownEvent.getType().getName())
-                        || eventType.equals(MouseUpEvent.getType().getName())
-                        || eventType.equals(KeyDownEvent.getType().getName())) {
+                if (EventUtils.nativePreviewEventTypeIsAny(event,
+                        new DomEvent.Type<?>[] {
+                            MouseDownEvent.getType(),
+                            MouseUpEvent.getType(),
+                            KeyDownEvent.getType()
+                    }))
+                {
                     that.updateButtonStates();
                 }
             }
@@ -202,7 +209,7 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
                 int selectedIndex = 0;
                 for (int i = 0;  i < listBox.getItemCount(); i++)
                 {
-                    if (listBox.getValue(i).equals(value)) {
+                    if (ObjectUtils.areEqual(listBox.getValue(i), value)) {
                         selectedIndex = i;
                         found = true;
                         break;
@@ -223,7 +230,7 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
                 {
                     return "";
                 }
-                if (cssProperty.equals("fontFamily")) {
+                if (ObjectUtils.areEqual(cssProperty, "fontFamily")) {
                     // css heuristic: pick out only the first part of the value
                     // (Arial Unicode MS,Arial,sans-serif --> arial
                     value = value.split("[ ,]")[0].toLowerCase();
@@ -492,7 +499,7 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
     private Boolean isCssPropertySet(final String cssProperty, final String[] setValues, Element element)
     {
         String currentValue = null;
-        if (cssProperty.equals("textDecoration")) {
+        if (ObjectUtils.areEqual(cssProperty, "textDecoration")) {
             currentValue = StyleUtils.getInheritedTextDecoration(element);
         } else {
             currentValue = StyleUtils.getComputedStyle(element, null).getProperty(cssProperty);
@@ -502,7 +509,7 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
             return false;
         }
         for (String setValue : setValues) {
-            if (setValue.equals("")) {
+            if (ObjectUtils.areEqual(setValue, "")) {
                 if ((currentValue.equals("inherit") || (currentValue.equals("")))) {
                     // treat empty values as inherit, and only consider "" set if the css property is set or is inherit
                     return true;
