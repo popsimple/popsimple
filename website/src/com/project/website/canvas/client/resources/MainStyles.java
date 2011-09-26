@@ -116,13 +116,13 @@ public interface MainStyles extends CssResource {
 
     String taskListBody();
 
+    String taskListCreateModeCanvasStyle();
+
 //    String textEditNoToolbars();
 //
 //    String textEditToolbar();
 //
 //    String textEditViewBox();
-
-    String taskListCreateModeCanvasStyle();
 
     String taskListFooter();
 
@@ -144,13 +144,13 @@ public interface MainStyles extends CssResource {
 
     String textEditToolbar();
 
-    String textEditToolbarListBox();
+    String textEditToolbarItemTitle();
 
-	String textEditToolbarItemTitle();
+    String textEditToolbarItemWrapper();
 
-	String textEditToolbarItemWrapper();
+	String textEditToolbarListBox();
 
-    String textEditToolbarToggleButton();
+	String textEditToolbarToggleButton();
 
     String toolbox();
 
@@ -192,9 +192,9 @@ public interface MainStyles extends CssResource {
 
     String toolFrameButton();
 
-	String toolFrameButtonsPanel();
+    String toolFrameButtonsPanel();
 
-    String toolFrameCloseLink();
+	String toolFrameCloseLink();
 
     String toolFrameDragOverlayPanel();
 
@@ -241,6 +241,8 @@ public interface MainStyles extends CssResource {
     String worksheetHeader();
 
     String worksheetHeaderLeft();
+
+    String worksheetHeaderLogoutLink();
 
     String worksheetHeaderRight();
 

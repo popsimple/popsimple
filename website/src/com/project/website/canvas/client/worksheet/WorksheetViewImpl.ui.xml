@@ -15,11 +15,12 @@
                 <div class="{res.main.worksheetWelcomeLabelHolder}">
                     <g:InlineLabel ui:field="userWelcomeLabel"/>
                 </div>
-                <g:Anchor ui:field="linkInvite" href="javascript:;">Invite a friend</g:Anchor>
-                <g:Anchor ui:field="linkLogout" href="javascript:;">Logout</g:Anchor>
+                <g:Anchor ui:field="linkInvite">Invite a friend</g:Anchor>
+                <g:Anchor ui:field="linkLogout" addStyleNames="{res.main.worksheetHeaderLogoutLink}">Logout</g:Anchor>
+                |
                 <g:HTMLPanel addStyleNames="{res.main.worksheetButtons}">
-                    <g:Button  ui:field="saveButton">Save</g:Button>
-                    <g:Button  ui:field="viewButton">Preview</g:Button>
+                    <g:Anchor ui:field="viewButton">Preview</g:Anchor>
+                    <g:Anchor ui:field="saveButton"  addStyleNames="{res.main.worksheetSaveButton}">Save</g:Anchor>
                 </g:HTMLPanel>
             </div>
 		</g:HTMLPanel>

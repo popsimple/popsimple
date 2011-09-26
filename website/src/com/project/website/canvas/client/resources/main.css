@@ -16,7 +16,7 @@
 
 @def zIndexOverAllToolFrames 100;
 
-@def topBarHeight 25px;
+@def topBarHeight 21px;
 @def topBarPadding 5px;
 @def topBarTitleFontSize 1.3em;
 @def topBarTitleTextColor #aaa;
@@ -100,6 +100,7 @@
     background-color: topBarBackgroundColor;
     color: topBarTextColor;
     font-size: 1em;
+    line-height: 18px;
 }
 
 .worksheetHeaderTitle
@@ -120,6 +121,18 @@
 	text-decoration: underline;
 	color:#aaaaff;
 }
+
+
+.worksheetHeader a.worksheetHeaderLogoutLink
+{
+/*     color: #ffaaaa; */
+}
+
+.worksheetHeader a.worksheetSaveButton {
+    color: #ffaaaa;
+	width: 3em;
+}
+
 
 .worksheetFocusPanel {
 	top: 35px;
@@ -148,6 +161,11 @@
 .worksheetButtons {
 	display: inline-block;
 }
+.worksheetButtons a {
+	text-align: center;
+	display: inline-block;
+}
+
 
 .worksheetHeaderLeft
 {
@@ -174,9 +192,6 @@
     color: topBarTextColor;
     cursor: default;
     vertical-align: text-top;
-}
-
-.worksheetSaveButton {
 }
 
 
@@ -306,10 +321,10 @@
 	border-color: #CCCCCC;
 }
 
-.textEditNotFocused  {
+.textEditNotFocused, .worksheetModeViewOnly .textEditFocused  {
     border-color: transparent;
+    background-color: transparent;
 }
-
 
 
 .textEditBox {
@@ -358,25 +373,6 @@
 	margin-right: 3px;
 }
 
-
-
-/* .textEditViewBox { */
-/* 	display: none; */
-/* } */
-
-/* .worksheetModeViewOnly .textEditViewBox { */
-/*     display: inline-block; */
-/*     background-color: transparent; */
-/* } */
-
-
-/* .textEditNoToolbars { */
-
-/* } */
-
-/* .textEditToolbar { margin-top:-80px; */
-
-/* } */
 
 .textBoxCreateModeCanvasStyle {
 	cursor: text;

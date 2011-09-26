@@ -18,9 +18,11 @@ import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.utils.ElementUtils;
+import com.project.shared.client.utils.UrlUtils;
 import com.project.shared.data.Point2D;
 import com.project.shared.utils.CloneableUtils;
 import com.project.shared.utils.ObjectUtils;
+import com.project.shared.utils.QueryString;
 import com.project.shared.utils.ThrowableUtils;
 import com.project.website.canvas.client.ToolFactories;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
@@ -44,6 +46,7 @@ import com.project.website.shared.client.widgets.authentication.invite.InviteWid
 import com.project.website.shared.client.widgets.authentication.invite.InviteWidget.InviteRequestData;
 import com.project.website.shared.contracts.authentication.AuthenticationService;
 import com.project.website.shared.contracts.authentication.AuthenticationServiceAsync;
+import com.project.website.shared.data.QueryParameters;
 import com.project.website.shared.data.UserProfile;
 
 public class WorksheetImpl implements Worksheet
@@ -56,6 +59,8 @@ public class WorksheetImpl implements Worksheet
 	private CanvasTool<?> activeToolInstance;
     private ToolboxItem activeToolboxItem;
     private ArrayList<ElementData> _toolClipboard = new ArrayList<ElementData>();
+    private final RegistrationsManager viewModeRegistrations = new RegistrationsManager();
+    private boolean _inViewMode = false;
 
     public WorksheetImpl(WorksheetView view)
     {
@@ -86,7 +91,12 @@ public class WorksheetImpl implements Worksheet
 
     @Override
 	public void load(String idStr, boolean viewMode) {
-		this.view.setViewMode(viewMode);
+        if (viewMode) {
+            this.setModeView();
+        }
+        else {
+            this.setModeEdit();
+        }
 		this.load(idStr);
 	}
 
@@ -121,8 +131,7 @@ public class WorksheetImpl implements Worksheet
                 // TODO: see issue #92
                 load(result);
                 view.onSaveOperationChange(OperationStatus.SUCCESS, null);
-                String newURL = Window.Location.createUrlBuilder().setHash(result.id.toString()).buildString();
-                Window.Location.replace(newURL);
+                Window.Location.replace(buildPageUrl(result.id, false));
             }
         });
     }
@@ -206,22 +215,6 @@ public class WorksheetImpl implements Worksheet
         return toolFrame;
     }
 
-    private void enterViewMode()
-    {
-        viewModeEvent.dispatch(true);
-        view.setViewMode(true);
-        final RegistrationsManager regs = new RegistrationsManager();
-        regs.add(view.addStopOperationHandler(new SimpleEvent.Handler<Void>() {
-            @Override
-            public void onFire(Void arg)
-            {
-                view.setViewMode(false);
-                viewModeEvent.dispatch(false);
-                regs.clear();
-            }
-        }));
-    }
-
     private void escapeOperation()
     {
         this.clearActiveToolboxItem();
@@ -289,7 +282,7 @@ public class WorksheetImpl implements Worksheet
         });
     }
 
-	private void load(CanvasPage newPage)
+    private void load(CanvasPage newPage)
     {
         this.page = newPage;
         this.updateOptions(this.page.options);
@@ -359,7 +352,7 @@ public class WorksheetImpl implements Worksheet
         });
     }
 
-    private void logout()
+	private void logout()
     {
         AuthenticationServiceAsync service = getAuthService();
         service.logout(new AsyncCallback<Void>() {
@@ -475,12 +468,33 @@ public class WorksheetImpl implements Worksheet
 	    }
 	}
 
+    private void setModeEdit()
+    {
+        view.setViewMode(false);
+        viewModeEvent.dispatch(false);
+        viewModeRegistrations.clear();
+        this._inViewMode = false;
+    }
+
+    private void setModeView()
+    {
+        this._inViewMode = true;
+        viewModeEvent.dispatch(true);
+        view.setViewMode(true);
+        viewModeRegistrations.add(view.addStopOperationHandler(new SimpleEvent.Handler<Void>() {
+            @Override
+            public void onFire(Void arg)
+            {
+                setModeEdit();
+            }
+        }));
+    }
+
+
     private void setRegistrations()
     {
         view.addToolCreationRequestHandler(new Handler<WorksheetView.ToolCreationRequest>() {
-            @Override
-            public void onFire(ToolCreationRequest arg)
-            {
+            @Override public void onFire(ToolCreationRequest arg) {
             	CanvasToolFactory<? extends CanvasTool<? extends ElementData>> factory = arg.getFactory();
             	if (null == factory) {
             		return;
@@ -498,80 +512,63 @@ public class WorksheetImpl implements Worksheet
         });
 
         view.addSaveHandler(new Handler<Void>() {
-            @Override
-            public void onFire(Void arg)
-            {
+            @Override public void onFire(Void arg) {
                 save();
             }
         });
         view.addLogoutHandler(new Handler<Void>() {
-            @Override
-            public void onFire(Void arg) {
+            @Override public void onFire(Void arg) {
                 logout();
             }
         });
         view.addInviteHandler(new Handler<Void>() {
-            @Override
-            public void onFire(Void arg) {
+            @Override public void onFire(Void arg) {
                 invite();
             }
         });
 
         view.addLoadHandler(new Handler<String>() {
-            @Override
-            public void onFire(String idStr)
-            {
+            @Override public void onFire(String idStr) {
                 updateLoadedPageURL(idStr);
             }
         });
 
         view.addViewHandler(new Handler<Void>() {
-            @Override
-            public void onFire(Void arg)
-            {
-                enterViewMode();
+            @Override public void onFire(Void arg) {
+                setModeView();
             }
         });
         view.addCopyToolHandler(new Handler<ArrayList<CanvasToolFrameImpl>>() {
-            @Override
-            public void onFire(ArrayList<CanvasToolFrameImpl> arg) {
+            @Override public void onFire(ArrayList<CanvasToolFrameImpl> arg) {
                 copyToolsToClipboard(arg);
             }
         });
         view.addPasteToolHandler(new Handler<Void>() {
-            @Override
-            public void onFire(Void arg) {
+            @Override public void onFire(Void arg) {
                 pasteToolsFromClipboard();
             }
         });
         view.addOptionsUpdatedHandler(new Handler<CanvasPageOptions>() {
-            @Override
-            public void onFire(CanvasPageOptions arg)
-            {
+            @Override public void onFire(CanvasPageOptions arg) {
                 updateOptions(arg);
             }
         });
         view.addStopOperationHandler(new Handler<Void>() {
-            @Override
-            public void onFire(Void arg)
-            {
+            @Override public void onFire(Void arg) {
                 escapeOperation();
             }
         });
         view.addActiveToolFrameChangedHandler(new Handler<CanvasToolFrameImpl>() {
-			@Override
-			public void onFire(CanvasToolFrameImpl frame) {
+			@Override public void onFire(CanvasToolFrameImpl frame) {
 		    	setActiveToolInstance(frame);
 			}
 		});
         view.addRemoveToolsRequest(new Handler<ArrayList<CanvasToolFrameImpl>>() {
-			@Override
-			public void onFire(ArrayList<CanvasToolFrameImpl> arg) {
+			@Override public void onFire(ArrayList<CanvasToolFrameImpl> arg) {
 				removeToolInstances(arg);
 			}
 		});
     }
-
 
     private Collection<ElementData> sortByZIndex(Collection<ElementData> elements)
     {
@@ -591,15 +588,14 @@ public class WorksheetImpl implements Worksheet
         if (false == ObjectUtils.areEqual(this.page.id, id)) {
             // Page id changed.
             // Change the URL hash and trigger a history load event.
-            String newURL = Window.Location.createUrlBuilder().setHash(id.toString()).buildString();
-            Window.Location.replace(newURL);
+            Window.Location.replace(this.buildPageUrl(id, this._inViewMode));
             return;
         }
         // Page id not changed, just reload
         this.load(idStr);
     }
 
-    private void updateOptions(CanvasPageOptions value)
+	private void updateOptions(CanvasPageOptions value)
     {
         if (null == value) {
             return;
@@ -608,7 +604,7 @@ public class WorksheetImpl implements Worksheet
         view.setOptions(value);
     }
 
-	private ElementData updateToolData(CanvasToolFrameImpl toolFrame){
+    private ElementData updateToolData(CanvasToolFrameImpl toolFrame){
         ElementData toolData = toolFrame.getTool().getValue();
         Element frameElement = toolFrame.getElement();
         toolData.zIndex = ZIndexAllocator.getElementZIndex(frameElement);
@@ -633,6 +629,17 @@ public class WorksheetImpl implements Worksheet
                 that.view.setUserProfile(result);
             }
         });
+    }
+
+    private String buildPageUrl(long pageId, boolean viewMode)
+    {
+        QueryString query = QueryString.create(UrlUtils.getUrlEncoder());
+        query.append(QueryParameters.PAGE_ID, pageId);
+        if (viewMode) {
+            query.append(QueryParameters.VIEW_MODE_FLAG, "");
+        }
+        String newURL = Window.Location.createUrlBuilder().setHash(query.toString()).buildString();
+        return newURL;
     }
 }
 
