@@ -70,6 +70,11 @@
 			height: 16px;
 			display: inline-block;
 		}
+		.acceptCropButton{
+			margin-left: 5px;
+			top: -2px;
+			position: relative;
+		}
     </ui:style>
     <g:HTMLPanel ui:field="rootPanel" addStyleNames="{res.main.cropSiteBox}">
         <g:FlowPanel ui:field="frameContainer" addStyleNames="{style.frameContainer}">
@@ -89,9 +94,9 @@
                 <my:ToggleButtonPanel addStyleNames="{style.toggleButtonPanel}">
 	                <g:ToggleButton ui:field="moveButton" addStyleNames="{res.main.cropMoveButton} {style.optionToggleButton}"></g:ToggleButton>
 	                <g:ToggleButton ui:field="browseButton" addStyleNames="{res.main.cropBrowseButton} {style.optionToggleButton}"></g:ToggleButton>
-	                <g:ToggleButton ui:field="selectButton" addStyleNames="{res.main.cropSelectButton} {style.optionToggleButton}"></g:ToggleButton>
+	                <g:ToggleButton ui:field="cropButton" addStyleNames="{res.main.cropCutButton} {style.optionToggleButton}"></g:ToggleButton>
                 </my:ToggleButtonPanel>
-                <g:ToggleButton ui:field="cutButton" addStyleNames="{res.main.cropCutButton} {style.optionToggleButton}"></g:ToggleButton>
+                <g:Button ui:field="acceptCropButton" addStyleNames="{style.acceptCropButton}">Crop</g:Button>
             </g:FlowPanel>
         </g:FlowPanel>
     </g:HTMLPanel>
