@@ -15,7 +15,6 @@ public class DocumentUtils
     {
         Element element = DocumentUtils.getActiveElement();
         while (null != element) {
-            Logger.info(element.toString() + " : " + element.getInnerHTML());
             if (rootElem == element) {
                 return true;
             }
