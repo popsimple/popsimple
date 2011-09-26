@@ -118,13 +118,13 @@ public interface MainStyles extends CssResource {
 
     String taskListCreateModeCanvasStyle();
 
+    String taskListFooter();
+
 //    String textEditNoToolbars();
 //
 //    String textEditToolbar();
 //
 //    String textEditViewBox();
-
-    String taskListFooter();
 
     String taskListHeader();
 
@@ -148,9 +148,11 @@ public interface MainStyles extends CssResource {
 
     String textEditToolbarItemWrapper();
 
-	String textEditToolbarListBox();
+    String textEditToolbarListBox();
 
 	String textEditToolbarToggleButton();
+
+	String textSelectionDisabled();
 
     String toolbox();
 
