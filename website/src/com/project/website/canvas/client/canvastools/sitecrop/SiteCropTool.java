@@ -226,7 +226,7 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
                     {
                         return;
                     }
-                    NativeUtils.disableTextSelectInternal(blockPanel.getElement(), true);
+                    ElementUtils.setTextSelectionEnabled(blockPanel.getElement(), true);
                     Handler<Point2D> moveHandler = new Handler<Point2D>() {
                         @Override
                         public void onFire(Point2D arg) {
@@ -262,7 +262,7 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
                     {
                         return;
                     }
-                    NativeUtils.disableTextSelectInternal(blockPanel.getElement(), true);
+                    ElementUtils.setTextSelectionEnabled(blockPanel.getElement(), true);
                     acceptCropButton.setVisible(true);
                     _frameSelectionManager.startSelectionDrag(event);
                 }
