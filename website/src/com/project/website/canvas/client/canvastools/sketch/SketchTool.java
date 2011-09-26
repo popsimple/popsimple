@@ -16,6 +16,8 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.handlers.RegistrationsManager;
+import com.project.shared.client.utils.ElementUtils;
+import com.project.shared.client.utils.EventUtils;
 import com.project.shared.data.Point2D;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
 import com.project.website.canvas.shared.data.ElementData;
@@ -40,7 +42,10 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
         final SketchTool that = this;
         this.registrationsManager.add(this.addDomHandler(new MouseDownHandler(){
             @Override public void onMouseDown(MouseDownEvent event) {
-                that._currentPath = new Path(event.getClientX(), event.getClientY());
+                Point2D pos = EventUtils.getCurrentMousePos().minus(ElementUtils.getElementAbsolutePosition(that.getElement()));
+                that._currentPath = new Path(pos.getX(), pos.getY());
+                that._currentPath.setStrokeColor("#000000");
+                that._currentPath.setFillOpacity(0);
                 that.add(that._currentPath);
             }}, MouseDownEvent.getType()));
         
@@ -52,7 +57,8 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
         this.registrationsManager.add(this.addDomHandler(new MouseMoveHandler(){
             @Override public void onMouseMove(MouseMoveEvent event) {
                 if (null != that._currentPath) {
-                    that._currentPath.lineTo(event.getClientX(), event.getClientY());
+                    Point2D pos = EventUtils.getCurrentMousePos().minus(ElementUtils.getElementAbsolutePosition(that.getElement()));
+                    that._currentPath.lineTo(pos.getX(), pos.getY());
                 }
             }}, MouseMoveEvent.getType()));
     }
