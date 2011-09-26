@@ -84,7 +84,7 @@ public class VideoTool extends Composite implements CanvasTool<VideoData>
 
         searchProviders.addAll(videoSearchProviders);
 
-        WidgetUtils.disableDrag(this);
+        WidgetUtils.mouseDownPreventDefault(this);
         super.addStyleName(CanvasResources.INSTANCE.main().videoToolEmpty());
         //this.videoFrame.setVisible(false);
     }

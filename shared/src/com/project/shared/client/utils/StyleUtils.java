@@ -265,6 +265,51 @@ public class StyleUtils
     }
 
 
+    static void setPropertyForAllVendors(Style style, String property, String transformValue)
+    {
+        String propertyCapitalized = property.substring(0, 1).toUpperCase() + property.substring(1);
+        style.setProperty(property, transformValue);
+        style.setProperty("Moz" + propertyCapitalized, transformValue);
+        style.setProperty("Webkit" + propertyCapitalized, transformValue);
+        style.setProperty("Khtml" + propertyCapitalized, transformValue);
+        style.setProperty("O" + propertyCapitalized, transformValue);
+        style.setProperty("Ms" + propertyCapitalized, transformValue);
+        StyleUtils.cssSetMSProperty(style, property, transformValue);
+    }
+
+    static void clearPropertyForAllVendors(Style style, String property)
+    {
+        String propertyCapitalized = property.substring(0, 1).toUpperCase() + property.substring(1);
+        style.clearProperty(property);
+        style.clearProperty("Moz" + propertyCapitalized);
+        style.clearProperty("Webkit" + propertyCapitalized);
+        style.clearProperty("Khtml" + propertyCapitalized);
+        style.clearProperty("O" + propertyCapitalized);
+        style.clearProperty("Ms" + propertyCapitalized);
+        StyleUtils.cssClearMSProperty(style, property);
+    }
+
+    private static final native void cssSetMSProperty(Style style, String name, String value) /*-{
+        style['-ms-' + name] = value;
+    }-*/;
+
+        private static final native void cssClearMSProperty(Style style, String name) /*-{
+        style['-ms-' + name] = "";
+    }-*/;
+
+
+
+    public static void setTextSelectionEnabled(Style style, boolean isEnabled)
+    {
+        if (isEnabled) {
+            clearPropertyForAllVendors(style, "userSelect");
+        }
+        else {
+            setPropertyForAllVendors(style, "userSelect", "none");
+        }
+    }
+
+
     public static Integer fromPXUnitString(String cssPxUnitNumStr)
     {
         String PX_SUFFIX = "px";

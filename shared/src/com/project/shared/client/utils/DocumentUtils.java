@@ -1,6 +1,7 @@
 package com.project.shared.client.utils;
 
 import com.google.gwt.dom.client.Element;
+import com.project.shared.utils.loggers.Logger;
 
 public class DocumentUtils
 {
@@ -8,4 +9,18 @@ public class DocumentUtils
     public static final native Element getActiveElement() /*-{
         return $wnd.document.activeElement;
     }-*/;
+
+
+    public static boolean isActiveElementTree(Element rootElem)
+    {
+        Element element = DocumentUtils.getActiveElement();
+        while (null != element) {
+            Logger.info(element.toString() + " : " + element.getInnerHTML());
+            if (rootElem == element) {
+                return true;
+            }
+            element = element.getParentElement();
+        }
+        return false;
+    }
 }

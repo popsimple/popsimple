@@ -75,7 +75,6 @@ public class ImageTool extends Composite implements CanvasTool<ImageData>
 
         searchProviders.addAll(imageSearchProviders);
 
-        WidgetUtils.disableDrag(this);
         WidgetUtils.stopClickPropagation(this.optionsLabel);
 
         this.addStyleName(CanvasResources.INSTANCE.main().imageToolDefault());
@@ -91,8 +90,7 @@ public class ImageTool extends Composite implements CanvasTool<ImageData>
     private void registerHandlers() {
         registrationsManager.clear();
         registrationsManager.add(this.addDomHandler(new MouseDownHandler() {
-            @Override
-            public void onMouseDown(MouseDownEvent event) {
+            @Override public void onMouseDown(MouseDownEvent event) {
                 moveStartEvent.dispatch(event);
             }
         }, MouseDownEvent.getType()));
@@ -102,12 +100,15 @@ public class ImageTool extends Composite implements CanvasTool<ImageData>
     {
         editModeRegistrationsManager.clear();
         editModeRegistrationsManager.add(this.optionsLabel.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
+            @Override public void onClick(ClickEvent event) {
                 uploadImage();
-
             }
         }));
+        editModeRegistrationsManager.add(this.addDomHandler(new ClickHandler() {
+            @Override public void onClick(ClickEvent event) {
+                uploadImage();
+            }
+        }, ClickEvent.getType()));
     }
 
     private void uploadImage() {

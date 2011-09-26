@@ -165,6 +165,14 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
         this.updateButtonStates();
     }
 
+    protected boolean isActiveElementTree()
+    {
+        if (null == this._editedWidget) {
+            return false;
+        }
+        return DocumentUtils.isActiveElementTree(this._editedWidget.getElement());
+    }
+
     private void initButtons()
     {
         // setSimpleCssValueButton("fontWeight", "bold", "Bold");
@@ -512,21 +520,6 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
         return this._editedWidget.getElement();
     }
 
-    private boolean isActiveElementTree()
-    {
-        if (null == this._editedWidget) {
-            return false;
-        }
-        Element rootElem = this._editedWidget.getElement();
-        Element element = DocumentUtils.getActiveElement();
-        while (null != element) {
-            if (rootElem == element) {
-                return true;
-            }
-            element = element.getParentElement();
-        }
-        return false;
-    }
 
 
     private void buttonPressed(final ToolbarButtonInfo buttonInfo)

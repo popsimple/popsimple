@@ -16,7 +16,6 @@ import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
-import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -31,6 +30,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.handlers.RegistrationsManager;
+import com.project.shared.client.utils.DocumentUtils;
 import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.NativeUtils;
 import com.project.shared.client.utils.SchedulerUtils;
@@ -89,7 +89,6 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
     protected final SimpleEvent<MouseEvent<?>> moveStartRequest = new SimpleEvent<MouseEvent<?>>();
     protected final SimpleEvent<MouseEvent<?>> resizeStartRequest = new SimpleEvent<MouseEvent<?>>();
     protected final SimpleEvent<MouseEvent<?>> rotateStartRequest = new SimpleEvent<MouseEvent<?>>();
-    protected final SimpleEvent<Void> selectRequest = new SimpleEvent<Void>();
 
     private final RegistrationsManager frameRegs = new RegistrationsManager();
     private final RegistrationsManager toolRegs = new RegistrationsManager();
@@ -111,7 +110,7 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
         WidgetUtils.stopClickPropagation(this.moveBackLink.asWidget());
         WidgetUtils.stopClickPropagation(this.moveFrontLink.asWidget());
 
-        NativeUtils.disableTextSelectInternal(this.buttonsPanel.getElement(), true);
+        StyleUtils.setTextSelectionEnabled(this.buttonsPanel.getElement().getStyle(), false);
 
         this.rotatePanel.setVisible(tool.canRotate());
         this.resizePanel.setVisible(tool.getResizeMode() != ResizeMode.NONE);
@@ -157,19 +156,6 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
 
 		frameRegs.clear();
 
-		frameRegs.add(this.addAttachHandler(new AttachEvent.Handler() {
-            @Override public void onAttachOrDetach(AttachEvent event) {
-                if (null == that.floatingToolbar) {
-                    return;
-                }
-                if (event.isAttached()) {
-                    RootPanel.get().add(that.floatingToolbar);
-                }
-                else {
-                    that.floatingToolbar.removeFromParent();
-                }
-        }}));
-
 		frameRegs.add(this.toolPanel. addDomHandler(new KeyDownHandler(){
             @Override public void onKeyDown(KeyDownEvent event) {
                 //Stop propogation of KeyDown events from the toolframe so that the worksheet
@@ -179,49 +165,50 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
 
 		frameRegs.add(this.closeLink.addClickHandler(new ClickHandler() {
             @Override public void onClick(ClickEvent event) {
-                closeRequest.dispatch(null);
+                that.closeRequest.dispatch(null);
         }}));
 
 		frameRegs.add(this.moveBackLink.addClickHandler(new ClickHandler() {
             @Override public void onClick(ClickEvent event) {
-                moveBackRequest.dispatch(null);
+                that.moveBackRequest.dispatch(null);
         }}));
 
 		frameRegs.add(this.moveFrontLink.addClickHandler(new ClickHandler() {
             @Override public void onClick(ClickEvent event) {
-                moveFrontRequest.dispatch(null);
+                that.moveFrontRequest.dispatch(null);
         }}));
 
 		frameRegs.add(this.resizePanel.addDomHandler(new MouseDownHandler() {
             @Override public void onMouseDown(MouseDownEvent event) {
-                resizeStartRequest.dispatch(event);
+                that.resizeStartRequest.dispatch(event);
         }}, MouseDownEvent.getType()));
 
 		frameRegs.add(this.rotatePanel.addDomHandler(new MouseDownHandler() {
             @Override public void onMouseDown(MouseDownEvent event) {
-                rotateStartRequest.dispatch(event);
+                that.rotateStartRequest.dispatch(event);
         }}, MouseDownEvent.getType()));
 
 		frameRegs.add(this.frameHeader.addDomHandler(new MouseDownHandler() {
             @Override public void onMouseDown(final MouseDownEvent event) {
-                onHeaderMouseDown(event);
+                that.onHeaderMouseDown(event);
         }}, MouseDownEvent.getType()));
 
 		frameRegs.add(tool.addSelfMoveRequestEventHandler(new Handler<Point2D>() {
 			@Override public void onFire(Point2D offset) {
-				toolSelfMoveRequest(offset);
+			    that.toolSelfMoveRequest(offset);
 		}}));
 
 		frameRegs.add(this.addDomHandler(new MouseDownHandler(){
 			@Override public void onMouseDown(MouseDownEvent event) {
-			    onToolFrameSelected(event);
+			    that.onToolFrameSelected(event);
 		}}, MouseDownEvent.getType()));
 	}
 
 	private void onToolFrameSelected(MouseDownEvent event)
 	{
-	    this.selectRequest.dispatch(null);
-	    focusPanel.setFocus(true); // take away focus from any others
+	    if (false == DocumentUtils.isActiveElementTree(this.getElement())) {
+	        focusPanel.setFocus(true); // take away focus from any others
+	    }
 	}
 
 	private void onHeaderMouseDown(MouseDownEvent event)

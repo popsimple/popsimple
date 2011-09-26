@@ -32,7 +32,6 @@ public abstract class ElementUtils
         return NodeUtils.fromNodeList(element.getChildNodes());
     }
 
-
     public static boolean areOverlappingElements(Element element1, Element element2) {
         // TODO: fix bugs in Rectangle and use isOverlapping instead of isExternalCircleOverlapping
         return ElementUtils.getElementAbsoluteRectangle(element1).isExternalCircleOverlapping(
@@ -74,12 +73,7 @@ public abstract class ElementUtils
     }
 
 	private static void setTransformOrigin(Element element, String originValue) {
-		final Style style = element.getStyle();
-        style.setProperty("transformOrigin", originValue);
-        style.setProperty("MozTransformOrigin", originValue);
-        style.setProperty("WebkitTransformOrigin", originValue);
-        style.setProperty("MsTransformOrigin", originValue);
-        cssSetMSProperty(element, "transform-origin", originValue);
+	    StyleUtils.setPropertyForAllVendors(element.getStyle(), "transformOrigin", originValue);
 	}
 
     public static void resetTransformOrigin(Element element) {
@@ -94,18 +88,8 @@ public abstract class ElementUtils
 
     private static void cssSetRotation(Element element, double degrees)
     {
-        String transformValue = "rotate(" + degrees + "deg)";
-        final Style style = element.getStyle();
-        style.setProperty("transform", transformValue);
-        style.setProperty("MozTransform", transformValue);
-        style.setProperty("WebkitTransform", transformValue);
-        style.setProperty("MsTransform", transformValue);
-        cssSetMSProperty(element, "transform", transformValue);
+        StyleUtils.setPropertyForAllVendors(element.getStyle(), "transform", "rotate(" + degrees + "deg)");
     }
-
-    private static final native void cssSetMSProperty(Element element, String name, String value) /*-{
-        element.style['-ms-' + name] = value;
-    }-*/;
 
     /**
      * Calculates the position of the mouse event relative to a given element.
