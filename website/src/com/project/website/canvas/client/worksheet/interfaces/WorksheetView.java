@@ -92,8 +92,6 @@ public interface WorksheetView extends IsWidget
      */
     void addToolInstanceWidget(final CanvasToolFrameImpl toolFrame, Transform2D transform, Point2D additionalOffset);
 
-    HandlerRegistration addViewHandler(SimpleEvent.Handler<Void> handler);
-
     void clearActiveToolboxItem();
 
     void onLoadOperationChange(OperationStatus status, String reason);
@@ -121,5 +119,7 @@ public interface WorksheetView extends IsWidget
     void setUserProfile(UserProfile result);
 
     ArrayList<CanvasToolFrameImpl> getToolFrames();
+
+    void setViewLinkTargetHistoryToken(String targetHistoryToken);
 
 }

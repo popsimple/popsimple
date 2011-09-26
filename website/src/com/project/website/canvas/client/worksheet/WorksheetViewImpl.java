@@ -36,6 +36,7 @@ import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent;
@@ -94,7 +95,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     Anchor saveButton;
 
     @UiField
-    Anchor viewButton;
+    Hyperlink viewButton;
 
     @UiField
     FlowPanel worksheetBackground;
@@ -297,11 +298,6 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     }
 
     @Override
-    public HandlerRegistration addViewHandler(Handler<Void> handler) {
-        return viewButton.addClickHandler(HandlerUtils.asClickHandler(handler));
-    }
-
-    @Override
     public void clearActiveToolboxItem() {
         clearFloatingWidget();
 
@@ -319,6 +315,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         }
     }
 
+    @Override
     public void clearToolFrameSelection() {
         ArrayList<CanvasToolFrameImpl> framesToClear = new ArrayList<CanvasToolFrameImpl>(this.selectedTools);
         for (CanvasToolFrameImpl toolFrame : framesToClear) {
@@ -331,6 +328,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         return new ArrayList<CanvasToolFrameImpl>(this.toolFrameRegistrations.keySet());
     }
 
+    @Override
     public boolean isToolFrameSelected(CanvasToolFrame toolFrame) {
         return this.selectedTools.contains(toolFrame);
     }
@@ -372,6 +370,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         }
     }
 
+    @Override
     public void selectToolFrame(CanvasToolFrameImpl toolFrame) {
         this.selectedTools.add(toolFrame);
         toolFrame.addStyleName(CanvasResources.INSTANCE.main().selected());
@@ -466,7 +465,13 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         }
     }
 
+    @Override
+    public void setViewLinkTargetHistoryToken(String targetHistoryToken)
+    {
+        this.viewButton.setTargetHistoryToken(targetHistoryToken);
+    }
 
+    @Override
     public void unSelectToolFrame(CanvasToolFrameImpl toolFrame) {
         this.selectedTools.remove(toolFrame);
         toolFrame.removeStyleName(CanvasResources.INSTANCE.main().selected());
