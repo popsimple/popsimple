@@ -151,10 +151,12 @@ public class WorksheetImpl implements Worksheet
         }
     }
 
-    private QueryString buildPageQueryString(long pageId, boolean viewMode)
+    private QueryString buildPageQueryString(Long pageId, boolean viewMode)
     {
         QueryString query = QueryString.create(UrlUtils.getUrlEncoder());
-        query.append(QueryParameters.PAGE_ID, pageId);
+        if (null != pageId) {
+            query.append(QueryParameters.PAGE_ID, pageId);
+        }
         if (viewMode) {
             query.append(QueryParameters.VIEW_MODE_FLAG, (String)null);
         }
@@ -228,6 +230,7 @@ public class WorksheetImpl implements Worksheet
     {
         CanvasToolFactory<? extends CanvasTool<? extends ElementData>> factory = ToolFactories.INSTANCE.get(newElement.factoryUniqueId);
         CanvasToolFrameImpl toolFrame = this.createToolInstance(newElement.transform, factory, false);
+        toolFrame.setViewMode(this._inViewMode);
         toolFrame.getTool().setElementData(newElement);
         toolFrame.setActive(false);
         return toolFrame;
@@ -303,7 +306,6 @@ public class WorksheetImpl implements Worksheet
 	private void load(CanvasPage newPage)
     {
         this.page = newPage;
-        this.view.setViewLinkTargetHistoryToken(this.buildPageQueryString(this.page.id, true).toString());
         this.updateOptions(this.page.options);
 
         HashMap<Long, ElementData> newElements = new HashMap<Long, ElementData>();
@@ -338,6 +340,7 @@ public class WorksheetImpl implements Worksheet
     private void load(Long id)
     {
         CanvasServiceAsync service = (CanvasServiceAsync) GWT.create(CanvasService.class);
+        this.view.setViewLinkTargetHistoryToken(this.buildPageQueryString(id, true).toString());
 
         if (null == id) {
             if (null != this.page.id) {
@@ -610,9 +613,8 @@ public class WorksheetImpl implements Worksheet
 
 	private void updateHistoryToken()
     {
-        if ((null != this.page) && (null != page.id)) {
-            History.newItem(buildPageQueryString(page.id, this._inViewMode).toString(), false);
-        }
+	    Long id = null == this.page ? null : this.page.id;
+        History.newItem(buildPageQueryString(id, this._inViewMode).toString(), false);
     }
 
     private void updateLoadedPageURL(String idStr)

@@ -57,6 +57,7 @@ public class ImageTool extends Composite implements CanvasTool<ImageData>
 
     private final SimpleEvent<MouseEvent<?>> moveStartEvent = new SimpleEvent<MouseEvent<?>>();
     private final RegistrationsManager registrationsManager = new RegistrationsManager();
+    private final RegistrationsManager editModeRegistrationsManager = new RegistrationsManager();
 
     private ImageData data = null;
     private SelectImageDialog selectImageDialog;
@@ -75,32 +76,38 @@ public class ImageTool extends Composite implements CanvasTool<ImageData>
         searchProviders.addAll(imageSearchProviders);
 
         WidgetUtils.disableDrag(this);
+        WidgetUtils.stopClickPropagation(this.optionsLabel);
+
         this.addStyleName(CanvasResources.INSTANCE.main().imageToolDefault());
         this.addStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
     }
 
-    @Override
+	@Override
     public void bind() {
+        this.registerHandlers();
         this.setViewMode(viewMode); // do whatever bindings necessary for our mode
     }
 
-    private void reRegisterHandlers() {
-        WidgetUtils.stopClickPropagation(this.optionsLabel);
+    private void registerHandlers() {
         registrationsManager.clear();
-
-        registrationsManager.add(this.optionsLabel.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                uploadImage();
-
-            }
-        }));
         registrationsManager.add(this.addDomHandler(new MouseDownHandler() {
             @Override
             public void onMouseDown(MouseDownEvent event) {
                 moveStartEvent.dispatch(event);
             }
         }, MouseDownEvent.getType()));
+    }
+
+    private void setEditModeRegistrations()
+    {
+        editModeRegistrationsManager.clear();
+        editModeRegistrationsManager.add(this.optionsLabel.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                uploadImage();
+
+            }
+        }));
     }
 
     private void uploadImage() {
@@ -154,8 +161,8 @@ public class ImageTool extends Composite implements CanvasTool<ImageData>
         }
 	    //Make sure we don't set arbitrary html or invalid urls
 	    imageInformation.url = UrlUtils.encodeOnce(imageInformation.url);
-	    data.imageInformation = imageInformation;
-        setImage(imageInformation.options.useOriginalSize);
+	    this.data.imageInformation = imageInformation;
+	    this.updateImageFromData(imageInformation.options.useOriginalSize);
 	}
 
     @Override
@@ -163,7 +170,8 @@ public class ImageTool extends Composite implements CanvasTool<ImageData>
         // do nothing.
     }
 
-    private void setImage(boolean autoSize) {
+    private void updateImageFromData(boolean autoSize) {
+        this.refreshVisibility();
         if (StringUtils.isWhitespaceOrNull(this.data.imageInformation.url)) {
             this.addStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
             this.removeStyleName(CanvasResources.INSTANCE.main().imageToolSet());
@@ -191,7 +199,7 @@ public class ImageTool extends Composite implements CanvasTool<ImageData>
     @Override
     public void setValue(ImageData data) {
         this.data = data;
-        this.setImage(false);
+        this.updateImageFromData(false);
     }
 
     @Override
@@ -225,15 +233,23 @@ public class ImageTool extends Composite implements CanvasTool<ImageData>
     public void setViewMode(boolean isViewMode)
     {
         this.viewMode = isViewMode;
+        this.refreshVisibility();
         if (isViewMode) {
-            registrationsManager.clear();
-            if (StringUtils.isWhitespaceOrNull(this.data.imageInformation.url)) {
-                this.setVisible(false);
-            }
+            editModeRegistrationsManager.clear();
         }
         else {
             this.setVisible(true);
-            reRegisterHandlers();
+            setEditModeRegistrations();
+        }
+    }
+
+    private void refreshVisibility()
+    {
+        if ((this.viewMode) && (StringUtils.isWhitespaceOrNull(this.data.imageInformation.url))) {
+            this.setVisible(false);
+        }
+        else {
+            this.setVisible(true);
         }
     }
 
