@@ -9,6 +9,8 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.DoubleClickEvent;
+import com.google.gwt.event.dom.client.DoubleClickHandler;
 import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
@@ -104,11 +106,12 @@ public class ImageTool extends Composite implements CanvasTool<ImageData>
                 uploadImage();
             }
         }));
-        editModeRegistrationsManager.add(this.addDomHandler(new ClickHandler() {
-            @Override public void onClick(ClickEvent event) {
-                uploadImage();
-            }
-        }, ClickEvent.getType()));
+        editModeRegistrationsManager.add(this.addDomHandler(new DoubleClickHandler() {
+			@Override
+			public void onDoubleClick(DoubleClickEvent event) {
+				uploadImage();
+			}
+		}, DoubleClickEvent.getType()));
     }
 
     private void uploadImage() {
