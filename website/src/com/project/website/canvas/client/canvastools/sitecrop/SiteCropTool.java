@@ -34,7 +34,6 @@ import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.handlers.SpecificKeyPressHandler;
 import com.project.shared.client.utils.ElementUtils;
-import com.project.shared.client.utils.StyleUtils;
 import com.project.shared.client.utils.widgets.WidgetUtils;
 import com.project.shared.data.Point2D;
 import com.project.shared.data.Rectangle;
@@ -169,7 +168,8 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
                 {
                     return;
                 }
-                StyleUtils.setTextSelectionEnabled(blockPanel.getElement().getStyle(), false);
+                ElementUtils.setTextSelectionEnabled(blockPanel.getElement(), false);
+
                 Handler<Point2D> moveHandler = new Handler<Point2D>() {
                     @Override
                     public void onFire(Point2D arg) {
@@ -196,7 +196,7 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
                 {
                     return;
                 }
-                StyleUtils.setTextSelectionEnabled(blockPanel.getElement().getStyle(), false);
+                ElementUtils.setTextSelectionEnabled(blockPanel.getElement(), false);
                 _frameSelectionManager.startSelectionDrag(event);
             }
         }, MouseDownEvent.getType());

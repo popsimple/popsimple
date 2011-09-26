@@ -32,7 +32,6 @@ import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.utils.DocumentUtils;
 import com.project.shared.client.utils.ElementUtils;
-import com.project.shared.client.utils.NativeUtils;
 import com.project.shared.client.utils.SchedulerUtils;
 import com.project.shared.client.utils.StyleUtils;
 import com.project.shared.client.utils.widgets.WidgetUtils;
@@ -110,7 +109,7 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
         WidgetUtils.stopClickPropagation(this.moveBackLink.asWidget());
         WidgetUtils.stopClickPropagation(this.moveFrontLink.asWidget());
 
-        StyleUtils.setTextSelectionEnabled(this.buttonsPanel.getElement().getStyle(), false);
+        ElementUtils.setTextSelectionEnabled(this.buttonsPanel.getElement(), false);
 
         this.rotatePanel.setVisible(tool.canRotate());
         this.resizePanel.setVisible(tool.getResizeMode() != ResizeMode.NONE);

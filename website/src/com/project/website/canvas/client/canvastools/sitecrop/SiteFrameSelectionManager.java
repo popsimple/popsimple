@@ -6,12 +6,9 @@ import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.utils.ElementUtils;
-import com.project.shared.client.utils.NativeUtils;
-import com.project.shared.client.utils.StyleUtils;
 import com.project.shared.data.Point2D;
 import com.project.shared.data.Rectangle;
 import com.project.shared.utils.RectangleUtils;
-import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.client.worksheet.ElementDragManagerImpl;
 import com.project.website.canvas.client.worksheet.interfaces.ElementDragManager.StopCondition;
 
@@ -29,7 +26,7 @@ public class SiteFrameSelectionManager {
 	}
 
 	public void startSelectionDrag(MouseDownEvent event) {
-	    StyleUtils.setTextSelectionEnabled(_container.getElement().getStyle(), false);
+        ElementUtils.setTextSelectionEnabled(_container.getElement(), false);
 
 		final Point2D initialPosition =
 			ElementUtils.getRelativePosition(event, this._container.getElement());

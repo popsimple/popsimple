@@ -8,7 +8,6 @@ import com.project.shared.data.funcs.Func;
 public class NativeUtils
 {
 
-
     public static boolean keyIsEnter(KeyPressEvent event)
     {
         return event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ENTER;

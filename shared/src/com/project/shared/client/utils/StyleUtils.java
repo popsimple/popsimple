@@ -265,16 +265,16 @@ public class StyleUtils
     }
 
 
-    static void setPropertyForAllVendors(Style style, String property, String transformValue)
+    static void setPropertyForAllVendors(Style style, String property, String value)
     {
         String propertyCapitalized = property.substring(0, 1).toUpperCase() + property.substring(1);
-        style.setProperty(property, transformValue);
-        style.setProperty("Moz" + propertyCapitalized, transformValue);
-        style.setProperty("Webkit" + propertyCapitalized, transformValue);
-        style.setProperty("Khtml" + propertyCapitalized, transformValue);
-        style.setProperty("O" + propertyCapitalized, transformValue);
-        style.setProperty("Ms" + propertyCapitalized, transformValue);
-        StyleUtils.cssSetMSProperty(style, property, transformValue);
+        style.setProperty(property, value);
+        style.setProperty("Moz" + propertyCapitalized, value);
+        style.setProperty("Webkit" + propertyCapitalized, value);
+        style.setProperty("Khtml" + propertyCapitalized, value);
+        style.setProperty("O" + propertyCapitalized, value);
+        style.setProperty("Ms" + propertyCapitalized, value);
+        StyleUtils.cssSetMSProperty(style, StringUtils.splitCamelCase(property, "-", true), value);
     }
 
     static void clearPropertyForAllVendors(Style style, String property)
@@ -286,7 +286,7 @@ public class StyleUtils
         style.clearProperty("Khtml" + propertyCapitalized);
         style.clearProperty("O" + propertyCapitalized);
         style.clearProperty("Ms" + propertyCapitalized);
-        StyleUtils.cssClearMSProperty(style, property);
+        StyleUtils.cssClearMSProperty(style, StringUtils.splitCamelCase(property, "-", true));
     }
 
     private static final native void cssSetMSProperty(Style style, String name, String value) /*-{

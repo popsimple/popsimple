@@ -91,6 +91,35 @@ public abstract class ElementUtils
         StyleUtils.setPropertyForAllVendors(element.getStyle(), "transform", "rotate(" + degrees + "deg)");
     }
 
+    public static void setTextSelectionEnabled(Element element, boolean isEnabled)
+    {
+        StyleUtils.setTextSelectionEnabled(element.getStyle(), isEnabled);
+        ElementUtils.setDisabledOnDragHandler(element, false == isEnabled);
+        ElementUtils.setDisabledOnSelectStartHandler(element, false == isEnabled);
+    }
+
+    public static native final void setDisabledOnDragHandler(Element element, boolean disabled) /*-{
+        if (disabled) {
+            element.ondrag = function() {
+                return false;
+            };
+        }
+        else {
+            element.ondrag = null;
+        }
+    }-*/;
+
+    public static native final void setDisabledOnSelectStartHandler(Element element, boolean disabled) /*-{
+        if (disabled) {
+            element.onselectstart = function() {
+                return false;
+            };
+        }
+        else {
+            element.onselectstart = null;
+        }
+    }-*/;
+
     /**
      * Calculates the position of the mouse event relative to a given element.
      * <strong>Don't use event.getRelativeX/Y!</strong>, because Firefox and IE/Chrome have different results for when the element is rotated.
