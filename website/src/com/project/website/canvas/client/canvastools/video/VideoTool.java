@@ -34,6 +34,7 @@ import com.project.shared.client.utils.UrlUtils;
 import com.project.shared.client.utils.widgets.WidgetUtils;
 import com.project.shared.data.Point2D;
 import com.project.shared.utils.CloneableUtils;
+import com.project.shared.utils.ObjectUtils;
 import com.project.shared.utils.StringUtils;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
 import com.project.website.canvas.client.canvastools.base.CanvasToolCommon;
@@ -83,7 +84,7 @@ public class VideoTool extends Composite implements CanvasTool<VideoData>
 
         searchProviders.addAll(videoSearchProviders);
 
-        WidgetUtils.disableDrag(this);
+        WidgetUtils.mouseDownPreventDefault(this);
         super.addStyleName(CanvasResources.INSTANCE.main().videoToolEmpty());
         //this.videoFrame.setVisible(false);
     }
@@ -155,7 +156,7 @@ public class VideoTool extends Composite implements CanvasTool<VideoData>
 
     private void setVideoInformation(VideoInformation videoInformation)
     {
-        if (data.videoInformation.equals(videoInformation))
+        if (ObjectUtils.areEqual(data.videoInformation, videoInformation))
         {
             return;
         }

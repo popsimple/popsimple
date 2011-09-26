@@ -14,7 +14,6 @@ import com.project.shared.client.events.SingleEvent;
 import com.project.shared.client.utils.HandlerUtils;
 import com.project.shared.data.funcs.AsyncFunc;
 import com.project.shared.data.funcs.Func;
-import com.project.shared.utils.loggers.Logger;
 
 public class DynamicSourceLoader
 {
@@ -74,8 +73,6 @@ public class DynamicSourceLoader
             @Override
             protected <S, E> void run(Void arg, final Func<Void, S> successHandler, final Func<Throwable, E> errorHandler)
             {
-                Logger.log("actionLoad starting: " + source);
-
                 final Handler<Void> innerHandler = HandlerUtils.fromFunc(successHandler);
 
                 Boolean status = scriptLoadStatusMap.get(source);
@@ -113,7 +110,6 @@ public class DynamicSourceLoader
 
     private static void loadSource(final String source, final SimpleEvent.Handler<Void> handler)
     {
-        Logger.log("Loading source: " + source);
         // no entry exists for this source -
         // first load request
         SingleEvent<Void> event = scriptLoadHandlersMap.get(source);
@@ -131,7 +127,6 @@ public class DynamicSourceLoader
 
     private static void sourceLoaded(final String source)
     {
-        Logger.log("Finished loading: " + source);
         scriptLoadStatusMap.put(source, true);
         scriptLoadHandlersMap.get(source).dispatch(null);
     }

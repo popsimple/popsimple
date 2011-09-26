@@ -35,10 +35,10 @@ public class VideoInformation implements Serializable, IsSerializable, ICloneabl
             return false;
         }
         VideoInformation other = (VideoInformation)obj;
-        if (false == ObjectUtils.equals(this.url, other.url)){
+        if (false == ObjectUtils.areEqual(this.url, other.url)){
             return false;
         }
-        if (false == ObjectUtils.equals(this.size, other.size)){
+        if (false == ObjectUtils.areEqual(this.size, other.size)){
             return false;
         }
         return true;

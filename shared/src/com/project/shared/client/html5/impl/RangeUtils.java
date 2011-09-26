@@ -53,7 +53,7 @@ public class RangeUtils
 
     /**
      * Returns the set of nodes that are covered by the given range. For each node key, the boolean value indicates
-     * whether the node is fully (true) or partially (false) contained in the range. 
+     * whether the node is fully (true) or partially (false) contained in the range.
      */
     public static HashMap<Node, Boolean> getNodeContainmentMap(Range range) {
         ArrayList<Node> descendants = new ArrayList<Node>();
@@ -71,7 +71,7 @@ public class RangeUtils
                 }
 
                 int startOffsetCompare = range.comparePoint(descendant, 0);
-                int endOffsetCompare = range.comparePoint(descendant, descendant.getNodeValue().length() - 1);
+                int endOffsetCompare = range.comparePoint(descendant, Math.max(0, descendant.getNodeValue().length() - 1));
 
                 boolean startContained = 0 == startOffsetCompare;
                 boolean endContained = 0 == endOffsetCompare;

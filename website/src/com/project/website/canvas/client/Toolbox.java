@@ -13,6 +13,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent;
+import com.project.shared.client.utils.ElementUtils;
 import com.project.website.canvas.client.canvastools.base.BuiltinTools;
 import com.project.website.canvas.client.canvastools.base.ToolboxItem;
 import com.project.website.canvas.client.resources.CanvasResources;
@@ -34,6 +35,8 @@ public class Toolbox extends Composite {
 
     public Toolbox() {
         initWidget(uiBinder.createAndBindUi(this));
+
+        ElementUtils.setTextSelectionEnabled(this.getElement(), false);
 
         for (ToolboxItem toolboxItem : BuiltinTools.getTools()) {
             this.addTool(toolboxItem);

@@ -6,6 +6,10 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.DOM;
+import com.project.shared.data.Rgba;
+import com.project.shared.data.funcs.Func;
+import com.project.shared.utils.IterableUtils;
+import com.project.shared.utils.StringUtils;
 
 public class StyleUtils
 {
@@ -107,8 +111,8 @@ public class StyleUtils
         return style.cssText;
     }-*/;
 
-    
-    public static native void setCssText(Style style, String cssText) 
+
+    public static native void setCssText(Style style, String cssText)
     /*-{
         style.cssText = cssText;
     }-*/;
@@ -260,7 +264,52 @@ public class StyleUtils
         style.setProperty(CssProperties.BACKGROUND_SIZE, width + " " + height);
     }
 
-    
+
+    static void setPropertyForAllVendors(Style style, String property, String value)
+    {
+        String propertyCapitalized = property.substring(0, 1).toUpperCase() + property.substring(1);
+        style.setProperty(property, value);
+        style.setProperty("Moz" + propertyCapitalized, value);
+        style.setProperty("Webkit" + propertyCapitalized, value);
+        style.setProperty("Khtml" + propertyCapitalized, value);
+        style.setProperty("O" + propertyCapitalized, value);
+        style.setProperty("Ms" + propertyCapitalized, value);
+        StyleUtils.cssSetMSProperty(style, StringUtils.splitCamelCase(property, "-", true), value);
+    }
+
+    static void clearPropertyForAllVendors(Style style, String property)
+    {
+        String propertyCapitalized = property.substring(0, 1).toUpperCase() + property.substring(1);
+        style.clearProperty(property);
+        style.clearProperty("Moz" + propertyCapitalized);
+        style.clearProperty("Webkit" + propertyCapitalized);
+        style.clearProperty("Khtml" + propertyCapitalized);
+        style.clearProperty("O" + propertyCapitalized);
+        style.clearProperty("Ms" + propertyCapitalized);
+        StyleUtils.cssClearMSProperty(style, StringUtils.splitCamelCase(property, "-", true));
+    }
+
+    private static final native void cssSetMSProperty(Style style, String name, String value) /*-{
+        style['-ms-' + name] = value;
+    }-*/;
+
+        private static final native void cssClearMSProperty(Style style, String name) /*-{
+        style['-ms-' + name] = "";
+    }-*/;
+
+
+
+    public static void setTextSelectionEnabled(Style style, boolean isEnabled)
+    {
+        if (isEnabled) {
+            clearPropertyForAllVendors(style, "userSelect");
+        }
+        else {
+            setPropertyForAllVendors(style, "userSelect", "none");
+        }
+    }
+
+
     public static Integer fromPXUnitString(String cssPxUnitNumStr)
     {
         String PX_SUFFIX = "px";
@@ -277,5 +326,37 @@ public class StyleUtils
             return null;
         }
     }
+
+    public static Rgba parseRgbCssColor(String cssColor)
+    {
+        int r,g,b,a;
+        String[] splitStrings = cssColor.trim().toLowerCase().split("[, \\(\\);]");
+        String[] values = new String[4];
+
+        IterableUtils.filter(splitStrings, new Func<String,Boolean>(){
+            @Override public Boolean call(String arg) {
+                return StringUtils.isEmptyOrNull(arg);
+            }});
+
+        if (values[0].equals("rgba")) {
+            a = Integer.valueOf(values[4]);
+        }
+        else if (values[0].equals("rgb")) {
+            a = 0;
+        }
+        else {
+            // Can't parse this!
+            // TODO: perhaps just return some default color?
+            throw new RuntimeException("Can't parse css color string: " +  cssColor);
+        }
+
+        r = Integer.valueOf(values[1]);
+        g = Integer.valueOf(values[2]);
+        b = Integer.valueOf(values[3]);
+
+        return new Rgba(r,g,b,a);
+    }
+
+
 
 }

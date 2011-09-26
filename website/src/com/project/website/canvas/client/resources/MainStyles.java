@@ -6,6 +6,18 @@ public interface MainStyles extends CssResource {
 
     String canvasContainer();
 
+    String canvasToolbar();
+
+    String canvasToolbarItemTitle();
+
+    String canvasToolbarItemWrapper();
+
+    String canvasToolbarListBox();
+
+    String canvasToolbarToggleButton();
+
+    String colorPickerButton();
+
     String cropAcceptIcon();
 
     String cropBrowseButton();
@@ -108,6 +120,12 @@ public interface MainStyles extends CssResource {
 
     String taskImageChecked();
 
+//    String textEditNoToolbars();
+//
+//    String canvasToolbar();
+//
+//    String textEditViewBox();
+
     String taskImageContainer();
 
     String taskList();
@@ -117,12 +135,6 @@ public interface MainStyles extends CssResource {
     String taskListCreateModeCanvasStyle();
 
     String taskListFooter();
-
-//    String textEditNoToolbars();
-//
-//    String textEditToolbar();
-//
-//    String textEditViewBox();
 
     String taskListHeader();
 
@@ -138,19 +150,11 @@ public interface MainStyles extends CssResource {
 
     String textEditFocused();
 
-    String textEditNotFocused();
+	String textEditNotFocused();
 
-    String textEditToolbar();
+	String textSelectionDisabled();
 
-    String textEditToolbarListBox();
-
-    String textEditToolbarListTitle();
-
-    String textEditToolbarListWrapper();
-
-	String textEditToolbarToggleButton();
-
-	String toolbox();
+    String toolbox();
 
     String toolboxCommonIconStyle();
 
@@ -192,9 +196,9 @@ public interface MainStyles extends CssResource {
 
     String toolFrameButtonsPanel();
 
-    String toolFrameCloseLink();
+	String toolFrameCloseLink();
 
-	String toolFrameDragOverlayPanel();
+    String toolFrameDragOverlayPanel();
 
     String toolFrameFrontLink();
 
@@ -239,6 +243,8 @@ public interface MainStyles extends CssResource {
     String worksheetHeader();
 
     String worksheetHeaderLeft();
+
+    String worksheetHeaderLogoutLink();
 
     String worksheetHeaderRight();
 

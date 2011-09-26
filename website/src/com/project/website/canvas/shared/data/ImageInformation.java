@@ -25,13 +25,13 @@ public class ImageInformation implements Serializable, IsSerializable, ICloneabl
             return false;
         }
         ImageInformation other = (ImageInformation)obj;
-        if (false == ObjectUtils.equals(this.url, other.url)){
+        if (false == ObjectUtils.areEqual(this.url, other.url)){
             return false;
         }
-        if (false == ObjectUtils.equals(this.size, other.size)){
+        if (false == ObjectUtils.areEqual(this.size, other.size)){
             return false;
         }
-        if (false == this.options.equals(other.options))
+        if (false == ObjectUtils.areEqual(this.options, other.options))
         {
             return false;
         }

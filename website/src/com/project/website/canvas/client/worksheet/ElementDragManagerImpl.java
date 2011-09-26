@@ -13,7 +13,6 @@ import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.EventUtils;
-import com.project.shared.client.utils.NativeUtils;
 import com.project.shared.data.Point2D;
 import com.project.website.canvas.client.worksheet.exceptions.InvalidDragPanelRelationshipException;
 import com.project.website.canvas.client.worksheet.interfaces.ElementDragManager;
@@ -91,8 +90,7 @@ public class ElementDragManagerImpl implements ElementDragManager
         if (false == setStopConditionHandlers(targetElement, referenceElem, stopHandler, stopConditions, regs)) {
             throw new RuntimeException("Must specify at least one stop condition. The bitfield was: " + stopConditions);
         }
-
-        NativeUtils.disableTextSelectInternal(_container.getElement(), true);
+        ElementUtils.setTextSelectionEnabled(_container.getElement(), false);
 
         MouseDragHandler dragHandler = new MouseDragHandler(
                 EventUtils.getCurrentMousePos(), this._dragStartSensitivity);
@@ -177,7 +175,7 @@ public class ElementDragManagerImpl implements ElementDragManager
     private void stopMouseMoveOperation(Element targetElement, RegistrationsManager regs)
     {
         ElementUtils.removeClassName(targetElement, this._targetDragStyleName);
-        NativeUtils.disableTextSelectInternal(_container.getElement(), false);
+        ElementUtils.setTextSelectionEnabled(_container.getElement(), true);
         _dragPanel.setVisible(false);
         regs.clear();
     }

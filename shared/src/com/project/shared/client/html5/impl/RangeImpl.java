@@ -9,6 +9,10 @@ public class RangeImpl extends JavaScriptObject implements Range
 {
     protected RangeImpl() {}
 
+    public final String asString() {
+        return this.getClass().getName() + " (RangeImpl) { " + this.getStartContainer() + ":" + this.getStartOffset() + ", "  + this.getEndContainer() + ":" + this.getEndOffset() + " }";
+    }
+
     public final native static RangeImpl create()
     /*-{
         return $wnd.document.createRange();

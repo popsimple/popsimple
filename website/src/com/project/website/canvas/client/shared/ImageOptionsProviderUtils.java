@@ -2,6 +2,7 @@ package com.project.website.canvas.client.shared;
 
 import java.util.Map.Entry;
 
+import com.project.shared.utils.ObjectUtils;
 import com.project.website.canvas.shared.data.ImageOptions;
 
 public class ImageOptionsProviderUtils
@@ -12,7 +13,7 @@ public class ImageOptionsProviderUtils
         for (Entry<ImageOptionTypes, ImageOptions> entry :
                 optionsProvider.getImageOptionMap().entrySet())
         {
-            if (entry.getValue().equals(imageOptions))
+            if (ObjectUtils.areEqual(entry.getValue(), imageOptions))
             {
                 return entry.getKey();
             }

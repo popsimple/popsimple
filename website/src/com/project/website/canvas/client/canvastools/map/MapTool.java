@@ -8,6 +8,9 @@ import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.FocusHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
@@ -16,13 +19,10 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.gwtmapstraction.client.mxn.LatLonPoint;
 import com.project.gwtmapstraction.client.mxn.MapProvider;
@@ -41,7 +41,6 @@ import com.project.shared.data.funcs.AsyncFunc;
 import com.project.shared.data.funcs.Func;
 import com.project.shared.utils.ListUtils;
 import com.project.shared.utils.StringUtils;
-import com.project.shared.utils.loggers.Logger;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
 import com.project.website.canvas.client.canvastools.base.CanvasToolCommon;
 import com.project.website.canvas.client.resources.CanvasResources;
@@ -68,20 +67,10 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
 	FlowPanel mainPanel;
 	@UiField
 	FlowPanel mapPanel;
-	@UiField
-	Anchor optionsLink;
     @UiField
-    Anchor removeMarkersLink;
+    FlowPanel mapLoadingPanel;
 
-	@UiField
-	FlowPanel optionsBar;
-	@UiField
-	FlowPanel mapLoadingPanel;
-
-	@UiField
-	TextBox mapSearchTextBox;
-	@UiField
-	Button mapSearchButton;
+    private final MapToolBar _toolbar = new MapToolBar();
 
 	private final SimpleEvent<MouseEvent<?>> moveStartEvent = new SimpleEvent<MouseEvent<?>>();
 	private final RegistrationsManager registrationsManager = new RegistrationsManager();
@@ -99,7 +88,6 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
 
 		this.addStyleName(CanvasResources.INSTANCE.main().mapToolEmpty());
 
-		this.optionsLink.addStyleName(CanvasResources.INSTANCE.main().disabledLink());
 		this.getApiLoadedAndAttachedAsyncFunc()
 			.then(getEnsureSetupProviderAsyncFunc(DEFAULT_MAP_PROVIDER))
 			.then(new Func.VoidAction() {
@@ -132,38 +120,43 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
 
 	@Override
 	public void bind() {
-		this.registrationsManager.add(this.optionsLink.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
+		this.registrationsManager.add(this._toolbar.getOptionsLink().addClickHandler(new ClickHandler() {
+			@Override public void onClick(ClickEvent event) {
 				showOptions();
 			}
 		}));
-        this.registrationsManager.add(this.optionsBar.addDomHandler(new MouseDownHandler() {
-            @Override
-            public void onMouseDown(MouseDownEvent event) {
+        this.registrationsManager.add(this._toolbar.getOptionsBar().addDomHandler(new MouseDownHandler() {
+            @Override public void onMouseDown(MouseDownEvent event) {
                 if (event.isControlKeyDown()) {
                     moveStartEvent.dispatch(event);
                 }
             }
         }, MouseDownEvent.getType()));
 
-        this.registrationsManager.add(this.mapSearchButton.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event)
+        this.registrationsManager.add(this._toolbar.getMapSearchButton().addClickHandler(new ClickHandler() {
+            @Override public void onClick(ClickEvent event)
             {
                 mapSearch();
             }
         }));
 
-        this.registrationsManager.add(this.removeMarkersLink.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event)
+        this.registrationsManager.add(this._toolbar.getRemoveMarkersLink().addClickHandler(new ClickHandler() {
+            @Override public void onClick(ClickEvent event)
             {
                 if (null != mapstraction) {
                     mapstraction.removeAllMarkers();
                 }
-                removeMarkersLink.setEnabled(false);
-                removeMarkersLink.addStyleName(CanvasResources.INSTANCE.main().disabledLink());
+                _toolbar.getRemoveMarkersLink().setEnabled(false);
+                _toolbar.getRemoveMarkersLink().addStyleName(CanvasResources.INSTANCE.main().disabledLink());
+            }
+        }));
+        this.registrationsManager.add(this._toolbar.getMapSearchTextBox().addKeyUpHandler(new KeyUpHandler() {
+            @Override
+            public void onKeyUp(KeyUpEvent event)
+            {
+                if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+                    mapSearch();
+                }
             }
         }));
 	}
@@ -210,7 +203,7 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
 
 	@Override
 	public void setViewMode(boolean isViewMode) {
-		this.optionsLink.setVisible(false == isViewMode);
+		this._toolbar.getOptionsLink().setVisible(false == isViewMode);
 	}
 
 	@Override
@@ -239,7 +232,6 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
 		if (null == this.mapData) {
 			return;
 		}
-		Logger.log("Applying map data to widget: " + provider.getApiString() + " -> " + mapWidget.getElement().getId());
 		if (null == this.mapData.center) {
 			this.mapData.center = new Location();
 			this.mapData.center.latitude = DEFAULT_MAP_LATITUDE;
@@ -280,7 +272,7 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
 		this.mapstraction.enableScrollWheelZoom();
 		this.mapstraction.setCenter(LatLonPoint.create(DEFAULT_MAP_LATITUDE, DEFAULT_MAP_LONGITUDE));
 		this.mapstraction.setZoom(DEFAULT_MAP_ZOOM);
-		this.optionsLink.removeStyleName(CanvasResources.INSTANCE.main().disabledLink());
+		this._toolbar.getOptionsLink().removeStyleName(CanvasResources.INSTANCE.main().disabledLink());
 	}
 
 	private Widget getWidgetForProvider(MapProvider provider) {
@@ -353,20 +345,20 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
 
     protected void mapSearch()
     {
-        final String query = this.mapSearchTextBox.getText();
+        final String query = this._toolbar.getMapSearchTextBox().getText();
         if (StringUtils.isWhitespaceOrNull(query)) {
             return;
         }
         final MapTool that = this;
         this.asyncInitCompleted.addHandler(HandlerUtils.fromAsyncFunc(
-                WidgetUtils.setEnabledFunc(this.mapSearchButton, false)
+                WidgetUtils.setEnabledFunc(this._toolbar.getMapSearchButton(), false)
           .then(this.getEnsureSetupProviderAsyncFunc(MapProvider.MICROSOFT))
           .then(new Func.VoidAction() {
                 @Override
                 public void exec() {
                     that.performMapSearch(query);
              }})
-          .then(WidgetUtils.setEnabledFunc(this.mapSearchButton, true))
+          .then(WidgetUtils.setEnabledFunc(this._toolbar.getMapSearchButton(), true))
         ));
     }
 
@@ -390,8 +382,8 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
                 that.applyMapDataToWidget();
                 if (found) {
                     that.mapstraction.addMarker(Marker.create(LatLonPoint.create(lat, lon)));
-                    that.removeMarkersLink.setEnabled(true);
-                    that.removeMarkersLink.removeStyleName(CanvasResources.INSTANCE.main().disabledLink());
+                    that._toolbar.getRemoveMarkersLink().setEnabled(true);
+                    that._toolbar.getRemoveMarkersLink().removeStyleName(CanvasResources.INSTANCE.main().disabledLink());
                 }
             }
         };
@@ -416,8 +408,7 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
     @Override
     public IsWidget getToolbar()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return this._toolbar;
     }
 
 //    private void bingLocationsQuery(String query)

@@ -572,7 +572,7 @@ public class QueryString {
             return false;
         }
 
-        String query = toString();
+        String query = this.toString();
         String thatQuery = ( (QueryString) obj ).toString();
 
         return query.equals( thatQuery );

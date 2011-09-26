@@ -6,13 +6,15 @@ import com.project.shared.data.funcs.Func;
 
 public class IterableUtils
 {
-      public static <T, TRes> ArrayList<TRes> select(T[] elems, Func<T, TRes> func) {
+    public static <T, TRes> ArrayList<TRes> select(T[] elems, Func<T, TRes> func)
+    {
         ArrayList<TRes> res = new ArrayList<TRes>();
         for (T elem : elems) {
             res.add(func.call(elem));
         }
         return res;
     }
+
     public static <T, TRes> ArrayList<TRes> select(Iterable<T> elems, Func<T, TRes> func) {
         ArrayList<TRes> res = new ArrayList<TRes>();
         for (T elem : elems) {
@@ -20,6 +22,7 @@ public class IterableUtils
         }
         return res;
     }
+
     public static <T> ArrayList<T> reverse(Iterable<T> elems)
     {
         ArrayList<T> res = new ArrayList<T>();
@@ -39,6 +42,7 @@ public class IterableUtils
         }
         return res;
     }
+
     public static <T> boolean contains(Iterable<T> values, T value)
     {
         for (T elem : values)
@@ -50,4 +54,15 @@ public class IterableUtils
         }
         return false;
     }
+
+    public static <T> ArrayList<T> filter(T[] elems, Func<T, Boolean> func) {
+        ArrayList<T> res = new ArrayList<T>();
+        for (T elem : elems) {
+            if (func.call(elem)) {
+                res.add(elem);
+            }
+        }
+        return res;
+    }
+
 }

@@ -4,6 +4,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.project.shared.utils.ObjectUtils;
 import com.project.shared.utils.StringUtils;
 
 public class HttpServerCookiesUtils
@@ -36,7 +37,7 @@ public class HttpServerCookiesUtils
         }
         for (Cookie cookie : cookies)
         {
-            if (cookie.getName().equals(cookieName))
+            if ((null != cookie) && (ObjectUtils.areEqual(cookie.getName(), cookieName)))
             {
                 return cookie;
             }

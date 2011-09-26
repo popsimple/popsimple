@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.project.shared.server.ServerQueryString;
+import com.project.shared.utils.ObjectUtils;
 import com.project.shared.utils.StringUtils;
 import com.project.website.shared.contracts.authentication.AuthenticationService;
 import com.project.website.shared.data.Invitation;
@@ -93,7 +94,7 @@ public class AuthenticationServiceImpl extends RemoteServiceServlet implements A
             this.onAuthenticationFailed();
             return;
         }
-        if ((false == user.isEnabled) || (false == user.password.equals(AuthenticationUtils.hashPassword(password))))
+        if ((false == user.isEnabled) || (false == ObjectUtils.areEqual(user.password, AuthenticationUtils.hashPassword(password))))
         {
             this.onAuthenticationFailed();
             return;
@@ -203,7 +204,7 @@ public class AuthenticationServiceImpl extends RemoteServiceServlet implements A
         if (null == user) {
             return false;
         }
-        return user.username.equals(ADMIN_USERNAME);
+        return ObjectUtils.areEqual(user.username, ADMIN_USERNAME);
     }
 
     private User getAuthenticatedUser()

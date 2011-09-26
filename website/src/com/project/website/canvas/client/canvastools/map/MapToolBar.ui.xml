@@ -1,0 +1,19 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:g="urn:import:com.google.gwt.user.client.ui">
+    <ui:with field='res' type='com.project.website.canvas.client.resources.CanvasResources' />
+    <ui:style>
+
+    </ui:style>
+    <g:FlowPanel ui:field="optionsBar" addStyleNames="{res.main.canvasToolbar}">
+        <g:FlowPanel addStyleNames="{res.main.canvasToolbarItemWrapper}">
+            <g:TextBox ui:field="mapSearchTextBox" />
+            <g:Button ui:field="mapSearchButton">Map Search</g:Button>
+        </g:FlowPanel>
+        <g:Anchor ui:field="optionsLink" addStyleNames="{res.main.link} {res.main.toolOptionsLabel} ">
+            Map options...
+        </g:Anchor>
+        <g:Anchor ui:field="removeMarkersLink" enabled="false" addStyleNames="{res.main.link} {res.main.toolOptionsLabel}  {res.main.disabledLink} ">
+            Remove all markers
+        </g:Anchor>
+    </g:FlowPanel>
+</ui:UiBinder>

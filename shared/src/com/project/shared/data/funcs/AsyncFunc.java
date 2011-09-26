@@ -134,8 +134,8 @@ public abstract class AsyncFunc<A, B>  {
                 }
                 catch (Throwable e) {
                 	// TODO perhaps use the errorHandler here?
-                	Logger.log("Error in AsyncFunc: " + e.toString());
-                	Logger.log(ThrowableUtils.joinStackTrace(e));
+                	Logger.info(this, "Error in AsyncFunc: " + e.toString());
+                	Logger.info(this, ThrowableUtils.joinStackTrace(e));
             		throw new RuntimeException(e);
                 }
                 successHandler.call(res);

@@ -2,8 +2,11 @@ package com.project.shared.utils;
 
 public class ObjectUtils
 {
-    public static boolean equals(Object first, Object second)
+    /**
+     * Compares two objects using 'equals', allowing for nulls
+     */
+    public static boolean areEqual(Object first, Object second)
     {
-        return first == null ? second == null : first.equals(second);
+        return (null == first) ? (null == second) : first.equals(second);
     }
 }
