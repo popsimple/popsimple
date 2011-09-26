@@ -13,12 +13,14 @@ import com.project.website.canvas.client.worksheet.ElementDragManagerImpl;
 import com.project.website.canvas.client.worksheet.interfaces.ElementDragManager.StopCondition;
 
 public class SiteFrameSelectionManager {
-	private ElementDragManagerImpl _selectionDragManager = null;
+    public final static int MIN_VALID_SELECTION_SIZE_PX = 5;
+
+    private ElementDragManagerImpl _selectionDragManager = null;
 	private Widget _selectionPanel = null;
 	private Widget _container = null;
 
-	public SiteFrameSelectionManager(Widget container, Widget dragPanel, Widget selectionPanel,
-			SimpleEvent<Void> stopOperationEvent, Handler<Rectangle> completeHandler) {
+	public SiteFrameSelectionManager(Widget container, Widget dragPanel,
+	        Widget selectionPanel, SimpleEvent<Void> stopOperationEvent) {
 		this._container = container;
 		this._selectionPanel = selectionPanel;
 		this._selectionDragManager = new ElementDragManagerImpl(container,
@@ -46,14 +48,16 @@ public class SiteFrameSelectionManager {
 		Handler<Point2D> stopHandler = new Handler<Point2D>() {
 			@Override
 			public void onFire(Point2D arg) {
-//			    _completeHandler.onFire(ElementUtils.getElementOffsetRectangle(_selectionPanel.getElement()));
-//			    hideSelectionPanel();
+			    if (false == isValidSelection())
+			    {
+			        clearSelection();
+			    }
 			}
 		};
 		Handler<Void> cancelHandler = new Handler<Void>() {
 			@Override
 			public void onFire(Void arg) {
-				hideSelectionPanel();
+			    clearSelection();
 			}
 		};
 
@@ -62,8 +66,24 @@ public class SiteFrameSelectionManager {
 				StopCondition.STOP_CONDITION_MOUSE_UP);
 	}
 
-	private void hideSelectionPanel() {
+	public Rectangle getSelectedRectangle()
+	{
+	    return ElementUtils.getElementOffsetRectangle(_selectionPanel.getElement());
+	}
+
+	public void clearSelection() {
 		this._selectionPanel.setVisible(false);
 		ElementUtils.setElementSize(this._selectionPanel.getElement(), Point2D.zero);
+	}
+
+	private boolean isValidSelection()
+	{
+	    Point2D selectionSize = this.getSelectedRectangle().getSize();
+	    if ((selectionSize.getX() > MIN_VALID_SELECTION_SIZE_PX) &&
+	        (selectionSize.getY() > MIN_VALID_SELECTION_SIZE_PX))
+	    {
+	        return true;
+	    }
+	    return false;
 	}
 }

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.gwt.user.client.ui.Widget;
@@ -19,15 +21,20 @@ public class ToggleButtonPanel extends FlowPanel
         final ToggleButton button = (ToggleButton)w;
 
         this._buttonList.add(button);
-        button.addClickHandler(new ClickHandler() {
+        button.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+
             @Override
-            public void onClick(ClickEvent event) {
-                HandleButtonClicked(button);
+            public void onValueChange(ValueChangeEvent<Boolean> event) {
+                if (false == event.getValue())
+                {
+                    return;
+                }
+                handleButtonToggled(button);
             }
         });
     }
 
-    private void HandleButtonClicked(ToggleButton clickedButton)
+    private void handleButtonToggled(ToggleButton clickedButton)
     {
         for (ToggleButton button : this._buttonList)
         {
