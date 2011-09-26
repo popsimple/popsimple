@@ -8,6 +8,11 @@ import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.FocusHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
@@ -118,14 +123,12 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
 	@Override
 	public void bind() {
 		this.registrationsManager.add(this._toolbar.getOptionsLink().addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
+			@Override public void onClick(ClickEvent event) {
 				showOptions();
 			}
 		}));
         this.registrationsManager.add(this._toolbar.getOptionsBar().addDomHandler(new MouseDownHandler() {
-            @Override
-            public void onMouseDown(MouseDownEvent event) {
+            @Override public void onMouseDown(MouseDownEvent event) {
                 if (event.isControlKeyDown()) {
                     moveStartEvent.dispatch(event);
                 }
@@ -133,22 +136,29 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
         }, MouseDownEvent.getType()));
 
         this.registrationsManager.add(this._toolbar.getMapSearchButton().addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event)
+            @Override public void onClick(ClickEvent event)
             {
                 mapSearch();
             }
         }));
 
         this.registrationsManager.add(this._toolbar.getRemoveMarkersLink().addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event)
+            @Override public void onClick(ClickEvent event)
             {
                 if (null != mapstraction) {
                     mapstraction.removeAllMarkers();
                 }
                 _toolbar.getRemoveMarkersLink().setEnabled(false);
                 _toolbar.getRemoveMarkersLink().addStyleName(CanvasResources.INSTANCE.main().disabledLink());
+            }
+        }));
+        this.registrationsManager.add(this._toolbar.getMapSearchTextBox().addKeyUpHandler(new KeyUpHandler() {
+            @Override
+            public void onKeyUp(KeyUpEvent event)
+            {
+                if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+                    mapSearch();
+                }
             }
         }));
 	}
