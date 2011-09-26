@@ -307,6 +307,7 @@ public class WorksheetImpl implements Worksheet
     {
         this.page = newPage;
         this.updateOptions(this.page.options);
+        this.updateHistoryToken();
 
         HashMap<Long, ElementData> newElements = new HashMap<Long, ElementData>();
         for (ElementData elem : this.page.elements) {
@@ -506,7 +507,6 @@ public class WorksheetImpl implements Worksheet
         this.viewModeRegistrations.clear();
 
         this._inViewMode = false;
-        this.updateHistoryToken();
     }
 
     private void setModeView()
@@ -515,7 +515,6 @@ public class WorksheetImpl implements Worksheet
             return;
         }
         this._inViewMode = true;
-        this.updateHistoryToken();
 
         viewModeEvent.dispatch(true);
         view.setViewMode(true);
@@ -524,6 +523,7 @@ public class WorksheetImpl implements Worksheet
             public void onFire(Void arg)
             {
                 setModeEdit();
+                updateHistoryToken();
             }
         }));
     }
