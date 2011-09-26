@@ -66,40 +66,16 @@ public class WorksheetImpl implements Worksheet
         setRegistrations();
     }
 
-    public void load(Long id)
+    @Override
+    public HandlerRegistration addDefaultToolboxItemRequestHandler(SimpleEvent.Handler<Void> handler)
     {
-        CanvasServiceAsync service = (CanvasServiceAsync) GWT.create(CanvasService.class);
+        return _defaultToolboxItemRequestEvent.addHandler(handler);
+    }
 
-        if (null == id) {
-            if (null != this.page.id) {
-                id = this.page.id;
-            }
-            else {
-            	// Trying to reload when page wasn't yet saved. Might as well do nothing.
-                return;
-            }
-        }
-
-        view.onLoadOperationChange(OperationStatus.PENDING, null);
-
-        service.getPage(id, new AsyncCallback<CanvasPage>() {
-            @Override
-            public void onFailure(Throwable caught)
-            {
-                view.onLoadOperationChange(OperationStatus.FAILURE, caught.toString());
-            }
-
-            @Override
-            public void onSuccess(CanvasPage result)
-            {
-                if (null == result) {
-                    view.onLoadOperationChange(OperationStatus.FAILURE, "Page not found");
-                    return;
-                }
-                view.onLoadOperationChange(OperationStatus.SUCCESS, null);
-                load(result);
-            }
-        });
+    @Override
+    public HandlerRegistration addViewModeChangedHandler(Handler<Boolean> handler)
+    {
+        return this.viewModeEvent.addHandler(handler);
     }
 
     @Override
@@ -108,80 +84,11 @@ public class WorksheetImpl implements Worksheet
         load(parsePageIdStr(idStr));
     }
 
-    private Long parsePageIdStr(String idStr)
-    {
-        Long id = null;
-        if ((null != idStr) && (false == idStr.trim().isEmpty()))
-        {
-            try {
-                id = Long.valueOf(idStr);
-            } catch (NumberFormatException e) {
-                return null;
-            }
-        }
-        return id;
-    }
-
-    protected ElementData updateToolData(CanvasToolFrameImpl toolFrame){
-        ElementData toolData = toolFrame.getTool().getValue();
-        Element frameElement = toolFrame.getElement();
-        toolData.zIndex = ZIndexAllocator.getElementZIndex(frameElement);
-        toolData.transform = new Transform2D(ElementUtils.getElementOffsetPosition(frameElement),
-                toolFrame.getToolSize(), ElementUtils.getRotation(frameElement));
-        return toolData;
-    }
-
-    protected void invite()
-    {
-        final DialogWithZIndex dialog = new DialogWithZIndex(false, true);
-        final InviteWidget regWidget = new InviteWidget();
-        dialog.add(regWidget);
-        regWidget.addInviteRequestHandler(new SimpleEvent.Handler<InviteRequestData>() {
-            @Override
-            public void onFire(InviteRequestData arg)
-            {
-                regWidget.setEnabled(false);
-                inviteRequest(dialog, arg);
-            }
-        });
-        regWidget.addCancelRequestHandler(new Handler<Void>() {
-            @Override
-            public void onFire(Void arg)
-            {
-                dialog.hide();
-            }
-        });
-        dialog.setText("Invite a friend to PopSimple.com");
-        Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-            @Override
-            public void execute()
-            {
-                dialog.center();
-            }
-        });
-    }
-
-    private void logout()
-    {
-        AuthenticationServiceAsync service = getAuthService();
-        service.logout(new AsyncCallback<Void>() {
-            @Override
-            public void onSuccess(Void result) {
-                Window.Location.reload();
-            }
-
-            @Override
-            public void onFailure(Throwable caught) {
-            }
-        });
-    }
-
-    private AuthenticationServiceAsync getAuthService()
-    {
-        AuthenticationServiceAsync service =
-            (AuthenticationServiceAsync)GWT.create(AuthenticationService.class);
-        return service;
-    }
+    @Override
+	public void load(String idStr, boolean viewMode) {
+		this.view.setViewMode(viewMode);
+		this.load(idStr);
+	}
 
     @Override
     public void save()
@@ -234,6 +141,21 @@ public class WorksheetImpl implements Worksheet
         }
     }
 
+    private void clearActiveToolboxItem()
+    {
+        view.clearActiveToolboxItem();
+    }
+
+    private void copyToolsToClipboard(Collection<CanvasToolFrameImpl> toolFrames)
+    {
+        this._toolClipboard.clear();
+        for (CanvasToolFrameImpl toolFrame : toolFrames)
+        {
+            this._toolClipboard.add((ElementData)CloneableUtils.clone(
+                    updateToolData(toolFrame)));
+        }
+    }
+
     private CanvasToolFrame createToolInstance(final Point2D relativePos,
             CanvasToolFactory<? extends CanvasTool<? extends ElementData>> toolFactory)
     {
@@ -283,6 +205,275 @@ public class WorksheetImpl implements Worksheet
         toolFrame.setActive(false);
         return toolFrame;
     }
+
+    private void enterViewMode()
+    {
+        viewModeEvent.dispatch(true);
+        view.setViewMode(true);
+        final RegistrationsManager regs = new RegistrationsManager();
+        regs.add(view.addStopOperationHandler(new SimpleEvent.Handler<Void>() {
+            @Override
+            public void onFire(Void arg)
+            {
+                view.setViewMode(false);
+                viewModeEvent.dispatch(false);
+                regs.clear();
+            }
+        }));
+    }
+
+    private void escapeOperation()
+    {
+        this.clearActiveToolboxItem();
+        this.setActiveToolInstance(null);
+        this.view.clearToolFrameSelection();
+        // TODO dispatch stop operation
+        // stopOperationEvent.dispatch(null);
+        this._defaultToolboxItemRequestEvent.dispatch(null);
+    }
+
+    private AuthenticationServiceAsync getAuthService()
+    {
+        AuthenticationServiceAsync service =
+            (AuthenticationServiceAsync)GWT.create(AuthenticationService.class);
+        return service;
+    }
+
+    private void invite()
+    {
+        final DialogWithZIndex dialog = new DialogWithZIndex(false, true);
+        final InviteWidget regWidget = new InviteWidget();
+        dialog.add(regWidget);
+        regWidget.addInviteRequestHandler(new SimpleEvent.Handler<InviteRequestData>() {
+            @Override
+            public void onFire(InviteRequestData arg)
+            {
+                regWidget.setEnabled(false);
+                inviteRequest(dialog, arg);
+            }
+        });
+        regWidget.addCancelRequestHandler(new Handler<Void>() {
+            @Override
+            public void onFire(Void arg)
+            {
+                dialog.hide();
+            }
+        });
+        dialog.setText("Invite a friend to PopSimple.com");
+        Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+            @Override
+            public void execute()
+            {
+                dialog.center();
+            }
+        });
+    }
+
+    private void inviteRequest(final DialogWithZIndex dialog, InviteRequestData arg)
+    {
+        AuthenticationServiceAsync service = getAuthService();
+        service.invite(arg.getEmail(), arg.getMessage(), arg.getName(), new AsyncCallback<Void>() {
+            @Override
+            public void onFailure(Throwable caught)
+            {
+                Window.alert("Error: " + caught.toString());
+                dialog.hide();
+            }
+
+            @Override
+            public void onSuccess(Void result)
+            {
+                Window.alert("Invite sent!");
+                dialog.hide();
+            }
+        });
+    }
+
+	private void load(CanvasPage newPage)
+    {
+        this.page = newPage;
+        this.updateOptions(this.page.options);
+
+        HashMap<Long, ElementData> newElements = new HashMap<Long, ElementData>();
+        for (ElementData elem : this.page.elements) {
+            newElements.put(elem.id, elem);
+        }
+
+        HashSet<Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo>> entries =
+            new HashSet<Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo>>(toolInfoMap.entrySet());
+
+        // Update existing and remove deleted tools
+        for (Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo> entry : entries) {
+            CanvasTool<? extends ElementData> tool = entry.getKey();
+            ToolInstanceInfo toolInfo = entry.getValue();
+            ElementData oldData = tool.getValue();
+            ElementData newData = newElements.get(oldData.id);
+            if (null != newData) {
+                tool.setElementData(newData);
+                view.setToolFrameTransform(toolInfo.toolFrame, newData.transform, Point2D.zero);
+                newElements.remove(oldData.id);
+            } else {
+                this.removeToolInstance(toolInfo.toolFrame);
+            }
+        }
+
+        // Create the new tool instances
+        for (ElementData newElement : this.sortByZIndex(newElements.values())) {
+            this.createToolInstanceFromData(newElement);
+        }
+    }
+
+	private void load(Long id)
+    {
+        CanvasServiceAsync service = (CanvasServiceAsync) GWT.create(CanvasService.class);
+
+        if (null == id) {
+            if (null != this.page.id) {
+                id = this.page.id;
+            }
+            else {
+            	// Trying to reload when page wasn't yet saved. Might as well do nothing.
+                return;
+            }
+        }
+
+        view.onLoadOperationChange(OperationStatus.PENDING, null);
+
+        service.getPage(id, new AsyncCallback<CanvasPage>() {
+            @Override
+            public void onFailure(Throwable caught)
+            {
+                view.onLoadOperationChange(OperationStatus.FAILURE, caught.toString());
+            }
+
+            @Override
+            public void onSuccess(CanvasPage result)
+            {
+                if (null == result) {
+                    view.onLoadOperationChange(OperationStatus.FAILURE, "Page not found");
+                    return;
+                }
+                view.onLoadOperationChange(OperationStatus.SUCCESS, null);
+                load(result);
+            }
+        });
+    }
+
+    private void logout()
+    {
+        AuthenticationServiceAsync service = getAuthService();
+        service.logout(new AsyncCallback<Void>() {
+            @Override
+            public void onFailure(Throwable caught) {
+            }
+
+            @Override
+            public void onSuccess(Void result) {
+                Window.Location.reload();
+            }
+        });
+    }
+
+    private Long parsePageIdStr(String idStr)
+    {
+        Long id = null;
+        if ((null != idStr) && (false == idStr.trim().isEmpty()))
+        {
+            try {
+                id = Long.valueOf(idStr);
+            } catch (NumberFormatException e) {
+                return null;
+            }
+        }
+        return id;
+    }
+
+    private void pasteToolsFromClipboard()
+    {
+        if (this._toolClipboard.isEmpty())
+        {
+            return;
+        }
+        view.clearToolFrameSelection();
+        for (ElementData data : _toolClipboard)
+        {
+            ElementData offsetData = (ElementData)CloneableUtils.clone(data);
+            //TODO: does it make sense that the Worksheet will add the offset?
+            offsetData.transform.translation =
+                offsetData.transform.translation.plus(new Point2D(10, 10));
+            view.selectToolFrame(createToolInstanceFromData(offsetData));
+        }
+    }
+
+    private RegistrationsManager registerToolInstanceHandlers(final CanvasToolFrameImpl toolFrame,
+            ToolInstanceInfo toolInfo)
+    {
+        RegistrationsManager regs = toolInfo.registrations;
+        regs.add(toolFrame.addCloseRequestHandler(new SimpleEvent.Handler<Void>() {
+            @Override
+            public void onFire(Void arg)
+            {
+                removeToolInstance(toolFrame);
+            }
+        }));
+
+        regs.add(toolFrame.addMoveBackRequestHandler(new SimpleEvent.Handler<Void>() {
+            @Override
+            public void onFire(Void arg)
+            {
+                ZIndexAllocator.moveElementBelow(toolFrame.getElement());
+            }
+        }));
+
+        regs.add(toolFrame.addMoveFrontRequestHandler(new SimpleEvent.Handler<Void>() {
+            @Override
+            public void onFire(Void arg)
+            {
+                ZIndexAllocator.moveElementAbove(toolFrame.getElement());
+            }
+        }));
+        return regs;
+    }
+
+    private void removeToolInstance(CanvasToolFrameImpl toolFrame)
+    {
+        ZIndexAllocator.deallocateZIndex(toolFrame.getElement());
+        ToolInstanceInfo info = this.toolInfoMap.remove(toolFrame.getTool());
+        view.removeToolInstanceWidget(toolFrame);
+        info.registrations.clear();
+    }
+
+    private void removeToolInstances(ArrayList<CanvasToolFrameImpl> toolFrames)
+    {
+    	for (CanvasToolFrameImpl toolFrame : toolFrames)
+    	{
+    		this.removeToolInstance(toolFrame);
+    	}
+    }
+
+    private void setActiveToolInstance(CanvasToolFrame toolFrame)
+	{
+        CanvasTool<?> tool = toolFrame != null ? toolFrame.getTool() : null;
+		if (tool == this.activeToolInstance) {
+		    if (null != tool) {
+    	        // Even if the current tool is already active, notify it, because
+    	        // it may need to re-capture focus.
+                toolFrame.setActive(true);
+		    }
+			return;
+		}
+		if (null != this.activeToolInstance) {
+		    ToolInstanceInfo toolInfo = this.toolInfoMap.get(this.activeToolInstance);
+		    if (null != toolInfo)
+		    {
+		        toolInfo.toolFrame.setActive(false);
+		    }
+		}
+		this.activeToolInstance = tool;
+		if (null != toolFrame) {
+		    toolFrame.setActive(true);
+	    }
+	}
 
     private void setRegistrations()
     {
@@ -338,18 +529,7 @@ public class WorksheetImpl implements Worksheet
             @Override
             public void onFire(Void arg)
             {
-                viewModeEvent.dispatch(true);
-                view.setViewMode(true);
-                final RegistrationsManager regs = new RegistrationsManager();
-                regs.add(view.addStopOperationHandler(new SimpleEvent.Handler<Void>() {
-                    @Override
-                    public void onFire(Void arg)
-                    {
-                        view.setViewMode(false);
-                        viewModeEvent.dispatch(false);
-                        regs.clear();
-                    }
-                }));
+                enterViewMode();
             }
         });
         view.addCopyToolHandler(new Handler<ArrayList<CanvasToolFrameImpl>>() {
@@ -392,7 +572,17 @@ public class WorksheetImpl implements Worksheet
 		});
     }
 
-    protected void updateLoadedPageURL(String idStr)
+
+    private Collection<ElementData> sortByZIndex(Collection<ElementData> elements)
+    {
+        TreeMap<Integer, ElementData> elementsByZIndex = new TreeMap<Integer, ElementData>();
+        for (ElementData element : elements) {
+            elementsByZIndex.put(element.zIndex, element);
+        }
+        return elementsByZIndex.values();
+    }
+
+    private void updateLoadedPageURL(String idStr)
     {
         Long id = parsePageIdStr(idStr);
         if (null == id) {
@@ -409,161 +599,6 @@ public class WorksheetImpl implements Worksheet
         this.load(idStr);
     }
 
-    private void copyToolsToClipboard(Collection<CanvasToolFrameImpl> toolFrames)
-    {
-        this._toolClipboard.clear();
-        for (CanvasToolFrameImpl toolFrame : toolFrames)
-        {
-            this._toolClipboard.add((ElementData)CloneableUtils.clone(
-                    updateToolData(toolFrame)));
-        }
-    }
-
-    private void pasteToolsFromClipboard()
-    {
-        if (this._toolClipboard.isEmpty())
-        {
-            return;
-        }
-        view.clearToolFrameSelection();
-        for (ElementData data : _toolClipboard)
-        {
-            ElementData offsetData = (ElementData)CloneableUtils.clone(data);
-            //TODO: does it make sense that the Worksheet will add the offset?
-            offsetData.transform.translation =
-                offsetData.transform.translation.plus(new Point2D(10, 10));
-            view.selectToolFrame(createToolInstanceFromData(offsetData));
-        }
-    }
-
-	private void setActiveToolInstance(CanvasToolFrame toolFrame)
-	{
-        CanvasTool<?> tool = toolFrame != null ? toolFrame.getTool() : null;
-		if (tool == this.activeToolInstance) {
-		    if (null != tool) {
-    	        // Even if the current tool is already active, notify it, because
-    	        // it may need to re-capture focus.
-                toolFrame.setActive(true);
-		    }
-			return;
-		}
-		if (null != this.activeToolInstance) {
-		    ToolInstanceInfo toolInfo = this.toolInfoMap.get(this.activeToolInstance);
-		    if (null != toolInfo)
-		    {
-		        toolInfo.toolFrame.setActive(false);
-		    }
-		}
-		this.activeToolInstance = tool;
-		if (null != toolFrame) {
-		    toolFrame.setActive(true);
-	    }
-	}
-
-	private void clearActiveToolboxItem()
-    {
-        view.clearActiveToolboxItem();
-    }
-
-    private void escapeOperation()
-    {
-        this.clearActiveToolboxItem();
-        this.setActiveToolInstance(null);
-        this.view.clearToolFrameSelection();
-        // TODO dispatch stop operation
-        // stopOperationEvent.dispatch(null);
-        this._defaultToolboxItemRequestEvent.dispatch(null);
-    }
-
-    private void load(CanvasPage newPage)
-    {
-        this.page = newPage;
-        this.updateOptions(this.page.options);
-
-        HashMap<Long, ElementData> newElements = new HashMap<Long, ElementData>();
-        for (ElementData elem : this.page.elements) {
-            newElements.put(elem.id, elem);
-        }
-
-        HashSet<Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo>> entries =
-            new HashSet<Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo>>(toolInfoMap.entrySet());
-
-        // Update existing and remove deleted tools
-        for (Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo> entry : entries) {
-            CanvasTool<? extends ElementData> tool = entry.getKey();
-            ToolInstanceInfo toolInfo = entry.getValue();
-            ElementData oldData = tool.getValue();
-            ElementData newData = newElements.get(oldData.id);
-            if (null != newData) {
-                tool.setElementData(newData);
-                view.setToolFrameTransform(toolInfo.toolFrame, newData.transform, Point2D.zero);
-                newElements.remove(oldData.id);
-            } else {
-                this.removeToolInstance(toolInfo.toolFrame);
-            }
-        }
-
-        // Create the new tool instances
-        for (ElementData newElement : this.sortByZIndex(newElements.values())) {
-            this.createToolInstanceFromData(newElement);
-        }
-    }
-
-    private RegistrationsManager registerToolInstanceHandlers(final CanvasToolFrameImpl toolFrame,
-            ToolInstanceInfo toolInfo)
-    {
-        RegistrationsManager regs = toolInfo.registrations;
-        regs.add(toolFrame.addCloseRequestHandler(new SimpleEvent.Handler<Void>() {
-            @Override
-            public void onFire(Void arg)
-            {
-                removeToolInstance(toolFrame);
-            }
-        }));
-
-        regs.add(toolFrame.addMoveBackRequestHandler(new SimpleEvent.Handler<Void>() {
-            @Override
-            public void onFire(Void arg)
-            {
-                ZIndexAllocator.moveElementBelow(toolFrame.getElement());
-            }
-        }));
-
-        regs.add(toolFrame.addMoveFrontRequestHandler(new SimpleEvent.Handler<Void>() {
-            @Override
-            public void onFire(Void arg)
-            {
-                ZIndexAllocator.moveElementAbove(toolFrame.getElement());
-            }
-        }));
-        return regs;
-    }
-
-    private void removeToolInstances(ArrayList<CanvasToolFrameImpl> toolFrames)
-    {
-    	for (CanvasToolFrameImpl toolFrame : toolFrames)
-    	{
-    		this.removeToolInstance(toolFrame);
-    	}
-    }
-
-    private void removeToolInstance(CanvasToolFrameImpl toolFrame)
-    {
-        ZIndexAllocator.deallocateZIndex(toolFrame.getElement());
-        ToolInstanceInfo info = this.toolInfoMap.remove(toolFrame.getTool());
-        view.removeToolInstanceWidget(toolFrame);
-        info.registrations.clear();
-    }
-
-    private Collection<ElementData> sortByZIndex(Collection<ElementData> elements)
-    {
-        TreeMap<Integer, ElementData> elementsByZIndex = new TreeMap<Integer, ElementData>();
-        for (ElementData element : elements) {
-            elementsByZIndex.put(element.zIndex, element);
-        }
-        return elementsByZIndex.values();
-    }
-
     private void updateOptions(CanvasPageOptions value)
     {
         if (null == value) {
@@ -573,26 +608,14 @@ public class WorksheetImpl implements Worksheet
         view.setOptions(value);
     }
 
-    private void inviteRequest(final DialogWithZIndex dialog, InviteRequestData arg)
-    {
-        AuthenticationServiceAsync service = getAuthService();
-        service.invite(arg.getEmail(), arg.getMessage(), arg.getName(), new AsyncCallback<Void>() {
-            @Override
-            public void onSuccess(Void result)
-            {
-                Window.alert("Invite sent!");
-                dialog.hide();
-            }
-
-            @Override
-            public void onFailure(Throwable caught)
-            {
-                Window.alert("Error: " + caught.toString());
-                dialog.hide();
-            }
-        });
+	private ElementData updateToolData(CanvasToolFrameImpl toolFrame){
+        ElementData toolData = toolFrame.getTool().getValue();
+        Element frameElement = toolFrame.getElement();
+        toolData.zIndex = ZIndexAllocator.getElementZIndex(frameElement);
+        toolData.transform = new Transform2D(ElementUtils.getElementOffsetPosition(frameElement),
+                toolFrame.getToolSize(), ElementUtils.getRotation(frameElement));
+        return toolData;
     }
-
 
     private void updateUserSpecificInfo(WorksheetView view, AuthenticationServiceAsync service)
     {
@@ -600,34 +623,16 @@ public class WorksheetImpl implements Worksheet
         final WorksheetImpl that = this;
         service.getUserProfile(new AsyncCallback<UserProfile>() {
             @Override
+            public void onFailure(Throwable caught)
+            {
+            }
+
+            @Override
             public void onSuccess(UserProfile result)
             {
                 that.view.setUserProfile(result);
             }
-
-            @Override
-            public void onFailure(Throwable caught)
-            {
-            }
         });
     }
-
-    @Override
-    public HandlerRegistration addDefaultToolboxItemRequestHandler(SimpleEvent.Handler<Void> handler)
-    {
-        return _defaultToolboxItemRequestEvent.addHandler(handler);
-    }
-
-    @Override
-    public HandlerRegistration addViewModeChangedHandler(Handler<Boolean> handler)
-    {
-        return this.viewModeEvent.addHandler(handler);
-    }
-
-	@Override
-	public void load(String idStr, boolean viewMode) {
-		this.view.setViewMode(viewMode);
-		this.load(idStr);
-	}
 }
 
