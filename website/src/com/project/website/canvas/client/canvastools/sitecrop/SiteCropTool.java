@@ -58,9 +58,6 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
     }
 
     @UiField
-    TextBox urlTextBox;
-
-    @UiField
     Frame siteFrame;
 
     @UiField
@@ -74,26 +71,6 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
     @UiField
     FlowPanel coverPanel;
 
-    @UiField
-    CheckBox chkAutoSize;
-
-
-    @UiField
-    ToggleButton moveButton;
-
-    @UiField
-    ToggleButton browseButton;
-
-    @UiField
-    ToggleButton cropButton;
-
-    @UiField
-    Button acceptCropButton;
-
-//    ONLY FOR DEBUGGING
-    @UiField
-    Label urlLabel;
-
     private int _frameLeft = 0;
     private int _frameTop = 0;
     private Point2D _lastPoint = Point2D.zero;
@@ -105,6 +82,9 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
     private RegistrationsManager _cropRegistrationManager = new RegistrationsManager();
 
     private SimpleEvent<Point2D> _selfMoveEvent = new SimpleEvent<Point2D>();
+    
+    //Why not singleton?
+    private final SiteCropToolbar _toolbar = new SiteCropToolbar();
 
     public SiteCropTool() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -113,7 +93,6 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
 
         this.selectionPanel.setVisible(false);
         this.dragPanel.setVisible(false);
-        this.acceptCropButton.setVisible(false);
 
         this.registerHandlers();
 
@@ -145,12 +124,13 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
 
     private void setDefaultMode()
     {
-        this.moveButton.setValue(true, true);
+        this._toolbar.getMoveButton().setValue(true, true);
     }
 
     private void registerHandlers()
     {
-        this.urlTextBox.addKeyPressHandler(new SpecificKeyPressHandler(KeyCodes.KEY_ENTER) {
+    	final TextBox urlTextBox = this._toolbar.getUrlTextBox();
+    	urlTextBox.addKeyPressHandler(new SpecificKeyPressHandler(KeyCodes.KEY_ENTER) {
             @Override
             public void onSpecificKeyPress(KeyPressEvent event) {
                 setUrl(urlTextBox.getText());
@@ -166,7 +146,7 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
                 handleNativePreviewEvent(event);
             }});
 
-        this.moveButton.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+        this._toolbar.getMoveButton().addValueChangeHandler(new ValueChangeHandler<Boolean>() {
             @Override
             public void onValueChange(ValueChangeEvent<Boolean> event) {
                 if (event.getValue())
@@ -180,7 +160,7 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
             }
         });
 
-        this.cropButton.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+        this._toolbar.getCropButton().addValueChangeHandler(new ValueChangeHandler<Boolean>() {
             @Override
             public void onValueChange(ValueChangeEvent<Boolean> event) {
                 if (event.getValue())
@@ -194,7 +174,7 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
             }
         });
 
-        this.browseButton.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+        this._toolbar.getBrowseButton().addValueChangeHandler(new ValueChangeHandler<Boolean>() {
             @Override
             public void onValueChange(ValueChangeEvent<Boolean> event) {
                 enableBrowsing(event.getValue());
@@ -203,7 +183,7 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
 
 
 //      ONLY FOR DEBUG
-      urlLabel.addClickHandler(new ClickHandler() {
+        this._toolbar.getUrlLabel().addClickHandler(new ClickHandler() {
           @Override
           public void onClick(ClickEvent event) {
               setUrl("http://www.google.com");
@@ -263,12 +243,12 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
                         return;
                     }
                     ElementUtils.setTextSelectionEnabled(blockPanel.getElement(), true);
-                    acceptCropButton.setVisible(true);
+                    _toolbar.getAcceptCropButton().setVisible(true);
                     _frameSelectionManager.startSelectionDrag(event);
                 }
             }, MouseDownEvent.getType()));
         this._cropRegistrationManager.add(
-                this.acceptCropButton.addClickHandler(new ClickHandler() {
+        		_toolbar.getAcceptCropButton().addClickHandler(new ClickHandler() {
 
                     @Override
                     public void onClick(ClickEvent event) {
@@ -281,7 +261,7 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
     {
         this._cropRegistrationManager.clear();
         this._frameSelectionManager.clearSelection();
-        this.acceptCropButton.setVisible(false);
+        _toolbar.getAcceptCropButton().setVisible(false);
     }
 
     private void handleNativePreviewEvent(NativePreviewEvent event)
@@ -304,10 +284,10 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
         this._frameTop += delta;
         Style frameStyle = siteFrame.getElement().getStyle();
         frameStyle.setTop(this._frameTop, Unit.PX);
-        if (this.chkAutoSize.getValue())
-        {
+//        if (this.chkAutoSize.getValue())
+//        {
             frameStyle.setHeight(siteFrame.getOffsetHeight() - delta, Unit.PX);
-        }
+//        }
     }
 
     private void updateFrameLeft(int delta)
@@ -315,10 +295,10 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
         this._frameLeft += delta;
         Style frameStyle = siteFrame.getElement().getStyle();
         frameStyle.setLeft(this._frameLeft, Unit.PX);
-        if (this.chkAutoSize.getValue())
-        {
+//        if (this.chkAutoSize.getValue())
+//        {
             frameStyle.setWidth(siteFrame.getOffsetWidth() - delta, Unit.PX);
-        }
+//        }
     }
 
     private void setUrl(String text) {
@@ -410,8 +390,7 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
     @Override
     public IsWidget getToolbar()
     {
-        return new Button("THIS IS A TEST");
-//        return null;
+        return this._toolbar;
     }
 
 }

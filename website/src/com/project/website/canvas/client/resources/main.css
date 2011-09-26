@@ -919,9 +919,7 @@
 	display: block;
 	border-radius: 2px;
 	text-align: center;
-	margin-bottom: 30px;
 	overflow: visible;
-	min-width: 560px;
 }
 
 @sprite .cropSiteToolEmpty {

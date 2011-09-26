@@ -1,0 +1,40 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui"
+	xmlns:my="urn:import:com.project.website.canvas.client.shared.widgets">
+	<ui:with field='res' type='com.project.website.canvas.client.resources.CanvasResources' />
+	<ui:style>
+		.urlText{
+			width: 300px;
+		}
+		.toggleButtonPanel{
+			display: inline-block;
+			position: relative;
+			top: 6px;
+		}
+		.optionToggleButton{
+			background-position: center;
+			width: 16px;
+			height: 16px;
+			display: inline-block;
+		}
+		.acceptCropButton{
+			margin-left: 5px;
+			top: -2px;
+			position: relative;
+		}
+	</ui:style>
+	<g:FlowPanel addStyleNames="{res.main.canvasToolbar}">
+	    <g:FlowPanel addStyleNames="{res.main.canvasToolbarItemWrapper}">
+	    	<g:Label ui:field="urlLabel" addStyleNames="{res.main.toolOptionsLabel}">Url:</g:Label>
+	        <g:TextBox ui:field="urlTextBox" addStyleNames="{style.urlText}"></g:TextBox>
+	        <g:CheckBox visible="false" checked="true" ui:field="chkAutoSize" />
+	        <my:ToggleButtonPanel addStyleNames="{style.toggleButtonPanel}">
+	         <g:ToggleButton ui:field="moveButton" addStyleNames="{res.main.cropMoveButton} {style.optionToggleButton}"></g:ToggleButton>
+	         <g:ToggleButton ui:field="browseButton" addStyleNames="{res.main.cropBrowseButton} {style.optionToggleButton}"></g:ToggleButton>
+	         <g:ToggleButton ui:field="cropButton" addStyleNames="{res.main.cropCutButton} {style.optionToggleButton}"></g:ToggleButton>
+	        </my:ToggleButtonPanel>
+	        <g:Button ui:field="acceptCropButton" addStyleNames="{style.acceptCropButton}">Crop</g:Button>
+	    </g:FlowPanel>
+    </g:FlowPanel>
+</ui:UiBinder> 

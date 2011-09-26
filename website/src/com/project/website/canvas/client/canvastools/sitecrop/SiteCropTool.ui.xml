@@ -4,12 +4,6 @@
     xmlns:my="urn:import:com.project.website.canvas.client.shared.widgets">
     <ui:with field='res' type='com.project.website.canvas.client.resources.CanvasResources'/>
     <ui:style>
-    	.urlPanel{
-			display: inline-block;
-    	}
-    	.urlText{
-			width: 300px;
-		}
 		.frameContainer{
 			overflow: hidden;
 			width: 100%;
@@ -59,22 +53,6 @@
 			width: 100%;
 			height: 100%;
 		}
-		.toggleButtonPanel{
-			display: inline-block;
-			position: relative;
-			top: 6px;
-		}
-		.optionToggleButton{
-			background-position: center;
-			width: 16px;
-			height: 16px;
-			display: inline-block;
-		}
-		.acceptCropButton{
-			margin-left: 5px;
-			top: -2px;
-			position: relative;
-		}
     </ui:style>
     <g:HTMLPanel ui:field="rootPanel" addStyleNames="{res.main.cropSiteBox}">
         <g:FlowPanel ui:field="frameContainer" addStyleNames="{style.frameContainer}">
@@ -86,18 +64,5 @@
 		       	<g:Frame ui:field="siteFrame" addStyleNames="{style.cropSiteFrame}"></g:Frame>
 	       	</g:FlowPanel>
        	</g:FlowPanel>
-        <g:FlowPanel addStyleNames="{res.main.toolOptionsBarContainer}">
-            <g:FlowPanel ui:field="urlPanel" addStyleNames="{res.main.toolOptionsBar} {res.main.toolFrameHoverDisplayBlockElement}">
-                <g:Label ui:field="urlLabel" addStyleNames="{style.urlPanel}">Url:</g:Label>
-                <g:TextBox ui:field="urlTextBox" addStyleNames="{style.urlPanel} {style.urlText}"></g:TextBox>
-                <g:CheckBox visible="false" checked="true" ui:field="chkAutoSize" addStyleNames="{style.urlPanel}"/>
-                <my:ToggleButtonPanel addStyleNames="{style.toggleButtonPanel}">
-	                <g:ToggleButton ui:field="moveButton" addStyleNames="{res.main.cropMoveButton} {style.optionToggleButton}"></g:ToggleButton>
-	                <g:ToggleButton ui:field="browseButton" addStyleNames="{res.main.cropBrowseButton} {style.optionToggleButton}"></g:ToggleButton>
-	                <g:ToggleButton ui:field="cropButton" addStyleNames="{res.main.cropCutButton} {style.optionToggleButton}"></g:ToggleButton>
-                </my:ToggleButtonPanel>
-                <g:Button ui:field="acceptCropButton" addStyleNames="{style.acceptCropButton}">Crop</g:Button>
-            </g:FlowPanel>
-        </g:FlowPanel>
     </g:HTMLPanel>
 </ui:UiBinder>
