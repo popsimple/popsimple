@@ -12,6 +12,7 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.project.shared.client.events.SimpleEvent;
@@ -150,6 +151,25 @@ public class WorksheetImpl implements Worksheet
         }
     }
 
+    private QueryString buildPageQueryString(Long pageId, boolean viewMode)
+    {
+        QueryString query = QueryString.create(UrlUtils.getUrlEncoder());
+        if (null != pageId) {
+            query.append(QueryParameters.PAGE_ID, pageId);
+        }
+        if (viewMode) {
+            query.append(QueryParameters.VIEW_MODE_FLAG, (String)null);
+        }
+        return query;
+    }
+
+    private String buildPageUrl(long pageId, boolean viewMode)
+    {
+        QueryString query = buildPageQueryString(pageId, viewMode);
+        String newURL = Window.Location.createUrlBuilder().setHash(query.toString()).buildString();
+        return newURL;
+    }
+
     private void clearActiveToolboxItem()
     {
         view.clearActiveToolboxItem();
@@ -210,6 +230,7 @@ public class WorksheetImpl implements Worksheet
     {
         CanvasToolFactory<? extends CanvasTool<? extends ElementData>> factory = ToolFactories.INSTANCE.get(newElement.factoryUniqueId);
         CanvasToolFrameImpl toolFrame = this.createToolInstance(newElement.transform, factory, false);
+        toolFrame.setViewMode(this._inViewMode);
         toolFrame.getTool().setElementData(newElement);
         toolFrame.setActive(false);
         return toolFrame;
@@ -262,7 +283,7 @@ public class WorksheetImpl implements Worksheet
         });
     }
 
-    private void inviteRequest(final DialogWithZIndex dialog, InviteRequestData arg)
+	private void inviteRequest(final DialogWithZIndex dialog, InviteRequestData arg)
     {
         AuthenticationServiceAsync service = getAuthService();
         service.invite(arg.getEmail(), arg.getMessage(), arg.getName(), new AsyncCallback<Void>() {
@@ -282,10 +303,11 @@ public class WorksheetImpl implements Worksheet
         });
     }
 
-    private void load(CanvasPage newPage)
+	private void load(CanvasPage newPage)
     {
         this.page = newPage;
         this.updateOptions(this.page.options);
+        this.updateHistoryToken();
 
         HashMap<Long, ElementData> newElements = new HashMap<Long, ElementData>();
         for (ElementData elem : this.page.elements) {
@@ -316,9 +338,10 @@ public class WorksheetImpl implements Worksheet
         }
     }
 
-	private void load(Long id)
+    private void load(Long id)
     {
         CanvasServiceAsync service = (CanvasServiceAsync) GWT.create(CanvasService.class);
+        this.view.setViewLinkTargetHistoryToken(this.buildPageQueryString(id, true).toString());
 
         if (null == id) {
             if (null != this.page.id) {
@@ -328,6 +351,10 @@ public class WorksheetImpl implements Worksheet
             	// Trying to reload when page wasn't yet saved. Might as well do nothing.
                 return;
             }
+        }
+
+        if (ObjectUtils.areEqual(id, this.page.id)) {
+            return;
         }
 
         view.onLoadOperationChange(OperationStatus.PENDING, null);
@@ -352,7 +379,7 @@ public class WorksheetImpl implements Worksheet
         });
     }
 
-	private void logout()
+    private void logout()
     {
         AuthenticationServiceAsync service = getAuthService();
         service.logout(new AsyncCallback<Void>() {
@@ -444,6 +471,7 @@ public class WorksheetImpl implements Worksheet
     	}
     }
 
+
     private void setActiveToolInstance(CanvasToolFrame toolFrame)
 	{
         CanvasTool<?> tool = toolFrame != null ? toolFrame.getTool() : null;
@@ -468,17 +496,26 @@ public class WorksheetImpl implements Worksheet
 	    }
 	}
 
+
     private void setModeEdit()
     {
-        view.setViewMode(false);
-        viewModeEvent.dispatch(false);
-        viewModeRegistrations.clear();
+        if (false == this._inViewMode) {
+            return;
+        }
+        this.view.setViewMode(false);
+        this.viewModeEvent.dispatch(false);
+        this.viewModeRegistrations.clear();
+
         this._inViewMode = false;
     }
 
     private void setModeView()
     {
+        if (this._inViewMode) {
+            return;
+        }
         this._inViewMode = true;
+
         viewModeEvent.dispatch(true);
         view.setViewMode(true);
         viewModeRegistrations.add(view.addStopOperationHandler(new SimpleEvent.Handler<Void>() {
@@ -486,10 +523,10 @@ public class WorksheetImpl implements Worksheet
             public void onFire(Void arg)
             {
                 setModeEdit();
+                updateHistoryToken();
             }
         }));
     }
-
 
     private void setRegistrations()
     {
@@ -533,11 +570,6 @@ public class WorksheetImpl implements Worksheet
             }
         });
 
-        view.addViewHandler(new Handler<Void>() {
-            @Override public void onFire(Void arg) {
-                setModeView();
-            }
-        });
         view.addCopyToolHandler(new Handler<ArrayList<CanvasToolFrameImpl>>() {
             @Override public void onFire(ArrayList<CanvasToolFrameImpl> arg) {
                 copyToolsToClipboard(arg);
@@ -579,6 +611,12 @@ public class WorksheetImpl implements Worksheet
         return elementsByZIndex.values();
     }
 
+	private void updateHistoryToken()
+    {
+	    Long id = null == this.page ? null : this.page.id;
+        History.newItem(buildPageQueryString(id, this._inViewMode).toString(), false);
+    }
+
     private void updateLoadedPageURL(String idStr)
     {
         Long id = parsePageIdStr(idStr);
@@ -595,7 +633,7 @@ public class WorksheetImpl implements Worksheet
         this.load(idStr);
     }
 
-	private void updateOptions(CanvasPageOptions value)
+    private void updateOptions(CanvasPageOptions value)
     {
         if (null == value) {
             return;
@@ -629,17 +667,6 @@ public class WorksheetImpl implements Worksheet
                 that.view.setUserProfile(result);
             }
         });
-    }
-
-    private String buildPageUrl(long pageId, boolean viewMode)
-    {
-        QueryString query = QueryString.create(UrlUtils.getUrlEncoder());
-        query.append(QueryParameters.PAGE_ID, pageId);
-        if (viewMode) {
-            query.append(QueryParameters.VIEW_MODE_FLAG, "");
-        }
-        String newURL = Window.Location.createUrlBuilder().setHash(query.toString()).buildString();
-        return newURL;
     }
 }
 

@@ -265,6 +265,51 @@ public class StyleUtils
     }
 
 
+    static void setPropertyForAllVendors(Style style, String property, String value)
+    {
+        String propertyCapitalized = property.substring(0, 1).toUpperCase() + property.substring(1);
+        style.setProperty(property, value);
+        style.setProperty("Moz" + propertyCapitalized, value);
+        style.setProperty("Webkit" + propertyCapitalized, value);
+        style.setProperty("Khtml" + propertyCapitalized, value);
+        style.setProperty("O" + propertyCapitalized, value);
+        style.setProperty("Ms" + propertyCapitalized, value);
+        StyleUtils.cssSetMSProperty(style, StringUtils.splitCamelCase(property, "-", true), value);
+    }
+
+    static void clearPropertyForAllVendors(Style style, String property)
+    {
+        String propertyCapitalized = property.substring(0, 1).toUpperCase() + property.substring(1);
+        style.clearProperty(property);
+        style.clearProperty("Moz" + propertyCapitalized);
+        style.clearProperty("Webkit" + propertyCapitalized);
+        style.clearProperty("Khtml" + propertyCapitalized);
+        style.clearProperty("O" + propertyCapitalized);
+        style.clearProperty("Ms" + propertyCapitalized);
+        StyleUtils.cssClearMSProperty(style, StringUtils.splitCamelCase(property, "-", true));
+    }
+
+    private static final native void cssSetMSProperty(Style style, String name, String value) /*-{
+        style['-ms-' + name] = value;
+    }-*/;
+
+        private static final native void cssClearMSProperty(Style style, String name) /*-{
+        style['-ms-' + name] = "";
+    }-*/;
+
+
+
+    public static void setTextSelectionEnabled(Style style, boolean isEnabled)
+    {
+        if (isEnabled) {
+            clearPropertyForAllVendors(style, "userSelect");
+        }
+        else {
+            setPropertyForAllVendors(style, "userSelect", "none");
+        }
+    }
+
+
     public static Integer fromPXUnitString(String cssPxUnitNumStr)
     {
         String PX_SUFFIX = "px";

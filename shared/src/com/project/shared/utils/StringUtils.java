@@ -3,6 +3,25 @@ package com.project.shared.utils;
 
 public class StringUtils
 {
+    public static String splitCamelCase(String camelCasedString, String seperator, boolean makelower)
+    {
+        StringBuilder dashedStringBuilder = new StringBuilder();
+        dashedStringBuilder.append(camelCasedString.charAt(0));
+        for (int i = 1; i < camelCasedString.length(); i++) {
+            char c = camelCasedString.charAt(i);
+            if (Character.isUpperCase(c)) {
+                dashedStringBuilder.append(seperator);
+                if (makelower) {
+                    c = Character.toLowerCase(c);
+                }
+            }
+            dashedStringBuilder.append(c);
+        }
+        return dashedStringBuilder.toString();
+    }
+
+
+
     public static String defaultIfEmptyOrNull(String str, String defaultStr)
     {
         return StringUtils.isEmptyOrNull(str) ? defaultStr : str;

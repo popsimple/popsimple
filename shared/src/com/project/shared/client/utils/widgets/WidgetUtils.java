@@ -58,7 +58,7 @@ public class WidgetUtils {
         }, MouseMoveEvent.getType());
     }
 
-    public static void disableDrag(Widget widget) {
+    public static void mouseDownPreventDefault(Widget widget) {
         widget.addDomHandler(new MouseDownHandler() {
             @Override
             public void onMouseDown(MouseDownEvent event) {

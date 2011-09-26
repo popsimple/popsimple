@@ -165,6 +165,14 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
         this.updateButtonStates();
     }
 
+    protected boolean isActiveElementTree()
+    {
+        if (null == this._editedWidget) {
+            return false;
+        }
+        return DocumentUtils.isActiveElementTree(this._editedWidget.getElement());
+    }
+
     private void initButtons()
     {
         // setSimpleCssValueButton("fontWeight", "bold", "Bold");
@@ -323,7 +331,7 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
             final Iterable<String> values, String... addStyleNames)
     {
         final ListBox listBox = new ListBox();
-        listBox.addStyleName(CanvasResources.INSTANCE.main().textEditToolbarListBox());
+        listBox.addStyleName(CanvasResources.INSTANCE.main().canvasToolbarListBox());
         for (String styleName : addStyleNames) {
             listBox.addStyleName(styleName);
         }
@@ -343,9 +351,9 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
     private void addTitledToolbarItem(String title, Widget widget)
     {
         FlowPanel listBoxWrapper = new FlowPanel();
-        listBoxWrapper.addStyleName(CanvasResources.INSTANCE.main().textEditToolbarItemWrapper());
+        listBoxWrapper.addStyleName(CanvasResources.INSTANCE.main().canvasToolbarItemWrapper());
         InlineLabel titleLabel = new InlineLabel(title);
-        titleLabel.addStyleName(CanvasResources.INSTANCE.main().textEditToolbarItemTitle());
+        titleLabel.addStyleName(CanvasResources.INSTANCE.main().canvasToolbarItemTitle());
         listBoxWrapper.add(titleLabel);
         listBoxWrapper.add(widget);
 
@@ -437,7 +445,7 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
         Button buttonWidget = new Button();
         buttonWidget.getElement().getStyle().setProperty(cssProperty, setValues[0]);
         buttonWidget.getElement().setInnerText(title);
-        buttonWidget.addStyleName(CanvasResources.INSTANCE.main().textEditToolbarToggleButton());
+        buttonWidget.addStyleName(CanvasResources.INSTANCE.main().canvasToolbarToggleButton());
         return buttonWidget;
     }
 
@@ -512,21 +520,6 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
         return this._editedWidget.getElement();
     }
 
-    private boolean isActiveElementTree()
-    {
-        if (null == this._editedWidget) {
-            return false;
-        }
-        Element rootElem = this._editedWidget.getElement();
-        Element element = DocumentUtils.getActiveElement();
-        while (null != element) {
-            if (rootElem == element) {
-                return true;
-            }
-            element = element.getParentElement();
-        }
-        return false;
-    }
 
 
     private void buttonPressed(final ToolbarButtonInfo buttonInfo)
