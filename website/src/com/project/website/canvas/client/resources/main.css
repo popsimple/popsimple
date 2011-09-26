@@ -18,6 +18,7 @@
 
 @def topBarHeight 21px;
 @def topBarPadding 5px;
+@def topBarHeightWithPadding 31px;
 @def topBarTitleFontSize 1.3em;
 @def topBarTitleTextColor #aaa;
 @def topBarBackgroundColor #222;
@@ -143,7 +144,7 @@
 
 
 .worksheetFocusPanel {
-	top: 35px;
+	top: topBarHeightWithPadding;
 	bottom: 0px;
 	width: 100%;
 	position: absolute;
@@ -340,7 +341,7 @@
 	resize: none;
 }
 
-.textEditToolbar {
+.canvasToolbar {
     background-color: #E0E0E0;
     border-radius: 3px 3px 3px 3px;
     box-shadow: 1px 1px 2px #444444;
@@ -352,7 +353,7 @@
 /*     -ms-border-radius: 3px; */
 }
 
-.textEditToolbarToggleButton {
+.canvasToolbarToggleButton {
 	display: inline-block;
     font-size: 0.9em;
 	padding: 2px 3px;
@@ -360,24 +361,24 @@
 	margin: 0 1px;
 }
 
-.textEditToolbarItemWrapper {
+.canvasToolbarItemWrapper {
     display: inline-block;
     margin:0 3px;
 }
 
-.textEditToolbarListBox
+.canvasToolbarListBox
 {
 	vertical-align: middle;
 }
 
 /* this exists because the list box can set styles on its options, we don't want it to eat-up the whole box */
-.textEditToolbarListBox, .textEditToolbarListBox option {
+.canvasToolbarListBox, .canvasToolbarListBox option {
     max-width: 200px;
     overflow: hidden;
     max-height: 20px;
 }
 
-.textEditToolbarItemTitle {
+.canvasToolbarItemTitle {
 	margin-right: 3px;
 }
 
@@ -833,7 +834,6 @@
 
 .mapToolMainPanel {
 	position: relative;
-	margin-bottom: 64px;
 }
 
 .mapToolFindBar {

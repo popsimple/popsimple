@@ -6,6 +6,16 @@ public interface MainStyles extends CssResource {
 
     String canvasContainer();
 
+    String canvasToolbar();
+
+    String canvasToolbarItemTitle();
+
+    String canvasToolbarItemWrapper();
+
+    String canvasToolbarListBox();
+
+    String canvasToolbarToggleButton();
+
     String colorPickerButton();
 
     String cropAcceptIcon();
@@ -110,6 +120,12 @@ public interface MainStyles extends CssResource {
 
     String taskImageChecked();
 
+//    String textEditNoToolbars();
+//
+//    String canvasToolbar();
+//
+//    String textEditViewBox();
+
     String taskImageContainer();
 
     String taskList();
@@ -119,12 +135,6 @@ public interface MainStyles extends CssResource {
     String taskListCreateModeCanvasStyle();
 
     String taskListFooter();
-
-//    String textEditNoToolbars();
-//
-//    String textEditToolbar();
-//
-//    String textEditViewBox();
 
     String taskListHeader();
 
@@ -140,17 +150,7 @@ public interface MainStyles extends CssResource {
 
     String textEditFocused();
 
-    String textEditNotFocused();
-
-    String textEditToolbar();
-
-    String textEditToolbarItemTitle();
-
-    String textEditToolbarItemWrapper();
-
-    String textEditToolbarListBox();
-
-	String textEditToolbarToggleButton();
+	String textEditNotFocused();
 
 	String textSelectionDisabled();
 
