@@ -151,23 +151,6 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
                 toolFrame.setToolSize(transformMovement(size, initialSize));
             }
         };
-        final SimpleEvent.Handler<Point2D> stopHandler = new SimpleEvent.Handler<Point2D>() {
-            @Override
-            public void onFire(Point2D pos)
-            {
-                Point2D size = sizeFromRotatedSizeOffset(angle, initialSize, startDragPos, pos);
-                toolFrame.setToolSize(transformMovement(size, initialSize));
-
-                // Move the rotation axis back to the center of the element (reset the transform origin)
-                // The element will jump
-                ElementUtils.resetTransformOrigin(toolFrameElement);
-
-                // Move the element so that its top-left is in the same position as it was before the resize.
-                Rectangle postResizeToolFrameRect = ElementUtils.getElementOffsetRectangle(toolFrameElement);
-                Point2D postResizeTopLeft = postResizeToolFrameRect.getCorners().topLeft;
-                setToolFramePosition(toolFrame, ElementUtils.getElementOffsetPosition(toolFrameElement).minus(postResizeTopLeft).plus(initialTopLeft));
-            }
-        };
         final SimpleEvent.Handler<Void> cancelHandler = new SimpleEvent.Handler<Void>() {
             @Override
             public void onFire(Void arg)
@@ -177,6 +160,21 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
                 setToolFramePosition(toolFrame, startPos);
             }
         };
+        final SimpleEvent.Handler<Point2D> stopHandler = new SimpleEvent.Handler<Point2D>() {
+            @Override
+            public void onFire(final Point2D pos)
+            {
+                UndoManager.get().addAndRedo(toolFrame, new UndoRedoPair() {
+                    @Override public void undo() {
+                        cancelHandler.onFire(null);
+                    }
+                    @Override public void redo() {
+                        onResizeFrameFinished(toolFrame, toolFrameElement, angle, initialSize, startDragPos, initialTopLeft, pos);
+                    }
+                });
+            }
+        };
+
         _elementDragManager.startMouseMoveOperation(toolFrameElement, _container.getElement(),
                 Point2D.zero, resizeHandler, stopHandler, cancelHandler,
                 ElementDragManager.StopCondition.STOP_CONDITION_MOUSE_UP);
@@ -193,25 +191,30 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
         final double startAngle = ElementUtils.getRotation(toolFrame.asWidget().getElement());
 
         final SimpleEvent.Handler<Point2D> rotateHandler = new SimpleEvent.Handler<Point2D>() {
-            @Override
-            public void onFire(Point2D pos)
-            {
-                Point2D posRelativeToCenter = pos.minus(initialCenter);
-                double rotation = Math.toDegrees(posRelativeToCenter.radians()) - unrotatedBottomLeftAngle;
-                ElementUtils.setRotation(toolFrame.asWidget().getElement(), roundedAngle(rotation));
-                toolFrame.onTransformed();
+            @Override public void onFire(Point2D pos) {
+                rotateToolFrame(toolFrame, initialCenter, unrotatedBottomLeftAngle, pos);
             }
         };
         final SimpleEvent.Handler<Void> cancelHandler = new SimpleEvent.Handler<Void>() {
-            @Override
-            public void onFire(Void arg)
-            {
+            @Override public void onFire(Void arg) {
                 ElementUtils.setRotation(toolFrame.asWidget().getElement(), startAngle);
                 toolFrame.onTransformed();
             }
         };
+        final SimpleEvent.Handler<Point2D> stopHandler = new SimpleEvent.Handler<Point2D>() {
+            @Override public void onFire(final Point2D arg) {
+                UndoManager.get().add(toolFrame, new UndoRedoPair() {
+                    @Override public void undo() {
+                        cancelHandler.onFire(null);
+                    }
+                    @Override public void redo() {
+                        rotateToolFrame(toolFrame, initialCenter, unrotatedBottomLeftAngle, arg);
+                    }
+                });
+            }
+        };
         _elementDragManager.startMouseMoveOperation(toolFrame.asWidget().getElement(), _container.getElement(),
-                Point2D.zero, rotateHandler, null, cancelHandler, ElementDragManager.StopCondition.STOP_CONDITION_MOUSE_UP);
+                Point2D.zero, rotateHandler, stopHandler, cancelHandler, ElementDragManager.StopCondition.STOP_CONDITION_MOUSE_UP);
     }
 
     private Point2D sizeFromRotatedSizeOffset(final double angle, final Point2D initialSize,
@@ -290,6 +293,34 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
                 setToolFramePosition(toolFrame, targetPos);
             }
         });
+    }
+
+
+    private void onResizeFrameFinished(final CanvasToolFrame toolFrame, final Element toolFrameElement,
+            final double angle, final Point2D initialSize, final Point2D startDragPos, final Point2D initialTopLeft,
+            Point2D pos)
+    {
+        Point2D size = sizeFromRotatedSizeOffset(angle, initialSize, startDragPos, pos);
+        toolFrame.setToolSize(transformMovement(size, initialSize));
+
+        // Move the rotation axis back to the center of the element (reset the transform origin)
+        // The element will jump
+        ElementUtils.resetTransformOrigin(toolFrameElement);
+
+        // Move the element so that its top-left is in the same position as it was before the resize.
+        Rectangle postResizeToolFrameRect = ElementUtils.getElementOffsetRectangle(toolFrameElement);
+        Point2D postResizeTopLeft = postResizeToolFrameRect.getCorners().topLeft;
+        setToolFramePosition(toolFrame, ElementUtils.getElementOffsetPosition(toolFrameElement).minus(postResizeTopLeft).plus(initialTopLeft));
+    }
+
+
+    private void rotateToolFrame(final CanvasToolFrame toolFrame, final Point2D initialCenter,
+            final double unrotatedBottomLeftAngle, Point2D pos)
+    {
+        Point2D posRelativeToCenter = pos.minus(initialCenter);
+        double rotation = Math.toDegrees(posRelativeToCenter.radians()) - unrotatedBottomLeftAngle;
+        ElementUtils.setRotation(toolFrame.asWidget().getElement(), roundedAngle(rotation));
+        toolFrame.onTransformed();
     }
 
 }

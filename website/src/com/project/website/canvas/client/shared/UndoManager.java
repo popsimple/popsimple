@@ -25,6 +25,12 @@ public class UndoManager
         return UndoManager.INSTANCE;
     }
 
+    public void addAndRedo(Object owner, UndoRedoPair undoRedoPair)
+    {
+        this.add(owner, undoRedoPair);
+        undoRedoPair.redo();
+    }
+
     public void add(Object owner, UndoRedoPair undoRedoPair)
     {
         this._past.push(new Pair<Object, UndoRedoPair>(owner, undoRedoPair));
