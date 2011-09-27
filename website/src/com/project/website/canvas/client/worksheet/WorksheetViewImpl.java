@@ -66,6 +66,7 @@ import com.project.website.canvas.client.shared.dialogs.SelectImageDialog;
 import com.project.website.canvas.client.shared.searchProviders.SearchProviders;
 import com.project.website.canvas.client.shared.widgets.DialogWithZIndex;
 import com.project.website.canvas.client.worksheet.interfaces.ElementDragManager;
+import com.project.website.canvas.client.worksheet.interfaces.MouseMoveOperationHandler;
 import com.project.website.canvas.client.worksheet.interfaces.ToolFrameTransformer;
 import com.project.website.canvas.client.worksheet.interfaces.WorksheetView;
 import com.project.website.canvas.shared.data.CanvasPageOptions;
@@ -803,23 +804,25 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
     private void startDraggingFloatingWidget(final ToolboxItem toolboxItem) {
         final WorksheetViewImpl that = this;
-        Handler<Point2D> floatingWidgetMoveHandler = new Handler<Point2D>() {
-            @Override
-            public void onFire(Point2D arg) {
-                ElementUtils.setElementCSSPosition(that.floatingWidget.getElement(), arg);
-            }
-        };
-        Handler<Point2D> floatingWidgetStop = new Handler<Point2D>() {
-            @Override
-            public void onFire(Point2D position) {
+        MouseMoveOperationHandler handler = new MouseMoveOperationHandler() {
+            @Override public void onStop(Point2D pos) {
                 toolCreationRequestEvent.dispatch(
-                        new ToolCreationRequest(position, toolboxItem.getToolFactory()));
+                        new ToolCreationRequest(pos, toolboxItem.getToolFactory()));
+            }
+
+            @Override public void onStart() {
+            }
+
+            @Override public void onMouseMove(Point2D pos) {
+                ElementUtils.setElementCSSPosition(that.floatingWidget.getElement(), pos);
+            }
+
+            @Override public void onCancel() {
             }
         };
         this._floatingWidgetTerminator = this._floatingWidgetDragManager.startMouseMoveOperation(
                 null, this.worksheetPanel.getElement(), Point2D.zero,
-                floatingWidgetMoveHandler, floatingWidgetStop, null,
-                ElementDragManager.StopCondition.STOP_CONDITION_MOUSE_CLICK);
+                handler, ElementDragManager.StopCondition.STOP_CONDITION_MOUSE_CLICK);
     }
 
     private void startDraggingSelectedToolFrames(MouseEvent<?> arg)

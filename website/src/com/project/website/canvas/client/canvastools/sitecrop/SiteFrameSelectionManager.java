@@ -4,13 +4,13 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent;
-import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.data.Point2D;
 import com.project.shared.data.Rectangle;
 import com.project.shared.utils.RectangleUtils;
 import com.project.website.canvas.client.worksheet.ElementDragManagerImpl;
 import com.project.website.canvas.client.worksheet.interfaces.ElementDragManager.StopCondition;
+import com.project.website.canvas.client.worksheet.interfaces.MouseMoveOperationHandler;
 
 public class SiteFrameSelectionManager {
     public final static int MIN_VALID_SELECTION_SIZE_PX = 5;
@@ -37,33 +37,32 @@ public class SiteFrameSelectionManager {
 
 		this._selectionPanel.setVisible(true);
 
-		Handler<Point2D> mouseMoveHandler = new Handler<Point2D>() {
-			@Override
-			public void onFire(Point2D arg) {
-				Element selectionElement = _selectionPanel.getElement();
-				ElementUtils.setElementRectangle(selectionElement,
-						RectangleUtils.Build(initialPosition, arg));
-			}
-		};
-		Handler<Point2D> stopHandler = new Handler<Point2D>() {
-			@Override
-			public void onFire(Point2D arg) {
-			    if (false == isValidSelection())
-			    {
-			        clearSelection();
-			    }
-			}
-		};
-		Handler<Void> cancelHandler = new Handler<Void>() {
-			@Override
-			public void onFire(Void arg) {
-			    clearSelection();
-			}
-		};
+		MouseMoveOperationHandler handler = new MouseMoveOperationHandler() {
+            @Override public void onStop(Point2D pos) {
+                if (false == isValidSelection())
+                {
+                    clearSelection();
+                }
+            }
+
+            @Override public void onStart() {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override public void onMouseMove(Point2D pos) {
+                Element selectionElement = _selectionPanel.getElement();
+                ElementUtils.setElementRectangle(selectionElement,
+                        RectangleUtils.Build(initialPosition, pos));
+            }
+
+            @Override public void onCancel() {
+                clearSelection();
+            }
+        };
 
 		this._selectionDragManager.startMouseMoveOperation(this._container.getElement(),
-		        Point2D.zero, mouseMoveHandler, stopHandler, cancelHandler,
-				StopCondition.STOP_CONDITION_MOUSE_UP);
+		        Point2D.zero, handler, StopCondition.STOP_CONDITION_MOUSE_UP);
 	}
 
 	public Rectangle getSelectedRectangle()

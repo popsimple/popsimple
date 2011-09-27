@@ -5,7 +5,6 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent;
-import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.data.Point2D;
 import com.project.shared.data.Rectangle;
@@ -16,6 +15,7 @@ import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.client.shared.UndoManager;
 import com.project.website.canvas.client.shared.UndoManager.UndoRedoPair;
 import com.project.website.canvas.client.worksheet.interfaces.ElementDragManager;
+import com.project.website.canvas.client.worksheet.interfaces.MouseMoveOperationHandler;
 import com.project.website.canvas.client.worksheet.interfaces.ToolFrameTransformer;
 
 public class ToolFrameTransformerImpl implements ToolFrameTransformer
@@ -73,35 +73,29 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
         Element toolFrameElement = toolFrame.asWidget().getElement();
         final Point2D initialPos = getElementCSSPositionFallback(startEvent, toolFrameElement);
         final Point2D originalOffsetFromFramePos = ElementUtils.getRelativePosition(startEvent, toolFrameElement);
-        toolFrame.setDragging(true);
 
-        final SimpleEvent.Handler<Point2D> dragHandler = new SimpleEvent.Handler<Point2D>() {
-            @Override
-            public void onFire(Point2D pos)
-            {
+        MouseMoveOperationHandler handler = new MouseMoveOperationHandler() {
+            @Override public void onStop(Point2D pos) {
+                toolFrame.setDragging(false);
+                addDragUndoStep(toolFrame, initialPos, calcDragTargetPos(initialPos, originalOffsetFromFramePos, pos));
+            }
+
+            @Override public void onStart() {
+                toolFrame.setDragging(true);
+            }
+
+            @Override public void onMouseMove(Point2D pos) {
                 setToolFramePosition(toolFrame, calcDragTargetPos(initialPos, originalOffsetFromFramePos, pos));
             }
-        };
-        Handler<Void> cancelMoveHandler = new Handler<Void>() {
-            @Override
-            public void onFire(Void arg)
-            {
+
+            @Override public void onCancel() {
                 setToolFramePosition(toolFrame, initialPos);
                 toolFrame.setDragging(false);
             }
         };
 
-        Handler<Point2D> stopHandler = new Handler<Point2D>() {
-            @Override
-            public void onFire(final Point2D arg)
-            {
-                toolFrame.setDragging(false);
-                addDragUndoStep(toolFrame, initialPos, calcDragTargetPos(initialPos, originalOffsetFromFramePos, arg));
-            }
-        };
         _elementDragManager.startMouseMoveOperation(toolFrameElement, _container.getElement(),
-                Point2D.zero, dragHandler, stopHandler,
-                cancelMoveHandler, ElementDragManager.StopCondition.STOP_CONDITION_MOUSE_UP);
+                Point2D.zero, handler, ElementDragManager.StopCondition.STOP_CONDITION_MOUSE_UP);
     }
 
 
@@ -149,42 +143,35 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
         // Move the element so that its top-left corner is the same as before switching the rotation axis.
         setToolFramePosition(toolFrame, initialTopLeft);
 
-
-        final SimpleEvent.Handler<Point2D> resizeHandler = new SimpleEvent.Handler<Point2D>() {
-            @Override
-            public void onFire(Point2D pos)
-            {
-                Point2D size = sizeFromRotatedSizeOffset(angle, initialSize, startDragPos, pos);
-                toolFrame.setToolSize(transformMovement(size, initialSize));
-            }
-        };
-        final SimpleEvent.Handler<Void> cancelHandler = new SimpleEvent.Handler<Void>() {
-            @Override
-            public void onFire(Void arg)
-            {
-                toolFrame.setToolSize(initialSize);
-                ElementUtils.resetTransformOrigin(toolFrameElement);
-                setToolFramePosition(toolFrame, startPos);
-            }
-        };
-        final SimpleEvent.Handler<Point2D> stopHandler = new SimpleEvent.Handler<Point2D>() {
-            @Override
-            public void onFire(final Point2D pos)
-            {
+        MouseMoveOperationHandler handler = new MouseMoveOperationHandler() {
+            @Override public void onStop(final Point2D pos) {
                 UndoManager.get().addAndRedo(toolFrame, new UndoRedoPair() {
                     @Override public void undo() {
-                        cancelHandler.onFire(null);
+                        onCancel();
                     }
                     @Override public void redo() {
                         onResizeFrameFinished(toolFrame, toolFrameElement, angle, initialSize, startDragPos, initialTopLeft, pos);
                     }
                 });
             }
+
+            @Override public void onStart() { }
+
+            @Override public void onMouseMove(Point2D pos) {
+                Point2D size = sizeFromRotatedSizeOffset(angle, initialSize, startDragPos, pos);
+                toolFrame.setToolSize(transformMovement(size, initialSize));
+            }
+
+            @Override public void onCancel() {
+                toolFrame.setToolSize(initialSize);
+                ElementUtils.resetTransformOrigin(toolFrameElement);
+                setToolFramePosition(toolFrame, startPos);
+            }
         };
 
+
         _elementDragManager.startMouseMoveOperation(toolFrameElement, _container.getElement(),
-                Point2D.zero, resizeHandler, stopHandler, cancelHandler,
-                ElementDragManager.StopCondition.STOP_CONDITION_MOUSE_UP);
+                Point2D.zero, handler, ElementDragManager.StopCondition.STOP_CONDITION_MOUSE_UP);
     }
 
     @Override
@@ -197,32 +184,33 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
         final double unrotatedBottomLeftAngle = Math.toDegrees(unrotatedBottomLeftRelativeToCenter.radians());
         final double startAngle = ElementUtils.getRotation(toolFrame.asWidget().getElement());
 
-        final SimpleEvent.Handler<Point2D> rotateHandler = new SimpleEvent.Handler<Point2D>() {
-            @Override public void onFire(Point2D pos) {
-                rotateToolFrame(toolFrame, initialCenter, unrotatedBottomLeftAngle, pos, 0);
-            }
-        };
-        final SimpleEvent.Handler<Void> cancelHandler = new SimpleEvent.Handler<Void>() {
-            @Override public void onFire(Void arg) {
-                ElementUtils.setRotation(toolFrame.asWidget().getElement(), startAngle);
-                toolFrame.onTransformed();
-            }
-        };
-        final SimpleEvent.Handler<Point2D> stopHandler = new SimpleEvent.Handler<Point2D>() {
-            @Override public void onFire(final Point2D arg) {
+        MouseMoveOperationHandler handler = new MouseMoveOperationHandler() {
+            @Override public void onStop(final Point2D pos) {
                 UndoManager.get().add(toolFrame, new UndoRedoPair() {
                     @Override public void undo() {
                         ElementUtils.setRotation(toolFrame.asWidget().getElement(), startAngle, DEFAULT_ANIMATION_DURATION);
                         toolFrame.onTransformed();
                     }
                     @Override public void redo() {
-                        rotateToolFrame(toolFrame, initialCenter, unrotatedBottomLeftAngle, arg, DEFAULT_ANIMATION_DURATION);
+                        rotateToolFrame(toolFrame, initialCenter, unrotatedBottomLeftAngle, pos, DEFAULT_ANIMATION_DURATION);
                     }
                 });
             }
+
+            @Override public void onStart() { }
+
+            @Override public void onMouseMove(Point2D pos) {
+                rotateToolFrame(toolFrame, initialCenter, unrotatedBottomLeftAngle, pos, 0);
+            }
+
+            @Override public void onCancel() {
+                ElementUtils.setRotation(toolFrame.asWidget().getElement(), startAngle);
+                toolFrame.onTransformed();
+            }
         };
+
         _elementDragManager.startMouseMoveOperation(toolFrame.asWidget().getElement(), _container.getElement(),
-                Point2D.zero, rotateHandler, stopHandler, cancelHandler, ElementDragManager.StopCondition.STOP_CONDITION_MOUSE_UP);
+                Point2D.zero, handler, ElementDragManager.StopCondition.STOP_CONDITION_MOUSE_UP);
     }
 
     private Point2D sizeFromRotatedSizeOffset(final double angle, final Point2D initialSize,

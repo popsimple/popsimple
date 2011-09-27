@@ -131,7 +131,8 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
 
     @Override
     public boolean canRotate() {
-        // TODO Auto-generated method stub
+        // TODO: disabled because we don't know how to translate mouse coordinates when the tool is rotated. It needs to
+        // be done relative to the tool frame, because that is the element that is rotated (not the tool itself).
         return false;
     }
 
@@ -164,7 +165,7 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
         this.registrationsManager.clear();
         this.registrationsManager.add(this.addDomHandler(new MouseDownHandler(){
             @Override public void onMouseDown(MouseDownEvent event) {
-                Point2D pos = EventUtils.getCurrentMousePos().minus(ElementUtils.getElementAbsolutePosition(that.getElement()));
+                Point2D pos = getMousePositionRelativeToElement(that.getElement());
                 that._currentPath = new Path(pos.getX(), pos.getY());
                 that._currentPath.setStrokeColor("#000000");
                 that._currentPath.setFillOpacity(0);
@@ -193,10 +194,15 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
         this.registrationsManager.add(this.addDomHandler(new MouseMoveHandler(){
             @Override public void onMouseMove(MouseMoveEvent event) {
                 if (null != that._currentPath) {
-                    Point2D pos = EventUtils.getCurrentMousePos().minus(ElementUtils.getElementAbsolutePosition(that.getElement()));
+                    Point2D pos = getMousePositionRelativeToElement(that.getElement());
                     that._currentPath.lineTo(pos.getX(), pos.getY());
                 }
             }}, MouseMoveEvent.getType()));
+    }
+
+    private Point2D getMousePositionRelativeToElement(final Element that)
+    {
+        return EventUtils.getCurrentMousePos().minus(ElementUtils.getElementAbsoluteRectangle(that).getCorners().topLeft);
     }
 
 }

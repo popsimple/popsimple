@@ -42,6 +42,7 @@ import com.project.shared.utils.RectangleUtils;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
 import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.client.worksheet.ElementDragManagerImpl;
+import com.project.website.canvas.client.worksheet.interfaces.MouseMoveOperationHandler;
 import com.project.website.canvas.client.worksheet.interfaces.ElementDragManager.StopCondition;
 import com.project.website.canvas.shared.data.ElementData;
 
@@ -77,7 +78,7 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
     private RegistrationsManager _cropRegistrationManager = new RegistrationsManager();
 
     private SimpleEvent<Point2D> _selfMoveEvent = new SimpleEvent<Point2D>();
-    
+
     //Why not singleton?
     private final SiteCropToolbar _toolbar = new SiteCropToolbar();
 
@@ -115,7 +116,7 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
 
         this._frameSelectionManager.clearSelection();
         this.setDefaultMode();
-        
+
         //TODO: Notify listeners about the resize so they can update (e.g. floating toolbar).
     }
 
@@ -194,7 +195,7 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
           }
       });
     }
-    
+
     private void enableBrowsing(Boolean enable)
     {
         blockPanel.setVisible(enable ? false : true);
@@ -211,20 +212,27 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
                         return;
                     }
                     ElementUtils.setTextSelectionEnabled(blockPanel.getElement(), true);
-                    Handler<Point2D> moveHandler = new Handler<Point2D>() {
+
+                    MouseMoveOperationHandler handler = new MouseMoveOperationHandler() {
+                        @Override public void onStop(Point2D pos) { }
+                        @Override public void onStart() { }
+                        @Override public void onCancel() { }
+
                         @Override
-                        public void onFire(Point2D arg) {
-                            Point2D deltaPoint = arg.minus(_lastPoint);
-                            _lastPoint = arg;
+                        public void onMouseMove(Point2D pos)
+                        {
+                            Point2D deltaPoint = pos.minus(_lastPoint);
+                            _lastPoint = pos;
                             updateFrameLeft(deltaPoint.getX());
                             updateFrameTop(deltaPoint.getY());
                         }
+
                     };
 
                     _lastPoint = Point2D.zero;
                     _frameDragManager.startMouseMoveOperation(blockPanel.getElement(),
                             ElementUtils.getRelativePosition(event, blockPanel.getElement()),
-                            moveHandler, null, null, StopCondition.STOP_CONDITION_MOUSE_UP);
+                            handler, StopCondition.STOP_CONDITION_MOUSE_UP);
 
                 }
             }, MouseDownEvent.getType()));

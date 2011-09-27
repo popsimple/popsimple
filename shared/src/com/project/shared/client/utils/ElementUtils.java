@@ -90,9 +90,30 @@ public abstract class ElementUtils
     }
 
 
-    public static double getRotation(Element element) {
-        Double rotation = rotations.get(element);
-        return rotation != null ? rotation.intValue() : 0;
+    /**
+     * Get the rotation of an element. Assumes that rotations were all set using {@link #setRotation(Element, double)}
+     * or {@link #setRotation(Element, double, int)}, and either one of the following holds:
+     *
+     * <el>
+     * <li>The element was rotated and no ancestor of the element was rotated</li>
+     * <li>The element was not rotated, but a single ancestor was rotated around the same axis as the element's rotation axis</li>
+     * </el>
+     */
+    public static double getRotation(Element element)
+    {
+        Double rotation;
+        while (true) {
+            rotation = rotations.get(element);
+            if (null != rotation) {
+                break;
+            }
+            if (false == element.hasParentElement()) {
+                return 0;
+            }
+            element = element.getParentElement();
+        }
+
+        return rotation;
     }
 
     private static class RotationAnimation extends Animation {
