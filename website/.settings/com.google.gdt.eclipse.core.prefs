@@ -1,6 +1,6 @@
-#Sun Sep 25 22:57:48 IDT 2011
+#Tue Sep 27 07:11:51 IDT 2011
 eclipse.preferences.version=1
-jarsExcludedFromWebInfLib=
+jarsExcludedFromWebInfLib=C\:/source/canvas/website/libs/gwt-graphics-1.0.0.jar
 launchConfigExternalUrlPrefix=
 warSrcDir=war
 warSrcDirIsOutput=true
