@@ -1,6 +1,5 @@
 package com.project.website.canvas.client.canvastools.sketch;
 
-import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.data.Point2D;
 import com.project.website.canvas.client.canvastools.base.CanvasToolFactory;
@@ -13,20 +12,24 @@ public class SketchToolFactory extends CanvasToolFactoryBase<SketchTool>
     private static final int DEFAULT_PEN_WIDTH = 5;
     public static final String UNIQUE_ID = "SketchToolFactory";
 
+    private final static int DEFAULT_WIDTH = 400;
+    private final static int DEFAULT_HEIGHT = 400;
+
+
     private int penWidth = DEFAULT_PEN_WIDTH;
 
     @Override
     public SketchTool create() {
         VectorGraphicsData data = new VectorGraphicsData(UNIQUE_ID);
         data.penWidth = this.penWidth;
-        SketchTool tool = new SketchTool();
+        SketchTool tool = new SketchTool(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         tool.setValue(data);
         return tool;
     }
 
     @Override
     public Widget getFloatingWidget() {
-        return new FlowPanel();
+        return null;
     }
 
     @Override
@@ -38,7 +41,6 @@ public class SketchToolFactory extends CanvasToolFactoryBase<SketchTool>
 
     @Override
     public Point2D getCreationOffset() {
-        return new Point2D(-7, -33);
+        return new Point2D(-7 - DEFAULT_WIDTH/2, -33 - DEFAULT_HEIGHT/2);
     }
-
 }

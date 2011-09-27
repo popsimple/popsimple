@@ -546,6 +546,7 @@ public class WorksheetImpl implements Worksheet
                 {
                     setActiveToolboxItem(activeToolboxItem);
                 }
+                arg.toolCreated(toolFrame.getTool());
             }
         });
 

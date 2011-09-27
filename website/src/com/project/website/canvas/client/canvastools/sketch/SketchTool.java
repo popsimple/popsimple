@@ -32,18 +32,20 @@ import com.project.website.canvas.shared.data.VectorGraphicsData;
 
 public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphicsData>
 {
-    private final static int defaultWidth = 200;
-    private final static int defaultHeight = 200;
 
     private VectorGraphicsData data = null;
 
-    public SketchTool() {
-        super(defaultWidth, defaultHeight);
+    public SketchTool(int width, int height) {
+        super(width, height);
     }
 
     private final RegistrationsManager registrationsManager = new RegistrationsManager();
+
     protected Path _currentPath = null;
     protected boolean _inViewMode = false;
+    protected boolean _active = false;
+
+
 
     @Override
     protected void onUnload() {
@@ -113,6 +115,7 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
 
     @Override
     public void setActive(boolean isActive) {
+        this._active = isActive;
         if (this._inViewMode) {
             return;
         }
@@ -173,12 +176,10 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
         this.registrationsManager.clear();
         this.registrationsManager.add(this.addDomHandler(new MouseDownHandler(){
             @Override public void onMouseDown(MouseDownEvent event) {
-                Point2D pos = getMousePositionRelativeToElement(that.getElement());
-                that._currentPath = new Path(pos.getX(), pos.getY());
-                that._currentPath.setStrokeColor("#000000");
-                that._currentPath.setFillOpacity(0);
-                that._currentPath.setStrokeWidth(that.data.penWidth);
-                that.add(that._currentPath);
+                // TODO request to be activated instead of doing this forcefully?
+                // we want the tool frame to know it is activated.
+                that.setActive(true);
+                that.startPathDraw();
             }}, MouseDownEvent.getType()));
 
         this.registrationsManager.add(this.addDomHandler(new MouseUpHandler(){
@@ -201,6 +202,18 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
 
         this.registrationsManager.add(this.addDomHandler(new MouseMoveHandler(){
             @Override public void onMouseMove(MouseMoveEvent event) {
+                if (false == that._active) {
+                    return;
+                }
+                // We can't use getButton or event.getNativeButton
+                // from within a MouseMove event handler.
+                // see: http://code.google.com/p/google-web-toolkit/issues/detail?id=3983
+//                int buttonFlags = event.getNativeButton();
+//                if (0 != (buttonFlags & NativeEvent.BUTTON_LEFT)) {
+//                    if (null == that._currentPath) {
+//                        that.startPathDraw();
+//                    }
+//                }
                 if (null != that._currentPath) {
                     Point2D pos = getMousePositionRelativeToElement(that.getElement());
                     that._currentPath.lineTo(pos.getX(), pos.getY());
@@ -211,6 +224,16 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
     private Point2D getMousePositionRelativeToElement(final Element that)
     {
         return EventUtils.getCurrentMousePos().minus(ElementUtils.getElementAbsoluteRectangle(that).getCorners().topLeft);
+    }
+
+    private void startPathDraw()
+    {
+        Point2D pos = getMousePositionRelativeToElement(this.getElement());
+        this._currentPath = new Path(pos.getX(), pos.getY());
+        this._currentPath.setStrokeColor("#000000");
+        this._currentPath.setFillOpacity(0);
+        this._currentPath.setStrokeWidth(this.data.penWidth);
+        this.add(this._currentPath);
     }
 
 }

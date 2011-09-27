@@ -28,6 +28,7 @@ public interface WorksheetView extends IsWidget
         private final CanvasToolFactory<? extends CanvasTool<? extends ElementData>> factory;
 
         private final Point2D position;
+
         public ToolCreationRequest(Point2D position,
                 CanvasToolFactory<? extends CanvasTool<? extends ElementData>> factory)
         {
@@ -44,6 +45,12 @@ public interface WorksheetView extends IsWidget
         {
             return position;
         }
+
+
+        /**
+         * Override in subclasses to do something after the tool was created.
+         */
+        public void toolCreated(CanvasTool<? extends ElementData> tool) { }
     }
 
     /**

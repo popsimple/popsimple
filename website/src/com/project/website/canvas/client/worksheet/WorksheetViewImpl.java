@@ -366,9 +366,9 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
             return;
         }
 
-        setFloatingWidgetForTool(factory);
+        this.setFloatingWidgetForTool(factory);
         if (null == this.floatingWidget) {
-            setActiveToolboxItemWithoutFloatingWidget(toolboxItem);
+            this.setActiveToolboxItemWithoutFloatingWidget(toolboxItem);
             return;
         }
 
@@ -717,16 +717,20 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     }
 
     private void setActiveToolboxItemWithoutFloatingWidget(final ToolboxItem toolboxItem) {
-        final HandlerRegistration createInstanceReg = this.worksheetPanel.addDomHandler(new ClickHandler() {
+        final HandlerRegistration createInstanceReg = this.worksheetPanel.addDomHandler(new MouseDownHandler() {
             @Override
-            public void onClick(ClickEvent event) {
-                if (overToolFrames.isEmpty()) {
-                    Point2D position = ElementUtils.getRelativePosition(event, worksheetPanel.getElement());
-                    toolCreationRequestEvent.dispatch(new ToolCreationRequest(position, toolboxItem
-                            .getToolFactory()));
-                }
+            public void onMouseDown(final MouseDownEvent event) {
+                Point2D position = ElementUtils.getRelativePosition(event, worksheetPanel.getElement());
+                toolCreationRequestEvent.dispatch(new ToolCreationRequest(position, toolboxItem.getToolFactory()) {
+                    @Override
+                    public void toolCreated(CanvasTool<? extends ElementData> tool)
+                    {
+                        super.toolCreated(tool);
+                        tool.asWidget().fireEvent(event);
+                    }
+                });
             }
-        }, ClickEvent.getType());
+        }, MouseDownEvent.getType());
         this._floatingWidgetTerminator = new Handler<Void>() {
             @Override
             public void onFire(Void arg) {
@@ -735,8 +739,8 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         };
     }
 
-    private void setFloatingWidgetForTool(
-            CanvasToolFactory<? extends CanvasTool<? extends ElementData>> factory) {
+    private void setFloatingWidgetForTool(CanvasToolFactory<? extends CanvasTool<? extends ElementData>> factory)
+    {
         this.floatingWidget = factory.getFloatingWidget();
         if (null == this.floatingWidget) {
             return;
