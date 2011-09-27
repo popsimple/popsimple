@@ -25,6 +25,8 @@ import com.project.shared.client.utils.EventUtils;
 import com.project.shared.client.utils.NodeUtils;
 import com.project.shared.data.Point2D;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
+import com.project.website.canvas.client.shared.UndoManager;
+import com.project.website.canvas.client.shared.UndoManager.UndoRedoPair;
 import com.project.website.canvas.shared.data.ElementData;
 import com.project.website.canvas.shared.data.VectorGraphicsData;
 
@@ -46,6 +48,7 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
     @Override
     protected void onUnload() {
         this.registrationsManager.clear();
+        UndoManager.get().removeOwner(this);
         super.onUnload();
     }
 
@@ -171,6 +174,19 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
 
         this.registrationsManager.add(this.addDomHandler(new MouseUpHandler(){
             @Override public void onMouseUp(MouseUpEvent event) {
+                final Path path = that._currentPath;
+                if (null == path) {
+                    return;
+                }
+                UndoManager.get().add(this, new UndoRedoPair() {
+                    @Override public void undo() {
+                        that.remove(path);
+                    }
+
+                    @Override public void redo() {
+                        that.add(path);
+                    }
+                });
                 that._currentPath = null;
             }}, MouseUpEvent.getType()));
 

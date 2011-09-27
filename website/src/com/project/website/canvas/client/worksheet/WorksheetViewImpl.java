@@ -60,6 +60,7 @@ import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.client.shared.ImageInformationUtils;
 import com.project.website.canvas.client.shared.ImageOptionTypes;
 import com.project.website.canvas.client.shared.ImageOptionsProviderUtils;
+import com.project.website.canvas.client.shared.UndoManager;
 import com.project.website.canvas.client.shared.ZIndexAllocator;
 import com.project.website.canvas.client.shared.dialogs.SelectImageDialog;
 import com.project.website.canvas.client.shared.searchProviders.SearchProviders;
@@ -140,8 +141,10 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     private final RegistrationsManager editModeRegistrations = new RegistrationsManager();
     private final RegistrationsManager allModesRegistrations = new RegistrationsManager();
 
+
     private final SimpleEvent<CanvasPageOptions> optionsUpdatedEvent = new SimpleEvent<CanvasPageOptions>();
     private final SimpleEvent<Void> stopOperationEvent = new SimpleEvent<Void>();
+    private final SimpleEvent<Void> undoRequestEvent = new SimpleEvent<Void>();
     private final SimpleEvent<ArrayList<CanvasToolFrameImpl>> removeToolsRequest = new SimpleEvent<ArrayList<CanvasToolFrameImpl>>();
     private final SimpleEvent<ArrayList<CanvasToolFrameImpl>> copyToolsRequest = new SimpleEvent<ArrayList<CanvasToolFrameImpl>>();
     private final SimpleEvent<Void> pasteToolsRequest = new SimpleEvent<Void>();
@@ -260,6 +263,12 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         }
 
         this.worksheetPanel.add(toolFrame);
+    }
+
+    @Override
+    public HandlerRegistration addUndoRequestHandler(Handler<Void> handler)
+    {
+        return this.undoRequestEvent.addHandler(handler);
     }
 
     @Override
@@ -502,7 +511,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         }));
         this.allModesRegistrations.add(this.focusPanel.addKeyDownHandler(new KeyDownHandler(){
             @Override public void onKeyDown(KeyDownEvent event) {
-                that.onKeyDown(event);
+                that.onWorksheetFocusedKeyDown(event);
             }}));
         this.allModesRegistrations.add(Event.addNativePreviewHandler(new NativePreviewHandler() {
             @Override public void onPreviewNativeEvent(NativePreviewEvent event) {
@@ -550,25 +559,19 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         this._floatingWidgetTerminator = null;
     }
 
+
     private void createDefaultPageOptions()
     {
         this.pageOptions = new CanvasPageOptions();
         ImageOptionsProviderUtils.setImageOptions(this._imageOptionsProvider, pageOptions.backgroundImage.options, ImageOptionTypes.OriginalSize);
     }
 
-
     private void handleAllModesPreviewEvent(NativePreviewEvent event)
     {
         if (EventUtils.nativePreviewEventTypeEquals(event, KeyDownEvent.getType()))
         {
-            // TODO: Use some sort of KeyMapper.
-            switch (event.getNativeEvent().getKeyCode()) {
-            case KeyCodes.KEY_ESCAPE:
-                stopOperationEvent.dispatch(null);
-                break;
-            default:
-                break;
-            }
+            final WorksheetViewImpl that = this;
+            that.onPreviewKeyDown(event);
         }
     }
 
@@ -621,26 +624,56 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     	this.copyToolsRequest.dispatch(new ArrayList<CanvasToolFrameImpl>(selectedTools));
     }
 
-    private void onKeyDown(KeyDownEvent event){
+    private void onPreviewKeyDown(NativePreviewEvent event)
+    {
+        if (event.getNativeEvent().getCtrlKey())
+        {
+            switch (event.getNativeEvent().getKeyCode())
+            {
+                case (int)'Z':
+                    UndoManager.get().undo();
+                    return;
+                case (int)'Y':
+                    UndoManager.get().redo();
+                    return;
+                default:
+                    //do nothing
+                    break;
+            }
+        }
+        switch (event.getNativeEvent().getKeyCode())
+        {
+            case KeyCodes.KEY_ESCAPE:
+                stopOperationEvent.dispatch(null);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void onWorksheetFocusedKeyDown(KeyDownEvent event){
         if (this._viewMode) {
             return;
         }
-        switch (event.getNativeKeyCode())
+        if (event.isControlKeyDown())
         {
-            case (int)'C':
-                if (event.isControlKeyDown())
-                {
+            switch (event.getNativeKeyCode())
+            {
+                case (int)'C':
                     this.onCopyToolsRequest();
                     event.preventDefault();
-                }
-                break;
-            case (int)'V':
-                if (event.isControlKeyDown())
-                {
+                    return;
+                case (int)'V':
                     this.onPasteToolsRequest();
                     event.preventDefault();
-                }
-                break;
+                    return;
+                default:
+                    //do nothing
+                    break;
+            }
+        }
+        switch (event.getNativeKeyCode())
+        {
             case KeyCodes.KEY_DELETE:
                 this.removeToolsRequest.dispatch(new ArrayList<CanvasToolFrameImpl>(this.selectedTools));
                 event.preventDefault();

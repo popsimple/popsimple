@@ -13,6 +13,8 @@ import com.project.shared.utils.PointUtils;
 import com.project.shared.utils.PointUtils.TransformationMode;
 import com.project.website.canvas.client.canvastools.base.CanvasToolFrame;
 import com.project.website.canvas.client.resources.CanvasResources;
+import com.project.website.canvas.client.shared.UndoManager;
+import com.project.website.canvas.client.shared.UndoManager.UndoRedoPair;
 import com.project.website.canvas.client.worksheet.interfaces.ElementDragManager;
 import com.project.website.canvas.client.worksheet.interfaces.ToolFrameTransformer;
 
@@ -70,8 +72,7 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
             @Override
             public void onFire(Point2D pos)
             {
-                Point2D targetPos = pos.minus(originalOffsetFromFramePos);
-                setToolFramePosition(toolFrame, transformMovement(targetPos, initialPos, false));
+                setToolFramePosition(toolFrame, calcDragTargetPos(initialPos, originalOffsetFromFramePos, pos));
             }
         };
         Handler<Void> cancelMoveHandler = new Handler<Void>() {
@@ -85,9 +86,10 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
 
         Handler<Point2D> stopHandler = new Handler<Point2D>() {
             @Override
-            public void onFire(Point2D arg)
+            public void onFire(final Point2D arg)
             {
                 toolFrame.setDragging(false);
+                addDragUndoStep(toolFrame, initialPos, calcDragTargetPos(initialPos, originalOffsetFromFramePos, arg));
             }
         };
         _elementDragManager.startMouseMoveOperation(toolFrameElement, _container.getElement(),
@@ -264,6 +266,30 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
             }
         }
         return initialCoords.plus(sizeDelta);
+    }
+
+
+    private Point2D calcDragTargetPos(final Point2D initialPos, final Point2D originalOffsetFromFramePos, Point2D pos)
+    {
+        return transformMovement(pos.minus(originalOffsetFromFramePos), initialPos, false);
+    }
+
+
+    private void addDragUndoStep(final CanvasToolFrame toolFrame, final Point2D initialPos, final Point2D targetPos)
+    {
+        UndoManager.get().add(toolFrame, new UndoRedoPair() {
+            @Override
+            public void undo()
+            {
+                setToolFramePosition(toolFrame, initialPos);
+            }
+
+            @Override
+            public void redo()
+            {
+                setToolFramePosition(toolFrame, targetPos);
+            }
+        });
     }
 
 }

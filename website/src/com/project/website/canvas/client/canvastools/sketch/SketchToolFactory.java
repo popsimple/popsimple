@@ -2,6 +2,7 @@ package com.project.website.canvas.client.canvastools.sketch;
 
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.project.shared.data.Point2D;
 import com.project.website.canvas.client.canvastools.base.CanvasToolFactory;
 import com.project.website.canvas.client.canvastools.base.CanvasToolFactoryBase;
 import com.project.website.canvas.shared.data.VectorGraphicsData;
@@ -32,6 +33,12 @@ public class SketchToolFactory extends CanvasToolFactoryBase<SketchTool>
     public String getFactoryId()
     {
         return SketchToolFactory.UNIQUE_ID;
+    }
+
+
+    @Override
+    public Point2D getCreationOffset() {
+        return new Point2D(-7, -33);
     }
 
 }
