@@ -33,7 +33,6 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.html5.Range;
-import com.project.shared.client.html5.impl.RangeImpl;
 import com.project.shared.client.html5.impl.RangeUtils;
 import com.project.shared.client.html5.impl.SelectionImpl;
 import com.project.shared.client.utils.DocumentUtils;
@@ -46,7 +45,6 @@ import com.project.shared.data.funcs.Func;
 import com.project.shared.data.funcs.Func.Action;
 import com.project.shared.utils.ListUtils;
 import com.project.shared.utils.ObjectUtils;
-import com.project.shared.utils.loggers.Logger;
 import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.client.shared.widgets.ColorPicker;
 
@@ -553,7 +551,6 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
 
         for (int i = 0; i < selection.getRangeCount(); i++) {
             Range range = selection.getRangeAt(i);
-            Logger.info(this, ((RangeImpl)range).asString());
             this.savedRanges.add(range.cloneRange());
         }
     }

@@ -366,9 +366,9 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
             return;
         }
 
-        setFloatingWidgetForTool(factory);
+        this.setFloatingWidgetForTool(factory);
         if (null == this.floatingWidget) {
-            setActiveToolboxItemWithoutFloatingWidget(toolboxItem);
+            this.setActiveToolboxItemWithoutFloatingWidget(toolboxItem);
             return;
         }
 
@@ -717,26 +717,23 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     }
 
     private void setActiveToolboxItemWithoutFloatingWidget(final ToolboxItem toolboxItem) {
-        final HandlerRegistration createInstanceReg = this.worksheetPanel.addDomHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                if (overToolFrames.isEmpty()) {
-                    Point2D position = ElementUtils.getRelativePosition(event, worksheetPanel.getElement());
-                    toolCreationRequestEvent.dispatch(new ToolCreationRequest(position, toolboxItem
-                            .getToolFactory()));
-                }
+        final RegistrationsManager regs = new RegistrationsManager();
+
+        regs.add(this.worksheetPanel.addDomHandler(new MouseDownHandler() {
+            @Override public void onMouseDown(final MouseDownEvent event) {
+                dispatchToolCreationWithoutFloatingWidget(toolboxItem, event);
             }
-        }, ClickEvent.getType());
+        }, MouseDownEvent.getType()));
+
         this._floatingWidgetTerminator = new Handler<Void>() {
-            @Override
-            public void onFire(Void arg) {
-                createInstanceReg.removeHandler();
+            @Override public void onFire(Void arg) {
+                regs.clear();
             }
         };
     }
 
-    private void setFloatingWidgetForTool(
-            CanvasToolFactory<? extends CanvasTool<? extends ElementData>> factory) {
+    private void setFloatingWidgetForTool(CanvasToolFactory<? extends CanvasTool<? extends ElementData>> factory)
+    {
         this.floatingWidget = factory.getFloatingWidget();
         if (null == this.floatingWidget) {
             return;
@@ -827,5 +824,16 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     private void startDraggingSelectedToolFrames(MouseEvent<?> arg)
     {
         _toolFrameTransformer.startDragCanvasToolFrames(IterableUtils.<CanvasToolFrame, CanvasToolFrame>upCast(selectedTools), arg);
+    }
+
+    private void dispatchToolCreationWithoutFloatingWidget(final ToolboxItem toolboxItem, final MouseDownEvent event)
+    {
+        Point2D position = ElementUtils.getRelativePosition(event, worksheetPanel.getElement());
+        toolCreationRequestEvent.dispatch(new ToolCreationRequest(position, toolboxItem.getToolFactory()) {
+            @Override public void toolCreated(CanvasTool<? extends ElementData> tool) {
+                super.toolCreated(tool);
+                tool.asWidget().fireEvent(event);
+            }
+        });
     }
 }

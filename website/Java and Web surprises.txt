@@ -1,0 +1,1 @@
+* MouseMoveEvent - you can't get the button state of the mouse. Only during MouseDown/Up events. Rest of the time, the button state values that you get from functions are always wrong.
