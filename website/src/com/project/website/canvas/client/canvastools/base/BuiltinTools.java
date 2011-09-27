@@ -33,8 +33,8 @@ public class BuiltinTools
 
     private static void registerBuiltinToolboxItems()
     {
-        tools.add(cursorTool);
-        tools.add(moveTool);
+        BuiltinTools.tools.add(cursorTool);
+        BuiltinTools.tools.add(moveTool);
 
         BuiltinTools.addToolboxItemWithFactory(new TextEditToolboxItem());
         BuiltinTools.addToolboxItemWithFactory(new ImageToolboxItem());
@@ -53,7 +53,7 @@ public class BuiltinTools
 
     private static void addToolboxItemWithFactory(ToolboxItem toolboxItem)
     {
-        BuiltinTools.addToolboxItemWithFactory(toolboxItem);
+        BuiltinTools.tools.add(toolboxItem);
         CanvasToolFactory<? extends CanvasTool<? extends ElementData>> factory = toolboxItem.getToolFactory();
         ToolFactories.INSTANCE.put(factory.getFactoryId(), factory);
     }
