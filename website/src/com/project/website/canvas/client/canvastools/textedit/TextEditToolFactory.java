@@ -28,7 +28,7 @@ public class TextEditToolFactory extends CanvasToolFactoryBase<TextEditTool>
     @Override
     public Point2D getCreationOffset()
     {
-        return new Point2D(-7, -33);
+        return new Point2D(-10, -34);
     }
 
     @Override

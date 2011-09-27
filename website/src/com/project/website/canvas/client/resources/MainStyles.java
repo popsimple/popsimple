@@ -152,7 +152,9 @@ public interface MainStyles extends CssResource {
 
 	String textEditNotFocused();
 
-	String textSelectionDisabled();
+	String textEditToolbarFontFamilyList();
+
+    String textSelectionDisabled();
 
     String toolbox();
 
@@ -194,9 +196,9 @@ public interface MainStyles extends CssResource {
 
     String toolFrameButton();
 
-    String toolFrameButtonsPanel();
+	String toolFrameButtonsPanel();
 
-	String toolFrameCloseLink();
+    String toolFrameCloseLink();
 
     String toolFrameDragOverlayPanel();
 

@@ -12,6 +12,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.utils.CssProperties;
+import com.project.shared.client.utils.DocumentUtils;
 import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.StyleUtils;
 import com.project.shared.client.utils.widgets.WidgetUtils;
@@ -180,7 +181,9 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
             this.removeStyleName(CanvasResources.INSTANCE.main().textEditNotFocused());
 
             // This causes infinite recursion / looping:
-            //this._editPanel.setFocus(true);
+            if (false == DocumentUtils.isActiveElementTree(this.getElement())) {
+                this._editedWidget.getElement().focus();
+            }
             this._toolbar.setEditedWidget(this._editedWidget);
 
         } else {

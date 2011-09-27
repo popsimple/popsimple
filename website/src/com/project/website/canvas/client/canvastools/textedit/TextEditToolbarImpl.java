@@ -180,7 +180,7 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
                 new String[] { "700", "bold" }, "Bold", false);
         this.addCssStringValueButton("fontStyle", "normal", "italic", "Italic", false);
         this.addCssStringValueButton("textDecoration", "none", "underline", "Underline", false);
-        this.addCssStringValueListBox("fontFamily", "Font:", true, getFontFamilies());
+        this.addCssStringValueListBox("fontFamily", "Font:", true, getFontFamilies(), CanvasResources.INSTANCE.main().textEditToolbarFontFamilyList());
         this.addCssStringValueListBox("fontSize", "Size:", false, getFontSizes());
 
         // TODO replace these two with color-pickers:
@@ -264,7 +264,7 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
 
     private Iterable<String> getFontFamilies()
     {
-        return ListUtils.create("arial", "georgia", "monospace", "verdana", "times");
+        return ListUtils.create("Arial", "Georgia", "Julee", "Monospace", "Verdana", "Times", "Tulpen One");
     }
 
     private void addCssStringValueListBox(final String cssProperty, String title, final boolean setOptionsStyles, final Iterable<String> values, String... addStyleNames)
@@ -666,8 +666,7 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
         }
         if (ObjectUtils.areEqual(cssProperty, "fontFamily")) {
             // css heuristic: pick out only the first part of the value
-            // (Arial Unicode MS,Arial,sans-serif --> arial
-            value = value.split("[ ,]")[0].toLowerCase();
+            value = value.split("[,]")[0];
         }
         return value;
     }
@@ -681,7 +680,7 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
         int selectedIndex = 0;
         for (int i = 0;  i < listBox.getItemCount(); i++)
         {
-            if (ObjectUtils.areEqual(listBox.getValue(i), value)) {
+            if (ObjectUtils.areEqual(listBox.getValue(i).toLowerCase(), value.toLowerCase())) {
                 selectedIndex = i;
                 found = true;
                 break;
