@@ -2,38 +2,31 @@ package com.project.website.canvas.client.canvastools.sitecrop;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.NativeEvent;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.BlurHandler;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
-import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.LoadEvent;
+import com.google.gwt.event.dom.client.LoadHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Event.NativePreviewHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Frame;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.handlers.RegistrationsManager;
-import com.project.shared.client.handlers.SpecificKeyPressHandler;
 import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.EventUtils;
 import com.project.shared.client.utils.WindowUtils;
@@ -41,6 +34,7 @@ import com.project.shared.client.utils.widgets.WidgetUtils;
 import com.project.shared.data.Point2D;
 import com.project.shared.data.Rectangle;
 import com.project.shared.utils.RectangleUtils;
+import com.project.shared.utils.StringUtils;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
 import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.client.worksheet.ElementDragManagerImpl;
@@ -48,7 +42,7 @@ import com.project.website.canvas.client.worksheet.interfaces.ElementDragManager
 import com.project.website.canvas.client.worksheet.interfaces.MouseMoveOperationHandler;
 import com.project.website.canvas.shared.data.ElementData;
 
-public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
+public class SiteCropTool extends Composite implements CanvasTool<SiteCropElementData>{
 
     //#region UiBinder Declarations
 
@@ -79,8 +73,8 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
 
     //#endregion
 
-    private int _frameLeft = 0;
-    private int _frameTop = 0;
+    private SiteCropElementData _data = null;
+
     private Point2D _lastPoint = Point2D.zero;
     private final SimpleEvent<Void> stopOperationEvent = new SimpleEvent<Void>();
     private ElementDragManagerImpl _frameDragManager = null;
@@ -125,21 +119,36 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
     private void cropSelectedFrame()
     {
         Rectangle rect = this._frameSelectionManager.getSelectedRectangle();
-        coverPanel.getElement().getStyle().setProperty("clip",
-                RectangleUtils.toRect(rect, Unit.PX));
-        ElementUtils.setElementRectangle(coverPanel.getElement(),
-                ElementUtils.getElementOffsetRectangle(coverPanel.getElement()));
+        rect.copyTo(this._data.clipRectangle);
 
-        this._selfMoveEvent.dispatch(new Point2D(rect.getLeft(), rect.getTop()));
+        Rectangle coverRectangle = ElementUtils.getElementOffsetRectangle(coverPanel.getElement());
+        coverRectangle.copyTo(this._data.coverRectangle);
 
-        ElementUtils.setElementCSSPosition(this.coverPanel.getElement(),
-                Point2D.zero.minus(new Point2D(rect.getLeft(), rect.getTop())));
-        ElementUtils.setElementSize(this.getElement(), rect.getSize());
+        this.setCropParameters();
+
+        this._selfMoveEvent.dispatch(new Point2D(
+                this._data.clipRectangle.getLeft(), this._data.clipRectangle.getTop()));
+        ElementUtils.setElementSize(this.getElement(), this._data.clipRectangle.getSize());
 
         this._frameSelectionManager.clearSelection();
         this.setDefaultMode();
+    }
 
-        //TODO: Notify listeners about the resize so they can update (e.g. floating toolbar).
+    private void setCropParameters()
+    {
+        if (this._data.coverRectangle.equals(Rectangle.empty))
+        {
+            return;
+        }
+
+        ElementUtils.setElementRectangle(coverPanel.getElement(), this._data.coverRectangle);
+
+        //TODO: Extract to utils
+        coverPanel.getElement().getStyle().setProperty("clip",
+                RectangleUtils.toRect(this._data.clipRectangle, Unit.PX));
+
+        ElementUtils.setElementCSSPosition(this.coverPanel.getElement(), Point2D.zero.minus(
+                new Point2D(this._data.clipRectangle.getLeft(), this._data.clipRectangle.getTop())));
     }
 
     private void setDefaultMode()
@@ -217,6 +226,7 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
     private void enableSiteMove()
     {
         this._moveRegistrationManager.clear();
+
         this._moveRegistrationManager.add(
                 this.blockPanel.addDomHandler(new MouseDownHandler() {
                 @Override
@@ -228,17 +238,21 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
                     ElementUtils.setTextSelectionEnabled(blockPanel.getElement(), true);
 
                     MouseMoveOperationHandler handler = new MouseMoveOperationHandler() {
+
+                        private Rectangle initialFrameRectangle = null;
+
                         @Override public void onStop(Point2D pos) { }
-                        @Override public void onStart() { }
-                        @Override public void onCancel() { }
+                        @Override public void onStart() {
+                            initialFrameRectangle = ElementUtils.getElementOffsetRectangle(siteFrame.getElement());
+                        }
+                        @Override public void onCancel() {
+                            updateFrameDimensions(initialFrameRectangle);
+                        }
 
                         @Override
                         public void onMouseMove(Point2D pos)
                         {
-                            Point2D deltaPoint = pos.minus(_lastPoint);
-                            _lastPoint = pos;
-                            updateFrameLeft(deltaPoint.getX());
-                            updateFrameTop(deltaPoint.getY());
+                            updateFrameDimensions(resolveFrameMovement(initialFrameRectangle, pos));
                         }
 
                     };
@@ -250,6 +264,15 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
 
                 }
             }, MouseDownEvent.getType()));
+    }
+
+    private Rectangle resolveFrameMovement(Rectangle frameRectangle, Point2D delta)
+    {
+        return new Rectangle(
+                frameRectangle.getLeft() + delta.getX(),
+                frameRectangle.getTop() + delta.getY(),
+                frameRectangle.getRight(),
+                frameRectangle.getBottom());
     }
 
     private void disableSiteMove()
@@ -305,30 +328,36 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
         }
     }
 
-    private void updateFrameTop(int delta)
+    private void updateFrameDimensions(Rectangle rectangle)
     {
-        this._frameTop += delta;
-        Style frameStyle = siteFrame.getElement().getStyle();
-        frameStyle.setTop(this._frameTop, Unit.PX);
-//        if (this.chkAutoSize.getValue())
-//        {
-            frameStyle.setHeight(siteFrame.getOffsetHeight() - delta, Unit.PX);
-//        }
+        rectangle.copyTo(this._data.frameRectangle);
+
+        this.setFrameParameters();
     }
 
-    private void updateFrameLeft(int delta)
+    private void setFrameParameters()
     {
-        this._frameLeft += delta;
-        Style frameStyle = siteFrame.getElement().getStyle();
-        frameStyle.setLeft(this._frameLeft, Unit.PX);
-//        if (this.chkAutoSize.getValue())
-//        {
-            frameStyle.setWidth(siteFrame.getOffsetWidth() - delta, Unit.PX);
-//        }
+        if (this._data.frameRectangle.equals(Rectangle.empty))
+        {
+            return;
+        }
+        ElementUtils.setElementRectangle(this.siteFrame.getElement(), this._data.frameRectangle);
     }
 
     private void setUrl(String url) {
-        siteFrame.setUrl(url);
+        this._data.url = url;
+
+        this.loadUrl(url);
+    }
+
+    private void loadUrl(String url)
+    {
+        if (false == this.isValidUrl(url))
+        {
+            return;
+        }
+        //TODO: Called twice due to toolbar changes.
+        this.siteFrame.setUrl(url);
         this.siteFrame.getElement().setPropertyString("scrolling", "no");
         ElementUtils.setElementSize(this.getElement(),
                 ElementUtils.getElementOffsetSize(this.getElement()));
@@ -338,15 +367,28 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
         this._toolbar.enableBrowse(true);
     }
 
-    @Override
-    public void setValue(ElementData value) {
-        // TODO Auto-generated method stub
+    private boolean isValidUrl(String url)
+    {
+        if (StringUtils.isEmptyOrNull(url))
+        {
+            return false;
+        }
+        return true;
     }
 
     @Override
-    public ElementData getValue() {
-        // TODO Auto-generated method stub
-        return null;
+    public void setValue(SiteCropElementData value) {
+        this._data = value;
+
+        this.loadUrl(this._data.url);
+
+        this.setFrameParameters();
+        this.setCropParameters();
+    }
+
+    @Override
+    public SiteCropElementData getValue() {
+        return this._data;
     }
 
     @Override
@@ -368,7 +410,7 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
 
     @Override
     public void setElementData(ElementData data) {
-        // TODO Auto-generated method stub
+        this.setValue((SiteCropElementData)data);
     }
 
     @Override

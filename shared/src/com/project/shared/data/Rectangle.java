@@ -1,7 +1,19 @@
 package com.project.shared.data;
 
+import java.io.Serializable;
 
-public class Rectangle {
+import com.google.gwt.user.client.rpc.IsSerializable;
+import com.project.shared.interfaces.ICloneable;
+
+
+public class Rectangle implements ICloneable, Serializable, IsSerializable {
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
+    public static final Rectangle empty = new Rectangle(0, 0, 0, 0);
+
     private int left = 0;
     private int top = 0;
     private int right = 0;
@@ -155,6 +167,37 @@ public class Rectangle {
             }
         }
         return false;
+    }
+
+    @Override
+    public Object createInstance() {
+        return new Rectangle();
+    }
+
+    @Override
+    public void copyTo(Object object) {
+        Rectangle copy = (Rectangle)object;
+        copy.top = this.top;
+        copy.left = this.left;
+        copy.right = this.right;
+        copy.bottom = this.bottom;
+        copy.rotation = this.rotation;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (null == other) {
+            return false;
+        }
+        if (other.getClass() != this.getClass()) {
+            return false;
+        }
+        Rectangle otherRectangle = (Rectangle)other;
+        return ((this.bottom == otherRectangle.bottom) &&
+                (this.left == otherRectangle.left) &&
+                (this.right == otherRectangle.right) &&
+                (this.top == otherRectangle.top ) &&
+                (this.rotation == otherRectangle.rotation));
     }
 
 //    public boolean isOverlapping(Rectangle rect) {
