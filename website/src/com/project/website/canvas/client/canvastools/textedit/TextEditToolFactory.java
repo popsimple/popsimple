@@ -6,24 +6,34 @@ import com.project.shared.data.Point2D;
 import com.project.website.canvas.client.canvastools.base.CanvasToolFactoryBase;
 import com.project.website.canvas.shared.data.TextData;
 
-public class TextEditToolFactory extends CanvasToolFactoryBase<TextEditTool> {
+public class TextEditToolFactory extends CanvasToolFactoryBase<TextEditTool>
+{
 
-    //TODO: Set a better uniqueId.
+    // TODO: Set a better uniqueId.
     public static final String UNIQUE_ID = "TextEditToolFactory";
 
-    public TextEditTool create() {
+    public TextEditTool create()
+    {
         TextEditTool textEditTool = new TextEditTool();
         textEditTool.setValue(new TextData(UNIQUE_ID));
         return textEditTool;
     }
 
     @Override
-    public Widget getFloatingWidget() {
+    public Widget getFloatingWidget()
+    {
         return new FlowPanel();
     }
 
     @Override
-    public Point2D getCreationOffset() {
+    public Point2D getCreationOffset()
+    {
         return new Point2D(-7, -33);
+    }
+
+    @Override
+    public String getFactoryId()
+    {
+        return TextEditToolFactory.UNIQUE_ID;
     }
 }

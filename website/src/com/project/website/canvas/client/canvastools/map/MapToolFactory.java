@@ -18,4 +18,9 @@ public class MapToolFactory extends CanvasToolFactoryBase<MapTool>
         return tool;
     }
 
+    @Override
+    public String getFactoryId()
+    {
+        return MapToolFactory.UNIQUE_ID;
+    }
 }

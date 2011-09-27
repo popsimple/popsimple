@@ -15,4 +15,10 @@ public class VideoToolFactory extends CanvasToolFactoryBase<VideoTool>
         videoTool.setValue(new VideoData(UNIQUE_ID));
         return videoTool;
     }
+
+    @Override
+    public String getFactoryId()
+    {
+        return VideoToolFactory.UNIQUE_ID;
+    }
 }

@@ -7,11 +7,13 @@ public class VectorGraphicsData extends ElementData
 {
     private static final long serialVersionUID = 1L;
 
-    public VectorGraphicsData(String uniqueId) {
+    public VectorGraphicsData(String uniqueId)
+    {
         super(uniqueId);
     }
 
-    protected VectorGraphicsData() {
+    protected VectorGraphicsData()
+    {
         super();
     }
 

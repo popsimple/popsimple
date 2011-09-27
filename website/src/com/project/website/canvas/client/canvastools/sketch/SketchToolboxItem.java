@@ -9,7 +9,7 @@ import com.project.website.canvas.shared.data.ElementData;
 public class SketchToolboxItem implements ToolboxItem {
 
     private static final SketchToolFactory _factory = new SketchToolFactory();
-    
+
     @Override
     public String getToolboxIconStyle() {
         return CanvasResources.INSTANCE.main().toolboxSketchIconStyle();
@@ -32,6 +32,6 @@ public class SketchToolboxItem implements ToolboxItem {
 
     @Override
     public CanvasToolFactory<? extends CanvasTool<? extends ElementData>> getToolFactory() {
-        return this._factory;
+        return SketchToolboxItem._factory;
     }
 }

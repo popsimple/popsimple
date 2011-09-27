@@ -513,7 +513,7 @@
 }
 
 .sketchCreateModeCanvasStyle {
-	cursor: default;
+	cursor: crosshair;
 }
 
 .floatingToolStyle {

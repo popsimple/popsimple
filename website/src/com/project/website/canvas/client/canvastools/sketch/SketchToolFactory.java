@@ -28,4 +28,10 @@ public class SketchToolFactory extends CanvasToolFactoryBase<SketchTool>
         return new FlowPanel();
     }
 
+    @Override
+    public String getFactoryId()
+    {
+        return SketchToolFactory.UNIQUE_ID;
+    }
+
 }

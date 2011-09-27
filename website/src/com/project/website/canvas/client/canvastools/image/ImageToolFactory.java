@@ -27,4 +27,10 @@ public class ImageToolFactory extends CanvasToolFactoryBase<ImageTool>
                 imageData.imageInformation.options, ImageOptionTypes.OriginalSize);
         return imageData;
     }
+
+    @Override
+    public String getFactoryId()
+    {
+        return ImageToolFactory.UNIQUE_ID;
+    }
 }
