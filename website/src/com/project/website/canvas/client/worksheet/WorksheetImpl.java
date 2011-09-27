@@ -429,25 +429,19 @@ public class WorksheetImpl implements Worksheet
     {
         RegistrationsManager regs = toolInfo.registrations;
         regs.add(toolFrame.addCloseRequestHandler(new SimpleEvent.Handler<Void>() {
-            @Override
-            public void onFire(Void arg)
-            {
+            @Override public void onFire(Void arg) {
                 removeToolInstance(toolFrame);
             }
         }));
 
         regs.add(toolFrame.addMoveBackRequestHandler(new SimpleEvent.Handler<Void>() {
-            @Override
-            public void onFire(Void arg)
-            {
+            @Override public void onFire(Void arg) {
                 ZIndexAllocator.moveElementBelow(toolFrame.getElement());
             }
         }));
 
         regs.add(toolFrame.addMoveFrontRequestHandler(new SimpleEvent.Handler<Void>() {
-            @Override
-            public void onFire(Void arg)
-            {
+            @Override public void onFire(Void arg) {
                 ZIndexAllocator.moveElementAbove(toolFrame.getElement());
             }
         }));
@@ -519,9 +513,7 @@ public class WorksheetImpl implements Worksheet
         viewModeEvent.dispatch(true);
         view.setViewMode(true);
         viewModeRegistrations.add(view.addStopOperationHandler(new SimpleEvent.Handler<Void>() {
-            @Override
-            public void onFire(Void arg)
-            {
+            @Override public void onFire(Void arg) {
                 setModeEdit();
                 updateHistoryToken();
             }
@@ -657,13 +649,12 @@ public class WorksheetImpl implements Worksheet
         this.view.setUserProfile(null);
         final WorksheetImpl that = this;
         service.getUserProfile(new AsyncCallback<UserProfile>() {
-            @Override
-            public void onFailure(Throwable caught)
+            @Override public void onFailure(Throwable caught)
             {
+                // TODO: handle
             }
 
-            @Override
-            public void onSuccess(UserProfile result)
+            @Override public void onSuccess(UserProfile result)
             {
                 that.view.setUserProfile(result);
             }
