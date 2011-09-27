@@ -41,6 +41,7 @@ import com.project.website.canvas.client.worksheet.ElementDragManagerImpl;
 import com.project.website.canvas.client.worksheet.interfaces.ElementDragManager.StopCondition;
 import com.project.website.canvas.client.worksheet.interfaces.MouseMoveOperationHandler;
 import com.project.website.canvas.shared.data.ElementData;
+import com.project.website.canvas.shared.data.SiteCropElementData;
 
 public class SiteCropTool extends Composite implements CanvasTool<SiteCropElementData>{
 

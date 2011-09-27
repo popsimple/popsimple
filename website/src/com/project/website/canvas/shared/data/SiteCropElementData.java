@@ -1,9 +1,7 @@
-package com.project.website.canvas.client.canvastools.sitecrop;
+package com.project.website.canvas.shared.data;
 
-import com.project.shared.data.Point2D;
 import com.project.shared.data.Rectangle;
 import com.project.shared.utils.CloneableUtils;
-import com.project.website.canvas.shared.data.ElementData;
 
 //TODO: Move to data.
 public class SiteCropElementData extends ElementData {
