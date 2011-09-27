@@ -327,13 +327,14 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
 //        }
     }
 
-    private void setUrl(String text) {
-        siteFrame.setUrl(text);
+    private void setUrl(String url) {
+        siteFrame.setUrl(url);
         this.siteFrame.getElement().setPropertyString("scrolling", "no");
         ElementUtils.setElementSize(this.getElement(),
                 ElementUtils.getElementOffsetSize(this.getElement()));
         this.removeStyleName(CanvasResources.INSTANCE.main().cropSiteToolEmpty());
         this.addStyleName(CanvasResources.INSTANCE.main().cropSiteToolSet());
+        this._toolbar.setUrl(url);
         this._toolbar.enableBrowse(true);
     }
 

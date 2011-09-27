@@ -150,4 +150,14 @@ public class SiteCropToolbar extends Composite
     {
         this.moveButton.setValue(true, true);
     }
+
+	public void setUrl(String url)
+	{
+	    if (this.urlTextBox.getText().equals(url))
+	    {
+	        return;
+	    }
+	    this.urlTextBox.setValue(url);
+	    this._urlChangeEvent.dispatch(url);
+	}
 }
