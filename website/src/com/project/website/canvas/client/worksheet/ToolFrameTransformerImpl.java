@@ -25,6 +25,8 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
 
     private static final double GRID_RESOLUTION = 15;
 
+    protected static final int DEFAULT_ANIMATION_DURATION = 300;
+
     private final Widget _container;
     private final ElementDragManager _elementDragManager;
 
@@ -45,9 +47,14 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
 
 
     @Override
-    public void setToolFramePosition(final CanvasToolFrame toolFrame, Point2D pos)
+    public void setToolFramePosition(CanvasToolFrame toolFrame, Point2D pos)
     {
-        ElementUtils.setElementCSSPosition(toolFrame.asWidget().getElement(), limitPosToContainer(pos, toolFrame.asWidget()));
+        this.setToolFramePosition(toolFrame, pos, 0);
+    }
+
+    private void setToolFramePosition(final CanvasToolFrame toolFrame, Point2D pos, int animationDuration)
+    {
+        ElementUtils.setElementCSSPosition(toolFrame.asWidget().getElement(), limitPosToContainer(pos, toolFrame.asWidget()), animationDuration);
         toolFrame.onTransformed();
     }
 
@@ -192,7 +199,7 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
 
         final SimpleEvent.Handler<Point2D> rotateHandler = new SimpleEvent.Handler<Point2D>() {
             @Override public void onFire(Point2D pos) {
-                rotateToolFrame(toolFrame, initialCenter, unrotatedBottomLeftAngle, pos);
+                rotateToolFrame(toolFrame, initialCenter, unrotatedBottomLeftAngle, pos, 0);
             }
         };
         final SimpleEvent.Handler<Void> cancelHandler = new SimpleEvent.Handler<Void>() {
@@ -205,10 +212,11 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
             @Override public void onFire(final Point2D arg) {
                 UndoManager.get().add(toolFrame, new UndoRedoPair() {
                     @Override public void undo() {
-                        cancelHandler.onFire(null);
+                        ElementUtils.setRotation(toolFrame.asWidget().getElement(), startAngle, DEFAULT_ANIMATION_DURATION);
+                        toolFrame.onTransformed();
                     }
                     @Override public void redo() {
-                        rotateToolFrame(toolFrame, initialCenter, unrotatedBottomLeftAngle, arg);
+                        rotateToolFrame(toolFrame, initialCenter, unrotatedBottomLeftAngle, arg, DEFAULT_ANIMATION_DURATION);
                     }
                 });
             }
@@ -284,13 +292,13 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
             @Override
             public void undo()
             {
-                setToolFramePosition(toolFrame, initialPos);
+                setToolFramePosition(toolFrame, initialPos, DEFAULT_ANIMATION_DURATION);
             }
 
             @Override
             public void redo()
             {
-                setToolFramePosition(toolFrame, targetPos);
+                setToolFramePosition(toolFrame, targetPos, DEFAULT_ANIMATION_DURATION);
             }
         });
     }
@@ -315,11 +323,11 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
 
 
     private void rotateToolFrame(final CanvasToolFrame toolFrame, final Point2D initialCenter,
-            final double unrotatedBottomLeftAngle, Point2D pos)
+            final double unrotatedBottomLeftAngle, Point2D pos, int animationDuration)
     {
         Point2D posRelativeToCenter = pos.minus(initialCenter);
         double rotation = Math.toDegrees(posRelativeToCenter.radians()) - unrotatedBottomLeftAngle;
-        ElementUtils.setRotation(toolFrame.asWidget().getElement(), roundedAngle(rotation));
+        ElementUtils.setRotation(toolFrame.asWidget().getElement(), roundedAngle(rotation), animationDuration);
         toolFrame.onTransformed();
     }
 

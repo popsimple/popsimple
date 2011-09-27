@@ -8,12 +8,11 @@ public interface ToolFrameTransformer
 {
      ElementDragManager getElementDragManager();
 
-     void setToolFramePosition(CanvasToolFrame toolFrame, Point2D pos);
-
      void startDragCanvasToolFrame(CanvasToolFrame toolFrame, MouseEvent<?> startEvent);
      void startDragCanvasToolFrames(Iterable<CanvasToolFrame> toolFrames, MouseEvent<?> startEvent);
 
      void startResizeCanvasToolFrame(CanvasToolFrame toolFrame, MouseEvent<?> startEvent);
      void startRotateCanvasToolFrame(CanvasToolFrame toolFrame, MouseEvent<?> startEvent);
 
+     void setToolFramePosition(CanvasToolFrame toolFrame, Point2D pos);
 }

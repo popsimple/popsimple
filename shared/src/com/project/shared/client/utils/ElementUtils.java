@@ -60,7 +60,16 @@ public abstract class ElementUtils
     private static HashMap<Element, Double> rotations = new HashMap<Element, Double>();
 
     public static void setRotation(Element element, double degrees) {
-        cssSetRotation(element, degrees);
+        ElementUtils.setRotation(element, degrees, 0);
+    }
+
+    public static void setRotation(Element element, double degrees, int animationDuration) {
+        if (0 == animationDuration) {
+            cssSetRotation(element, degrees);
+        }
+        else {
+            new RotationAnimation(element, degrees).run(animationDuration);
+        }
         if (0 == degrees) {
             rotations.remove(element);
         }
@@ -85,6 +94,29 @@ public abstract class ElementUtils
         Double rotation = rotations.get(element);
         return rotation != null ? rotation.intValue() : 0;
     }
+
+    private static class RotationAnimation extends Animation {
+        private Element element;
+        private double targetDegrees;
+        private double startDegrees;
+
+        public RotationAnimation(Element element, double degrees)
+        {
+            this.element = element;
+            this.targetDegrees = MathUtils.normalAbsoluteDegrees(degrees);
+            this.startDegrees = MathUtils.normalAbsoluteDegrees(ElementUtils.getRotation(element));
+            if (Math.abs(this.startDegrees - degrees) > Math.abs(this.startDegrees - MathUtils.CIRCLE_DEGREES + degrees)) {
+               this.targetDegrees = MathUtils.CIRCLE_DEGREES - degrees;
+            }
+        }
+
+        @Override
+        protected void onUpdate(double progress)
+        {
+            double curRotation = ((targetDegrees - startDegrees) * Math.max(0, progress)) + startDegrees;
+            cssSetRotation(element, curRotation);
+        }
+    };
 
     private static void cssSetRotation(Element element, double degrees)
     {
@@ -152,6 +184,7 @@ public abstract class ElementUtils
             setElementCSSPosition(element, curPos);
         }
     };
+
 
     /**
      * TODO: For animation to work without glitches, the element must not have
