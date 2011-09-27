@@ -118,13 +118,15 @@ public interface MainStyles extends CssResource {
 
     String sketchCreateModeCanvasStyle();
 
-    String taskImageChecked();
+    String sketchTool();
 
 //    String textEditNoToolbars();
 //
 //    String canvasToolbar();
 //
 //    String textEditViewBox();
+
+    String taskImageChecked();
 
     String taskImageContainer();
 
@@ -148,11 +150,11 @@ public interface MainStyles extends CssResource {
 
     String textEditBox();
 
-    String textEditFocused();
+	String textEditFocused();
 
 	String textEditNotFocused();
 
-	String textEditToolbarFontFamilyList();
+    String textEditToolbarFontFamilyList();
 
     String textSelectionDisabled();
 
@@ -194,9 +196,9 @@ public interface MainStyles extends CssResource {
 
     String toolFrameBottomRightResize();
 
-    String toolFrameButton();
+	String toolFrameButton();
 
-	String toolFrameButtonsPanel();
+    String toolFrameButtonsPanel();
 
     String toolFrameCloseLink();
 

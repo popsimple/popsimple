@@ -549,8 +549,12 @@
 	border-radius: 5px;
 	border-color: #ccc;
 	background-color: #ccc;
-	background-color: rgba(250, 250, 250, 0.6);
+	background-color: rgba(250, 250, 250, 0.4);
 	/*	-sand-transform:rotate(0deg);*/
+}
+
+.toolFramePanel.selected {
+	background-color: rgba(250, 250, 250, 0.7);
 }
 
 .toolFrameDragOverlayPanel {
@@ -977,4 +981,11 @@
     background-image: none;
     overflow: hidden;
     font-size: 0;
+}
+
+/*------------------------------------------------------------*/
+
+.sketchTool {
+
+}
 }

@@ -25,6 +25,7 @@ import com.project.shared.client.utils.EventUtils;
 import com.project.shared.client.utils.NodeUtils;
 import com.project.shared.data.Point2D;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
+import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.client.shared.UndoManager;
 import com.project.website.canvas.client.shared.UndoManager.UndoRedoPair;
 import com.project.website.canvas.shared.data.ElementData;
@@ -37,6 +38,7 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
 
     public SketchTool(int width, int height) {
         super(width, height);
+        this.addStyleName(CanvasResources.INSTANCE.main().sketchTool());
     }
 
     private final RegistrationsManager registrationsManager = new RegistrationsManager();

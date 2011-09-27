@@ -222,7 +222,6 @@ public class WorksheetImpl implements Worksheet
             }
         });
         tool.bind();
-        this.setActiveToolInstance(toolFrame);
         return toolFrame;
     }
 
@@ -538,7 +537,7 @@ public class WorksheetImpl implements Worksheet
             		return;
             	}
                 CanvasToolFrame toolFrame = createToolInstance(arg.getPosition(), factory);
-                toolFrame.setActive(true);
+                setActiveToolInstance(toolFrame);
                 if (arg.getFactory().isOneShot()) {
                     _defaultToolboxItemRequestEvent.dispatch(null);
                 }
