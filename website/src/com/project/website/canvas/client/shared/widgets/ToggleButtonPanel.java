@@ -12,6 +12,9 @@ public class ToggleButtonPanel extends FlowPanel
 {
     private ArrayList<ToggleButton> _buttonList = new ArrayList<ToggleButton>();
 
+    private boolean _isDuringChangeHandling = false;
+    private ToggleButton _defaultButton = null;
+
     @Override
     public void add(Widget w) {
         super.add(w);
@@ -23,24 +26,68 @@ public class ToggleButtonPanel extends FlowPanel
 
             @Override
             public void onValueChange(ValueChangeEvent<Boolean> event) {
-                if (false == event.getValue())
-                {
-                    return;
+                if (false == event.getValue()) {
+                    handleButtonUnToggled(button);
                 }
-                handleButtonToggled(button);
+                else {
+                    handleButtonToggled(button);
+                }
             }
         });
     }
 
-    private void handleButtonToggled(ToggleButton clickedButton)
+    public void setDefaultButton(ToggleButton button)
+    {
+        if (false == this._buttonList.contains(button))
+        {
+            throw new ButtonNotContainedOnPanelException();
+        }
+        this._defaultButton = button;
+        if (null != this.getToggledButton())
+        {
+            return;
+        }
+        this._defaultButton.setValue(true, true);
+    }
+
+    protected ToggleButton getToggledButton()
     {
         for (ToggleButton button : this._buttonList)
         {
-            if (button == clickedButton)
+            if (button.getValue())
             {
-                continue;
+                return button;
             }
-            button.setValue(false, true);
+        }
+        return null;
+    }
+
+    private void handleButtonUnToggled(ToggleButton button)
+    {
+        if (this._isDuringChangeHandling) {
+            return;
+        }
+        if (null == this._defaultButton) {
+            return;
+        }
+        this._defaultButton.setValue(true, true);
+    }
+
+    private void handleButtonToggled(ToggleButton button)
+    {
+        this._isDuringChangeHandling = true;
+        try  {
+            for (ToggleButton otherButton : this._buttonList)
+            {
+                if (otherButton == button)
+                {
+                    continue;
+                }
+                otherButton.setValue(false, true);
+            }
+        }
+        finally {
+            this._isDuringChangeHandling = false;
         }
     }
 }
