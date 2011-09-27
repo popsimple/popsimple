@@ -53,8 +53,15 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
     }
 
     @Override
+    protected void onLoad()
+    {
+        this.updateViewMode();
+    }
+
+    @Override
     public void setValue(VectorGraphicsData value) {
         this.data = value;
+        ElementUtils.setTextSelectionEnabled(this.getElement(), false);
         Element svgElement = this.getElement().getElementsByTagName("svg").getItem(0);
         DivElement tempElement = Document.get().createDivElement();
         tempElement.setInnerHTML(this.data.svgString);
@@ -111,10 +118,6 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
         }
         if (false == isActive) {
             this._currentPath = null;
-            this.registrationsManager.clear();
-        }
-        else {
-            this.setRegistrations();
         }
     }
 
@@ -139,7 +142,12 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
     @Override
     public void setViewMode(boolean isViewMode) {
         this._inViewMode = isViewMode;
-        if (isViewMode) {
+        this.updateViewMode();
+    }
+
+    private void updateViewMode()
+    {
+        if (this._inViewMode) {
             this.registrationsManager.clear();
         }
         else {
