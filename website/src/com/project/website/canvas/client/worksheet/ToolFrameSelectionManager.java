@@ -11,7 +11,7 @@ import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.data.Point2D;
 import com.project.shared.data.Rectangle;
 import com.project.shared.utils.RectangleUtils;
-import com.project.website.canvas.client.canvastools.base.CanvasToolFrameImpl;
+import com.project.website.canvas.client.canvastools.base.CanvasToolFrame;
 import com.project.website.canvas.client.worksheet.interfaces.ElementDragManager.StopCondition;
 import com.project.website.canvas.client.worksheet.interfaces.MouseMoveOperationHandler;
 import com.project.website.canvas.client.worksheet.interfaces.WorksheetView;
@@ -21,7 +21,7 @@ public class ToolFrameSelectionManager {
 	private Widget _selectionPanel = null;
 	private WorksheetView _worksheetView = null;
 	private Widget _container = null;
-	private HashSet<CanvasToolFrameImpl> _ignoreSet = new HashSet<CanvasToolFrameImpl>();
+	private HashSet<CanvasToolFrame> _ignoreSet = new HashSet<CanvasToolFrame>();
 
 	public ToolFrameSelectionManager(WorksheetView worksheetView,
 			Widget container, Widget dragPanel, Widget selectionPanel,
@@ -33,7 +33,7 @@ public class ToolFrameSelectionManager {
 				dragPanel, stopOperationEvent);
 	}
 
-	public void handleToolFrameSelection(CanvasToolFrameImpl toolFrame) {
+	public void handleToolFrameSelection(CanvasToolFrame toolFrame) {
 		if (this._ignoreSet.remove(toolFrame))
         {
 		    return;
@@ -54,7 +54,7 @@ public class ToolFrameSelectionManager {
      *
      * @param toolFrame the toolframe to select.
      */
-	public void forceToolFrameSelection(CanvasToolFrameImpl toolFrame)
+	public void forceToolFrameSelection(CanvasToolFrame toolFrame)
 	{
 	    this._ignoreSet.remove(toolFrame);
 	    if (false == this.ensureToolFrameSelection(toolFrame))
@@ -64,7 +64,7 @@ public class ToolFrameSelectionManager {
 	    this._ignoreSet.add(toolFrame);
 	}
 
-	public boolean ensureToolFrameSelection(CanvasToolFrameImpl toolFrame)
+	public boolean ensureToolFrameSelection(CanvasToolFrame toolFrame)
 	{
 	    if (this._worksheetView.isToolFrameSelected(toolFrame)) {
             return false;
@@ -84,7 +84,7 @@ public class ToolFrameSelectionManager {
 		ElementUtils.setElementRectangle(this._selectionPanel.getElement(),
 				new Rectangle(initialPosition.getX(), initialPosition.getY(), 0));
 
-		final HashSet<CanvasToolFrameImpl> newlySelectedFrames = new HashSet<CanvasToolFrameImpl>();
+		final HashSet<CanvasToolFrame> newlySelectedFrames = new HashSet<CanvasToolFrame>();
 		this._selectionPanel.setVisible(true);
 
 		MouseMoveOperationHandler handler = new MouseMoveOperationHandler() {
@@ -102,13 +102,12 @@ public class ToolFrameSelectionManager {
                 ElementUtils.setElementRectangle(selectionElement,
                         RectangleUtils.Build(initialPosition, pos));
 
-                selectFramesByRectangle(ElementUtils.getElementOffsetRectangle(
-                        selectionElement), newlySelectedFrames);
+                selectFramesByRectangle(ElementUtils.getElementOffsetRectangle(selectionElement), newlySelectedFrames);
             }
 
             @Override public void onCancel() {
                 hideSelectionPanel();
-                for (CanvasToolFrameImpl toolFrame : newlySelectedFrames) {
+                for (CanvasToolFrame toolFrame : newlySelectedFrames) {
                     _worksheetView.unSelectToolFrame(toolFrame);
                 }
             }
@@ -123,11 +122,10 @@ public class ToolFrameSelectionManager {
 		ElementUtils.setElementSize(this._selectionPanel.getElement(), Point2D.zero);
 	}
 
-	private void selectFramesByRectangle(Rectangle selectionRectangle,
-			HashSet<CanvasToolFrameImpl> selectedFrameSet) {
-		for (CanvasToolFrameImpl toolFrame : this._worksheetView.getToolFrames()) {
+	private void selectFramesByRectangle(Rectangle selectionRectangle, HashSet<CanvasToolFrame> selectedFrameSet) {
+		for (CanvasToolFrame toolFrame : this._worksheetView.getToolFrames()) {
 			if (selectionRectangle.isOverlapping(ElementUtils
-					.getElementOffsetRectangle(toolFrame.getElement()))) {
+					.getElementOffsetRectangle(toolFrame.asWidget().getElement()))) {
 				if (false == this._worksheetView.isToolFrameSelected(toolFrame)) {
 					selectedFrameSet.add(toolFrame);
 					this._worksheetView.selectToolFrame(toolFrame);
@@ -154,7 +152,7 @@ public class ToolFrameSelectionManager {
 	}
 
 	// TODO: Should be here or in worksheetView?
-	private void toggleToolFrameSelection(CanvasToolFrameImpl toolFrame) {
+	private void toggleToolFrameSelection(CanvasToolFrame toolFrame) {
 		if (this._worksheetView.isToolFrameSelected(toolFrame)) {
 			this._worksheetView.unSelectToolFrame(toolFrame);
 		} else {

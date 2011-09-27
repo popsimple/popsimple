@@ -175,10 +175,10 @@ public class WorksheetImpl implements Worksheet
         view.clearActiveToolboxItem();
     }
 
-    private void copyToolsToClipboard(Collection<CanvasToolFrameImpl> toolFrames)
+    private void copyToolsToClipboard(Collection<CanvasToolFrame> toolFrames)
     {
         this._toolClipboard.clear();
-        for (CanvasToolFrameImpl toolFrame : toolFrames)
+        for (CanvasToolFrame toolFrame : toolFrames)
         {
             this._toolClipboard.add((ElementData)CloneableUtils.clone(
                     updateToolData(toolFrame)));
@@ -455,17 +455,17 @@ public class WorksheetImpl implements Worksheet
         return regs;
     }
 
-    private void removeToolInstance(CanvasToolFrameImpl toolFrame)
+    private void removeToolInstance(CanvasToolFrame toolFrame)
     {
-        ZIndexAllocator.deallocateZIndex(toolFrame.getElement());
+        ZIndexAllocator.deallocateZIndex(toolFrame.asWidget().getElement());
         ToolInstanceInfo info = this.toolInfoMap.remove(toolFrame.getTool());
         view.removeToolInstanceWidget(toolFrame);
         info.registrations.clear();
     }
 
-    private void removeToolInstances(ArrayList<CanvasToolFrameImpl> toolFrames)
+    private void removeToolInstances(ArrayList<CanvasToolFrame> toolFrames)
     {
-    	for (CanvasToolFrameImpl toolFrame : toolFrames)
+    	for (CanvasToolFrame toolFrame : toolFrames)
     	{
     		this.removeToolInstance(toolFrame);
     	}
@@ -493,6 +493,7 @@ public class WorksheetImpl implements Worksheet
 		this.activeToolInstance = tool;
 		if (null != toolFrame) {
 		    toolFrame.setActive(true);
+		    this.view.selectToolFrame(toolFrame);
 	    }
 	}
 
@@ -570,8 +571,8 @@ public class WorksheetImpl implements Worksheet
             }
         });
 
-        view.addCopyToolHandler(new Handler<ArrayList<CanvasToolFrameImpl>>() {
-            @Override public void onFire(ArrayList<CanvasToolFrameImpl> arg) {
+        view.addCopyToolHandler(new Handler<ArrayList<CanvasToolFrame>>() {
+            @Override public void onFire(ArrayList<CanvasToolFrame> arg) {
                 copyToolsToClipboard(arg);
             }
         });
@@ -590,13 +591,13 @@ public class WorksheetImpl implements Worksheet
                 escapeOperation();
             }
         });
-        view.addActiveToolFrameChangedHandler(new Handler<CanvasToolFrameImpl>() {
-			@Override public void onFire(CanvasToolFrameImpl frame) {
+        view.addActiveToolFrameChangedHandler(new Handler<CanvasToolFrame>() {
+			@Override public void onFire(CanvasToolFrame frame) {
 		    	setActiveToolInstance(frame);
 			}
 		});
-        view.addRemoveToolsRequest(new Handler<ArrayList<CanvasToolFrameImpl>>() {
-			@Override public void onFire(ArrayList<CanvasToolFrameImpl> arg) {
+        view.addRemoveToolsRequest(new Handler<ArrayList<CanvasToolFrame>>() {
+			@Override public void onFire(ArrayList<CanvasToolFrame> arg) {
 				removeToolInstances(arg);
 			}
 		});
@@ -642,9 +643,9 @@ public class WorksheetImpl implements Worksheet
         view.setOptions(value);
     }
 
-    private ElementData updateToolData(CanvasToolFrameImpl toolFrame){
+    private ElementData updateToolData(CanvasToolFrame toolFrame){
         ElementData toolData = toolFrame.getTool().getValue();
-        Element frameElement = toolFrame.getElement();
+        Element frameElement = toolFrame.asWidget().getElement();
         toolData.zIndex = ZIndexAllocator.getElementZIndex(frameElement);
         toolData.transform = new Transform2D(ElementUtils.getElementOffsetPosition(frameElement),
                 toolFrame.getToolSize(), ElementUtils.getRotation(frameElement));
