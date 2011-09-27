@@ -1,6 +1,7 @@
 package com.project.website.canvas.client.canvastools.sitecrop;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
@@ -11,6 +12,8 @@ import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.LoadEvent;
+import com.google.gwt.event.dom.client.LoadHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
@@ -22,16 +25,12 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Event.NativePreviewHandler;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Frame;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.events.SimpleEvent.Handler;
@@ -39,7 +38,6 @@ import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.handlers.SpecificKeyPressHandler;
 import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.EventUtils;
-import com.project.shared.client.utils.NativeUtils;
 import com.project.shared.client.utils.widgets.WidgetUtils;
 import com.project.shared.data.Point2D;
 import com.project.shared.data.Rectangle;
@@ -120,6 +118,8 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
 
         this._frameSelectionManager.clearSelection();
         this.setDefaultMode();
+        
+        //TODO: Notify listeners about the resize so they can update (e.g. floating toolbar).
     }
 
     private void setDefaultMode()
@@ -181,6 +181,13 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
             }
             });
 
+        //Can't get src from iframe if not in the same domain.
+//        this.siteFrame.addLoadHandler(new LoadHandler() {
+//			@Override
+//			public void onLoad(LoadEvent event) {
+//				//TODO: Extract to a proper method.
+//				urlTextBox.setText(siteFrame.getUrl());
+//			}});
 
 //      ONLY FOR DEBUG
         this._toolbar.getUrlLabel().addClickHandler(new ClickHandler() {
@@ -190,7 +197,7 @@ public class SiteCropTool extends Composite implements CanvasTool<ElementData>{
           }
       });
     }
-
+    
     private void enableBrowsing(Boolean enable)
     {
         blockPanel.setVisible(enable ? false : true);
