@@ -65,4 +65,13 @@ public class IterableUtils
         return res;
     }
 
+    public static <T> ArrayList<T> toList(Iterable<T> elems)
+    {
+        ArrayList<T> res = new ArrayList<T>();
+        for (T elem : elems) {
+            res.add(elem);
+        }
+        return res;
+    }
+
 }
