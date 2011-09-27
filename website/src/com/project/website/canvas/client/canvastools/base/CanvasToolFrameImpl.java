@@ -430,6 +430,7 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
 		}
 		Point2D newPos = ElementUtils.getElementOffsetPosition(getElement()).plus(offset);
 		ElementUtils.setElementCSSPosition(getElement(), newPos);
+		this.onTransformed();
 	}
 
     private void updateToolActive()
