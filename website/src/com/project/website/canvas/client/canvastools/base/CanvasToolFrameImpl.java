@@ -461,6 +461,7 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
     private void onResize()
     {
         this.onTransformed();
+        this.tool.onResize();
     }
 
     private void handleOnTransform()

@@ -4,6 +4,8 @@ import com.project.website.canvas.client.canvastools.base.CanvasToolFactoryBase;
 
 public class SiteCropToolFactory extends CanvasToolFactoryBase<SiteCropTool>{
 
+    public static final String UNIQUE_ID = "SiteCropToolFactory";
+
     @Override
     public SiteCropTool create() {
         SiteCropTool siteCropTool = new SiteCropTool();

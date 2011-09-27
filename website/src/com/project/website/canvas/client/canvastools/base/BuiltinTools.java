@@ -9,7 +9,9 @@ import com.project.website.canvas.client.canvastools.image.ImageToolFactory;
 import com.project.website.canvas.client.canvastools.image.ImageToolboxItem;
 import com.project.website.canvas.client.canvastools.map.MapToolFactory;
 import com.project.website.canvas.client.canvastools.map.MapToolboxItem;
+import com.project.website.canvas.client.canvastools.sitecrop.SiteCropToolFactory;
 import com.project.website.canvas.client.canvastools.sitecrop.SiteCropToolboxItem;
+import com.project.website.canvas.client.canvastools.sketch.SketchToolFactory;
 import com.project.website.canvas.client.canvastools.sketch.SketchToolboxItem;
 import com.project.website.canvas.client.canvastools.tasklist.TaskListToolFactory;
 import com.project.website.canvas.client.canvastools.tasklist.TaskListToolboxItem;
@@ -58,6 +60,8 @@ public class BuiltinTools {
         allFactories.put(VideoToolFactory.UNIQUE_ID, new VideoToolFactory());
         allFactories.put(TextEditToolFactory.UNIQUE_ID, new TextEditToolFactory());
         allFactories.put(MapToolFactory.UNIQUE_ID, new MapToolFactory());
+        allFactories.put(SiteCropToolFactory.UNIQUE_ID, new SiteCropToolFactory());
+        allFactories.put(SketchToolFactory.UNIQUE_ID, new SketchToolFactory());
         allFactories.put(TaskListToolFactory.UNIQUE_ID, new TaskListToolFactory());
     }
 }

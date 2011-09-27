@@ -3,6 +3,10 @@ package com.project.website.canvas.client.canvastools.sketch;
 import org.vaadin.gwtgraphics.client.DrawingArea;
 import org.vaadin.gwtgraphics.client.shape.Path;
 
+import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Node;
 import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
@@ -18,66 +22,48 @@ import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.EventUtils;
+import com.project.shared.client.utils.NodeUtils;
 import com.project.shared.data.Point2D;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
 import com.project.website.canvas.shared.data.ElementData;
 import com.project.website.canvas.shared.data.VectorGraphicsData;
 
-public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphicsData> 
+public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphicsData>
 {
     private final static int defaultWidth = 200;
     private final static int defaultHeight = 200;
-    
+
+    private VectorGraphicsData data = null;
+
     public SketchTool() {
         super(defaultWidth, defaultHeight);
     }
 
     private final RegistrationsManager registrationsManager = new RegistrationsManager();
-    protected Path _currentPath;
-    
-    @Override
-    protected void onLoad() {
-        super.onLoad();
-        
-        final SketchTool that = this;
-        this.registrationsManager.add(this.addDomHandler(new MouseDownHandler(){
-            @Override public void onMouseDown(MouseDownEvent event) {
-                Point2D pos = EventUtils.getCurrentMousePos().minus(ElementUtils.getElementAbsolutePosition(that.getElement()));
-                that._currentPath = new Path(pos.getX(), pos.getY());
-                that._currentPath.setStrokeColor("#000000");
-                that._currentPath.setFillOpacity(0);
-                that.add(that._currentPath);
-            }}, MouseDownEvent.getType()));
-        
-        this.registrationsManager.add(this.addDomHandler(new MouseUpHandler(){
-            @Override public void onMouseUp(MouseUpEvent event) {
-                that._currentPath = null;
-            }}, MouseUpEvent.getType()));
-        
-        this.registrationsManager.add(this.addDomHandler(new MouseMoveHandler(){
-            @Override public void onMouseMove(MouseMoveEvent event) {
-                if (null != that._currentPath) {
-                    Point2D pos = EventUtils.getCurrentMousePos().minus(ElementUtils.getElementAbsolutePosition(that.getElement()));
-                    that._currentPath.lineTo(pos.getX(), pos.getY());
-                }
-            }}, MouseMoveEvent.getType()));
-    }
+    protected Path _currentPath = null;
+    protected boolean _inViewMode = false;
 
     @Override
     protected void onUnload() {
+        this.registrationsManager.clear();
         super.onUnload();
     }
 
     @Override
     public void setValue(VectorGraphicsData value) {
-        // TODO Auto-generated method stub
-        
+        this.data = value;
+        Element svgElement = this.getElement().getElementsByTagName("svg").getItem(0);
+        DivElement tempElement = Document.get().createDivElement();
+        tempElement.setInnerHTML(this.data.svgString);
+        for (Node node : NodeUtils.fromNodeList(tempElement.getChildNodes())) {
+            svgElement.appendChild(node);
+        }
     }
 
     @Override
     public VectorGraphicsData getValue() {
-        // TODO Auto-generated method stub
-        return null;
+        this.data.svgString = this.getElement().getInnerHTML();
+        return this.data;
     }
 
     @Override
@@ -112,20 +98,27 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
 
     @Override
     public void setElementData(ElementData data) {
-        // TODO Auto-generated method stub
-        
+        this.setValue((VectorGraphicsData) data);
     }
 
     @Override
     public void setActive(boolean isActive) {
-        // TODO Auto-generated method stub
-        
+        if (this._inViewMode) {
+            return;
+        }
+        if (false == isActive) {
+            this._currentPath = null;
+            this.registrationsManager.clear();
+        }
+        else {
+            this.setRegistrations();
+        }
     }
 
     @Override
     public void bind() {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
@@ -141,14 +134,19 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
 
     @Override
     public void setViewMode(boolean isViewMode) {
-        // TODO Auto-generated method stub
-        
+        this._inViewMode = isViewMode;
+        if (isViewMode) {
+            this.registrationsManager.clear();
+        }
+        else {
+            this.setRegistrations();
+        }
     }
 
     @Override
     public void onResize() {
-        // TODO Auto-generated method stub
-        
+        this.setWidth(this.getOffsetWidth());
+        this.setHeight(this.getOffsetHeight());
     }
 
     @Override
@@ -156,4 +154,34 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
         // TODO Auto-generated method stub
         return null;
     }
+
+    private void setRegistrations()
+    {
+        final SketchTool that = this;
+        this.registrationsManager.clear();
+        this.registrationsManager.add(this.addDomHandler(new MouseDownHandler(){
+            @Override public void onMouseDown(MouseDownEvent event) {
+                Point2D pos = EventUtils.getCurrentMousePos().minus(ElementUtils.getElementAbsolutePosition(that.getElement()));
+                that._currentPath = new Path(pos.getX(), pos.getY());
+                that._currentPath.setStrokeColor("#000000");
+                that._currentPath.setFillOpacity(0);
+                that._currentPath.setStrokeWidth(that.data.penWidth);
+                that.add(that._currentPath);
+            }}, MouseDownEvent.getType()));
+
+        this.registrationsManager.add(this.addDomHandler(new MouseUpHandler(){
+            @Override public void onMouseUp(MouseUpEvent event) {
+                that._currentPath = null;
+            }}, MouseUpEvent.getType()));
+
+        this.registrationsManager.add(this.addDomHandler(new MouseMoveHandler(){
+            @Override public void onMouseMove(MouseMoveEvent event) {
+                if (null != that._currentPath) {
+                    Point2D pos = EventUtils.getCurrentMousePos().minus(ElementUtils.getElementAbsolutePosition(that.getElement()));
+                    that._currentPath.lineTo(pos.getX(), pos.getY());
+                }
+            }}, MouseMoveEvent.getType()));
+    }
+
 }
+
