@@ -24,7 +24,7 @@
 			width: 16px;
 			height: 16px;
 			display: inline-block;
-			margin-left: 2px;
+			margin-left: 5px;
 		}
 		.acceptCropButton{
 			margin-left: 5px;
@@ -42,8 +42,8 @@
 	         <g:ToggleButton ui:field="cropButton" addStyleNames="{res.main.cropCutButton} {style.optionToggleButton}"></g:ToggleButton>
 	        </my:ToggleButtonPanel>
 	        <g:Button ui:field="acceptCropButton" addStyleNames="{style.acceptCropButton}">Crop</g:Button>
-	        <g:PushButton ui:field="browseButton" addStyleNames="{style.browseButton}">
-        	</g:PushButton>
+	        <g:PushButton ui:field="browseButton" addStyleNames="{style.browseButton}"></g:PushButton>
+	        <g:CheckBox ui:field="interactiveCheckBox">Interactive</g:CheckBox>
 	    </g:FlowPanel>
     </g:FlowPanel>
 </ui:UiBinder>

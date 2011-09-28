@@ -66,6 +66,9 @@ public class SiteCropToolbar extends Composite
     @UiField
     TextBox urlTextBox;
 
+    @UiField
+    CheckBox interactiveCheckBox;
+
     //#endregion
 
     private SimpleEvent<String> _urlChangeEvent = new SimpleEvent<String>();
@@ -141,6 +144,11 @@ public class SiteCropToolbar extends Composite
 	    return this.browseButton.addClickHandler(HandlerUtils.asClickHandler(handler));
 	}
 
+	public HandlerRegistration addIsInteractiveChangedHandler(ValueChangeHandler<Boolean> handler)
+	{
+	    return this.interactiveCheckBox.addValueChangeHandler(handler);
+	}
+
 	public void toggleMoveMode()
 	{
 	    this.moveButton.setValue(true, true);
@@ -159,5 +167,10 @@ public class SiteCropToolbar extends Composite
 	    }
 	    this.urlTextBox.setValue(url);
 	    this._urlChangeEvent.dispatch(url);
+	}
+
+	public void setIsInteractive(boolean isInteractive)
+	{
+	    this.interactiveCheckBox.setValue(isInteractive, false);
 	}
 }

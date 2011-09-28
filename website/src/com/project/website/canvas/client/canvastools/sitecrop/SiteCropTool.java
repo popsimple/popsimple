@@ -1,23 +1,19 @@
 package com.project.website.canvas.client.canvastools.sitecrop;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
-import com.google.gwt.event.dom.client.LoadEvent;
-import com.google.gwt.event.dom.client.LoadHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
-import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
-import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Frame;
@@ -26,11 +22,14 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.events.SimpleEvent.Handler;
+import com.project.shared.client.handlers.MouseButtonDownHandler;
 import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.EventUtils;
+import com.project.shared.client.utils.UrlUtils;
 import com.project.shared.client.utils.WindowUtils;
 import com.project.shared.client.utils.widgets.WidgetUtils;
+import com.project.shared.data.MouseButtons;
 import com.project.shared.data.Point2D;
 import com.project.shared.data.Rectangle;
 import com.project.shared.utils.RectangleUtils;
@@ -76,17 +75,17 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
 
     private SiteCropElementData _data = null;
 
-    private Point2D _lastPoint = Point2D.zero;
-    private final SimpleEvent<Void> stopOperationEvent = new SimpleEvent<Void>();
+    private final SimpleEvent<Void> _stopMouseOperationEvent = new SimpleEvent<Void>();
     private ElementDragManagerImpl _frameDragManager = null;
     private SiteFrameSelectionManager _frameSelectionManager = null;
 
+    private RegistrationsManager _registrationManager = new RegistrationsManager();
     private RegistrationsManager _moveRegistrationManager = new RegistrationsManager();
     private RegistrationsManager _cropRegistrationManager = new RegistrationsManager();
 
     private SimpleEvent<Point2D> _selfMoveEvent = new SimpleEvent<Point2D>();
 
-    //Why not singleton?
+    //TODO: Make singleton and update according to data when displayed.
     private final SiteCropToolbar _toolbar = new SiteCropToolbar();
 
     public SiteCropTool() {
@@ -99,14 +98,12 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
 
         this.initializeToolbar();
 
-        this.registerHandlers();
-
         WidgetUtils.disableContextMenu(this.blockPanel);
 
         this._frameDragManager = new ElementDragManagerImpl(
-                this.frameContainer, this.dragPanel, 0, this.stopOperationEvent);
+                this.frameContainer, this.dragPanel, 0, this._stopMouseOperationEvent);
         this._frameSelectionManager = new SiteFrameSelectionManager(
-                this.frameContainer, this.dragPanel, this.selectionPanel, this.stopOperationEvent);
+                this.frameContainer, this.dragPanel, this.selectionPanel, this._stopMouseOperationEvent);
 
         this.setDefaultMode();
     }
@@ -115,6 +112,99 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
     {
         this._toolbar.enableBrowse(false);
         this._toolbar.setAcceptCropVisibility(false);
+    }
+
+    private void registerHandlers()
+    {
+        this._registrationManager.clear();
+
+        this._registrationManager.add(this._cropRegistrationManager.asSingleRegistration());
+        this._registrationManager.add(this._moveRegistrationManager.asSingleRegistration());
+
+        this._registrationManager.add(EventUtils.addNativePreviewEvent(KeyDownEvent.getType(),
+                new Handler<NativePreviewEvent>(){
+                    @Override
+                    public void onFire(NativePreviewEvent arg) {
+                        handlePreviewKeyDownEvent(arg);
+                    }}));
+
+        this._registrationManager.add(
+                this._toolbar.addUrlChangedHandler(new Handler<String>() {
+            @Override
+            public void onFire(String arg) {
+                setUrl(arg);
+            }
+        }));
+
+        this._registrationManager.add(
+                this._toolbar.addToggleMoveModeRequestHandler(new Handler<Boolean>() {
+            @Override
+            public void onFire(Boolean arg) {
+                if (arg) {
+                    enableSiteMove();
+                }
+                else {
+                    disableSiteMove();
+                }
+            }
+        }));
+
+        this._registrationManager.add(
+                this._toolbar.addToggleCropModeRequestHandler(new Handler<Boolean>() {
+            @Override
+            public void onFire(Boolean arg) {
+                if (arg) {
+                    enableSiteCrop();
+                }
+                else {
+                    disableSiteCrop();
+                }
+            }
+        }));
+
+        this._registrationManager.add(
+                this._toolbar.addBrowseRequestHandler(new Handler<Void>() {
+            @Override
+            public void onFire(Void arg) {
+                WindowUtils.openNewTab(siteFrame.getUrl());
+            }
+        }));
+
+        this._registrationManager.add(
+                this._toolbar.addIsInteractiveChangedHandler(new ValueChangeHandler<Boolean>() {
+                    @Override
+                    public void onValueChange(ValueChangeEvent<Boolean> event) {
+                        _data.isInteractive = event.getValue();
+                    }
+                }));
+
+//      ONLY FOR DEBUG
+        this._toolbar.addDebugClickRequestHandler(new Handler<Void>() {
+            @Override
+            public void onFire(Void arg) {
+                setUrl("http://www.google.com");
+            }
+        });
+    }
+
+    private void handlePreviewKeyDownEvent(NativePreviewEvent event)
+    {
+        // TODO: Use some sort of KeyMapper.
+        switch (event.getNativeEvent().getKeyCode()) {
+        case KeyCodes.KEY_ESCAPE:
+            _stopMouseOperationEvent.dispatch(null);
+            break;
+        default:
+            break;
+        }
+    }
+
+    private void setDefaultMode()
+    {
+        this._toolbar.toggleMoveMode();
+        //We don't know if all the handlers are already registered and therefore we can't count on the toolbar
+        //to raise the appropriate event which will enable the actual behavior.
+        this.enableSiteMove();
     }
 
     private void cropSelectedFrame()
@@ -152,119 +242,39 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
                 new Point2D(this._data.clipRectangle.getLeft(), this._data.clipRectangle.getTop())));
     }
 
-    private void setDefaultMode()
-    {
-        this._toolbar.toggleMoveMode();
-        //We don't know if all the handlers are already registered and therefor we can't count on the toolbar
-        //to raise the appropriate event which will enable the actual behavior.
-        this.enableSiteMove();
-    }
-
-    private void registerHandlers()
-    {
-        Event.addNativePreviewHandler(new NativePreviewHandler() {
-            @Override public void onPreviewNativeEvent(NativePreviewEvent event) {
-                NativeEvent nativeEvent = null == event ? null : event.getNativeEvent();
-                if (null == nativeEvent) {
-                    return;
-                }
-                handleNativePreviewEvent(event);
-            }});
-
-        this._toolbar.addUrlChangedHandler(new Handler<String>() {
-            @Override
-            public void onFire(String arg) {
-                setUrl(arg);
-            }
-        });
-
-        this._toolbar.addToggleMoveModeRequestHandler(new Handler<Boolean>() {
-            @Override
-            public void onFire(Boolean arg) {
-                if (arg) {
-                    enableSiteMove();
-                }
-                else {
-                    disableSiteMove();
-                }
-            }
-        });
-
-        this._toolbar.addToggleCropModeRequestHandler(new Handler<Boolean>() {
-
-            @Override
-            public void onFire(Boolean arg) {
-                if (arg) {
-                    enableSiteCrop();
-                }
-                else {
-                    disableSiteCrop();
-                }
-            }
-        });
-
-        this._toolbar.addBrowseRequestHandler(new Handler<Void>() {
-            @Override
-            public void onFire(Void arg) {
-                WindowUtils.openNewTab(siteFrame.getUrl());
-            }
-        });
-
-//      ONLY FOR DEBUG
-        this._toolbar.addDebugClickRequestHandler(new Handler<Void>() {
-            @Override
-            public void onFire(Void arg) {
-                setUrl("http://www.google.com");
-            }
-        });
-    }
-
-//    private void enableBrowsing(Boolean enable)
-//    {
-//        blockPanel.setVisible(enable ? false : true);
-//    }
-
     private void enableSiteMove()
     {
         this._moveRegistrationManager.clear();
 
         this._moveRegistrationManager.add(
-                this.blockPanel.addDomHandler(new MouseDownHandler() {
-                @Override
-                public void onMouseDown(MouseDownEvent event) {
-                    if (NativeEvent.BUTTON_LEFT != event.getNativeButton())
-                    {
-                        return;
+                this.blockPanel.addDomHandler(new MouseButtonDownHandler(MouseButtons.Left) {
+                    @Override
+                    public void onMouseButtonDown(MouseDownEvent event) {
+                        MouseMoveOperationHandler handler = new MouseMoveOperationHandler() {
+
+                            private Rectangle initialFrameRectangle = null;
+
+                            @Override public void onStop(Point2D pos) { }
+                            @Override public void onStart() {
+                                initialFrameRectangle = ElementUtils.getElementOffsetRectangle(siteFrame.getElement());
+                            }
+                            @Override public void onCancel() {
+                                updateFrameDimensions(initialFrameRectangle);
+                            }
+
+                            @Override
+                            public void onMouseMove(Point2D pos)
+                            {
+                                updateFrameDimensions(resolveFrameMovement(initialFrameRectangle, pos));
+                            }
+
+                        };
+
+                        _frameDragManager.startMouseMoveOperation(blockPanel.getElement(),
+                                ElementUtils.getRelativePosition(event, blockPanel.getElement()),
+                                handler, StopCondition.STOP_CONDITION_MOUSE_UP);
                     }
-                    ElementUtils.setTextSelectionEnabled(blockPanel.getElement(), true);
-
-                    MouseMoveOperationHandler handler = new MouseMoveOperationHandler() {
-
-                        private Rectangle initialFrameRectangle = null;
-
-                        @Override public void onStop(Point2D pos) { }
-                        @Override public void onStart() {
-                            initialFrameRectangle = ElementUtils.getElementOffsetRectangle(siteFrame.getElement());
-                        }
-                        @Override public void onCancel() {
-                            updateFrameDimensions(initialFrameRectangle);
-                        }
-
-                        @Override
-                        public void onMouseMove(Point2D pos)
-                        {
-                            updateFrameDimensions(resolveFrameMovement(initialFrameRectangle, pos));
-                        }
-
-                    };
-
-                    _lastPoint = Point2D.zero;
-                    _frameDragManager.startMouseMoveOperation(blockPanel.getElement(),
-                            ElementUtils.getRelativePosition(event, blockPanel.getElement()),
-                            handler, StopCondition.STOP_CONDITION_MOUSE_UP);
-
-                }
-            }, MouseDownEvent.getType()));
+                }, MouseDownEvent.getType()));
     }
 
     private Rectangle resolveFrameMovement(Rectangle frameRectangle, Point2D delta)
@@ -285,15 +295,9 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
     {
         this._cropRegistrationManager.clear();
         this._cropRegistrationManager.add(
-            this.blockPanel.addDomHandler(new MouseDownHandler() {
-
+            this.blockPanel.addDomHandler(new MouseButtonDownHandler(MouseButtons.Left) {
                 @Override
-                public void onMouseDown(MouseDownEvent event) {
-                    if (NativeEvent.BUTTON_LEFT != event.getNativeButton())
-                    {
-                        return;
-                    }
-                    ElementUtils.setTextSelectionEnabled(blockPanel.getElement(), true);
+                public void onMouseButtonDown(MouseDownEvent event) {
                     _toolbar.setAcceptCropVisibility(true);
                     _frameSelectionManager.startSelectionDrag(event);
                 }
@@ -311,22 +315,7 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
     {
         this._cropRegistrationManager.clear();
         this._frameSelectionManager.clearSelection();
-        _toolbar.setAcceptCropVisibility(false);
-    }
-
-    private void handleNativePreviewEvent(NativePreviewEvent event)
-    {
-        if (EventUtils.nativePreviewEventTypeEquals(event, KeyDownEvent.getType()))
-        {
-            // TODO: Use some sort of KeyMapper.
-            switch (event.getNativeEvent().getKeyCode()) {
-            case KeyCodes.KEY_ESCAPE:
-                stopOperationEvent.dispatch(null);
-                break;
-            default:
-                break;
-            }
-        }
+        this._toolbar.setAcceptCropVisibility(false);
     }
 
     private void updateFrameDimensions(Rectangle rectangle)
@@ -357,6 +346,9 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
         {
             return;
         }
+
+        url = UrlUtils.ensureProtocol(url);
+
         //TODO: Called twice due to toolbar changes.
         this.siteFrame.setUrl(url);
         this.siteFrame.getElement().setPropertyString("scrolling", "no");
@@ -381,10 +373,17 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
     public void setValue(SiteCropElementData value) {
         this._data = value;
 
+        this.setToolbarData(value);
+
         this.loadUrl(this._data.url);
 
         this.setFrameParameters();
         this.setCropParameters();
+    }
+
+    private void setToolbarData(SiteCropElementData data)
+    {
+        this._toolbar.setIsInteractive(data.isInteractive);
     }
 
     @Override
@@ -394,13 +393,11 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
 
     @Override
     public HandlerRegistration addKillRequestEventHandler(Handler<String> handler) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public HandlerRegistration addMoveStartEventHandler(Handler<MouseEvent<?>> handler) {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -416,12 +413,11 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
 
     @Override
     public void setActive(boolean isActive) {
-        // TODO Auto-generated method stub
     }
 
     @Override
     public void bind() {
-        // TODO Auto-generated method stub
+        this.registerHandlers();
     }
 
     @Override
@@ -436,25 +432,48 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
 
     @Override
     public void setViewMode(boolean isViewMode) {
-        // TODO Auto-generated method stub
+        if (isViewMode) {
+            this.setViewMode();
+        }
+        else {
+            this.setEditMode();
+        }
+    }
+
+    private void setViewMode()
+    {
+      //TODO: Set actual view mode;
+        this._registrationManager.clear();
+
+        this.setFrameInteractive(this._data.isInteractive);
+    }
+
+    private void setEditMode()
+    {
+        //TODO: Set actual edit mode.
+        this.registerHandlers();
+
+        this.setFrameInteractive(false);
+    }
+
+    private void setFrameInteractive(Boolean isInteractive)
+    {
+        blockPanel.setVisible(isInteractive ? false : true);
     }
 
     @Override
     public void onResize() {
-//        this.siteFrame.getElement().getStyle().setWidth(this.getElement().getOffsetWidth(), Unit.PX);
     }
 
     @Override
     public HandlerRegistration addFocusHandler(FocusHandler handler)
     {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public HandlerRegistration addBlurHandler(BlurHandler handler)
     {
-        // TODO Auto-generated method stub
         return null;
     }
 
