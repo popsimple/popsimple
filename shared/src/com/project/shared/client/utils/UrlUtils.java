@@ -7,6 +7,10 @@ import com.project.shared.data.StringEncoder;
 import com.project.shared.data.StringKeyValue;
 
 public class UrlUtils {
+
+    public static final String PROTOCOL_DELIMETER = "://";
+    public static final String PROTOCOL_HTTP = "http";
+
     private static RegExp urlValidator = null;
     private static RegExp urlPlusTldValidator = null;
 
@@ -83,5 +87,21 @@ public class UrlUtils {
     public static String formatQueryParameter(String parameterName, String parameterValue)
     {
         return UrlUtils.encodeOnce(parameterName) + "=" + UrlUtils.encodeOnce(parameterValue);
+    }
+
+    public static String ensureProtocol(String url)
+    {
+        //TODO: Replace with a proper trim method which also handles unicode whitespace (Guava?)
+        url = url.trim();
+        int delimeterIndex = url.indexOf(PROTOCOL_DELIMETER);
+        if (-1 == delimeterIndex)
+        {
+            return PROTOCOL_HTTP + PROTOCOL_DELIMETER + url;
+        }
+        if (0 == delimeterIndex)
+        {
+            return PROTOCOL_HTTP + url;
+        }
+        return url;
     }
 }
