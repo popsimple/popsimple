@@ -34,20 +34,25 @@ import com.project.website.canvas.shared.data.VectorGraphicsData;
 public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphicsData>
 {
 
-    private VectorGraphicsData data = null;
-
-    public SketchTool(int width, int height) {
-        super(width, height);
-        this.addStyleName(CanvasResources.INSTANCE.main().sketchTool());
-    }
-
     private final RegistrationsManager registrationsManager = new RegistrationsManager();
+
+    private final SketchToolbar _toolbar = new SketchToolbar();
+
+    private VectorGraphicsData data = null;
 
     protected Path _currentPath = null;
     protected boolean _inViewMode = false;
     protected boolean _active = false;
     protected boolean _bound = false;
 
+    protected String _strokeColor = "#000000";
+
+
+
+    public SketchTool(int width, int height) {
+        super(width, height);
+        this.addStyleName(CanvasResources.INSTANCE.main().sketchTool());
+    }
 
     @Override
     protected void onUnload() {
@@ -168,8 +173,7 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
 
     @Override
     public IsWidget getToolbar() {
-        // TODO Auto-generated method stub
-        return null;
+        return this._toolbar;
     }
 
     private void setRegistrations()
@@ -218,6 +222,11 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
 //                }
                 that.addLineToPath();
             }}, MouseMoveEvent.getType()));
+
+        this.registrationsManager.add(this._toolbar.addColorChangedHandler(new Handler<String>() {
+            @Override public void onFire(String arg) {
+                that.setColor(arg);
+            }}));
     }
 
     private Point2D getMousePositionRelativeToElement(final Element that)
@@ -232,6 +241,7 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
         this._currentPath.setStrokeColor("#000000");
         this._currentPath.setFillOpacity(0);
         this._currentPath.setStrokeWidth(this.data.penWidth);
+        this._currentPath.setStrokeColor(this._strokeColor);
         this.add(this._currentPath);
     }
 
@@ -243,5 +253,13 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
         }
     }
 
+
+    protected void setColor(String arg)
+    {
+        this._strokeColor = arg;
+        if (null != this._currentPath) {
+            this._currentPath.setStrokeColor(arg);
+        }
+    }
 }
 
