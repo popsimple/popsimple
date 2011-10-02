@@ -1,7 +1,6 @@
 package com.project.shared.client.utils;
 
 import com.google.gwt.dom.client.Element;
-import com.project.shared.utils.loggers.Logger;
 
 public class DocumentUtils
 {

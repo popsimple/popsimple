@@ -1,8 +1,5 @@
 package com.project.website.canvas.client.canvastools.sitecrop;
 
-import com.project.shared.client.utils.ElementUtils;
-import com.project.shared.data.Rectangle;
-import com.project.shared.utils.CloneableUtils;
 import com.project.website.canvas.client.canvastools.base.CanvasToolFactoryBase;
 import com.project.website.canvas.shared.data.SiteCropElementData;
 
