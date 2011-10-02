@@ -261,6 +261,9 @@ public abstract class ElementUtils
     /**
      * An alternative to GWT's own implementation of getAbsoluteLeft/Top which is inconsistent among browsers.
      *
+     * We took GWT's implementation from DOMImpl and added - curr.clientLeft/Top to include the borders in
+     * the calculation.
+     *
      * TODO: Force GWT to use this function instead of <code>getAbsoluteLeft</code> using deferred binding.
      *
      * @See <a href="http://code.google.com/p/google-web-toolkit/issues/detail?id=5645">GWT issue 5645</a>
@@ -272,7 +275,7 @@ public abstract class ElementUtils
         var curr = elem;
         // This intentionally excludes body which has a null offsetParent.
         while (curr.offsetParent) {
-          left -= curr.scrollLeft;
+          left -= curr.scrollLeft - curr.clientLeft;
           curr = curr.parentNode;
         }
         while (elem) {
@@ -291,7 +294,7 @@ public abstract class ElementUtils
         var curr = elem;
         // This intentionally excludes body which has a null offsetParent.
         while (curr.offsetParent) {
-            top -= curr.scrollTop;
+            top -= curr.scrollTop - curr.clientTop;
             curr = curr.parentNode;
         }
         while (elem) {
