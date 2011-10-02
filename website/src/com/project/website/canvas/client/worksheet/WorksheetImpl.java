@@ -340,7 +340,7 @@ public class WorksheetImpl implements Worksheet
     private void load(Long id)
     {
         CanvasServiceAsync service = (CanvasServiceAsync) GWT.create(CanvasService.class);
-        this.view.setViewLinkTargetHistoryToken(this.buildPageQueryString(id, true).toString());
+        this.updateViewForPageId(id);
 
         if (null == id) {
             if (null != this.page.id) {
@@ -376,6 +376,11 @@ public class WorksheetImpl implements Worksheet
                 load(result);
             }
         });
+    }
+
+    private void updateViewForPageId(Long id)
+    {
+        this.view.setViewLinkTargetHistoryToken(this.buildPageQueryString(id, true).toString());
     }
 
     private void logout()
@@ -608,6 +613,7 @@ public class WorksheetImpl implements Worksheet
     {
 	    Long id = null == this.page ? null : this.page.id;
         History.newItem(buildPageQueryString(id, this._inViewMode).toString(), false);
+        this.updateViewForPageId(id);
     }
 
     private void updateLoadedPageURL(String idStr)
