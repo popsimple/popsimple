@@ -988,3 +988,7 @@
 .sketchTool {
     cursor: crosshair;
 }
+
+.worksheetModeViewOnly .sketchTool {
+    cursor: default;
+}
