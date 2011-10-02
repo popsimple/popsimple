@@ -46,7 +46,6 @@ import com.project.website.canvas.shared.data.SiteCropElementData;
 //1. stretch frame when changing the size of the tool after cropping or moving.
 //2. set the frame correctly if the page loads again.
 //3. handle View/Edit mode correctly.
-//5. Add loading circle on iframe.
 //6. Disable all toolbar when loading.
 
 public class SiteCropTool extends Composite implements CanvasTool<SiteCropElementData>{
