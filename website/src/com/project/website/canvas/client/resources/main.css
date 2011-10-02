@@ -867,17 +867,14 @@
 	position: absolute;
 }
 
-@url imageLoadIconUrl imageLoadIcon;
+@url loadingIconUrl loadingIcon;
 .imageLoadingStyle, .loadingFiller {
-	background-image: imageLoadIconUrl !important;
+	background-image: loadingIconUrl !important;
 	background-repeat: no-repeat !important;
 	background-position: center center !important;
 	background-size: 48px !important;
 }
 
-.imageLoadingStyle {
-    background-color: transparent !important;
-}
 .loadingFiller {
 	width: 100%;
 	height: 100%;

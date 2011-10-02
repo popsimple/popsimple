@@ -87,7 +87,7 @@ public interface CanvasResources extends ClientBundle {
     ImageResource imageUnavailable();
 
     @Source("com/project/website/shared/client/resources/images/bitmaps/loadCircle.gif")
-    DataResource  imageLoadIcon();
+    DataResource loadingIcon();
 
     @Source("com/project/website/shared/client/resources/images/bitmaps/bingLogo_16.png")
     ImageResource bingLogo16();
