@@ -529,20 +529,7 @@ public class WorksheetImpl implements Worksheet
     {
         view.addToolCreationRequestHandler(new Handler<WorksheetView.ToolCreationRequest>() {
             @Override public void onFire(ToolCreationRequest arg) {
-            	CanvasToolFactory<? extends CanvasTool<? extends ElementData>> factory = arg.getFactory();
-            	if (null == factory) {
-            		return;
-            	}
-                CanvasToolFrame toolFrame = createToolInstance(arg.getPosition(), factory);
-                setActiveToolInstance(toolFrame);
-                if (arg.getFactory().isOneShot()) {
-                    _defaultToolboxItemRequestEvent.dispatch(null);
-                }
-                else
-                {
-                    setActiveToolboxItem(activeToolboxItem);
-                }
-                arg.toolCreated(toolFrame.getTool());
+            	handleToolCreationRequest(arg);
             }
         });
 
@@ -665,6 +652,24 @@ public class WorksheetImpl implements Worksheet
                 that.view.setUserProfile(result);
             }
         });
+    }
+
+    private void handleToolCreationRequest(ToolCreationRequest toolCreationRequest)
+    {
+        CanvasToolFactory<? extends CanvasTool<? extends ElementData>> factory = toolCreationRequest.getFactory();
+        if (null == factory) {
+        	return;
+        }
+        CanvasToolFrame toolFrame = createToolInstance(toolCreationRequest.getPosition(), factory);
+        setActiveToolInstance(toolFrame);
+        if (toolCreationRequest.getFactory().isOneShot()) {
+            _defaultToolboxItemRequestEvent.dispatch(null);
+        }
+        else
+        {
+            setActiveToolboxItem(activeToolboxItem);
+        }
+        toolCreationRequest.toolCreated(toolFrame.getTool());
     }
 }
 

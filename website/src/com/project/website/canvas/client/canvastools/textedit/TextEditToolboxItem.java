@@ -29,4 +29,11 @@ public class TextEditToolboxItem implements ToolboxItem {
         // TODO Auto-generated method stub
         return TextEditToolboxItem.factory;
     }
+
+    @Override
+    public boolean createOnMouseDown()
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
 }

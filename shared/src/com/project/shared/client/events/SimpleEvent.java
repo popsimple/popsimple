@@ -41,4 +41,8 @@ public class SimpleEvent<T> {
 			}
 		};
 	}
+
+	public void clearAllHandlers() {
+	    this.handlers.clear();
+	}
 }

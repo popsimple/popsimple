@@ -35,6 +35,6 @@ public class SketchToolFactory extends CanvasToolFactoryBase<SketchTool>
 
     @Override
     public Point2D getCreationOffset() {
-        return new Point2D(-7 - DEFAULT_WIDTH/2, -33 - DEFAULT_HEIGHT/2);
+        return new Point2D(-DEFAULT_WIDTH/2, -DEFAULT_HEIGHT/2);
     }
 }

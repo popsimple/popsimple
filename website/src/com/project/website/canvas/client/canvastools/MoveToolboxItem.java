@@ -27,4 +27,11 @@ public class MoveToolboxItem implements ToolboxItem {
         // TODO Auto-generated method stub
         return null;
     }
+
+    @Override
+    public boolean createOnMouseDown()
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
 }

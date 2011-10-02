@@ -245,7 +245,11 @@ public abstract class ElementUtils
 
 
 
-
+	/**
+	 * The number of pixels that the upper top-left corner of the current element is offset to the top-left within the offsetParent node.
+	 *
+	 * Does not include padding or border of the child element.
+	 */
     public static Point2D getElementOffsetPosition(Element element) {
     	return new Point2D(element.getOffsetLeft(), element.getOffsetTop());
     }
@@ -558,6 +562,20 @@ public abstract class ElementUtils
         } else {
             element.setAttribute(CONTENTEDITABLE, "true");
         }
+    }
+
+
+    public static Rectangle tryGetPaddingRectangle(Element elem)
+    {
+        Style style = StyleUtils.getComputedStyle(elem, null);
+        Integer left = StyleUtils.fromPXUnitString(style.getPaddingLeft());
+        Integer top = StyleUtils.fromPXUnitString(style.getPaddingTop());
+        Integer right = StyleUtils.fromPXUnitString(style.getPaddingRight());
+        Integer bottom = StyleUtils.fromPXUnitString(style.getPaddingBottom());
+        if ((null != left) && (null != top) && (null != right) && (null != bottom)) {
+            return new Rectangle(left, top, right, bottom);
+        }
+        return null;
     }
 
 }

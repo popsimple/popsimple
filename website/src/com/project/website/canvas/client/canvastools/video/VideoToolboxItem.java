@@ -36,4 +36,11 @@ public class VideoToolboxItem implements ToolboxItem
         return factory;
     }
 
+    @Override
+    public boolean createOnMouseDown()
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
 }

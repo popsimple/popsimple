@@ -356,7 +356,4 @@ public class StyleUtils
 
         return new Rgba(r,g,b,a);
     }
-
-
-
 }

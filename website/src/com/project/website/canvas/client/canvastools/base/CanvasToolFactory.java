@@ -13,4 +13,6 @@ public interface CanvasToolFactory<T extends CanvasTool<?>> extends Factory<T>
     Point2D getCreationOffset();
 
     String getFactoryId();
+
+    Point2D getFloatingWidgetCreationOffset();
 }

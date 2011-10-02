@@ -29,4 +29,11 @@ public class ImageToolboxItem implements ToolboxItem {
         // TODO Auto-generated method stub
         return ImageToolboxItem.factory;
     }
+
+    @Override
+    public boolean createOnMouseDown()
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
 }
