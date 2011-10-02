@@ -2,10 +2,13 @@ package com.project.website.canvas.client.worksheet;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
+import com.google.gwt.event.dom.client.TouchEndEvent;
+import com.google.gwt.event.dom.client.TouchEndHandler;
+import com.google.gwt.event.dom.client.TouchMoveEvent;
+import com.google.gwt.event.dom.client.TouchMoveHandler;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent;
@@ -100,12 +103,17 @@ public class ElementDragManagerImpl implements ElementDragManager
         }));
         regs.add(dragHandler.addDragHandler(new SimpleEvent.Handler<MouseMoveEvent>() {
             @Override public void onFire(MouseMoveEvent arg) {
-                Point2D pos = ElementUtils.getRelativePosition(arg, referenceElem);
-                handleMouseMove(referenceElem, referenceOffset, handler, pos);
+                handleMouseMove(referenceElem, referenceOffset, handler);
             }
         }));
 
         regs.add(_container.addDomHandler(dragHandler, MouseMoveEvent.getType()));
+        
+        regs.add(_container.addDomHandler(new TouchMoveHandler() {
+			@Override public void onTouchMove(TouchMoveEvent event) {
+                handleMouseMove(referenceElem, referenceOffset, handler);
+			}
+		}, TouchMoveEvent.getType()));
 
         if (null != _stopOperationEvent) {
             regs.add(_stopOperationEvent.addHandler(new SimpleEvent.Handler<Void>() {
@@ -124,10 +132,10 @@ public class ElementDragManagerImpl implements ElementDragManager
 
     }
 
-    private void operationEnded(final Element targetElement, final Element referenceElem, MouseMoveOperationHandler handler, RegistrationsManager regs, MouseEvent<?> event)
+    private void operationEnded(final Element targetElement, final Element referenceElem, MouseMoveOperationHandler handler, RegistrationsManager regs)
     {
         stopMouseMoveOperation(targetElement, regs);
-        handler.onStop(ElementUtils.getRelativePosition(event, referenceElem));
+        handler.onStop(ElementUtils.getMousePositionRelativeToElement(referenceElem));
     }
 
     private boolean setStopConditionHandlers(final Element targetElement,
@@ -140,15 +148,21 @@ public class ElementDragManagerImpl implements ElementDragManager
             stopConditionFound = true;
             regs.add(_container.addDomHandler(new MouseUpHandler() {
                 @Override public void onMouseUp(MouseUpEvent event) {
-                    operationEnded(targetElement, referenceElem, handler, regs, event);
+                    operationEnded(targetElement, referenceElem, handler, regs);
                 }
             }, MouseUpEvent.getType()));
+            regs.add(_container.addDomHandler(new TouchEndHandler() {
+				@Override
+				public void onTouchEnd(TouchEndEvent event) {
+                    operationEnded(targetElement, referenceElem, handler, regs);
+				}
+            }, TouchEndEvent.getType()));
         }
         if (0 != (stopConditions & StopCondition.STOP_CONDITION_MOUSE_CLICK)) {
             stopConditionFound = true;
             regs.add(_container.addDomHandler(new ClickHandler() {
                 @Override public void onClick(ClickEvent event) {
-                    operationEnded(targetElement, referenceElem, handler, regs, event);
+                    operationEnded(targetElement, referenceElem, handler, regs);
                 }
             }, ClickEvent.getType()));
         }
@@ -163,9 +177,8 @@ public class ElementDragManagerImpl implements ElementDragManager
         regs.clear();
     }
 
-    private void handleMouseMove(final Element referenceElem, final Point2D referenceOffset,
-            MouseMoveOperationHandler handler, Point2D pos)
+    private void handleMouseMove(Element referenceElem, Point2D referenceOffset, MouseMoveOperationHandler handler)
     {
-        handler.onMouseMove(pos.minus(referenceOffset));
+        handler.onMouseMove(ElementUtils.getMousePositionRelativeToElement(referenceElem).minus(referenceOffset));
     }
 }

@@ -17,7 +17,6 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.utils.ElementUtils;
-import com.project.shared.client.utils.EventUtils;
 import com.project.shared.client.utils.NodeUtils;
 import com.project.shared.data.Point2D;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
@@ -202,14 +201,9 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
             }}));
     }
 
-    private Point2D getMousePositionRelativeToElement(final Element that)
-    {
-        return EventUtils.getCurrentMousePos().minus(ElementUtils.getElementAbsoluteRectangle(that).getCorners().topLeft);
-    }
-
     private void startPathDraw()
     {
-        Point2D pos = getMousePositionRelativeToElement(this.getElement());
+        Point2D pos = ElementUtils.getMousePositionRelativeToElement(this.getElement());
         this._currentPath = new Path(pos.getX(), pos.getY());
         this._currentPath.setStrokeColor("#000000");
         this._currentPath.setFillOpacity(0);
@@ -221,7 +215,7 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
     private void addLineToPath()
     {
         if (null != this._currentPath) {
-            Point2D pos = getMousePositionRelativeToElement(this.getElement());
+            Point2D pos = ElementUtils.getMousePositionRelativeToElement(this.getElement());
             this._currentPath.lineTo(pos.getX(), pos.getY());
         }
     }

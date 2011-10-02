@@ -1,6 +1,7 @@
 package com.project.shared.client.utils;
 
 import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.dom.client.Touch;
 import com.google.gwt.event.dom.client.DomEvent;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -38,6 +39,10 @@ public class EventUtils
         Event currentEvent = Event.getCurrentEvent();
         if (null == currentEvent){
             return null;
+        }
+        if (0 < currentEvent.getTouches().length()) {
+        	Touch touch = currentEvent.getTouches().get(0);
+        	return new Point2D(touch.getClientX(), touch.getClientY());
         }
         return new Point2D(currentEvent.getClientX(), currentEvent.getClientY());
     }
