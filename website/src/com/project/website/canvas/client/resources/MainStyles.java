@@ -267,5 +267,9 @@ public interface MainStyles extends CssResource {
     String worksheetSaveButton();
 
     String worksheetWelcomeLabelHolder();
+
+    String imageToolLoading();
+
+    String loadingFillerDim();
 }
 

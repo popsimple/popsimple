@@ -213,6 +213,15 @@ public class StyleUtils
         return "url(\"" + imageUrl + "\")";
     }
 
+    public static void clearBackground(Style style)
+    {
+        style.clearProperty(CssProperties.BACKGROUND);
+        style.clearProperty(CssProperties.BACKGROUND_REPEAT);
+        style.clearProperty(CssProperties.BACKGROUND_POSITION);
+        style.clearBackgroundColor();
+        style.clearBackgroundImage();
+    }
+
     public static void clearBackgroundRepeat(Style style)
     {
         style.clearProperty(CssProperties.BACKGROUND_REPEAT);

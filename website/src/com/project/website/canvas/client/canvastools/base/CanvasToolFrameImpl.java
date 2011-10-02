@@ -113,6 +113,10 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
 
         ElementUtils.setTextSelectionEnabled(this.buttonsPanel.getElement(), false);
 
+        if (this.tool.dimOnLoad())
+        {
+            this.loadingPanel.addStyleName(CanvasResources.INSTANCE.main().loadingFillerDim());
+        }
         this.loadingPanel.setVisible(false);
         this.rotatePanel.setVisible(tool.canRotate());
         this.resizePanel.setVisible(tool.getResizeMode() != ResizeMode.NONE);
@@ -200,20 +204,6 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
 			    that.toolSelfMoveRequest(offset);
 		}}));
 
-		frameRegs.add(tool.getToolEvents().addLoadStartedEventHandler(new Handler<Void>() {
-            @Override
-            public void onFire(Void arg) {
-                toolLoadStarted();
-            }
-        }));
-
-		frameRegs.add(tool.getToolEvents().addLoadEndedEventHandler(new Handler<Void>() {
-            @Override
-            public void onFire(Void arg) {
-                toolLoadEnded();
-            }
-        }));
-
 		frameRegs.add(this.addDomHandler(new MouseDownHandler(){
 			@Override public void onMouseDown(MouseDownEvent event) {
 			    that.onToolFrameSelected(event);
@@ -238,6 +228,19 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
             @Override
             public void onFire(MouseEvent<?> arg) {
                 moveStartRequest.dispatch(arg);
+            }
+        }));
+        toolRegs.add(tool.getToolEvents().addLoadStartedEventHandler(new Handler<Void>() {
+            @Override
+            public void onFire(Void arg) {
+                toolLoadStarted();
+            }
+        }));
+
+        toolRegs.add(tool.getToolEvents().addLoadEndedEventHandler(new Handler<Void>() {
+            @Override
+            public void onFire(Void arg) {
+                toolLoadEnded();
             }
         }));
     }

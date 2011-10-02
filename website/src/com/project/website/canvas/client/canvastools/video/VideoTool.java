@@ -68,6 +68,7 @@ public class VideoTool extends Composite implements CanvasTool<VideoData>
     private CanvasToolEvents _toolEvents = new CanvasToolEvents(this);
 
     private final RegistrationsManager registrationsManager = new RegistrationsManager();
+    private final RegistrationsManager _editModeRegistrations = new RegistrationsManager();
 
     private VideoData data = null;
     private SelectVideoDialog selectVideoDialog;
@@ -80,6 +81,8 @@ public class VideoTool extends Composite implements CanvasTool<VideoData>
     {
         initWidget(uiBinder.createAndBindUi(this));
         CanvasToolCommon.initCanvasToolWidget(this);
+
+        this.registerGeneralHandlers();
 
         searchProviders.addAll(videoSearchProviders);
 
@@ -100,8 +103,18 @@ public class VideoTool extends Composite implements CanvasTool<VideoData>
         this.setViewMode(viewMode); // do whatever bindings necessary for our mode
     }
 
-    private void reRegisterHandlers() {
-        registrationsManager.add(this.rootPanel.addDomHandler(new MouseDownHandler() {
+    private void registerGeneralHandlers() {
+        registrationsManager.add(this.videoFrame.addLoadHandler(new LoadHandler() {
+            @Override
+            public void onLoad(LoadEvent event) {
+                _toolEvents.dispatchLoadEndedEvent();
+            }
+        }));
+    }
+
+    private void registerEditModeHandlers()
+    {
+        this._editModeRegistrations.add(this.rootPanel.addDomHandler(new MouseDownHandler() {
             @Override
             public void onMouseDown(MouseDownEvent event) {
                 if (event.isControlKeyDown()) {
@@ -109,7 +122,7 @@ public class VideoTool extends Composite implements CanvasTool<VideoData>
                 }
             }
         }, MouseDownEvent.getType()));
-        registrationsManager.add(this.optionsLabel.addClickHandler(new ClickHandler() {
+        this._editModeRegistrations.add(this.optionsLabel.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 showOptionsDialog();
@@ -206,14 +219,14 @@ public class VideoTool extends Composite implements CanvasTool<VideoData>
     {
         this.viewMode = isViewMode;
         if (isViewMode) {
-            registrationsManager.clear();
+            this._editModeRegistrations.clear();
             if (StringUtils.isWhitespaceOrNull(this.data.videoInformation.url)) {
                 this.setVisible(false);
             }
-            this.registrationsManager.clear();
+            this._editModeRegistrations.clear();
         }
         else {
-            this.reRegisterHandlers();
+            this.registerEditModeHandlers();
         }
     }
 
@@ -234,6 +247,7 @@ public class VideoTool extends Composite implements CanvasTool<VideoData>
         }
         // Only set the url if it changed, because there will be a refresh of the iframe
         if (autoSize || (false == UrlUtils.areEquivalent(url, videoFrame.getUrl()))) {
+            _toolEvents.dispatchLoadStartedEvent();
             videoFrame.setUrl(url);
         }
         optionsLabel.setText(OPTIONS_LABEL_VIDEO_SET);
@@ -283,4 +297,8 @@ public class VideoTool extends Composite implements CanvasTool<VideoData>
         return null;
     }
 
+    @Override
+    public boolean dimOnLoad() {
+        return false;
+    }
 }

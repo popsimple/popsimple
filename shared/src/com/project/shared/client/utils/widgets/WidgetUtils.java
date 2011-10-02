@@ -22,6 +22,7 @@ import com.project.shared.client.utils.HandlerUtils;
 import com.project.shared.data.Point2D;
 import com.project.shared.data.funcs.AsyncFunc;
 import com.project.shared.data.funcs.Func;
+import com.project.shared.utils.StringUtils;
 
 public class WidgetUtils {
 
@@ -80,22 +81,31 @@ public class WidgetUtils {
     }
 
 	public static void setBackgroundImageAsync(final Widget widget, String imageUrl, String errorImageUrl,
+            final boolean autoSize, final SimpleEvent.Handler<Void> loadHandler,
+            final SimpleEvent.Handler<Void> errorHandler)
+    {
+	    WidgetUtils.setBackgroundImageAsync(widget, imageUrl, errorImageUrl, autoSize, "",
+                loadHandler, HandlerUtils.<Void>emptyHandler());
+    }
+
+	public static void setBackgroundImageAsync(final Widget widget, String imageUrl, String errorImageUrl,
 	        final boolean autoSize, final String loadingStyleName,
 	        final SimpleEvent.Handler<Void> loadHandler, final SimpleEvent.Handler<Void> errorHandler)
     {
 	    widget.getElement().getStyle().clearBackgroundImage();
-	    widget.addStyleName(loadingStyleName);
-	    ElementUtils.setBackgroundImageAsync(widget.getElement(), imageUrl, errorImageUrl, autoSize,
+	    WidgetUtils.addNonEmptyStyleName(widget, loadingStyleName);
+
+        ElementUtils.setBackgroundImageAsync(widget.getElement(), imageUrl, errorImageUrl, autoSize,
             new SimpleEvent.Handler<Void>() {
                 @Override
                 public void onFire(Void arg) {
-                    widget.removeStyleName(loadingStyleName);
+                    WidgetUtils.removeNonEmptyStyleName(widget, loadingStyleName);
                     loadHandler.onFire(null);
                 }},
             new SimpleEvent.Handler<Void>() {
                 @Override
                 public void onFire(Void arg) {
-                    widget.removeStyleName(loadingStyleName);
+                    WidgetUtils.removeNonEmptyStyleName(widget, loadingStyleName);
                     errorHandler.onFire(null);
                 }});
     }
@@ -152,5 +162,23 @@ public class WidgetUtils {
                 widget.setEnabled(isEnabled);
             }
         };
+    }
+
+    public static void addNonEmptyStyleName(Widget widget, String style)
+    {
+        if (StringUtils.isEmptyOrNull(style))
+        {
+            return;
+        }
+        widget.addStyleName(style);
+    }
+
+    public static void removeNonEmptyStyleName(Widget widget, String style)
+    {
+        if (StringUtils.isEmptyOrNull(style))
+        {
+            return;
+        }
+        widget.removeStyleName(style);
     }
 }

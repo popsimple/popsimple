@@ -462,7 +462,7 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
     private void setViewMode()
     {
       //TODO: Set actual view mode;
-        this._registrationManager.clear();
+//        this._registrationManager.clear();
 
         this.setFrameInteractive(this._data.isInteractive);
     }
@@ -470,7 +470,7 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
     private void setEditMode()
     {
         //TODO: Set actual edit mode.
-        this.registerHandlers();
+//        this.registerHandlers();
 
         this.setFrameInteractive(false);
     }
@@ -490,4 +490,8 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
         return this._toolbar;
     }
 
+    @Override
+    public boolean dimOnLoad() {
+        return true;
+    }
 }

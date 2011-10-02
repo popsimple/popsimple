@@ -17,9 +17,11 @@
 						<g:Anchor ui:field="closeLink" addStyleNames="{res.main.toolFrameCloseLink} {res.main.toolFrameButton}" title="Delete element"></g:Anchor>
 					</g:FlowPanel>
 				</g:HTMLPanel>
-				<g:HTMLPanel ui:field="toolPanel" addStyleNames="{res.main.toolFrameBodyPanel}">
-					<g:HTMLPanel ui:field="loadingPanel" addStyleNames="{res.main.loadingFiller}"/>
-				</g:HTMLPanel>
+					<g:HTMLPanel ui:field="toolArea" addStyleNames="{res.main.toolFrameBodyPanel}">
+						<g:HTMLPanel ui:field="toolPanel" />
+						<g:HTMLPanel ui:field="loadingPanel" addStyleNames="{res.main.loadingFiller}"/>
+					</g:HTMLPanel>
+
 				<g:HTMLPanel ui:field="resizePanel" addStyleNames="{res.main.toolFrameBottomRightResize} {res.main.toolFrameHoverVisibleElement}" title="Scale" />
 				<g:HTMLPanel ui:field="rotatePanel" addStyleNames="{res.main.toolFrameBottomLeftRotate}  {res.main.toolFrameHoverVisibleElement}" title="Rotate" />
 			</g:FlowPanel>

@@ -234,5 +234,10 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
             this._currentPath.setStrokeColor(arg);
         }
     }
+
+    @Override
+    public boolean dimOnLoad() {
+        return true;
+    }
 }
 

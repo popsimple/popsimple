@@ -124,5 +124,4 @@ public interface CanvasResources extends ClientBundle {
 
     @Source("com/project/website/shared/client/resources/images/bitmaps/closeIcon.png")
     ImageResource cropCancelIcon();
-
 }
