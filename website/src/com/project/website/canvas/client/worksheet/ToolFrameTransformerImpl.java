@@ -1,6 +1,5 @@
 package com.project.website.canvas.client.worksheet;
 
-import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
@@ -59,20 +58,20 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
     }
 
     @Override
-    public void startDragCanvasToolFrames(Iterable<CanvasToolFrame> toolFrames, MouseEvent<?> startEvent)
+    public void startDragCanvasToolFrames(Iterable<CanvasToolFrame> toolFrames)
     {
     	for (CanvasToolFrame toolFrame : toolFrames)
     	{
-    		startDragCanvasToolFrame(toolFrame, startEvent);
+    		startDragCanvasToolFrame(toolFrame);
     	}
     }
 
     @Override
-    public void startDragCanvasToolFrame(final CanvasToolFrame toolFrame, final MouseEvent<?> startEvent)
+    public void startDragCanvasToolFrame(final CanvasToolFrame toolFrame)
     {
         Element toolFrameElement = toolFrame.asWidget().getElement();
-        final Point2D initialPos = getElementCSSPositionFallback(startEvent, toolFrameElement);
-        final Point2D originalOffsetFromFramePos = ElementUtils.getRelativePosition(startEvent, toolFrameElement);
+        final Point2D initialPos = getElementCSSPositionFallback(toolFrameElement);
+        final Point2D originalOffsetFromFramePos = ElementUtils.getMousePositionRelativeToElement(toolFrameElement);
 
         MouseMoveOperationHandler handler = new MouseMoveOperationHandler() {
             @Override public void onStop(Point2D pos) {
@@ -99,13 +98,13 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
     }
 
 
-    private Point2D getElementCSSPositionFallback(final MouseEvent<?> startEvent, Element toolFrameElement)
+    private Point2D getElementCSSPositionFallback(Element toolFrameElement)
     {
         Point2D pos = ElementUtils.getElementCSSPosition(toolFrameElement);
         if (null == pos) {
             // Less good..
             // Fallback in case the css left+top is not set.
-            pos = ElementUtils.getRelativePosition(startEvent, toolFrameElement);
+            pos = ElementUtils.getMousePositionRelativeToElement(toolFrameElement);
         }
         return pos;
     }
@@ -124,14 +123,14 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
      * </el>
      */
     @Override
-    public void startResizeCanvasToolFrame(final CanvasToolFrame toolFrame, final MouseEvent<?> startEvent)
+    public void startResizeCanvasToolFrame(final CanvasToolFrame toolFrame)
     {
         final Element toolFrameElement = toolFrame.asWidget().getElement();
         final double angle = Math.toRadians(ElementUtils.getRotation(toolFrameElement));
         final Point2D initialSize = toolFrame.getToolSize();
-        final Point2D startDragPos = ElementUtils.getRelativePosition(startEvent, _container.getElement());
+        final Point2D startDragPos = ElementUtils.getMousePositionRelativeToElement(_container.getElement());
 
-        final Point2D startPos = startDragPos.minus(ElementUtils.getRelativePosition(startEvent, toolFrameElement));
+        final Point2D startPos = startDragPos.minus(ElementUtils.getMousePositionRelativeToElement(toolFrameElement));
 
         final Rectangle initialToolFrameRect = ElementUtils.getElementOffsetRectangle(toolFrameElement);
         final Point2D initialTopLeft = initialToolFrameRect.getCorners().topLeft;
@@ -175,7 +174,7 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
     }
 
     @Override
-    public void startRotateCanvasToolFrame(final CanvasToolFrame toolFrame, MouseEvent<?> startEvent)
+    public void startRotateCanvasToolFrame(final CanvasToolFrame toolFrame)
     {
         Rectangle initialRect = ElementUtils.getElementOffsetRectangle(toolFrame.asWidget().getElement());
 
@@ -277,15 +276,11 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
     private void addDragUndoStep(final CanvasToolFrame toolFrame, final Point2D initialPos, final Point2D targetPos)
     {
         UndoManager.get().add(toolFrame, new UndoRedoPair() {
-            @Override
-            public void undo()
-            {
+            @Override public void undo() {
                 setToolFramePosition(toolFrame, initialPos, DEFAULT_ANIMATION_DURATION);
             }
 
-            @Override
-            public void redo()
-            {
+            @Override public void redo() {
                 setToolFramePosition(toolFrame, targetPos, DEFAULT_ANIMATION_DURATION);
             }
         });

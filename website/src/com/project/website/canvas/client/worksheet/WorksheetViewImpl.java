@@ -788,14 +788,14 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         regs.add(toolFrame.addResizeStartRequestHandler(new SimpleEvent.Handler<MouseEvent<?>>() {
             @Override public void onFire(MouseEvent<?> arg) {
                 _toolFrameSelectionManager.forceToolFrameSelection(toolFrame);
-                _toolFrameTransformer.startResizeCanvasToolFrame(toolFrame, arg);
+                _toolFrameTransformer.startResizeCanvasToolFrame(toolFrame);
             }
         }));
         if (toolFrame.getTool().canRotate()) {
             regs.add(toolFrame.addRotateStartRequestHandler(new SimpleEvent.Handler<MouseEvent<?>>() {
                 @Override public void onFire(MouseEvent<?> arg) {
                     _toolFrameSelectionManager.forceToolFrameSelection(toolFrame);
-                    _toolFrameTransformer.startRotateCanvasToolFrame(toolFrame, arg);
+                    _toolFrameTransformer.startRotateCanvasToolFrame(toolFrame);
                 }
             }));
         }
@@ -844,7 +844,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
     private void startDraggingSelectedToolFrames(MouseEvent<?> arg)
     {
-        _toolFrameTransformer.startDragCanvasToolFrames(IterableUtils.<CanvasToolFrame, CanvasToolFrame>upCast(_selectedTools), arg);
+        _toolFrameTransformer.startDragCanvasToolFrames(IterableUtils.<CanvasToolFrame, CanvasToolFrame>upCast(_selectedTools));
     }
 
     private void dispatchToolCreationWithoutFloatingWidget(final ToolboxItem toolboxItem, final MouseEvent<?> event)
