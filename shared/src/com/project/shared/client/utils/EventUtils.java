@@ -11,6 +11,7 @@ import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.data.Point2D;
 import com.project.shared.utils.ObjectUtils;
+import com.project.shared.utils.loggers.Logger;
 
 public class EventUtils
 {
@@ -40,9 +41,13 @@ public class EventUtils
         if (null == currentEvent){
             return null;
         }
-        if (0 < currentEvent.getTouches().length()) {
-        	Touch touch = currentEvent.getTouches().get(0);
-        	return new Point2D(touch.getClientX(), touch.getClientY());
+        if (EventUtils.hasTouches(currentEvent)) {
+            if (0 < currentEvent.getTouches().length()) {
+            	Touch touch = currentEvent.getTouches().get(0);
+            	Logger.info(ElementUtils.class, "touch: " + touch.getClientX());
+            	Logger.info(ElementUtils.class, touch.toString());
+            	return new Point2D(touch.getClientX(), touch.getClientY());
+            }
         }
         return new Point2D(currentEvent.getClientX(), currentEvent.getClientY());
     }
@@ -63,4 +68,8 @@ public class EventUtils
                 handler.onFire(event);
             }});
     }
+
+    public static native final boolean hasTouches(NativeEvent evt) /*-{
+        return (undefined !== evt.touches);
+    }-*/;
 }
