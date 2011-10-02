@@ -187,7 +187,7 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
         this.registrationsManager.add(this.addDomHandler(new MouseUpHandler(){
             @Override public void onMouseUp(MouseUpEvent event) {
                 final Path path = that._currentPath;
-                if (null == path) {
+                if ((false == that._active) || (null == path)) {
                     return;
                 }
                 UndoManager.get().add(this, new UndoRedoPair() {
@@ -216,10 +216,7 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
 //                        that.startPathDraw();
 //                    }
 //                }
-                if (null != that._currentPath) {
-                    Point2D pos = getMousePositionRelativeToElement(that.getElement());
-                    that._currentPath.lineTo(pos.getX(), pos.getY());
-                }
+                that.addLineToPath();
             }}, MouseMoveEvent.getType()));
     }
 
@@ -236,6 +233,14 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
         this._currentPath.setFillOpacity(0);
         this._currentPath.setStrokeWidth(this.data.penWidth);
         this.add(this._currentPath);
+    }
+
+    private void addLineToPath()
+    {
+        if (null != this._currentPath) {
+            Point2D pos = getMousePositionRelativeToElement(this.getElement());
+            this._currentPath.lineTo(pos.getX(), pos.getY());
+        }
     }
 
 }
