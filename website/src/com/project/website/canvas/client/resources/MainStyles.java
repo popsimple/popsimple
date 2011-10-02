@@ -4,6 +4,8 @@ import com.google.gwt.resources.client.CssResource;
 
 public interface MainStyles extends CssResource {
 
+    String activeToolFrame();
+
     String canvasContainer();
 
     String canvasToolbar();
@@ -118,13 +120,13 @@ public interface MainStyles extends CssResource {
 
     String sketchCreateModeCanvasStyle();
 
-    String sketchTool();
-
 //    String textEditNoToolbars();
 //
 //    String canvasToolbar();
 //
 //    String textEditViewBox();
+
+    String sketchTool();
 
     String taskImageChecked();
 
@@ -148,11 +150,11 @@ public interface MainStyles extends CssResource {
 
     String textEdit();
 
-    String textEditBox();
+	String textEditBox();
 
 	String textEditFocused();
 
-	String textEditNotFocused();
+    String textEditNotFocused();
 
     String textEditToolbarFontFamilyList();
 
@@ -194,9 +196,9 @@ public interface MainStyles extends CssResource {
 
     String toolFrameBottomLeftRotate();
 
-    String toolFrameBottomRightResize();
+	String toolFrameBottomRightResize();
 
-	String toolFrameButton();
+    String toolFrameButton();
 
     String toolFrameButtonsPanel();
 

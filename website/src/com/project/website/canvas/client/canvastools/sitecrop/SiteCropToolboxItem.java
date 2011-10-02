@@ -34,4 +34,11 @@ public class SiteCropToolboxItem implements ToolboxItem {
     public CanvasToolFactory<? extends CanvasTool<? extends ElementData>> getToolFactory() {
         return factory;
     }
+
+    @Override
+    public boolean createOnMouseDown()
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
 }

@@ -95,7 +95,9 @@
 .worksheetFullView .worksheetBackground {
 	top: 0;
 }
+
 /*************************************/
+
 .outOfBounds {
 	position: absolute;
 	left: 9999px;
@@ -535,6 +537,11 @@
 }
 
 /* ToolFrame Styles */
+.activeToolFrame {
+
+}
+
+
 .toolFramePanel {
 	position: absolute;
 	display: inline-block;
@@ -984,8 +991,20 @@
 
 .sketchTool {
     cursor: crosshair;
+    border-style: solid;
+    border-width: 1px;
+    border-color: transparent;
+}
+
+.activeToolFrame .sketchTool {
+    border-color: #ccc;
 }
 
 .worksheetModeViewOnly .sketchTool {
     cursor: default;
+}
+
+.sketchTool.floatingToolStyle {
+	background-color: #eee;
+	opacity: 0.6;
 }

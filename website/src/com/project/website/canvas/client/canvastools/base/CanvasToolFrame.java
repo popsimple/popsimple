@@ -34,6 +34,7 @@ public interface CanvasToolFrame extends Focusable, HasFocusHandlers, HasBlurHan
      */
     void setToolSize(Point2D size);
     Point2D getToolSize();
+    Point2D getToolOffsetInFrame();
 
     /**
      * Notifies the CanvasToolFrame that it is being dragged / not being dragged.
@@ -56,4 +57,5 @@ public interface CanvasToolFrame extends Focusable, HasFocusHandlers, HasBlurHan
     void setActive(boolean isActive);
 
     void onTransformed();
+
 }

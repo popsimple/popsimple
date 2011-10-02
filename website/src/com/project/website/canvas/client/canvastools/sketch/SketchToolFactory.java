@@ -1,6 +1,5 @@
 package com.project.website.canvas.client.canvastools.sketch;
 
-import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.data.Point2D;
 import com.project.website.canvas.client.canvastools.base.CanvasToolFactory;
 import com.project.website.canvas.client.canvastools.base.CanvasToolFactoryBase;
@@ -28,11 +27,6 @@ public class SketchToolFactory extends CanvasToolFactoryBase<SketchTool>
     }
 
     @Override
-    public Widget getFloatingWidget() {
-        return null;
-    }
-
-    @Override
     public String getFactoryId()
     {
         return SketchToolFactory.UNIQUE_ID;
@@ -41,6 +35,6 @@ public class SketchToolFactory extends CanvasToolFactoryBase<SketchTool>
 
     @Override
     public Point2D getCreationOffset() {
-        return new Point2D(-7 - DEFAULT_WIDTH/2, -33 - DEFAULT_HEIGHT/2);
+        return new Point2D(-DEFAULT_WIDTH/2, -DEFAULT_HEIGHT/2);
     }
 }

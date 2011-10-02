@@ -25,4 +25,12 @@ public abstract class CanvasToolFactoryBase<T extends CanvasTool<?>> implements 
     public Point2D getCreationOffset() {
         return Point2D.zero;
     }
+
+    @Override
+    public Point2D getFloatingWidgetCreationOffset()
+    {
+        return this.getCreationOffset();
+    }
+
+
 }

@@ -29,4 +29,11 @@ public class TaskListToolboxItem implements ToolboxItem {
         // TODO Auto-generated method stub
         return TaskListToolboxItem.factory;
     }
+
+    @Override
+    public boolean createOnMouseDown()
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
 }

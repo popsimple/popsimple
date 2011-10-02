@@ -41,4 +41,11 @@ public class MapToolboxItem implements ToolboxItem
         return mapToolFactory;
     }
 
+    @Override
+    public boolean createOnMouseDown()
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
 }

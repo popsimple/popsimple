@@ -36,6 +36,7 @@ import com.project.shared.client.utils.SchedulerUtils;
 import com.project.shared.client.utils.StyleUtils;
 import com.project.shared.client.utils.widgets.WidgetUtils;
 import com.project.shared.data.Point2D;
+import com.project.shared.data.Rectangle;
 import com.project.website.canvas.client.canvastools.base.CanvasTool.ResizeMode;
 import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.client.shared.widgets.FloatingToolbar;
@@ -304,6 +305,19 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
         return size;
     }
 
+    @Override
+    public Point2D getToolOffsetInFrame()
+    {
+        Element toolPanelElement = this.toolPanel.getElement();
+        Point2D offset = ElementUtils.getElementOffsetPosition(toolPanelElement);
+        Rectangle paddingRect = ElementUtils.tryGetPaddingRectangle(toolPanelElement);
+        if (null != paddingRect) {
+            offset = offset.plus(paddingRect.getCorners().topLeft);
+        }
+        return offset;
+    }
+
+
 
 //    public void setToolPosition(Point2D pos)
 //    {
@@ -438,6 +452,12 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
         if (0 >= this.draggingStackDepth) {
             this.tool.setActive(this._isActive);
             setFloatingToolbarVisible(this._isActive);
+            if (this._isActive) {
+                this.addStyleName(CanvasResources.INSTANCE.main().activeToolFrame());
+            }
+            else {
+                this.removeStyleName(CanvasResources.INSTANCE.main().activeToolFrame());
+            }
         }
     }
 
@@ -471,5 +491,4 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
             this.floatingToolbar.updatePosition();
         }
     }
-
 }

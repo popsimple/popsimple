@@ -34,4 +34,10 @@ public class SketchToolboxItem implements ToolboxItem {
     public CanvasToolFactory<? extends CanvasTool<? extends ElementData>> getToolFactory() {
         return SketchToolboxItem._factory;
     }
+
+    @Override
+    public boolean createOnMouseDown()
+    {
+        return true;
+    }
 }
