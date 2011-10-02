@@ -1,6 +1,5 @@
 package com.project.website.canvas.client.textparsers;
 
-import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;
 
 public class UrlTextParser implements TextParser {
@@ -26,7 +25,7 @@ public class UrlTextParser implements TextParser {
     public boolean parse(String text) {
         if (URL_YOUTUBE.test(text)) {
             this.urlType = UrlType.Video;
-            MatchResult match = URL_YOUTUBE.exec(text);
+//            MatchResult match = URL_YOUTUBE.exec(text);
             // this.embeddableUrl = match.getGroup(index)
         }
         return false;
