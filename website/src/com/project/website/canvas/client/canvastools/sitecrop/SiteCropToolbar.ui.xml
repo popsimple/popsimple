@@ -34,6 +34,7 @@
 	</ui:style>
 	<g:FlowPanel addStyleNames="{res.main.canvasToolbar}">
 	    <g:FlowPanel addStyleNames="{res.main.canvasToolbarItemWrapper}">
+	    	<g:PushButton ui:field="browseButton" addStyleNames="{style.browseButton}"></g:PushButton>
 	    	<g:Label ui:field="urlLabel" addStyleNames="{res.main.toolOptionsLabel}">Url:</g:Label>
 	        <g:TextBox ui:field="urlTextBox" addStyleNames="{style.urlText}"></g:TextBox>
 	        <g:CheckBox visible="false" checked="true" ui:field="chkAutoSize" />
@@ -42,7 +43,6 @@
 	         <g:ToggleButton ui:field="cropButton" addStyleNames="{res.main.cropCutButton} {style.optionToggleButton}"></g:ToggleButton>
 	        </my:ToggleButtonPanel>
 	        <g:Button ui:field="acceptCropButton" addStyleNames="{style.acceptCropButton}">Crop</g:Button>
-	        <g:PushButton ui:field="browseButton" addStyleNames="{style.browseButton}"></g:PushButton>
 	        <g:CheckBox ui:field="interactiveCheckBox">Interactive</g:CheckBox>
 	    </g:FlowPanel>
     </g:FlowPanel>

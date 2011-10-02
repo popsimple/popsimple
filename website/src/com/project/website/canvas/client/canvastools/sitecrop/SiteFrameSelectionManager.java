@@ -46,8 +46,6 @@ public class SiteFrameSelectionManager {
             }
 
             @Override public void onStart() {
-                // TODO Auto-generated method stub
-
             }
 
             @Override public void onMouseMove(Point2D pos) {

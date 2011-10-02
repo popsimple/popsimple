@@ -56,10 +56,9 @@
     </ui:style>
     <g:HTMLPanel ui:field="rootPanel" addStyleNames="{res.main.cropSiteBox}">
         <g:FlowPanel ui:field="frameContainer" addStyleNames="{style.frameContainer}">
+	       	<g:HTMLPanel ui:field="selectionPanel" addStyleNames="{style.selectionPanel}" />
 	       	<g:FlowPanel ui:field="coverPanel" addStyleNames="{style.coverPanel}">
 		       	<g:HTMLPanel ui:field="blockPanel" addStyleNames="{style.blockPanel}"></g:HTMLPanel>
-		       	<g:HTMLPanel ui:field="selectionPanel" addStyleNames="{style.selectionPanel}">
-		       	</g:HTMLPanel>
 		       	<g:HTMLPanel ui:field="dragPanel" addStyleNames="{style.dragPanel}"></g:HTMLPanel>
 		       	<g:Frame ui:field="siteFrame" addStyleNames="{style.cropSiteFrame}"></g:Frame>
 	       	</g:FlowPanel>

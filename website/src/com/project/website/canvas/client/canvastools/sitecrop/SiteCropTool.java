@@ -47,7 +47,6 @@ import com.project.website.canvas.shared.data.SiteCropElementData;
 //1. stretch frame when changing the size of the tool after cropping or moving.
 //2. set the frame correctly if the page loads again.
 //3. handle View/Edit mode correctly.
-//4. Crop selection starts with a small offset.
 //5. Add loading circle on iframe.
 
 public class SiteCropTool extends Composite implements CanvasTool<SiteCropElementData>{
@@ -242,11 +241,8 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
 
         ElementUtils.setElementRectangle(coverPanel.getElement(), this._data.coverRectangle);
 
-        //TODO: Extract to utils
-        coverPanel.getElement().getStyle().setProperty("clip",
-                RectangleUtils.toRect(this._data.clipRectangle, Unit.PX));
-
-        ElementUtils.setElementCSSPosition(this.coverPanel.getElement(), Point2D.zero.minus(
+        Point2D currentPosition = ElementUtils.getElementCSSPosition(this.coverPanel.getElement());
+        ElementUtils.setElementCSSPosition(this.coverPanel.getElement(), currentPosition.minus(
                 new Point2D(this._data.clipRectangle.getLeft(), this._data.clipRectangle.getTop())));
     }
 
