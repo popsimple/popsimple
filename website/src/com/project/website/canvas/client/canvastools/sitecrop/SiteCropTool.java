@@ -1,16 +1,13 @@
 package com.project.website.canvas.client.canvastools.sitecrop;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.event.dom.client.BlurHandler;
-import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.LoadEvent;
+import com.google.gwt.event.dom.client.LoadHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
-import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
@@ -32,9 +29,11 @@ import com.project.shared.client.utils.widgets.WidgetUtils;
 import com.project.shared.data.MouseButtons;
 import com.project.shared.data.Point2D;
 import com.project.shared.data.Rectangle;
-import com.project.shared.utils.RectangleUtils;
 import com.project.shared.utils.StringUtils;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
+import com.project.website.canvas.client.canvastools.base.CanvasToolEvents;
+import com.project.website.canvas.client.canvastools.base.ICanvasToolEvents;
+import com.project.website.canvas.client.canvastools.base.ResizeMode;
 import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.client.worksheet.ElementDragManagerImpl;
 import com.project.website.canvas.client.worksheet.interfaces.ElementDragManager.StopCondition;
@@ -48,6 +47,7 @@ import com.project.website.canvas.shared.data.SiteCropElementData;
 //2. set the frame correctly if the page loads again.
 //3. handle View/Edit mode correctly.
 //5. Add loading circle on iframe.
+//6. Disable all toolbar when loading.
 
 public class SiteCropTool extends Composite implements CanvasTool<SiteCropElementData>{
 
@@ -80,6 +80,8 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
 
     //#endregion
 
+    private CanvasToolEvents _toolEvents = new CanvasToolEvents(this);
+
     private SiteCropElementData _data = null;
 
     private final SimpleEvent<Void> _stopMouseOperationEvent = new SimpleEvent<Void>();
@@ -89,8 +91,6 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
     private RegistrationsManager _registrationManager = new RegistrationsManager();
     private RegistrationsManager _moveRegistrationManager = new RegistrationsManager();
     private RegistrationsManager _cropRegistrationManager = new RegistrationsManager();
-
-    private SimpleEvent<Point2D> _selfMoveEvent = new SimpleEvent<Point2D>();
 
     //TODO: Make singleton and update according to data when displayed.
     private final SiteCropToolbar _toolbar = new SiteCropToolbar();
@@ -115,8 +115,15 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
         this.setDefaultMode();
     }
 
+    @Override
+    public ICanvasToolEvents getToolEvents()
+    {
+        return this._toolEvents;
+    }
+
     private void initializeToolbar()
     {
+        this._toolbar.enableCrop(false);
         this._toolbar.enableBrowse(false);
         this._toolbar.setAcceptCropVisibility(false);
     }
@@ -185,6 +192,14 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
                     }
                 }));
 
+        this._registrationManager.add(
+            this.siteFrame.addLoadHandler(new LoadHandler() {
+                @Override
+                public void onLoad(LoadEvent event) {
+                    handleFrameLoaded(event);
+                }
+            }));
+
 //      ONLY FOR DEBUG
         this._toolbar.addDebugClickRequestHandler(new Handler<Void>() {
             @Override
@@ -192,6 +207,16 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
                 setUrl("http://www.google.com");
             }
         });
+    }
+
+    private void handleFrameLoaded(LoadEvent event)
+    {
+        if (StringUtils.isEmptyOrNull(this.siteFrame.getUrl()))
+        {
+            return;
+        }
+        this._toolEvents.dispatchLoadEndedEvent();
+        this._toolbar.enableCrop(true);
     }
 
     private void handlePreviewKeyDownEvent(NativePreviewEvent event)
@@ -224,7 +249,7 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
 
         this.setCropParameters();
 
-        this._selfMoveEvent.dispatch(new Point2D(
+        this._toolEvents.dispatchSelfMoveRequestEvent(new Point2D(
                 this._data.clipRectangle.getLeft(), this._data.clipRectangle.getTop()));
         ElementUtils.setElementSize(this.getElement(), this._data.clipRectangle.getSize());
 
@@ -351,6 +376,11 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
             return;
         }
 
+        this._toolEvents.dispatchLoadStartedEvent();
+
+        this._toolbar.enableCrop(false);
+//        this.loadingPanel.addStyleName(CanvasResources.INSTANCE.main().imageLoadingStyle());
+
         url = UrlUtils.ensureProtocol(url);
 
         //TODO: Called twice due to toolbar changes.
@@ -393,21 +423,6 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
     @Override
     public SiteCropElementData getValue() {
         return this._data;
-    }
-
-    @Override
-    public HandlerRegistration addKillRequestEventHandler(Handler<String> handler) {
-        return null;
-    }
-
-    @Override
-    public HandlerRegistration addMoveStartEventHandler(Handler<MouseEvent<?>> handler) {
-        return null;
-    }
-
-    @Override
-    public HandlerRegistration addSelfMoveRequestEventHandler(Handler<Point2D> handler) {
-        return this._selfMoveEvent.addHandler(handler);
     }
 
     @Override
@@ -467,18 +482,6 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
 
     @Override
     public void onResize() {
-    }
-
-    @Override
-    public HandlerRegistration addFocusHandler(FocusHandler handler)
-    {
-        return null;
-    }
-
-    @Override
-    public HandlerRegistration addBlurHandler(BlurHandler handler)
-    {
-        return null;
     }
 
     @Override

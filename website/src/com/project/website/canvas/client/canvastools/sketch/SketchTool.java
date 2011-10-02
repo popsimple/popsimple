@@ -7,24 +7,22 @@ import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
-import com.google.gwt.event.dom.client.BlurHandler;
-import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
-import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseMoveHandler;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.IsWidget;
-import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.EventUtils;
 import com.project.shared.client.utils.NodeUtils;
 import com.project.shared.data.Point2D;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
+import com.project.website.canvas.client.canvastools.base.CanvasToolEvents;
+import com.project.website.canvas.client.canvastools.base.ICanvasToolEvents;
+import com.project.website.canvas.client.canvastools.base.ResizeMode;
 import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.client.shared.UndoManager;
 import com.project.website.canvas.client.shared.UndoManager.UndoRedoPair;
@@ -33,14 +31,9 @@ import com.project.website.canvas.shared.data.VectorGraphicsData;
 
 public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphicsData>
 {
+    private CanvasToolEvents _toolEvents = new CanvasToolEvents(this);
 
     private VectorGraphicsData data = null;
-
-    public SketchTool(int width, int height) {
-        super(width, height);
-        this.addStyleName(CanvasResources.INSTANCE.main().sketchTool());
-    }
-
     private final RegistrationsManager registrationsManager = new RegistrationsManager();
 
     protected Path _currentPath = null;
@@ -48,6 +41,16 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
     protected boolean _active = false;
     protected boolean _bound = false;
 
+    public SketchTool(int width, int height) {
+        super(width, height);
+        this.addStyleName(CanvasResources.INSTANCE.main().sketchTool());
+    }
+
+    @Override
+    public ICanvasToolEvents getToolEvents()
+    {
+        return this._toolEvents;
+    }
 
     @Override
     protected void onUnload() {
@@ -78,36 +81,6 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
     public VectorGraphicsData getValue() {
         this.data.svgString = this.getElement().getInnerHTML();
         return this.data;
-    }
-
-    @Override
-    public HandlerRegistration addFocusHandler(FocusHandler handler) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public HandlerRegistration addBlurHandler(BlurHandler handler) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public HandlerRegistration addKillRequestEventHandler(Handler<String> handler) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public HandlerRegistration addMoveStartEventHandler(Handler<MouseEvent<?>> handler) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public HandlerRegistration addSelfMoveRequestEventHandler(Handler<Point2D> handler) {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     @Override

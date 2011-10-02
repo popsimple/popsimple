@@ -18,9 +18,10 @@
 					</g:FlowPanel>
 				</g:HTMLPanel>
 				<g:HTMLPanel ui:field="toolPanel" addStyleNames="{res.main.toolFrameBodyPanel}">
-					<g:HTMLPanel ui:field="resizePanel" addStyleNames="{res.main.toolFrameBottomRightResize} {res.main.toolFrameHoverVisibleElement}" title="Scale" />
-					<g:HTMLPanel ui:field="rotatePanel" addStyleNames="{res.main.toolFrameBottomLeftRotate}  {res.main.toolFrameHoverVisibleElement}" title="Rotate" />
+					<g:HTMLPanel ui:field="loadingPanel" addStyleNames="{res.main.loadingFiller}"/>
 				</g:HTMLPanel>
+				<g:HTMLPanel ui:field="resizePanel" addStyleNames="{res.main.toolFrameBottomRightResize} {res.main.toolFrameHoverVisibleElement}" title="Scale" />
+				<g:HTMLPanel ui:field="rotatePanel" addStyleNames="{res.main.toolFrameBottomLeftRotate}  {res.main.toolFrameHoverVisibleElement}" title="Rotate" />
 			</g:FlowPanel>
 		</g:FocusPanel>
 	</g:FlowPanel>

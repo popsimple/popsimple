@@ -4,19 +4,15 @@ import java.util.HashMap;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
-import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
@@ -28,7 +24,6 @@ import com.project.gwtmapstraction.client.mxn.LatLonPoint;
 import com.project.gwtmapstraction.client.mxn.MapProvider;
 import com.project.gwtmapstraction.client.mxn.Mapstraction;
 import com.project.gwtmapstraction.client.mxn.Marker;
-import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.events.SingleEvent;
 import com.project.shared.client.handlers.RegistrationsManager;
@@ -43,6 +38,9 @@ import com.project.shared.utils.ListUtils;
 import com.project.shared.utils.StringUtils;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
 import com.project.website.canvas.client.canvastools.base.CanvasToolCommon;
+import com.project.website.canvas.client.canvastools.base.CanvasToolEvents;
+import com.project.website.canvas.client.canvastools.base.ICanvasToolEvents;
+import com.project.website.canvas.client.canvastools.base.ResizeMode;
 import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.client.shared.widgets.DialogWithZIndex;
 import com.project.website.canvas.shared.data.ElementData;
@@ -70,9 +68,10 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
     @UiField
     FlowPanel mapLoadingPanel;
 
+    private CanvasToolEvents _toolEvents = new CanvasToolEvents(this);
+
     private final MapToolBar _toolbar = new MapToolBar();
 
-	private final SimpleEvent<MouseEvent<?>> moveStartEvent = new SimpleEvent<MouseEvent<?>>();
 	private final RegistrationsManager registrationsManager = new RegistrationsManager();
 	private DialogBox optionsDialog;
 	private MapToolOptions mapToolOptionsWidget;
@@ -104,19 +103,10 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
 	}
 
 	@Override
-	public HandlerRegistration addKillRequestEventHandler(Handler<String> handler) {
-		return null;
-	}
-
-	@Override
-	public HandlerRegistration addMoveStartEventHandler(Handler<MouseEvent<?>> handler) {
-		return this.moveStartEvent.addHandler(handler);
-	}
-
-	@Override
-	public HandlerRegistration addSelfMoveRequestEventHandler(Handler<Point2D> handler) {
-		return null;
-	}
+    public ICanvasToolEvents getToolEvents()
+    {
+        return this._toolEvents;
+    }
 
 	@Override
 	public void bind() {
@@ -128,7 +118,7 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
         this.registrationsManager.add(this._toolbar.getOptionsBar().addDomHandler(new MouseDownHandler() {
             @Override public void onMouseDown(MouseDownEvent event) {
                 if (event.isControlKeyDown()) {
-                    moveStartEvent.dispatch(event);
+                    _toolEvents.dispatchMoveStartRequestEvent(event);
                 }
             }
         }, MouseDownEvent.getType()));
@@ -389,20 +379,6 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
         };
         finder.find(this.mapstraction.getMap(), query);
         //bingLocationsQuery(query);
-    }
-
-    @Override
-    public HandlerRegistration addFocusHandler(FocusHandler handler)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public HandlerRegistration addBlurHandler(BlurHandler handler)
-    {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     @Override

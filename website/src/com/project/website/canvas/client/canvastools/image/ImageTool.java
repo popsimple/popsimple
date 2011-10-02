@@ -6,16 +6,12 @@ import java.util.Collection;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.DoubleClickEvent;
 import com.google.gwt.event.dom.client.DoubleClickHandler;
-import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
-import com.google.gwt.event.dom.client.MouseEvent;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Button;
@@ -25,17 +21,18 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent;
-import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.utils.HandlerUtils;
 import com.project.shared.client.utils.UrlUtils;
 import com.project.shared.client.utils.widgets.WidgetUtils;
-import com.project.shared.data.Point2D;
 import com.project.shared.utils.CloneableUtils;
 import com.project.shared.utils.ObjectUtils;
 import com.project.shared.utils.StringUtils;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
 import com.project.website.canvas.client.canvastools.base.CanvasToolCommon;
+import com.project.website.canvas.client.canvastools.base.CanvasToolEvents;
+import com.project.website.canvas.client.canvastools.base.ICanvasToolEvents;
+import com.project.website.canvas.client.canvastools.base.ResizeMode;
 import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.client.shared.ImageInformationUtils;
 import com.project.website.canvas.client.shared.dialogs.SelectImageDialog;
@@ -57,7 +54,7 @@ public class ImageTool extends Composite implements CanvasTool<ImageData>
     @UiField
     FlowPanel optionsBar;
 
-    private final SimpleEvent<MouseEvent<?>> moveStartEvent = new SimpleEvent<MouseEvent<?>>();
+    private CanvasToolEvents _toolEvents = new CanvasToolEvents(this);
     private final RegistrationsManager registrationsManager = new RegistrationsManager();
     private final RegistrationsManager editModeRegistrationsManager = new RegistrationsManager();
 
@@ -67,8 +64,6 @@ public class ImageTool extends Composite implements CanvasTool<ImageData>
 	private boolean optionsWidgetInited = false;
 	private ArrayList<ImageSearchProvider> searchProviders = new ArrayList<ImageSearchProvider>();
     private boolean viewMode;
-
-
 
 	public ImageTool(Collection<ImageSearchProvider> imageSearchProviders)
 	{
@@ -84,6 +79,12 @@ public class ImageTool extends Composite implements CanvasTool<ImageData>
     }
 
 	@Override
+	public ICanvasToolEvents getToolEvents()
+	{
+	    return this._toolEvents;
+	}
+
+	@Override
     public void bind() {
         this.registerHandlers();
         this.setViewMode(viewMode); // do whatever bindings necessary for our mode
@@ -93,7 +94,7 @@ public class ImageTool extends Composite implements CanvasTool<ImageData>
         registrationsManager.clear();
         registrationsManager.add(this.addDomHandler(new MouseDownHandler() {
             @Override public void onMouseDown(MouseDownEvent event) {
-                moveStartEvent.dispatch(event);
+                _toolEvents.dispatchMoveStartRequestEvent(event);
             }
         }, MouseDownEvent.getType()));
     }
@@ -211,11 +212,6 @@ public class ImageTool extends Composite implements CanvasTool<ImageData>
         this.setValue((ImageData) data);
     }
 
-    @Override
-    public HandlerRegistration addMoveStartEventHandler(Handler<MouseEvent<?>> handler) {
-        return this.moveStartEvent.addHandler(handler);
-    }
-
 	@Override
 	public ResizeMode getResizeMode() {
 		return ResizeMode.BOTH;
@@ -226,12 +222,6 @@ public class ImageTool extends Composite implements CanvasTool<ImageData>
     public boolean canRotate() {
         return true;
     }
-
-    @Override
-	public HandlerRegistration addSelfMoveRequestEventHandler(Handler<Point2D> handler) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
     @Override
     public void setViewMode(boolean isViewMode)
@@ -258,25 +248,7 @@ public class ImageTool extends Composite implements CanvasTool<ImageData>
     }
 
     @Override
-    public HandlerRegistration addKillRequestEventHandler(Handler<String> handler)
-    {
-        return null;
-    }
-
-    @Override
     public void onResize() {
-    }
-
-    @Override
-    public HandlerRegistration addFocusHandler(FocusHandler handler)
-    {
-        return null;
-    }
-
-    @Override
-    public HandlerRegistration addBlurHandler(BlurHandler handler)
-    {
-        return null;
     }
 
     @Override

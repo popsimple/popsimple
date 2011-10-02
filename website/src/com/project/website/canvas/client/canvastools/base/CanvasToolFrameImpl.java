@@ -37,7 +37,6 @@ import com.project.shared.client.utils.StyleUtils;
 import com.project.shared.client.utils.widgets.WidgetUtils;
 import com.project.shared.data.Point2D;
 import com.project.shared.data.Rectangle;
-import com.project.website.canvas.client.canvastools.base.CanvasTool.ResizeMode;
 import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.client.shared.widgets.FloatingToolbar;
 import com.project.website.canvas.shared.data.ElementData;
@@ -79,6 +78,9 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
     @UiField
     HTMLPanel rotatePanel;
 
+    @UiField
+    HTMLPanel loadingPanel;
+
     protected final CanvasTool<?> tool;
 
     private FloatingToolbar floatingToolbar = null;
@@ -105,13 +107,13 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
         this.tool = canvasTool;
         this.toolPanel.add(canvasTool);
 
-
         WidgetUtils.stopClickPropagation(this.closeLink.asWidget());
         WidgetUtils.stopClickPropagation(this.moveBackLink.asWidget());
         WidgetUtils.stopClickPropagation(this.moveFrontLink.asWidget());
 
         ElementUtils.setTextSelectionEnabled(this.buttonsPanel.getElement(), false);
 
+        this.loadingPanel.setVisible(false);
         this.rotatePanel.setVisible(tool.canRotate());
         this.resizePanel.setVisible(tool.getResizeMode() != ResizeMode.NONE);
     }
@@ -156,7 +158,7 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
 
 		frameRegs.clear();
 
-		frameRegs.add(this.toolPanel. addDomHandler(new KeyDownHandler(){
+		frameRegs.add(this.toolPanel.addDomHandler(new KeyDownHandler(){
             @Override public void onKeyDown(KeyDownEvent event) {
                 //Stop propogation of KeyDown events from the toolframe so that the worksheet
                 //won't get any keydown that was already handled by the tool.
@@ -193,10 +195,24 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
                 that.onHeaderMouseDown(event);
         }}, MouseDownEvent.getType()));
 
-		frameRegs.add(tool.addSelfMoveRequestEventHandler(new Handler<Point2D>() {
+		frameRegs.add(tool.getToolEvents().addSelfMoveRequestEventHandler(new Handler<Point2D>() {
 			@Override public void onFire(Point2D offset) {
 			    that.toolSelfMoveRequest(offset);
 		}}));
+
+		frameRegs.add(tool.getToolEvents().addLoadStartedEventHandler(new Handler<Void>() {
+            @Override
+            public void onFire(Void arg) {
+                toolLoadStarted();
+            }
+        }));
+
+		frameRegs.add(tool.getToolEvents().addLoadEndedEventHandler(new Handler<Void>() {
+            @Override
+            public void onFire(Void arg) {
+                toolLoadEnded();
+            }
+        }));
 
 		frameRegs.add(this.addDomHandler(new MouseDownHandler(){
 			@Override public void onMouseDown(MouseDownEvent event) {
@@ -217,7 +233,8 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
 	}
 
     protected void registerTransformHandlers() {
-        this.toolRegs.add(this.tool.addMoveStartEventHandler(new SimpleEvent.Handler<MouseEvent<?>>() {
+        this.toolRegs.add(this.tool.getToolEvents().addMoveStartEventHandler(
+                new SimpleEvent.Handler<MouseEvent<?>>() {
             @Override
             public void onFire(MouseEvent<?> arg) {
                 moveStartRequest.dispatch(arg);
@@ -384,7 +401,7 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
     @Override
 	public HandlerRegistration addBlurHandler(BlurHandler handler) {
 	    RegistrationsManager regs = new RegistrationsManager();
-        regs.add(tool.addBlurHandler(handler));
+        regs.add(tool.getToolEvents().addBlurHandler(handler));
 		regs.add(this.focusPanel.addBlurHandler(handler));
 		return regs.asSingleRegistration();
 	}
@@ -392,7 +409,7 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
 	@Override
 	public HandlerRegistration addFocusHandler(FocusHandler handler) {
         RegistrationsManager regs = new RegistrationsManager();
-        regs.add(tool.addFocusHandler(handler));
+        regs.add(tool.getToolEvents().addFocusHandler(handler));
         regs.add(this.focusPanel.addFocusHandler(handler));
         return regs.asSingleRegistration();
 	}
@@ -435,6 +452,16 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
     {
         this._isActive = isActive;
         this.updateToolActive();
+    }
+
+    private void toolLoadStarted()
+    {
+        this.loadingPanel.setVisible(true);
+    }
+
+    private void toolLoadEnded()
+    {
+        this.loadingPanel.setVisible(false);
     }
 
 	private void toolSelfMoveRequest(Point2D offset) {

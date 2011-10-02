@@ -130,6 +130,11 @@ public class SiteCropToolbar extends Composite
 	    this.acceptCropButton.setVisible(visible);
 	}
 
+	public void enableCrop(boolean enable)
+	{
+	    this.cropButton.setEnabled(enable);
+	}
+
 	public void enableBrowse(boolean enable)
 	{
 	    this.browseButton.setEnabled(enable);

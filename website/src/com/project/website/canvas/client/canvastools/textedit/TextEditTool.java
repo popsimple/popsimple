@@ -4,22 +4,20 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
-import com.google.gwt.event.dom.client.MouseEvent;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
-import com.project.shared.client.events.SimpleEvent;
-import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.utils.CssProperties;
 import com.project.shared.client.utils.DocumentUtils;
 import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.StyleUtils;
 import com.project.shared.client.utils.widgets.WidgetUtils;
-import com.project.shared.data.Point2D;
 import com.project.shared.data.funcs.Func;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
 import com.project.website.canvas.client.canvastools.base.CanvasToolCommon;
+import com.project.website.canvas.client.canvastools.base.CanvasToolEvents;
+import com.project.website.canvas.client.canvastools.base.ICanvasToolEvents;
+import com.project.website.canvas.client.canvastools.base.ResizeMode;
 import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.shared.data.ElementData;
 import com.project.website.canvas.shared.data.TextData;
@@ -27,8 +25,8 @@ import com.project.website.canvas.shared.data.TextData;
 public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
 {
     // private final FlowPanel editorPanel = new FlowPanel();
-    private final SimpleEvent<String> _killRequestEvent = new SimpleEvent<String>();
-    private final SimpleEvent<Point2D> _moveRequestEvent = new SimpleEvent<Point2D>();
+
+    private CanvasToolEvents _toolEvents = new CanvasToolEvents(this);
 
     private final Widget _editedWidget;
 
@@ -61,17 +59,10 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
         this.addStyleName(CanvasResources.INSTANCE.main().textEditBox());
     }
 
-
     @Override
-    public HandlerRegistration addSelfMoveRequestEventHandler(Handler<Point2D> handler)
+    public ICanvasToolEvents getToolEvents()
     {
-        return this._moveRequestEvent.addHandler(handler);
-    }
-
-    @Override
-    public HandlerRegistration addMoveStartEventHandler(Handler<MouseEvent<?>> handler)
-    {
-        return null;
+        return this._toolEvents;
     }
 
     @Override
@@ -201,7 +192,7 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
             String text = this.getContents().replace((char) 160, ' ');
             if (killIfEmpty) {
                 if (text.trim().isEmpty()) {
-                    this._killRequestEvent.dispatch("Empty");
+                    this._toolEvents.dispatchKillRequestEvent();
                 }
             }
 
@@ -218,13 +209,6 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
     public void setViewMode(boolean isViewMode)
     {
         ElementUtils.setContentEditable(this._editedWidget.getElement(), isViewMode);
-    }
-
-
-    @Override
-    public HandlerRegistration addKillRequestEventHandler(Handler<String> handler)
-    {
-        return this._killRequestEvent.addHandler(handler);
     }
 
     @Override

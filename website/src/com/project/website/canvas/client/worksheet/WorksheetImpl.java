@@ -204,9 +204,10 @@ public class WorksheetImpl implements Worksheet
 
         Point2D creationOffset = useCreationOffset ? toolFactory.getCreationOffset() : Point2D.zero;
 		view.addToolInstanceWidget(toolFrame, transform, creationOffset);
-        toolInfo.killRegistration = tool.addKillRequestEventHandler(new SimpleEvent.Handler<String>() {
+        toolInfo.killRegistration = tool.getToolEvents().addKillRequestEventHandler(
+                new SimpleEvent.Handler<Void>() {
             @Override
-            public void onFire(String arg)
+            public void onFire(Void arg)
             {
                 removeToolInstance(toolFrame);
             }

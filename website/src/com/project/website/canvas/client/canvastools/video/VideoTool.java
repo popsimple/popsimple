@@ -6,16 +6,12 @@ import java.util.Collection;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.gwt.event.dom.client.LoadHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
-import com.google.gwt.event.dom.client.MouseEvent;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Button;
@@ -27,7 +23,6 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent;
-import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.UrlUtils;
@@ -38,6 +33,9 @@ import com.project.shared.utils.ObjectUtils;
 import com.project.shared.utils.StringUtils;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
 import com.project.website.canvas.client.canvastools.base.CanvasToolCommon;
+import com.project.website.canvas.client.canvastools.base.CanvasToolEvents;
+import com.project.website.canvas.client.canvastools.base.ICanvasToolEvents;
+import com.project.website.canvas.client.canvastools.base.ResizeMode;
 import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.client.shared.dialogs.SelectVideoDialog;
 import com.project.website.canvas.client.shared.searchProviders.interfaces.VideoSearchProvider;
@@ -67,7 +65,8 @@ public class VideoTool extends Composite implements CanvasTool<VideoData>
     private static final Point2D DEFAULT_SIZE = new Point2D(425, 349);
     private static final String OPTIONS_LABEL_VIDEO_SET = "Change video...";
 
-    private final SimpleEvent<MouseEvent<?>> moveStartEvent = new SimpleEvent<MouseEvent<?>>();
+    private CanvasToolEvents _toolEvents = new CanvasToolEvents(this);
+
     private final RegistrationsManager registrationsManager = new RegistrationsManager();
 
     private VideoData data = null;
@@ -90,6 +89,12 @@ public class VideoTool extends Composite implements CanvasTool<VideoData>
     }
 
     @Override
+    public ICanvasToolEvents getToolEvents()
+    {
+        return this._toolEvents;
+    }
+
+    @Override
     public void bind() {
         super.setTitle("Control-click to drag");
         this.setViewMode(viewMode); // do whatever bindings necessary for our mode
@@ -100,7 +105,7 @@ public class VideoTool extends Composite implements CanvasTool<VideoData>
             @Override
             public void onMouseDown(MouseDownEvent event) {
                 if (event.isControlKeyDown()) {
-                    moveStartEvent.dispatch(event);
+                    _toolEvents.dispatchMoveStartRequestEvent(event);
                 }
             }
         }, MouseDownEvent.getType()));
@@ -187,20 +192,8 @@ public class VideoTool extends Composite implements CanvasTool<VideoData>
     }
 
     @Override
-    public HandlerRegistration addMoveStartEventHandler(Handler<MouseEvent<?>> handler) {
-        return this.moveStartEvent.addHandler(handler);
-    }
-
-
-    @Override
     public boolean canRotate() {
         return true;
-    }
-
-    @Override
-    public HandlerRegistration addSelfMoveRequestEventHandler(Handler<Point2D> handler) {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     @Override
@@ -222,12 +215,6 @@ public class VideoTool extends Composite implements CanvasTool<VideoData>
         else {
             this.reRegisterHandlers();
         }
-    }
-
-    @Override
-    public HandlerRegistration addKillRequestEventHandler(Handler<String> handler)
-    {
-        return null;
     }
 
     private void setValue(VideoData data, boolean autoSize) {
@@ -287,20 +274,6 @@ public class VideoTool extends Composite implements CanvasTool<VideoData>
     @Override
     public void onResize() {
         // TODO Auto-generated method stub
-    }
-
-    @Override
-    public HandlerRegistration addFocusHandler(FocusHandler handler)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public HandlerRegistration addBlurHandler(BlurHandler handler)
-    {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     @Override

@@ -3,12 +3,8 @@ package com.project.website.canvas.client.canvastools.tasklist;
 import java.util.ArrayList;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.FocusHandler;
-import com.google.gwt.event.dom.client.MouseEvent;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Button;
@@ -18,9 +14,11 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent.Handler;
-import com.project.shared.data.Point2D;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
 import com.project.website.canvas.client.canvastools.base.CanvasToolCommon;
+import com.project.website.canvas.client.canvastools.base.CanvasToolEvents;
+import com.project.website.canvas.client.canvastools.base.ICanvasToolEvents;
+import com.project.website.canvas.client.canvastools.base.ResizeMode;
 import com.project.website.canvas.shared.data.ElementData;
 import com.project.website.canvas.shared.data.TaskData;
 import com.project.website.canvas.shared.data.TaskListData;
@@ -41,6 +39,8 @@ public class TaskListTool extends Composite implements CanvasTool<TaskListData>,
     @UiField
     Button buttonAdd;
 
+    private CanvasToolEvents _toolEvents = new CanvasToolEvents(this);
+
     protected int _tabIndex = 0;
     protected char _accessKey = 0;
     private ArrayList<TaskTool> taskWidgets = new ArrayList<TaskTool>();
@@ -52,6 +52,12 @@ public class TaskListTool extends Composite implements CanvasTool<TaskListData>,
         CanvasToolCommon.initCanvasToolWidget(this);
 
         this.createNewTaskWidget();
+    }
+
+    @Override
+    public ICanvasToolEvents getToolEvents()
+    {
+        return this._toolEvents;
     }
 
     @Override
@@ -151,21 +157,9 @@ public class TaskListTool extends Composite implements CanvasTool<TaskListData>,
         this.setValue((TaskListData) data);
     }
 
-    @Override
-    public HandlerRegistration addMoveStartEventHandler(Handler<MouseEvent<?>> handler) {
-        return null;
-    }
-
 	@Override
 	public ResizeMode getResizeMode() {
 		return ResizeMode.BOTH;
-	}
-
-
-    @Override
-	public HandlerRegistration addSelfMoveRequestEventHandler(Handler<Point2D> handler) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
     @Override
@@ -180,28 +174,8 @@ public class TaskListTool extends Composite implements CanvasTool<TaskListData>,
     }
 
     @Override
-    public HandlerRegistration addKillRequestEventHandler(Handler<String> handler)
-    {
-        return null;
-    }
-
-    @Override
     public void onResize() {
         // TODO Auto-generated method stub
-    }
-
-    @Override
-    public HandlerRegistration addFocusHandler(FocusHandler handler)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public HandlerRegistration addBlurHandler(BlurHandler handler)
-    {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     @Override

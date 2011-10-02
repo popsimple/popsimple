@@ -20,7 +20,6 @@
 		.dragPanel {
 		    z-index: 1000;
 			background-color: transparent;
-			opacity: 0.4;
 			position: absolute;
 			top: 0;
 			left: 0;
@@ -29,8 +28,6 @@
 		}
 		.blockPanel {
 		    z-index: 1000;
-
-			opacity: 0.4;
 			position: absolute;
 			top: 0;
 			left: 0;
@@ -53,6 +50,7 @@
 			width: 100%;
 			height: 100%;
 		}
+
     </ui:style>
     <g:HTMLPanel ui:field="rootPanel" addStyleNames="{res.main.cropSiteBox}">
         <g:FlowPanel ui:field="frameContainer" addStyleNames="{style.frameContainer}">
