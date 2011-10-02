@@ -65,6 +65,11 @@ public class ColorPicker extends TextBox
         return this.getElement().getStyle().getBackgroundColor();
     }
 
+    public void setColor(String color)
+    {
+        this.getElement().getStyle().setBackgroundColor(color);
+    }
+
     private final native int getColor(Element elem, int index) /*-{
         return elem.color.rgb[index];
     }-*/;

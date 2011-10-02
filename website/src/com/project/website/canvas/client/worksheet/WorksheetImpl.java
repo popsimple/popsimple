@@ -203,7 +203,7 @@ public class WorksheetImpl implements Worksheet
         RegistrationsManager regs = registerToolInstanceHandlers(toolFrame, toolInfo);
 
         Point2D creationOffset = useCreationOffset ? toolFactory.getCreationOffset() : Point2D.zero;
-		view.addToolInstanceWidget(toolFrame, transform, creationOffset);
+		view.addToolInstanceWidget(toolFrame, transform, creationOffset, useCreationOffset);
         toolInfo.killRegistration = tool.getToolEvents().addKillRequestEventHandler(
                 new SimpleEvent.Handler<Void>() {
             @Override

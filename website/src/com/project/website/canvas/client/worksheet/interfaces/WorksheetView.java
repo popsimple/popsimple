@@ -98,7 +98,7 @@ public interface WorksheetView extends IsWidget
      * @param transform
      * @param additionalOffset
      */
-    void addToolInstanceWidget(final CanvasToolFrame toolFrame, Transform2D transform, Point2D additionalOffset);
+    void addToolInstanceWidget(final CanvasToolFrame toolFrame, Transform2D transform, Point2D additionalOffset, boolean addFrameInnerOffset);
 
     void clearActiveToolboxItem();
 
