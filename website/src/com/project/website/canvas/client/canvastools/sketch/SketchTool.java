@@ -46,7 +46,7 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
     protected Path _currentPath = null;
     protected boolean _inViewMode = false;
     protected boolean _active = false;
-
+    protected boolean _bound = false;
 
 
     @Override
@@ -128,8 +128,8 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
 
     @Override
     public void bind() {
-        // TODO Auto-generated method stub
-
+        this._bound = true;
+        this.updateViewMode();
     }
 
     @Override
@@ -155,7 +155,7 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
         if (this._inViewMode) {
             this.registrationsManager.clear();
         }
-        else {
+        else if (this._bound) {
             this.setRegistrations();
         }
     }

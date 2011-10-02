@@ -438,6 +438,12 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
         if (0 >= this.draggingStackDepth) {
             this.tool.setActive(this._isActive);
             setFloatingToolbarVisible(this._isActive);
+            if (this._isActive) {
+                this.addStyleName(CanvasResources.INSTANCE.main().activeToolFrame());
+            }
+            else {
+                this.removeStyleName(CanvasResources.INSTANCE.main().activeToolFrame());
+            }
         }
     }
 

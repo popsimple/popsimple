@@ -1,6 +1,5 @@
 package com.project.website.canvas.client.canvastools.sketch;
 
-import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.data.Point2D;
 import com.project.website.canvas.client.canvastools.base.CanvasToolFactory;
 import com.project.website.canvas.client.canvastools.base.CanvasToolFactoryBase;
@@ -25,11 +24,6 @@ public class SketchToolFactory extends CanvasToolFactoryBase<SketchTool>
         SketchTool tool = new SketchTool(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         tool.setValue(data);
         return tool;
-    }
-
-    @Override
-    public Widget getFloatingWidget() {
-        return null;
     }
 
     @Override

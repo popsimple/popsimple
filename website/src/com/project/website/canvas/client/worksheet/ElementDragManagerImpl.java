@@ -2,6 +2,8 @@ package com.project.website.canvas.client.worksheet;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.MouseDownEvent;
+import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseUpEvent;
@@ -92,16 +94,14 @@ public class ElementDragManagerImpl implements ElementDragManager
         MouseDragHandler dragHandler = new MouseDragHandler(
                 EventUtils.getCurrentMousePos(), this._dragStartSensitivity);
         regs.add(dragHandler.addDragStartedHandler(new SimpleEvent.Handler<Void>() {
-            @Override
-            public void onFire(Void arg) {
+            @Override public void onFire(Void arg) {
                 ElementUtils.addClassName(targetElement, _targetDragStyleName);
                 _dragPanel.setVisible(true);
                 handler.onStart();
             }
         }));
         regs.add(dragHandler.addDragHandler(new SimpleEvent.Handler<MouseMoveEvent>() {
-            @Override
-            public void onFire(MouseMoveEvent arg) {
+            @Override public void onFire(MouseMoveEvent arg) {
                 Point2D pos = ElementUtils.getRelativePosition(arg, referenceElem);
                 handleMouseMove(referenceElem, referenceOffset, handler, pos);
             }
@@ -111,9 +111,7 @@ public class ElementDragManagerImpl implements ElementDragManager
 
         if (null != _stopOperationEvent) {
             regs.add(_stopOperationEvent.addHandler(new SimpleEvent.Handler<Void>() {
-                @Override
-                public void onFire(Void arg)
-                {
+                @Override public void onFire(Void arg) {
                     stopMouseMoveOperation(targetElement, regs);
                     handler.onCancel();
                 }
@@ -121,9 +119,7 @@ public class ElementDragManagerImpl implements ElementDragManager
         }
 
         return new Handler<Void>() {
-            @Override
-            public void onFire(Void arg)
-            {
+            @Override public void onFire(Void arg) {
                 stopMouseMoveOperation(targetElement, regs);
             }
         };
@@ -145,9 +141,7 @@ public class ElementDragManagerImpl implements ElementDragManager
         if (0 != (stopConditions & StopCondition.STOP_CONDITION_MOUSE_UP)) {
             stopConditionFound = true;
             regs.add(_container.addDomHandler(new MouseUpHandler() {
-                @Override
-                public void onMouseUp(MouseUpEvent event)
-                {
+                @Override public void onMouseUp(MouseUpEvent event) {
                     operationEnded(targetElement, referenceElem, handler, regs, event);
                 }
             }, MouseUpEvent.getType()));
@@ -155,9 +149,7 @@ public class ElementDragManagerImpl implements ElementDragManager
         if (0 != (stopConditions & StopCondition.STOP_CONDITION_MOUSE_CLICK)) {
             stopConditionFound = true;
             regs.add(_container.addDomHandler(new ClickHandler() {
-                @Override
-                public void onClick(ClickEvent event)
-                {
+                @Override public void onClick(ClickEvent event) {
                     operationEnded(targetElement, referenceElem, handler, regs, event);
                 }
             }, ClickEvent.getType()));
