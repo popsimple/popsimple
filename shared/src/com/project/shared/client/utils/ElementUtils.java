@@ -294,7 +294,10 @@ public abstract class ElementUtils
           left += elem.offsetLeft;
           elem = elem.offsetParent;
         }
-        return left;
+        if (isNaN(left)) {
+            return 0;
+        }
+        return Math.floor(left);
     }-*/;
 
     /**
@@ -313,7 +316,10 @@ public abstract class ElementUtils
             top += elem.offsetTop;
             elem = elem.offsetParent;
         }
-        return top;
+        if (isNaN(top)) {
+            return 0;
+        }
+        return Math.floor(top);
     }-*/;
 
     /**
