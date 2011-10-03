@@ -3,10 +3,13 @@ package com.project.website.canvas.client.canvastools.sketch;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.website.canvas.client.shared.widgets.ColorPicker;
@@ -15,6 +18,7 @@ public class SketchToolbar extends Composite
 {
 
     private static final String DEFAULT_STROKE_COLOR = "#000000";
+    private static final String ERASURE_COLOR = "transparent";
 
     private static SketchToolbarUiBinder uiBinder = GWT.create(SketchToolbarUiBinder.class);
 
@@ -24,9 +28,13 @@ public class SketchToolbar extends Composite
     @UiField
     ColorPicker color;
 
+    @UiField
+    ToggleButton eraseButton;
+
     private final SimpleEvent<String> colorChangedEvent = new SimpleEvent<String>();
 
     private boolean _initialized = false;
+    private boolean _erasing;
 
     public SketchToolbar()
     {
@@ -36,9 +44,25 @@ public class SketchToolbar extends Composite
             @Override
             public void onChange(ChangeEvent event)
             {
-                colorChangedEvent.dispatch(color.getColor());
+                dispatchColorChangeEvent();
             }
         });
+        this.eraseButton.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+            @Override public void onValueChange(ValueChangeEvent<Boolean> event) {
+                _erasing = event.getValue();
+                dispatchColorChangeEvent();
+            }
+        });
+    }
+
+    public boolean isErasing()
+    {
+        return _erasing;
+    }
+
+    public void setErasing(boolean _erasing)
+    {
+        this._erasing = _erasing;
     }
 
 
@@ -69,11 +93,26 @@ public class SketchToolbar extends Composite
     }
 
     public String getColor() {
+        if (this._erasing) {
+            return ERASURE_COLOR;
+        }
         return this.color.getColor();
     }
 
     public void setColor(String color) {
         this.color.setColor(color);
+    }
+
+
+
+    private void dispatchColorChangeEvent()
+    {
+        if (_erasing) {
+            colorChangedEvent.dispatch(ERASURE_COLOR);
+        }
+        else {
+            colorChangedEvent.dispatch(getColor());
+        }
     }
 
 }

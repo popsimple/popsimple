@@ -1,6 +1,12 @@
 package com.project.website.canvas.client.canvastools.sketch;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import org.vaadin.gwtgraphics.client.DrawingArea;
+import org.vaadin.gwtgraphics.client.Positionable;
+import org.vaadin.gwtgraphics.client.VectorObject;
+import org.vaadin.gwtgraphics.client.shape.Circle;
 import org.vaadin.gwtgraphics.client.shape.Path;
 
 import com.google.gwt.dom.client.DivElement;
@@ -23,7 +29,6 @@ import com.project.website.canvas.client.canvastools.base.ICanvasToolEvents;
 import com.project.website.canvas.client.canvastools.base.ResizeMode;
 import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.client.shared.UndoManager;
-import com.project.website.canvas.client.shared.UndoManager.UndoRedoPair;
 import com.project.website.canvas.shared.data.ElementData;
 import com.project.website.canvas.shared.data.VectorGraphicsData;
 
@@ -42,6 +47,10 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
     protected boolean _bound = false;
 
     protected String _strokeColor = "#000000";
+
+    private boolean _drawingPathExists;
+
+    private Point2D _prevDrawPos = Point2D.zero;
 
     public SketchTool(int width, int height) {
         super(width, height);
@@ -160,20 +169,20 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
             }}));
         this.registrationsManager.add(WidgetUtils.addMovementStopHandler(this, new Handler<HumanInputEvent<?>>() {
             @Override public void onFire(HumanInputEvent<?> arg) {
-                final Path path = that._currentPath;
-                if ((false == that._active) || (null == path)) {
+                //final Path path = that._currentPath;
+                if ((false == that._active) || (false == that.drawingPathExists())) {
                     return;
                 }
-                UndoManager.get().add(this, new UndoRedoPair() {
-                    @Override public void undo() {
-                        that.remove(path);
-                    }
-
-                    @Override public void redo() {
-                        that.add(path);
-                    }
-                });
-                that._currentPath = null;
+//                UndoManager.get().add(this, new UndoRedoPair() {
+//                    @Override public void undo() {
+//                        that.remove(path);
+//                    }
+//
+//                    @Override public void redo() {
+//                        that.add(path);
+//                    }
+//                });
+                terminateDrawingPath();
             }}));
 
         this.registrationsManager.add(this.addDomHandler(new MouseMoveHandler(){
@@ -202,29 +211,83 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
     private void startPathDraw()
     {
         Point2D pos = ElementUtils.getMousePositionRelativeToElement(this.getElement());
-        this._currentPath = new Path(pos.getX(), pos.getY());
-        this._currentPath.setStrokeColor("#000000");
-        this._currentPath.setFillOpacity(0);
-        this._currentPath.setStrokeWidth(this.data.penWidth);
-        this._currentPath.setStrokeColor(this._strokeColor);
-        this.add(this._currentPath);
+//        this._currentPath = new Path(pos.getX(), pos.getY());
+//        this._currentPath.setStrokeColor("#000000");
+//        this._currentPath.setFillOpacity(0);
+//        this._currentPath.setStrokeWidth(this.data.penWidth);
+//        this._currentPath.setStrokeColor(this._strokeColor);
+//        this.add(this._currentPath);
+        this._drawingPathExists = true;
+        this.drawPen(pos);
+        this._prevDrawPos = pos;
+    }
+
+    private Circle createDrawingCircle(Point2D pos)
+    {
+        Circle circle = new Circle(pos.getX(), pos.getY(), this.data.penWidth);
+        circle.setFillColor(this._strokeColor);
+        circle.setStrokeWidth(0);
+        return circle;
     }
 
     private void addLineToPath()
     {
-        if (null != this._currentPath) {
+        if (drawingPathExists()) {
+
             Point2D pos = ElementUtils.getMousePositionRelativeToElement(this.getElement());
-            this._currentPath.lineTo(pos.getX(), pos.getY());
+            //this._currentPath.lineTo(pos.getX(), pos.getY());
+            final Point2D offset = pos.minus(this._prevDrawPos);
+            int steps = (int) Math.floor(offset.radius());
+            for (int i = 0 ; i < steps; i += Math.max(1, this.data.penSkip)) {
+                Point2D stepPos = this._prevDrawPos.plus(offset.mul(((double)i)/steps));
+                this.drawPen(stepPos);
+            }
+            this._prevDrawPos = pos;
+            this.drawPen(pos);
         }
+    }
+
+    private void drawPen(Point2D stepPos)
+    {
+        if (this._toolbar.isErasing()) {
+            ArrayList<VectorObject> objsToRemove = new ArrayList<VectorObject>();
+            for (int i = 0 ; i < this.getVectorObjectCount(); i++) {
+                VectorObject obj = this.getVectorObject(i);
+                if (obj instanceof Positionable) {
+                    Positionable positionableObj = (Positionable) obj;
+                    Point2D objPos = new Point2D(positionableObj.getX(), positionableObj.getY());
+                    if (objPos.minus(stepPos).radius() < 2*this.data.penWidth) {
+                        objsToRemove.add(obj);
+                    }
+                }
+            }
+            for (VectorObject obj : objsToRemove) {
+                this.remove(obj);
+            }
+        }
+        else {
+            this.add(this.createDrawingCircle(stepPos));
+        }
+    }
+
+    private boolean drawingPathExists()
+    {
+        return this._drawingPathExists;//null != this._currentPath;
     }
 
 
     protected void setColor(String arg)
     {
         this._strokeColor = arg;
-        if (null != this._currentPath) {
-            this._currentPath.setStrokeColor(arg);
+        if (drawingPathExists()) {
+            //this._currentPath.setStrokeColor(arg);
         }
+    }
+
+    private void terminateDrawingPath()
+    {
+        _currentPath = null;
+        _drawingPathExists = false;
     }
 }
 

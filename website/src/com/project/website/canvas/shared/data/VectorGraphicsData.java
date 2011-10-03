@@ -22,4 +22,6 @@ public class VectorGraphicsData extends ElementData
     @Type(Text.class)
     public String svgString;
 
+    public int penSkip;
+
 }
