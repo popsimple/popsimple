@@ -8,7 +8,7 @@ import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.data.Point2D;
 import com.project.shared.data.Rectangle;
 import com.project.shared.utils.PointUtils;
-import com.project.shared.utils.PointUtils.TransformationMode;
+import com.project.shared.utils.PointUtils.ConstraintMode;
 import com.project.website.canvas.client.canvastools.base.CanvasToolFrame;
 import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.client.shared.UndoManager;
@@ -222,30 +222,30 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
         return (int) Math.round(ROTATION_ROUND_RESOLUTION * (rotation / ROTATION_ROUND_RESOLUTION));
     }
 
-    private Point2D transformMovement(Point2D size, Point2D initialCoords)
+    private Point2D transformMovement(Point2D coords, Point2D initialCoords)
     {
-        return transformMovement(size, initialCoords, true);
+        return transformMovement(coords, initialCoords, true);
     }
 
-    private Point2D transformMovement(Point2D size, Point2D initialCoords, boolean allowMean)
+    private Point2D transformMovement(Point2D coords, Point2D initialCoords, boolean allowMean)
     {
-        Point2D sizeDelta = size.minus(initialCoords);
+        Point2D sizeDelta = coords.minus(initialCoords);
         Event event = Event.getCurrentEvent();
         if (null != event) {
-            TransformationMode mode = TransformationMode.NONE;
+            ConstraintMode mode = ConstraintMode.NONE;
             if (allowMean && event.getCtrlKey()) {
-                mode = TransformationMode.MEAN;
+                mode = ConstraintMode.KEEP_RATIO;
             }
             else if (event.getShiftKey() && event.getAltKey()) {
                 // do nothing here.
             }
             else if (event.getShiftKey()) {
-                mode = TransformationMode.SNAP_Y;
+                mode = ConstraintMode.SNAP_Y;
             }
             else if (event.getAltKey()) {
-                mode = TransformationMode.SNAP_X;
+                mode = ConstraintMode.SNAP_X;
             }
-            sizeDelta = PointUtils.transform(sizeDelta, mode);
+            sizeDelta = PointUtils.constrain(sizeDelta, initialCoords, mode);
             if (event.getShiftKey() && event.getAltKey()) {
                 // Snap to grid.
                 sizeDelta = sizeDelta.mul(1/GRID_RESOLUTION).mul(GRID_RESOLUTION);
