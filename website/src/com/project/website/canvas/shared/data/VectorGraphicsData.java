@@ -24,4 +24,6 @@ public class VectorGraphicsData extends ElementData
 
     public int penSkip;
 
+    public int eraserWidth;
+
 }

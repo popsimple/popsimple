@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import org.vaadin.gwtgraphics.client.DrawingArea;
 import org.vaadin.gwtgraphics.client.Positionable;
+import org.vaadin.gwtgraphics.client.Shape;
 import org.vaadin.gwtgraphics.client.VectorObject;
 import org.vaadin.gwtgraphics.client.shape.Circle;
 import org.vaadin.gwtgraphics.client.shape.Path;
@@ -51,6 +52,8 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
     private boolean _drawingPathExists;
 
     private Point2D _prevDrawPos = Point2D.zero;
+
+    private Circle _cursor;
 
     public SketchTool(int width, int height) {
         super(width, height);
@@ -187,6 +190,7 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
 
         this.registrationsManager.add(this.addDomHandler(new MouseMoveHandler(){
             @Override public void onMouseMove(MouseMoveEvent event) {
+                that.updateCursor();
                 if (false == that._active) {
                     return;
                 }
@@ -233,14 +237,15 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
     private void addLineToPath()
     {
         if (drawingPathExists()) {
-
             Point2D pos = ElementUtils.getMousePositionRelativeToElement(this.getElement());
             //this._currentPath.lineTo(pos.getX(), pos.getY());
-            final Point2D offset = pos.minus(this._prevDrawPos);
-            int steps = (int) Math.floor(offset.radius());
-            for (int i = 0 ; i < steps; i += Math.max(1, this.data.penSkip)) {
-                Point2D stepPos = this._prevDrawPos.plus(offset.mul(((double)i)/steps));
-                this.drawPen(stepPos);
+            if (false == this._toolbar.isErasing()) {
+                final Point2D offset = pos.minus(this._prevDrawPos);
+                int steps = (int) Math.floor(offset.radius());
+                for (int i = 0 ; i < steps; i += Math.max(1, this.data.penSkip)) {
+                    Point2D stepPos = this._prevDrawPos.plus(offset.mul(((double)i)/steps));
+                    this.drawPen(stepPos);
+                }
             }
             this._prevDrawPos = pos;
             this.drawPen(pos);
@@ -253,10 +258,13 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
             ArrayList<VectorObject> objsToRemove = new ArrayList<VectorObject>();
             for (int i = 0 ; i < this.getVectorObjectCount(); i++) {
                 VectorObject obj = this.getVectorObject(i);
+                if (obj == this._cursor) {
+                    continue;
+                }
                 if (obj instanceof Positionable) {
                     Positionable positionableObj = (Positionable) obj;
                     Point2D objPos = new Point2D(positionableObj.getX(), positionableObj.getY());
-                    if (objPos.minus(stepPos).radius() < 2*this.data.penWidth) {
+                    if (objPos.minus(stepPos).radius() < this.data.eraserWidth + this.data.penWidth) {
                         objsToRemove.add(obj);
                     }
                 }
@@ -288,6 +296,28 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
     {
         _currentPath = null;
         _drawingPathExists = false;
+    }
+
+    private void updateCursor()
+    {
+        if (null == this._cursor) {
+            this._cursor = this.createDrawingCircle(Point2D.zero);
+            this.add(this._cursor);
+        }
+        Point2D mousePos = ElementUtils.getMousePositionRelativeToElement(this.getElement());
+        this._cursor.setX(mousePos.getX());
+        this._cursor.setY(mousePos.getY());
+        if (this._toolbar.isErasing()) {
+            this._cursor.setFillColor("transparent");
+            this._cursor.setStrokeColor("black");
+            this._cursor.setStrokeWidth(1);
+            this._cursor.setRadius(this.data.eraserWidth);
+        }
+        else {
+            this._cursor.setStrokeWidth(0);
+            this._cursor.setFillColor(this._toolbar.getColor());
+            this._cursor.setRadius(this.data.penWidth);
+        }
     }
 }
 
