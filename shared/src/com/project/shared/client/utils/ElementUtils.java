@@ -186,6 +186,14 @@ public abstract class ElementUtils
         return eventPos.minus(elementAbsolutePosition);
 	}
 
+
+    public static Point2D getMousePositionRelativeToElement(final Element that)
+    {
+        return EventUtils.getCurrentMousePos().minus(ElementUtils.getElementAbsoluteRectangle(that).getCorners().topLeft);
+    }
+
+
+
     private static class PositionAnimation extends Animation {
         private Point2D pos;
         private Point2D oldPos;
@@ -286,7 +294,10 @@ public abstract class ElementUtils
           left += elem.offsetLeft;
           elem = elem.offsetParent;
         }
-        return left;
+        if (isNaN(left)) {
+            return 0;
+        }
+        return Math.floor(left);
     }-*/;
 
     /**
@@ -305,7 +316,10 @@ public abstract class ElementUtils
             top += elem.offsetTop;
             elem = elem.offsetParent;
         }
-        return top;
+        if (isNaN(top)) {
+            return 0;
+        }
+        return Math.floor(top);
     }-*/;
 
     /**

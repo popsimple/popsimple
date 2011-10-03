@@ -8,6 +8,8 @@ import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
+import com.google.gwt.event.dom.client.TouchStartEvent;
+import com.google.gwt.event.dom.client.TouchStartHandler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.Event;
@@ -63,6 +65,10 @@ public class FloatingToolbar extends FlowPanel
             @Override public void onMouseDown(MouseDownEvent event) {
                 that.updatePosition();
             }}, MouseDownEvent.getType()));
+        this.registrationsManager.add(this._editedWidget.addDomHandler(new TouchStartHandler() {
+            @Override public void onTouchStart(TouchStartEvent event) {
+                that.updatePosition();
+            }}, TouchStartEvent.getType()));
 //        this.registrationsManager.add(this._editedWidget.addDomHandler(new MouseUpHandler() {
 //            @Override public void onMouseUp(MouseUpEvent event) {
 //                that.updatePosition();

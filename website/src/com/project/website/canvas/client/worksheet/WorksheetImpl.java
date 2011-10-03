@@ -309,9 +309,9 @@ public class WorksheetImpl implements Worksheet
         this.updateOptions(this.page.options);
         this.updateHistoryToken();
 
-        HashMap<Long, ElementData> newElements = new HashMap<Long, ElementData>();
+        HashMap<String, ElementData> newElements = new HashMap<String, ElementData>();
         for (ElementData elem : this.page.elements) {
-            newElements.put(elem.id, elem);
+            newElements.put(elem.uniqueId, elem);
         }
 
         HashSet<Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo>> entries =
@@ -322,11 +322,11 @@ public class WorksheetImpl implements Worksheet
             CanvasTool<? extends ElementData> tool = entry.getKey();
             ToolInstanceInfo toolInfo = entry.getValue();
             ElementData oldData = tool.getValue();
-            ElementData newData = newElements.get(oldData.id);
+            ElementData newData = newElements.get(oldData.uniqueId);
             if (null != newData) {
                 tool.setElementData(newData);
                 view.setToolFrameTransform(toolInfo.toolFrame, newData.transform, Point2D.zero);
-                newElements.remove(oldData.id);
+                newElements.remove(oldData.uniqueId);
             } else {
                 this.removeToolInstance(toolInfo.toolFrame);
             }

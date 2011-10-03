@@ -9,6 +9,7 @@ import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.FocusHandler;
+import com.google.gwt.event.dom.client.HumanInputEvent;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
@@ -16,6 +17,12 @@ import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
+import com.google.gwt.event.dom.client.TouchEndEvent;
+import com.google.gwt.event.dom.client.TouchEndHandler;
+import com.google.gwt.event.dom.client.TouchMoveEvent;
+import com.google.gwt.event.dom.client.TouchMoveHandler;
+import com.google.gwt.event.dom.client.TouchStartEvent;
+import com.google.gwt.event.dom.client.TouchStartHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -88,9 +95,9 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
     protected final SimpleEvent<Void> closeRequest = new SimpleEvent<Void>();
     protected final SimpleEvent<Void> moveBackRequest = new SimpleEvent<Void>();
     protected final SimpleEvent<Void> moveFrontRequest = new SimpleEvent<Void>();
-    protected final SimpleEvent<MouseEvent<?>> moveStartRequest = new SimpleEvent<MouseEvent<?>>();
-    protected final SimpleEvent<MouseEvent<?>> resizeStartRequest = new SimpleEvent<MouseEvent<?>>();
-    protected final SimpleEvent<MouseEvent<?>> rotateStartRequest = new SimpleEvent<MouseEvent<?>>();
+    protected final SimpleEvent<Void> moveStartRequest = new SimpleEvent<Void>();
+    protected final SimpleEvent<Void> resizeStartRequest = new SimpleEvent<Void>();
+    protected final SimpleEvent<Void> rotateStartRequest = new SimpleEvent<Void>();
 
     private final RegistrationsManager frameRegs = new RegistrationsManager();
     private final RegistrationsManager toolRegs = new RegistrationsManager();
@@ -120,6 +127,7 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
         this.loadingPanel.setVisible(false);
         this.rotatePanel.setVisible(tool.canRotate());
         this.resizePanel.setVisible(tool.getResizeMode() != ResizeMode.NONE);
+        this.preventTouchScroll();
     }
 
     @Override
@@ -184,42 +192,37 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
                 that.moveFrontRequest.dispatch(null);
         }}));
 
-		frameRegs.add(this.resizePanel.addDomHandler(new MouseDownHandler() {
-            @Override public void onMouseDown(MouseDownEvent event) {
-                that.resizeStartRequest.dispatch(event);
-        }}, MouseDownEvent.getType()));
+		frameRegs.add(WidgetUtils.addMovementStartHandler(this.resizePanel, new SimpleEvent.Handler<HumanInputEvent<?>>() {
+            @Override public void onFire(HumanInputEvent<?> arg) {
+                that.resizeStartRequest.dispatch(null);
+            }}));
 
-		frameRegs.add(this.rotatePanel.addDomHandler(new MouseDownHandler() {
-            @Override public void onMouseDown(MouseDownEvent event) {
-                that.rotateStartRequest.dispatch(event);
-        }}, MouseDownEvent.getType()));
+        frameRegs.add(WidgetUtils.addMovementStartHandler(this.rotatePanel, new SimpleEvent.Handler<HumanInputEvent<?>>() {
+            @Override public void onFire(HumanInputEvent<?> arg) {
+                that.rotateStartRequest.dispatch(null);
+            }}));
 
-		frameRegs.add(this.frameHeader.addDomHandler(new MouseDownHandler() {
-            @Override public void onMouseDown(final MouseDownEvent event) {
-                that.onHeaderMouseDown(event);
-        }}, MouseDownEvent.getType()));
+        frameRegs.add(WidgetUtils.addMovementStartHandler(this.frameHeader, new SimpleEvent.Handler<HumanInputEvent<?>>() {
+            @Override public void onFire(HumanInputEvent<?> arg) {
+                moveStartRequest.dispatch(null);
+        }}));
 
 		frameRegs.add(tool.getToolEvents().addSelfMoveRequestEventHandler(new Handler<Point2D>() {
 			@Override public void onFire(Point2D offset) {
 			    that.toolSelfMoveRequest(offset);
 		}}));
 
-		frameRegs.add(this.addDomHandler(new MouseDownHandler(){
-			@Override public void onMouseDown(MouseDownEvent event) {
-			    that.onToolFrameSelected(event);
-		}}, MouseDownEvent.getType()));
+        frameRegs.add(WidgetUtils.addMovementStartHandler(this, new SimpleEvent.Handler<HumanInputEvent<?>>() {
+            @Override public void onFire(HumanInputEvent<?> arg) {
+                that.onToolFrameSelected();
+            }}));
 	}
 
-	private void onToolFrameSelected(MouseDownEvent event)
+	private void onToolFrameSelected()
 	{
 	    if (false == DocumentUtils.isActiveElementTree(this.getElement())) {
 	        focusPanel.setFocus(true); // take away focus from any others
 	    }
-	}
-
-	private void onHeaderMouseDown(MouseDownEvent event)
-	{
-	    moveStartRequest.dispatch(event);
 	}
 
     protected void registerTransformHandlers() {
@@ -227,7 +230,7 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
                 new SimpleEvent.Handler<MouseEvent<?>>() {
             @Override
             public void onFire(MouseEvent<?> arg) {
-                moveStartRequest.dispatch(arg);
+                moveStartRequest.dispatch(null);
             }
         }));
         toolRegs.add(tool.getToolEvents().addLoadStartedEventHandler(new Handler<Void>() {
@@ -272,7 +275,7 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
     }
 
     @Override
-    public HandlerRegistration addMoveStartRequestHandler(SimpleEvent.Handler<MouseEvent<?>> handler) {
+    public HandlerRegistration addMoveStartRequestHandler(SimpleEvent.Handler<Void> handler) {
         return this.moveStartRequest.addHandler(handler);
     }
 
@@ -287,12 +290,12 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
     }
 
     @Override
-    public HandlerRegistration addResizeStartRequestHandler(SimpleEvent.Handler<MouseEvent<?>> handler) {
+    public HandlerRegistration addResizeStartRequestHandler(SimpleEvent.Handler<Void> handler) {
         return this.resizeStartRequest.addHandler(handler);
     }
 
     @Override
-    public HandlerRegistration addRotateStartRequestHandler(SimpleEvent.Handler<MouseEvent<?>> handler) {
+    public HandlerRegistration addRotateStartRequestHandler(SimpleEvent.Handler<Void> handler) {
         return this.rotateStartRequest.addHandler(handler);
     }
 
@@ -520,5 +523,22 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
         if (null != this.floatingToolbar) {
             this.floatingToolbar.updatePosition();
         }
+    }
+
+    private void preventTouchScroll()
+    {
+        Widget widget = this;
+        widget.addDomHandler(new TouchStartHandler(){
+            @Override public void onTouchStart(TouchStartEvent event) {
+                event.preventDefault();
+            }}, TouchStartEvent.getType());
+        widget.addDomHandler(new TouchEndHandler(){
+            @Override public void onTouchEnd(TouchEndEvent event) {
+                event.preventDefault();
+            }}, TouchEndEvent.getType());
+        widget.addDomHandler(new TouchMoveHandler(){
+            @Override public void onTouchMove(TouchMoveEvent event) {
+                event.preventDefault();
+            }}, TouchMoveEvent.getType());
     }
 }

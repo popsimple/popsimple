@@ -9,9 +9,10 @@
 
     </ui:style>
     <g:HTMLPanel ui:field="rootPanel" addStyleNames="{res.main.canvasToolbar}">
-        <div class="canvasToolbarItemWrapper">
-            <span class="canvasToolbarItemTitle">Color:</span>
+        <div class="{res.main.canvasToolbarItemWrapper}">
+            <span class="{res.main.canvasToolbarItemTitle}">Color:</span>
             <w:ColorPicker ui:field="color"></w:ColorPicker>
         </div>
+        <g:ToggleButton ui:field="eraseButton">Erase</g:ToggleButton>
     </g:HTMLPanel>
 </ui:UiBinder>

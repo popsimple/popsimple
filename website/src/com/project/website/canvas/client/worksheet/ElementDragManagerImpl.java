@@ -2,10 +2,7 @@ package com.project.website.canvas.client.worksheet;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.MouseEvent;
-import com.google.gwt.event.dom.client.MouseMoveEvent;
-import com.google.gwt.event.dom.client.MouseUpEvent;
-import com.google.gwt.event.dom.client.MouseUpHandler;
+import com.google.gwt.event.dom.client.HumanInputEvent;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent;
@@ -13,6 +10,7 @@ import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.EventUtils;
+import com.project.shared.client.utils.widgets.WidgetUtils;
 import com.project.shared.data.Point2D;
 import com.project.website.canvas.client.worksheet.exceptions.InvalidDragPanelRelationshipException;
 import com.project.website.canvas.client.worksheet.interfaces.ElementDragManager;
@@ -89,23 +87,24 @@ public class ElementDragManagerImpl implements ElementDragManager
         }
         ElementUtils.setTextSelectionEnabled(_container.getElement(), false);
 
-        MouseDragHandler dragHandler = new MouseDragHandler(
+        final MouseDragHandler dragHandler = new MouseDragHandler(
                 EventUtils.getCurrentMousePos(), this._dragStartSensitivity);
-        regs.add(dragHandler.addDragStartedHandler(new SimpleEvent.Handler<Void>() {
-            @Override public void onFire(Void arg) {
+        regs.add(dragHandler.addDragStartedHandler(new SimpleEvent.Handler<HumanInputEvent<?>>() {
+            @Override public void onFire(HumanInputEvent<?> arg) {
                 ElementUtils.addClassName(targetElement, _targetDragStyleName);
                 _dragPanel.setVisible(true);
                 handler.onStart();
+                arg.preventDefault();
             }
         }));
-        regs.add(dragHandler.addDragHandler(new SimpleEvent.Handler<MouseMoveEvent>() {
-            @Override public void onFire(MouseMoveEvent arg) {
-                Point2D pos = ElementUtils.getRelativePosition(arg, referenceElem);
-                handleMouseMove(referenceElem, referenceOffset, handler, pos);
+        regs.add(dragHandler.addDragHandler(new SimpleEvent.Handler<HumanInputEvent<?>>() {
+            @Override public void onFire(HumanInputEvent<?> arg) {
+                handleMouseMove(referenceElem, referenceOffset, handler);
+                arg.preventDefault();
             }
         }));
 
-        regs.add(_container.addDomHandler(dragHandler, MouseMoveEvent.getType()));
+        regs.add(WidgetUtils.addMovementMoveHandler(_container, dragHandler));
 
         if (null != _stopOperationEvent) {
             regs.add(_stopOperationEvent.addHandler(new SimpleEvent.Handler<Void>() {
@@ -124,10 +123,10 @@ public class ElementDragManagerImpl implements ElementDragManager
 
     }
 
-    private void operationEnded(final Element targetElement, final Element referenceElem, MouseMoveOperationHandler handler, RegistrationsManager regs, MouseEvent<?> event)
+    private void operationEnded(final Element targetElement, final Element referenceElem, MouseMoveOperationHandler handler, RegistrationsManager regs)
     {
         stopMouseMoveOperation(targetElement, regs);
-        handler.onStop(ElementUtils.getRelativePosition(event, referenceElem));
+        handler.onStop(ElementUtils.getMousePositionRelativeToElement(referenceElem));
     }
 
     private boolean setStopConditionHandlers(final Element targetElement,
@@ -136,19 +135,18 @@ public class ElementDragManagerImpl implements ElementDragManager
     {
         boolean stopConditionFound = false;
 
-        if (0 != (stopConditions & StopCondition.STOP_CONDITION_MOUSE_UP)) {
+        if (0 != (stopConditions & StopCondition.STOP_CONDITION_MOVEMENT_STOP)) {
             stopConditionFound = true;
-            regs.add(_container.addDomHandler(new MouseUpHandler() {
-                @Override public void onMouseUp(MouseUpEvent event) {
-                    operationEnded(targetElement, referenceElem, handler, regs, event);
-                }
-            }, MouseUpEvent.getType()));
+            regs.add(WidgetUtils.addMovementStopHandler(_container, new Handler<HumanInputEvent<?>>() {
+                @Override public void onFire(HumanInputEvent<?> arg) {
+                    operationEnded(targetElement, referenceElem, handler, regs);
+                }}));
         }
         if (0 != (stopConditions & StopCondition.STOP_CONDITION_MOUSE_CLICK)) {
             stopConditionFound = true;
             regs.add(_container.addDomHandler(new ClickHandler() {
                 @Override public void onClick(ClickEvent event) {
-                    operationEnded(targetElement, referenceElem, handler, regs, event);
+                    operationEnded(targetElement, referenceElem, handler, regs);
                 }
             }, ClickEvent.getType()));
         }
@@ -163,9 +161,8 @@ public class ElementDragManagerImpl implements ElementDragManager
         regs.clear();
     }
 
-    private void handleMouseMove(final Element referenceElem, final Point2D referenceOffset,
-            MouseMoveOperationHandler handler, Point2D pos)
+    private void handleMouseMove(Element referenceElem, Point2D referenceOffset, MouseMoveOperationHandler handler)
     {
-        handler.onMouseMove(pos.minus(referenceOffset));
+        handler.onMouseMove(ElementUtils.getMousePositionRelativeToElement(referenceElem).minus(referenceOffset));
     }
 }

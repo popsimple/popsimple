@@ -9,6 +9,8 @@ public class SketchToolFactory extends CanvasToolFactoryBase<SketchTool>
     implements CanvasToolFactory<SketchTool>
 {
     private static final int DEFAULT_PEN_WIDTH = 5;
+    private static final int DEFAULT_ERASER_WIDTH = 15;
+    private static final int DEFAULT_PEN_SKIP = DEFAULT_PEN_WIDTH;
     public static final String UNIQUE_ID = "SketchToolFactory";
 
     private final static int DEFAULT_WIDTH = 400;
@@ -16,11 +18,15 @@ public class SketchToolFactory extends CanvasToolFactoryBase<SketchTool>
 
 
     private int penWidth = DEFAULT_PEN_WIDTH;
+    private int penSkip = DEFAULT_PEN_SKIP;
+    private int eraserWidth = DEFAULT_ERASER_WIDTH;
 
     @Override
     public SketchTool create() {
         VectorGraphicsData data = new VectorGraphicsData(UNIQUE_ID);
         data.penWidth = this.penWidth;
+        data.penSkip = this.penSkip;
+        data.eraserWidth = this.eraserWidth;
         SketchTool tool = new SketchTool(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         tool.setValue(data);
         return tool;

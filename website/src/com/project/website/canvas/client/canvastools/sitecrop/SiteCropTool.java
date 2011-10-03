@@ -300,7 +300,7 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
 
                         _frameDragManager.startMouseMoveOperation(blockPanel.getElement(),
                                 ElementUtils.getRelativePosition(event, blockPanel.getElement()),
-                                handler, StopCondition.STOP_CONDITION_MOUSE_UP);
+                                handler, StopCondition.STOP_CONDITION_MOVEMENT_STOP);
                     }
                 }, MouseDownEvent.getType()));
     }
