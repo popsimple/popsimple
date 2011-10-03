@@ -17,6 +17,12 @@ import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
+import com.google.gwt.event.dom.client.TouchEndEvent;
+import com.google.gwt.event.dom.client.TouchEndHandler;
+import com.google.gwt.event.dom.client.TouchMoveEvent;
+import com.google.gwt.event.dom.client.TouchMoveHandler;
+import com.google.gwt.event.dom.client.TouchStartEvent;
+import com.google.gwt.event.dom.client.TouchStartHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -517,17 +523,17 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
     private void preventTouchScroll()
     {
         Widget widget = this;
-        WidgetUtils.addMovementMoveHandler(widget, new SimpleEvent.Handler<HumanInputEvent<?>>() {
-            @Override public void onFire(HumanInputEvent<?> arg) {
-                arg.preventDefault();
-        }});
-        WidgetUtils.addMovementStartHandler(widget, new SimpleEvent.Handler<HumanInputEvent<?>>() {
-            @Override public void onFire(HumanInputEvent<?> arg) {
-                arg.preventDefault();
-        }});
-        WidgetUtils.addMovementStopHandler(widget, new SimpleEvent.Handler<HumanInputEvent<?>>() {
-            @Override public void onFire(HumanInputEvent<?> arg) {
-                arg.preventDefault();
-        }});
+        widget.addDomHandler(new TouchStartHandler(){
+            @Override public void onTouchStart(TouchStartEvent event) {
+                event.preventDefault();
+            }}, TouchStartEvent.getType());
+        widget.addDomHandler(new TouchEndHandler(){
+            @Override public void onTouchEnd(TouchEndEvent event) {
+                event.preventDefault();
+            }}, TouchEndEvent.getType());
+        widget.addDomHandler(new TouchMoveHandler(){
+            @Override public void onTouchMove(TouchMoveEvent event) {
+                event.preventDefault();
+            }}, TouchMoveEvent.getType());
     }
 }
