@@ -387,6 +387,11 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
         return this._toolbar;
     }
 
+    @Override
+    public boolean dimOnLoad() {
+        return true;
+    }
+
 //    private void bingLocationsQuery(String query)
 //    {
 //        BindLocationRequestFactory factory = GWT.create(BindLocationRequestFactory.class);

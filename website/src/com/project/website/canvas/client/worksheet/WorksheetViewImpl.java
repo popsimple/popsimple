@@ -47,6 +47,7 @@ import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.EventUtils;
 import com.project.shared.client.utils.HandlerUtils;
+import com.project.shared.client.utils.widgets.WidgetUtils;
 import com.project.shared.data.Point2D;
 import com.project.shared.utils.CloneableUtils;
 import com.project.shared.utils.IterableUtils;
@@ -392,8 +393,21 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     public void setOptions(final CanvasPageOptions value) {
         this._pageOptions = value;
 
-        ImageInformationUtils.setWidgetBackgroundAsync(
-                value.backgroundImage, this.worksheetBackground, false);
+        this.worksheetBackground.addStyleName(CanvasResources.INSTANCE.main().imageLoadingStyle());
+
+        WidgetUtils.setBackgroundImageAsync(this.worksheetBackground, value.backgroundImage.url,
+                CanvasResources.INSTANCE.imageUnavailable().getSafeUri().asString(), false,
+                CanvasResources.INSTANCE.main().imageLoadingStyle(),
+                new SimpleEvent.Handler<Void>() {
+                    @Override
+                    public void onFire(Void arg) {
+                        handleBackgroundImageSet();
+                    }}, HandlerUtils.<Void>emptyHandler());
+    }
+
+    private void handleBackgroundImageSet()
+    {
+        ImageInformationUtils.setBackgroundStyle(this.worksheetBackground, this._pageOptions.backgroundImage);
     }
 
     @Override

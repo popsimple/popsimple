@@ -23,6 +23,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.utils.HandlerUtils;
+import com.project.shared.client.utils.StyleUtils;
 import com.project.shared.client.utils.UrlUtils;
 import com.project.shared.client.utils.widgets.WidgetUtils;
 import com.project.shared.utils.CloneableUtils;
@@ -42,9 +43,9 @@ import com.project.website.canvas.shared.data.ElementData;
 import com.project.website.canvas.shared.data.ImageData;
 import com.project.website.canvas.shared.data.ImageInformation;
 
-public class ImageTool extends Composite implements CanvasTool<ImageData>
-{
-    interface ImageToolUiBinder extends UiBinder<Widget, ImageTool> {}
+public class ImageTool extends Composite implements CanvasTool<ImageData> {
+    interface ImageToolUiBinder extends UiBinder<Widget, ImageTool> {
+    }
 
     private static ImageToolUiBinder uiBinder = GWT.create(ImageToolUiBinder.class);
 
@@ -61,13 +62,12 @@ public class ImageTool extends Composite implements CanvasTool<ImageData>
     private ImageData data = null;
     private SelectImageDialog selectImageDialog;
     private DialogBox dialogContainer;
-	private boolean optionsWidgetInited = false;
-	private ArrayList<ImageSearchProvider> searchProviders = new ArrayList<ImageSearchProvider>();
+    private boolean optionsWidgetInited = false;
+    private ArrayList<ImageSearchProvider> searchProviders = new ArrayList<ImageSearchProvider>();
     private boolean viewMode;
 
-	public ImageTool(Collection<ImageSearchProvider> imageSearchProviders)
-	{
-	    initWidget(uiBinder.createAndBindUi(this));
+    public ImageTool(Collection<ImageSearchProvider> imageSearchProviders) {
+        initWidget(uiBinder.createAndBindUi(this));
         CanvasToolCommon.initCanvasToolWidget(this);
 
         searchProviders.addAll(imageSearchProviders);
@@ -78,47 +78,47 @@ public class ImageTool extends Composite implements CanvasTool<ImageData>
         this.addStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
     }
 
-	@Override
-	public ICanvasToolEvents getToolEvents()
-	{
-	    return this._toolEvents;
-	}
+    @Override
+    public ICanvasToolEvents getToolEvents() {
+        return this._toolEvents;
+    }
 
-	@Override
+    @Override
     public void bind() {
         this.registerHandlers();
-        this.setViewMode(viewMode); // do whatever bindings necessary for our mode
+        this.setViewMode(viewMode); // do whatever bindings necessary for our
+                                    // mode
     }
 
     private void registerHandlers() {
         registrationsManager.clear();
         registrationsManager.add(this.addDomHandler(new MouseDownHandler() {
-            @Override public void onMouseDown(MouseDownEvent event) {
+            @Override
+            public void onMouseDown(MouseDownEvent event) {
                 _toolEvents.dispatchMoveStartRequestEvent(event);
             }
         }, MouseDownEvent.getType()));
     }
 
-    private void setEditModeRegistrations()
-    {
+    private void setEditModeRegistrations() {
         editModeRegistrationsManager.clear();
         editModeRegistrationsManager.add(this.optionsLabel.addClickHandler(new ClickHandler() {
-            @Override public void onClick(ClickEvent event) {
+            @Override
+            public void onClick(ClickEvent event) {
                 uploadImage();
             }
         }));
         editModeRegistrationsManager.add(this.addDomHandler(new DoubleClickHandler() {
-			@Override
-			public void onDoubleClick(DoubleClickEvent event) {
-				uploadImage();
-			}
-		}, DoubleClickEvent.getType()));
+            @Override
+            public void onDoubleClick(DoubleClickEvent event) {
+                uploadImage();
+            }
+        }, DoubleClickEvent.getType()));
     }
 
     private void uploadImage() {
-    	initOptionsWidget();
-        selectImageDialog.setValue(
-                (ImageInformation)CloneableUtils.clone(data.imageInformation));
+        initOptionsWidget();
+        selectImageDialog.setValue((ImageInformation) CloneableUtils.clone(data.imageInformation));
 
         Scheduler.get().scheduleDeferred(new ScheduledCommand() {
             @Override
@@ -129,46 +129,44 @@ public class ImageTool extends Composite implements CanvasTool<ImageData>
         });
     }
 
-	private void initOptionsWidget() {
-		if (optionsWidgetInited) {
-			return;
-		}
-		this.optionsWidgetInited = true;
-		this.dialogContainer = new DialogWithZIndex(false, true);
+    private void initOptionsWidget() {
+        if (optionsWidgetInited) {
+            return;
+        }
+        this.optionsWidgetInited = true;
+        this.dialogContainer = new DialogWithZIndex(false, true);
         dialogContainer.setGlassEnabled(true);
         dialogContainer.setText("Image options");
 
-		this.selectImageDialog = new SelectImageDialog();
+        this.selectImageDialog = new SelectImageDialog();
         dialogContainer.add(selectImageDialog);
 
         this.selectImageDialog.setSearchProviders(this.searchProviders);
         this.selectImageDialog.setImageOptionsProvider(new ImageToolOptionsProvider());
         selectImageDialog.addCancelHandler(new SimpleEvent.Handler<Void>() {
-		    @Override
-		    public void onFire(Void arg) {
-		        dialogContainer.hide();
-		    }
-		});
+            @Override
+            public void onFire(Void arg) {
+                dialogContainer.hide();
+            }
+        });
         selectImageDialog.addDoneHandler(new SimpleEvent.Handler<ImageInformation>() {
-		    @Override
-		    public void onFire(ImageInformation arg) {
-		        setImageInformation(arg);
-		        dialogContainer.hide();
-		    }
-		});
-	}
+            @Override
+            public void onFire(ImageInformation arg) {
+                setImageInformation(arg);
+                dialogContainer.hide();
+            }
+        });
+    }
 
-	private void setImageInformation(ImageInformation imageInformation)
-	{
-	    if (ObjectUtils.areEqual(data.imageInformation, imageInformation))
-        {
-	        return;
+    private void setImageInformation(ImageInformation imageInformation) {
+        if (ObjectUtils.areEqual(data.imageInformation, imageInformation)) {
+            return;
         }
-	    //Make sure we don't set arbitrary html or invalid urls
-	    imageInformation.url = UrlUtils.encodeOnce(imageInformation.url);
-	    this.data.imageInformation = imageInformation;
-	    this.updateImageFromData(imageInformation.options.useOriginalSize);
-	}
+        // Make sure we don't set arbitrary html or invalid urls
+        imageInformation.url = UrlUtils.encodeOnce(imageInformation.url);
+        this.data.imageInformation = imageInformation;
+        this.updateImageFromData(imageInformation.options.useOriginalSize);
+    }
 
     @Override
     public void setActive(boolean isFocused) {
@@ -183,16 +181,29 @@ public class ImageTool extends Composite implements CanvasTool<ImageData>
             return;
         }
         this.removeStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
-        ImageInformationUtils.setWidgetBackgroundAsync(this.data.imageInformation, this, autoSize,
+        StyleUtils.clearBackground(this.getElement().getStyle());
+
+        if (StringUtils.isEmptyOrNull(this.data.imageInformation.url)) {
+            return;
+        }
+
+        this._toolEvents.dispatchLoadStartedEvent();
+
+        WidgetUtils.setBackgroundImageAsync(this, this.data.imageInformation.url, CanvasResources.INSTANCE
+                .imageUnavailable().getSafeUri().asString(), autoSize,
+                CanvasResources.INSTANCE.main().imageToolLoading(),
                 new SimpleEvent.Handler<Void>() {
-                    @Override
-                    public void onFire(Void arg) {
-                        setLoadedStyle();
-                    }}, HandlerUtils.<Void>emptyHandler());
+            @Override
+            public void onFire(Void arg) {
+                setLoadedStyle();
+            }
+        }, HandlerUtils.<Void> emptyHandler());
     }
 
-    private void setLoadedStyle()
-    {
+    private void setLoadedStyle() {
+        ImageInformationUtils.setBackgroundStyle(this, this.data.imageInformation);
+
+        this._toolEvents.dispatchLoadEndedEvent();
         this.addStyleName(CanvasResources.INSTANCE.main().imageToolSet());
     }
 
@@ -212,11 +223,10 @@ public class ImageTool extends Composite implements CanvasTool<ImageData>
         this.setValue((ImageData) data);
     }
 
-	@Override
-	public ResizeMode getResizeMode() {
-		return ResizeMode.BOTH;
-	}
-
+    @Override
+    public ResizeMode getResizeMode() {
+        return ResizeMode.BOTH;
+    }
 
     @Override
     public boolean canRotate() {
@@ -224,25 +234,21 @@ public class ImageTool extends Composite implements CanvasTool<ImageData>
     }
 
     @Override
-    public void setViewMode(boolean isViewMode)
-    {
+    public void setViewMode(boolean isViewMode) {
         this.viewMode = isViewMode;
         this.refreshVisibility();
         if (isViewMode) {
             editModeRegistrationsManager.clear();
-        }
-        else {
+        } else {
             this.setVisible(true);
             setEditModeRegistrations();
         }
     }
 
-    private void refreshVisibility()
-    {
+    private void refreshVisibility() {
         if ((this.viewMode) && (StringUtils.isWhitespaceOrNull(this.data.imageInformation.url))) {
             this.setVisible(false);
-        }
-        else {
+        } else {
             this.setVisible(true);
         }
     }
@@ -252,9 +258,13 @@ public class ImageTool extends Composite implements CanvasTool<ImageData>
     }
 
     @Override
-    public IsWidget getToolbar()
-    {
+    public IsWidget getToolbar() {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public boolean dimOnLoad() {
+        return false;
     }
 }

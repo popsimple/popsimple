@@ -343,5 +343,10 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
             this._cursor.setRadius(this.data.penWidth);
         }
     }
+
+    @Override
+    public boolean dimOnLoad() {
+        return true;
+    }
 }
 
