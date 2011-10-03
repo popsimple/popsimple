@@ -141,4 +141,9 @@ public class Point2D implements Serializable, IsSerializable, ICloneable {
     {
         return "Point2D(x=" + this.getX() +  ", y=" + this.getY() + ")";
     }
+
+    public Point2D normalize()
+    {
+        return this.mul(1/this.radius());
+    }
 }
