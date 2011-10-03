@@ -184,6 +184,7 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
         this.registrationsManager.add(this.addMouseOutHandler(new MouseOutHandler() {
             @Override public void onMouseOut(MouseOutEvent event) {
                 that.removeCursor();
+                that._prevDrawPos = null;
             }
         }));
         this.registrationsManager.add(WidgetUtils.addMovementStartHandler(this, new Handler<HumanInputEvent<?>>() {
@@ -262,7 +263,7 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
         if (drawingPathExists()) {
             Point2D pos = ElementUtils.getMousePositionRelativeToElement(this.getElement());
             //this._currentPath.lineTo(pos.getX(), pos.getY());
-            if (false == this._toolbar.isErasing()) {
+            if ((false == this._toolbar.isErasing()) && (null != this._prevDrawPos)) {
                 final Point2D offset = pos.minus(this._prevDrawPos);
                 int steps = (int) Math.floor(offset.radius());
                 for (int i = 0 ; i < steps; i += Math.max(1, this.data.penSkip)) {
