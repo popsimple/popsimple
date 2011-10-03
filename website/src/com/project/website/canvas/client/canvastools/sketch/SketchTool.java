@@ -17,6 +17,8 @@ import com.google.gwt.dom.client.Node;
 import com.google.gwt.event.dom.client.HumanInputEvent;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseMoveHandler;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.handlers.RegistrationsManager;
@@ -83,6 +85,10 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
     public void setValue(VectorGraphicsData value) {
         this.data = value;
         ElementUtils.setTextSelectionEnabled(this.getElement(), false);
+        if (this.getElement().getInnerHTML().equals(this.data.svgString)) {
+            return;
+        }
+        this.clear();
         Element svgElement = this.getElement().getElementsByTagName("svg").getItem(0);
         DivElement tempElement = Document.get().createDivElement();
         tempElement.setInnerHTML(this.data.svgString);
@@ -110,7 +116,18 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
         }
         if (false == isActive) {
             this._currentPath = null;
+            this.removeCursor();
         }
+    }
+
+    private void removeCursor()
+    {
+        if (null == this._cursor) {
+            return;
+        }
+
+        this.remove(this._cursor);
+        this._cursor = null;
     }
 
     @Override
@@ -141,6 +158,7 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
     {
         if (this._inViewMode) {
             this.registrationsManager.clear();
+            this.removeCursor();
         }
         else if (this._bound) {
             this.setRegistrations();
@@ -163,6 +181,11 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
         final SketchTool that = this;
         this.registrationsManager.clear();
 
+        this.registrationsManager.add(this.addMouseOutHandler(new MouseOutHandler() {
+            @Override public void onMouseOut(MouseOutEvent event) {
+                that.removeCursor();
+            }
+        }));
         this.registrationsManager.add(WidgetUtils.addMovementStartHandler(this, new Handler<HumanInputEvent<?>>() {
             @Override public void onFire(HumanInputEvent<?> arg) {
                 // TODO request to be activated instead of doing this forcefully?

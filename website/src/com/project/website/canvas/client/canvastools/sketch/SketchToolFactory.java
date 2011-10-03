@@ -9,8 +9,8 @@ public class SketchToolFactory extends CanvasToolFactoryBase<SketchTool>
     implements CanvasToolFactory<SketchTool>
 {
     private static final int DEFAULT_PEN_WIDTH = 5;
-    private static final int DEFAULT_PEN_SKIP = 5;
     private static final int DEFAULT_ERASER_WIDTH = 15;
+    private static final int DEFAULT_PEN_SKIP = DEFAULT_PEN_WIDTH;
     public static final String UNIQUE_ID = "SketchToolFactory";
 
     private final static int DEFAULT_WIDTH = 400;

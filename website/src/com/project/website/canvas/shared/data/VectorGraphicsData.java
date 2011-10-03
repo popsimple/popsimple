@@ -1,6 +1,6 @@
 package com.project.website.canvas.shared.data;
 
-import com.google.appengine.api.datastore.Text;
+import com.google.appengine.api.datastore.Blob;
 import com.google.code.twig.annotation.Type;
 
 public class VectorGraphicsData extends ElementData
@@ -19,7 +19,7 @@ public class VectorGraphicsData extends ElementData
 
     public int penWidth;
 
-    @Type(Text.class)
+    @Type(Blob.class)
     public String svgString;
 
     public int penSkip;
