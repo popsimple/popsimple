@@ -8,7 +8,7 @@ public interface ElementDragManager
 {
 
     public class StopCondition {
-        public static final int STOP_CONDITION_MOUSE_UP = 1;
+        public static final int STOP_CONDITION_MOVEMENT_STOP = 1;
         public static final int STOP_CONDITION_MOUSE_CLICK = 2;
     }
 

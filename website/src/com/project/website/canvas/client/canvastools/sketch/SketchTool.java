@@ -7,17 +7,15 @@ import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
-import com.google.gwt.event.dom.client.MouseDownEvent;
-import com.google.gwt.event.dom.client.MouseDownHandler;
+import com.google.gwt.event.dom.client.HumanInputEvent;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseMoveHandler;
-import com.google.gwt.event.dom.client.MouseUpEvent;
-import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.NodeUtils;
+import com.project.shared.client.utils.widgets.WidgetUtils;
 import com.project.shared.data.Point2D;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
 import com.project.website.canvas.client.canvastools.base.CanvasToolEvents;
@@ -152,16 +150,16 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
     {
         final SketchTool that = this;
         this.registrationsManager.clear();
-        this.registrationsManager.add(this.addDomHandler(new MouseDownHandler(){
-            @Override public void onMouseDown(MouseDownEvent event) {
+
+        this.registrationsManager.add(WidgetUtils.addMovementStartHandler(this, new Handler<HumanInputEvent<?>>() {
+            @Override public void onFire(HumanInputEvent<?> arg) {
                 // TODO request to be activated instead of doing this forcefully?
                 // we want the tool frame to know it is activated.
                 that.setActive(true);
                 that.startPathDraw();
-            }}, MouseDownEvent.getType()));
-
-        this.registrationsManager.add(this.addDomHandler(new MouseUpHandler(){
-            @Override public void onMouseUp(MouseUpEvent event) {
+            }}));
+        this.registrationsManager.add(WidgetUtils.addMovementStopHandler(this, new Handler<HumanInputEvent<?>>() {
+            @Override public void onFire(HumanInputEvent<?> arg) {
                 final Path path = that._currentPath;
                 if ((false == that._active) || (null == path)) {
                     return;
@@ -176,7 +174,7 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
                     }
                 });
                 that._currentPath = null;
-            }}, MouseUpEvent.getType()));
+            }}));
 
         this.registrationsManager.add(this.addDomHandler(new MouseMoveHandler(){
             @Override public void onMouseMove(MouseMoveEvent event) {

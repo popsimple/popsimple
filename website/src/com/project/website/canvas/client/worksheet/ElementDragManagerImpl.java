@@ -2,13 +2,7 @@ package com.project.website.canvas.client.worksheet;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.MouseMoveEvent;
-import com.google.gwt.event.dom.client.MouseUpEvent;
-import com.google.gwt.event.dom.client.MouseUpHandler;
-import com.google.gwt.event.dom.client.TouchEndEvent;
-import com.google.gwt.event.dom.client.TouchEndHandler;
-import com.google.gwt.event.dom.client.TouchMoveEvent;
-import com.google.gwt.event.dom.client.TouchMoveHandler;
+import com.google.gwt.event.dom.client.HumanInputEvent;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent;
@@ -16,6 +10,7 @@ import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.EventUtils;
+import com.project.shared.client.utils.widgets.WidgetUtils;
 import com.project.shared.data.Point2D;
 import com.project.website.canvas.client.worksheet.exceptions.InvalidDragPanelRelationshipException;
 import com.project.website.canvas.client.worksheet.interfaces.ElementDragManager;
@@ -92,28 +87,24 @@ public class ElementDragManagerImpl implements ElementDragManager
         }
         ElementUtils.setTextSelectionEnabled(_container.getElement(), false);
 
-        MouseDragHandler dragHandler = new MouseDragHandler(
+        final MouseDragHandler dragHandler = new MouseDragHandler(
                 EventUtils.getCurrentMousePos(), this._dragStartSensitivity);
-        regs.add(dragHandler.addDragStartedHandler(new SimpleEvent.Handler<Void>() {
-            @Override public void onFire(Void arg) {
+        regs.add(dragHandler.addDragStartedHandler(new SimpleEvent.Handler<HumanInputEvent<?>>() {
+            @Override public void onFire(HumanInputEvent<?> arg) {
                 ElementUtils.addClassName(targetElement, _targetDragStyleName);
                 _dragPanel.setVisible(true);
                 handler.onStart();
+                arg.preventDefault();
             }
         }));
-        regs.add(dragHandler.addDragHandler(new SimpleEvent.Handler<MouseMoveEvent>() {
-            @Override public void onFire(MouseMoveEvent arg) {
+        regs.add(dragHandler.addDragHandler(new SimpleEvent.Handler<HumanInputEvent<?>>() {
+            @Override public void onFire(HumanInputEvent<?> arg) {
                 handleMouseMove(referenceElem, referenceOffset, handler);
+                arg.preventDefault();
             }
         }));
 
-        regs.add(_container.addDomHandler(dragHandler, MouseMoveEvent.getType()));
-        
-        regs.add(_container.addDomHandler(new TouchMoveHandler() {
-			@Override public void onTouchMove(TouchMoveEvent event) {
-                handleMouseMove(referenceElem, referenceOffset, handler);
-			}
-		}, TouchMoveEvent.getType()));
+        regs.add(WidgetUtils.addMovementMoveHandler(_container, dragHandler));
 
         if (null != _stopOperationEvent) {
             regs.add(_stopOperationEvent.addHandler(new SimpleEvent.Handler<Void>() {
@@ -144,19 +135,12 @@ public class ElementDragManagerImpl implements ElementDragManager
     {
         boolean stopConditionFound = false;
 
-        if (0 != (stopConditions & StopCondition.STOP_CONDITION_MOUSE_UP)) {
+        if (0 != (stopConditions & StopCondition.STOP_CONDITION_MOVEMENT_STOP)) {
             stopConditionFound = true;
-            regs.add(_container.addDomHandler(new MouseUpHandler() {
-                @Override public void onMouseUp(MouseUpEvent event) {
+            regs.add(WidgetUtils.addMovementStopHandler(_container, new Handler<HumanInputEvent<?>>() {
+                @Override public void onFire(HumanInputEvent<?> arg) {
                     operationEnded(targetElement, referenceElem, handler, regs);
-                }
-            }, MouseUpEvent.getType()));
-            regs.add(_container.addDomHandler(new TouchEndHandler() {
-				@Override
-				public void onTouchEnd(TouchEndEvent event) {
-                    operationEnded(targetElement, referenceElem, handler, regs);
-				}
-            }, TouchEndEvent.getType()));
+                }}));
         }
         if (0 != (stopConditions & StopCondition.STOP_CONDITION_MOUSE_CLICK)) {
             stopConditionFound = true;

@@ -5,6 +5,7 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.utils.ElementUtils;
+import com.project.shared.client.utils.EventUtils;
 import com.project.shared.data.Point2D;
 import com.project.shared.data.Rectangle;
 import com.project.shared.utils.PointUtils;
@@ -70,8 +71,8 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
     public void startDragCanvasToolFrame(final CanvasToolFrame toolFrame)
     {
         Element toolFrameElement = toolFrame.asWidget().getElement();
-        final Point2D initialPos = getElementCSSPositionFallback(toolFrameElement);
-        final Point2D originalOffsetFromFramePos = ElementUtils.getMousePositionRelativeToElement(toolFrameElement);
+        final Point2D initialPos =  ElementUtils.getElementCSSPosition(toolFrameElement);
+        final Point2D originalOffsetFromFramePos = ElementUtils.getMousePositionRelativeToElement(this._container.getElement()).minus(initialPos);
 
         MouseMoveOperationHandler handler = new MouseMoveOperationHandler() {
             @Override public void onStop(Point2D pos) {
@@ -94,19 +95,7 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
         };
 
         _elementDragManager.startMouseMoveOperation(toolFrameElement, _container.getElement(),
-                Point2D.zero, handler, ElementDragManager.StopCondition.STOP_CONDITION_MOUSE_UP);
-    }
-
-
-    private Point2D getElementCSSPositionFallback(Element toolFrameElement)
-    {
-        Point2D pos = ElementUtils.getElementCSSPosition(toolFrameElement);
-        if (null == pos) {
-            // Less good..
-            // Fallback in case the css left+top is not set.
-            pos = ElementUtils.getMousePositionRelativeToElement(toolFrameElement);
-        }
-        return pos;
+                Point2D.zero, handler, ElementDragManager.StopCondition.STOP_CONDITION_MOVEMENT_STOP);
     }
 
 
@@ -170,7 +159,7 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
 
 
         _elementDragManager.startMouseMoveOperation(toolFrameElement, _container.getElement(),
-                Point2D.zero, handler, ElementDragManager.StopCondition.STOP_CONDITION_MOUSE_UP);
+                Point2D.zero, handler, ElementDragManager.StopCondition.STOP_CONDITION_MOVEMENT_STOP);
     }
 
     @Override
@@ -209,7 +198,7 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
         };
 
         _elementDragManager.startMouseMoveOperation(toolFrame.asWidget().getElement(), _container.getElement(),
-                Point2D.zero, handler, ElementDragManager.StopCondition.STOP_CONDITION_MOUSE_UP);
+                Point2D.zero, handler, ElementDragManager.StopCondition.STOP_CONDITION_MOVEMENT_STOP);
     }
 
     private Point2D sizeFromRotatedSizeOffset(final double angle, final Point2D initialSize,

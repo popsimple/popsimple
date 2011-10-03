@@ -72,4 +72,5 @@ public class EventUtils
     public static native final boolean hasTouches(NativeEvent evt) /*-{
         return (undefined !== evt.touches);
     }-*/;
+
 }

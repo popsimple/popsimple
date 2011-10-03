@@ -185,8 +185,8 @@ public abstract class ElementUtils
 	    final Point2D elementAbsolutePosition = ElementUtils.getElementAbsolutePosition(elem);
         return eventPos.minus(elementAbsolutePosition);
 	}
-	
-	
+
+
     public static Point2D getMousePositionRelativeToElement(final Element that)
     {
         return EventUtils.getCurrentMousePos().minus(ElementUtils.getElementAbsoluteRectangle(that).getCorners().topLeft);

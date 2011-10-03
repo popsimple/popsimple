@@ -113,7 +113,7 @@ public class ToolFrameSelectionManager {
         };
 
 		this._selectionDragManager.startMouseMoveOperation(this._container.getElement(),
-		        Point2D.zero, handler, StopCondition.STOP_CONDITION_MOUSE_UP);
+		        Point2D.zero, handler, StopCondition.STOP_CONDITION_MOVEMENT_STOP);
 	}
 
 	private void hideSelectionPanel() {
