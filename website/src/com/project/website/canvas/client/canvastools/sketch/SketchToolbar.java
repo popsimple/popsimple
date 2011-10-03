@@ -9,6 +9,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent;
@@ -30,6 +31,11 @@ public class SketchToolbar extends Composite
 
     @UiField
     ToggleButton eraseButton;
+    @UiField
+    ToggleButton paintButton;
+    
+    @UiField
+    HTMLPanel colorPanel;
 
     private final SimpleEvent<String> colorChangedEvent = new SimpleEvent<String>();
 
@@ -41,18 +47,24 @@ public class SketchToolbar extends Composite
         initWidget(uiBinder.createAndBindUi(this));
 
         this.color.addChangeHandler(new ChangeHandler() {
-            @Override
-            public void onChange(ChangeEvent event)
-            {
+            @Override public void onChange(ChangeEvent event) {
+            	setErasing(false);
                 dispatchColorChangeEvent();
             }
         });
         this.eraseButton.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
             @Override public void onValueChange(ValueChangeEvent<Boolean> event) {
-                _erasing = event.getValue();
+            	_erasing = event.getValue();
                 dispatchColorChangeEvent();
             }
         });
+        this.paintButton.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+			@Override public void onValueChange(ValueChangeEvent<Boolean> event) {
+				colorPanel.setVisible(event.getValue());
+			}
+		});
+        
+        this.paintButton.setValue(true, true);
     }
 
     public boolean isErasing()
@@ -60,9 +72,10 @@ public class SketchToolbar extends Composite
         return _erasing;
     }
 
-    public void setErasing(boolean _erasing)
+    public void setErasing(boolean isErasing)
     {
-        this._erasing = _erasing;
+        this._erasing = isErasing;
+        this.eraseButton.setValue(isErasing);
     }
 
 

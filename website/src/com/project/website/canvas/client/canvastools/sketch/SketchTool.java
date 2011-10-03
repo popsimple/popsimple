@@ -1,11 +1,9 @@
 package com.project.website.canvas.client.canvastools.sketch;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import org.vaadin.gwtgraphics.client.DrawingArea;
 import org.vaadin.gwtgraphics.client.Positionable;
-import org.vaadin.gwtgraphics.client.Shape;
 import org.vaadin.gwtgraphics.client.VectorObject;
 import org.vaadin.gwtgraphics.client.shape.Circle;
 import org.vaadin.gwtgraphics.client.shape.Path;
