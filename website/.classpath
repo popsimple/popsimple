@@ -13,6 +13,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/shared"/>
 	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER"/>
 	<classpathentry kind="lib" path="/shared/libs/guava-r09-gwt.jar"/>
-	<classpathentry kind="lib" path="/shared/libs/guava-r09.jar"/>
+	<classpathentry kind="lib" path="/shared/libs/guava-r09.jar" sourcepath="D:/Download/guava-r09/guava-r09/guava-src-r09.zip"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
