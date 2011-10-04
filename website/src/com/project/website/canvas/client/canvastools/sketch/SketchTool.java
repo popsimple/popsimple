@@ -1,5 +1,6 @@
 package com.project.website.canvas.client.canvastools.sketch;
 
+import com.google.common.base.Strings;
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.dom.client.Element;
@@ -71,7 +72,11 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
 
     private void updateImageVisibilty()
     {
-        this._image.setVisible(this._inViewMode || (null == _canvas));
+        final boolean imageVisible = this._inViewMode || (null == _canvas);
+        if (imageVisible) {
+            this.updateImageFromCanvas();
+        }
+        this._image.setVisible(imageVisible);
         this._canvas.setVisible((false == this._inViewMode) && (null != _canvas));
     }
 
@@ -372,6 +377,10 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
         return String.valueOf(height) + "px";
     }
 
+    private void updateImageFromCanvas()
+    {
+        this._image.setUrl(Strings.nullToEmpty(this._canvas.toDataUrl()));
+    }
 }
 
 
