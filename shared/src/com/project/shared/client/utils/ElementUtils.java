@@ -189,7 +189,9 @@ public abstract class ElementUtils
 
     public static Point2D getMousePositionRelativeToElement(final Element that)
     {
-        return EventUtils.getCurrentMousePos().minus(ElementUtils.getElementAbsoluteRectangle(that).getCorners().topLeft);
+        final Rectangle elementAbsoluteRectangle = ElementUtils.getElementAbsoluteRectangle(that);
+        return EventUtils.getCurrentMousePos().minus(elementAbsoluteRectangle.getCorners().topLeft)
+                                              .rotate(-Math.toRadians(elementAbsoluteRectangle.getRotation()));
     }
 
 

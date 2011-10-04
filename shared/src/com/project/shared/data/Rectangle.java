@@ -7,6 +7,16 @@ import com.project.shared.interfaces.ICloneable;
 
 
 public class Rectangle implements ICloneable, Serializable, IsSerializable {
+    public double getRotation()
+    {
+        return rotation;
+    }
+
+    public void setRotation(double rotation)
+    {
+        this.rotation = rotation;
+    }
+
     /**
      *
      */

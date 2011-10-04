@@ -179,7 +179,7 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
     public boolean canRotate() {
         // TODO: disabled because we don't know how to translate mouse coordinates when the tool is rotated. It needs to
         // be done relative to the tool frame, because that is the element that is rotated (not the tool itself).
-        return false;
+        return true;
     }
 
     @Override
