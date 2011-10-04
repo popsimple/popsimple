@@ -4,15 +4,7 @@
 	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="lib" path="libs/guava-10.0.jar" sourcepath="libs/guava-10.0-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:platform:/resource/shared/libs/guava-10.0-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="libs/guava-gwt-10.0.jar" sourcepath="libs/guava-gwt-10.0-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:platform:/resource/shared/libs/guava-gwt-10.0-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
+	<classpathentry kind="lib" path="libs/guava-r09.jar"/>
+	<classpathentry kind="lib" path="libs/guava-r09-gwt.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
