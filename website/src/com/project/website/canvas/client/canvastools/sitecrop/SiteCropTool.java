@@ -7,6 +7,8 @@ import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.gwt.event.dom.client.LoadHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
+import com.google.gwt.event.dom.client.MouseWheelEvent;
+import com.google.gwt.event.dom.client.MouseWheelHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -47,7 +49,6 @@ import com.project.website.canvas.shared.data.SiteCropElementData;
 //2. set the frame correctly if the page loads again.
 //3. handle View/Edit mode correctly.
 //6. Disable all toolbar when loading.
-//7. Support mouse scroll for movement.
 
 public class SiteCropTool extends Composite implements CanvasTool<SiteCropElementData>{
 
@@ -77,6 +78,8 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
     HTMLPanel dragPanel;
 
     //#endregion
+
+    private static final int MOUSE_SCROLL_PIXELS = 5;
 
     private CanvasToolEvents _toolEvents = new CanvasToolEvents(this);
 
@@ -265,10 +268,12 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
                         MouseMoveOperationHandler handler = new MouseMoveOperationHandler() {
 
                             private Rectangle initialFrameRectangle = null;
+                            private Point2D lastMousePos = null;
 
                             @Override public void onStop(Point2D pos) { }
                             @Override public void onStart() {
                                 initialFrameRectangle = ElementUtils.getElementOffsetRectangle(siteFrame.getElement());
+                                lastMousePos = Point2D.zero;
                             }
                             @Override public void onCancel() {
                                 updateFrameDimensions(initialFrameRectangle);
@@ -277,7 +282,10 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
                             @Override
                             public void onMouseMove(Point2D pos)
                             {
-                                updateFrameDimensions(resolveFrameMovement(initialFrameRectangle, pos));
+                                Point2D delta = pos.minus(lastMousePos);
+                                lastMousePos = pos;
+                                updateFrameDimensions(moveFrame(
+                                        ElementUtils.getElementOffsetRectangle(siteFrame.getElement()), delta));
                             }
 
                         };
@@ -287,13 +295,27 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
                                 handler, StopCondition.STOP_CONDITION_MOVEMENT_STOP);
                     }
                 }, MouseDownEvent.getType()));
+
+        this._moveRegistrationManager.add(
+                this.addDomHandler(new MouseWheelHandler() {
+                    @Override
+                    public void onMouseWheel(MouseWheelEvent event) {
+                        handleMouseScroll(event);
+                    }
+                }, MouseWheelEvent.getType()));;
     }
 
-    private Rectangle resolveFrameMovement(Rectangle frameRectangle, Point2D delta)
+    private void handleMouseScroll(MouseWheelEvent event)
+    {
+        Rectangle frameRect = ElementUtils.getElementOffsetRectangle(siteFrame.getElement());
+        this.updateFrameDimensions(this.moveFrame(frameRect, new Point2D(0, event.getDeltaY() * -(MOUSE_SCROLL_PIXELS))));
+    }
+
+    private Rectangle moveFrame(Rectangle frameRectangle, Point2D delta)
     {
         return new Rectangle(
-                frameRectangle.getLeft() + delta.getX(),
-                frameRectangle.getTop() + delta.getY(),
+                Math.min(0, frameRectangle.getLeft() + delta.getX()),
+                Math.min(0, frameRectangle.getTop() + delta.getY()),
                 frameRectangle.getRight(),
                 frameRectangle.getBottom());
     }
