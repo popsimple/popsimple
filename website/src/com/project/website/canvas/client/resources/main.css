@@ -1004,14 +1004,6 @@
     border-color: transparent;
 }
 
-@if (com.project.shared.client.utils.BrowserUtils.supportsDynamicSVG()) {
-	@if (com.project.shared.client.utils.BrowserUtils.supportCSSCursorNone()) {
-		.sketchTool {
-			cursor: none;
-		}
-    }
-}
-
 .activeToolFrame .sketchTool {
     border-color: #ccc;
 }

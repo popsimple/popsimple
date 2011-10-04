@@ -1,28 +1,23 @@
 package com.project.website.canvas.client.canvastools.sketch;
 
-import java.util.ArrayList;
-
-import org.vaadin.gwtgraphics.client.DrawingArea;
-import org.vaadin.gwtgraphics.client.Positionable;
-import org.vaadin.gwtgraphics.client.VectorObject;
-import org.vaadin.gwtgraphics.client.shape.Circle;
-import org.vaadin.gwtgraphics.client.shape.Path;
-
-import com.google.gwt.dom.client.DivElement;
-import com.google.gwt.dom.client.Document;
+import com.google.common.base.Strings;
+import com.google.gwt.canvas.client.Canvas;
+import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.Node;
+import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.event.dom.client.HumanInputEvent;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseMoveHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.handlers.RegistrationsManager;
-import com.project.shared.client.utils.BrowserUtils;
+import com.project.shared.client.utils.CanvasUtils;
 import com.project.shared.client.utils.ElementUtils;
-import com.project.shared.client.utils.NodeUtils;
 import com.project.shared.client.utils.widgets.WidgetUtils;
 import com.project.shared.data.Point2D;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
@@ -32,18 +27,20 @@ import com.project.website.canvas.client.canvastools.base.ResizeMode;
 import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.client.shared.UndoManager;
 import com.project.website.canvas.shared.data.ElementData;
-import com.project.website.canvas.shared.data.VectorGraphicsData;
+import com.project.website.canvas.shared.data.SketchData;
 
-public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphicsData>
+public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
 {
     private CanvasToolEvents _toolEvents = new CanvasToolEvents(this);
 
-    private VectorGraphicsData data = null;
+    private SketchData data = null;
     private final RegistrationsManager registrationsManager = new RegistrationsManager();
 
     private final SketchToolbar _toolbar = new SketchToolbar();
+    private final Canvas _canvas = Canvas.createIfSupported();
+    private Canvas _resizeCanvas1 = Canvas.createIfSupported();
+    private Canvas _resizeCanvas2 = Canvas.createIfSupported();
 
-    protected Path _currentPath = null;
     protected boolean _inViewMode = false;
     protected boolean _active = false;
     protected boolean _bound = false;
@@ -54,11 +51,51 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
 
     private Point2D _prevDrawPos = Point2D.zero;
 
-    private Circle _cursor;
+    private Context2d _context = null;
+    private final ImageElement _imageElement;
+    private Image _image = new Image();
 
     public SketchTool(int width, int height) {
-        super(width, height);
+        this._imageElement = ImageElement.as(this._image.getElement());
+        this.add(this._image);
+        this.updateImageVisibilty();
+
+        if (null != _canvas) {
+            this.add(this._canvas);
+            this._context = this._canvas.getContext2d();
+        }
+        this.setWidth(width);
+        this.setHeight(height);
         this.addStyleName(CanvasResources.INSTANCE.main().sketchTool());
+    }
+
+
+    private void updateImageVisibilty()
+    {
+        final boolean imageVisible = this._inViewMode || (null == _canvas);
+        if (imageVisible) {
+            this.updateImageFromCanvas();
+        }
+        this._image.setVisible(imageVisible);
+        this._canvas.setVisible((false == this._inViewMode) && (null != _canvas));
+    }
+
+
+    // TODO: for IE <= 8, call this instead of Canvas.getContext2d
+    private static final native Context2d getContext2d(Element canvasElement) /*-{
+        $wnd.G_vmlCanvasManager.initElement(el);
+        return el.getContext('2d');
+    }-*/;
+
+    private void setHeight(int height)
+    {
+        super.setHeight(toPxString(height));
+        this._canvas.setCoordinateSpaceHeight(height);
+    }
+    private void setWidth(int width)
+    {
+        super.setWidth(toPxString(width));
+        this._canvas.setCoordinateSpaceWidth(width);
     }
 
     @Override
@@ -81,30 +118,41 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
     }
 
     @Override
-    public void setValue(VectorGraphicsData value) {
+    public void setValue(SketchData value) {
         this.data = value;
         ElementUtils.setTextSelectionEnabled(this.getElement(), false);
-        if (this.getElement().getInnerHTML().equals(this.data.svgString)) {
+
+        final String imageData = value.imageData;
+        if (null != imageData) {
+            this._imageElement.setSrc(imageData);
+        }
+        else {
+            if (null != this._canvas) {
+                this._canvas.setCoordinateSpaceHeight(this._canvas.getCoordinateSpaceHeight());
+            }
             return;
         }
-        this.clear();
-        Element svgElement = this.getElement().getElementsByTagName("svg").getItem(0);
-        DivElement tempElement = Document.get().createDivElement();
-        tempElement.setInnerHTML(this.data.svgString);
-        for (Node node : NodeUtils.fromNodeList(tempElement.getChildNodes())) {
-            svgElement.appendChild(node);
+
+        if (null == this._context) {
+            return;
         }
+
+        this._context.drawImage(this._imageElement, 0, 0);
     }
 
     @Override
-    public VectorGraphicsData getValue() {
-        this.data.svgString = this.getElement().getInnerHTML();
+    public SketchData getValue() {
+        if (null == this._context) {
+            // we can't change anything.
+            return this.data;
+        }
+        this.data.imageData = this._context.getCanvas().toDataUrl("image/png");
         return this.data;
     }
 
     @Override
     public void setElementData(ElementData data) {
-        this.setValue((VectorGraphicsData) data);
+        this.setValue((SketchData) data);
     }
 
     @Override
@@ -113,21 +161,8 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
         if (this._inViewMode) {
             return;
         }
-        if (false == isActive) {
-            this._currentPath = null;
-            this.removeCursor();
-        }
     }
 
-    private void removeCursor()
-    {
-        if (null == this._cursor) {
-            return;
-        }
-
-        this.remove(this._cursor);
-        this._cursor = null;
-    }
 
     @Override
     public void bind() {
@@ -144,7 +179,7 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
     public boolean canRotate() {
         // TODO: disabled because we don't know how to translate mouse coordinates when the tool is rotated. It needs to
         // be done relative to the tool frame, because that is the element that is rotated (not the tool itself).
-        return false;
+        return true;
     }
 
     @Override
@@ -157,17 +192,53 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
     {
         if (this._inViewMode) {
             this.registrationsManager.clear();
-            this.removeCursor();
         }
         else if (this._bound) {
             this.setRegistrations();
         }
+        this.updateImageVisibilty();
     }
 
     @Override
-    public void onResize() {
-        this.setWidth(this.getOffsetWidth());
-        this.setHeight(this.getOffsetHeight());
+    public void onResize()
+    {
+        Point2D targetSize = ElementUtils.getElementOffsetSize(this.getElement());
+
+        this.expandBackCanvas(targetSize);
+        copyCanvas(this._canvas, this._resizeCanvas1);
+
+        this.setWidth(targetSize.getX());
+        this.setHeight(targetSize.getY());
+
+        copyCanvas(this._resizeCanvas1, this._canvas);
+    }
+
+
+    private void expandBackCanvas(Point2D targetSize)
+    {
+        Point2D maxSize = Point2D.max(CanvasUtils.getCoorinateSpaceSize(this._resizeCanvas1), targetSize);
+        CanvasUtils.setCoordinateSpaceSize(this._resizeCanvas2, maxSize);
+
+        copyCanvas(this._resizeCanvas1, this._resizeCanvas2);
+        this.swapResizeCanvases();
+    }
+
+
+    private void swapResizeCanvases()
+    {
+        Canvas tempCanvas = this._resizeCanvas2;
+        this._resizeCanvas2 = this._resizeCanvas1;
+        this._resizeCanvas1 = tempCanvas;
+    }
+
+    private static void copyCanvas(Canvas source, Canvas dest)
+    {
+        dest.getContext2d().drawImage(source.getCanvasElement(), 0, 0);
+    }
+
+    private static void clearCanvas(Canvas canvas)
+    {
+        canvas.getContext2d().clearRect(0, 0, canvas.getCoordinateSpaceWidth(), canvas.getCoordinateSpaceHeight());
     }
 
     @Override
@@ -180,12 +251,11 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
         final SketchTool that = this;
         this.registrationsManager.clear();
 
-        this.registrationsManager.add(this.addMouseOutHandler(new MouseOutHandler() {
+        this.registrationsManager.add(this.addDomHandler(new MouseOutHandler() {
             @Override public void onMouseOut(MouseOutEvent event) {
-                that.removeCursor();
                 that._prevDrawPos = null;
             }
-        }));
+        }, MouseOutEvent.getType()));
         this.registrationsManager.add(WidgetUtils.addMovementStartHandler(this, new Handler<HumanInputEvent<?>>() {
             @Override public void onFire(HumanInputEvent<?> arg) {
                 // TODO request to be activated instead of doing this forcefully?
@@ -195,25 +265,14 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
             }}));
         this.registrationsManager.add(WidgetUtils.addMovementStopHandler(this, new Handler<HumanInputEvent<?>>() {
             @Override public void onFire(HumanInputEvent<?> arg) {
-                //final Path path = that._currentPath;
                 if ((false == that._active) || (false == that.drawingPathExists())) {
                     return;
                 }
-//                UndoManager.get().add(this, new UndoRedoPair() {
-//                    @Override public void undo() {
-//                        that.remove(path);
-//                    }
-//
-//                    @Override public void redo() {
-//                        that.add(path);
-//                    }
-//                });
                 terminateDrawingPath();
             }}));
 
         this.registrationsManager.add(this.addDomHandler(new MouseMoveHandler(){
             @Override public void onMouseMove(MouseMoveEvent event) {
-                that.updateCursor();
                 if (false == that._active) {
                     return;
                 }
@@ -238,31 +297,18 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
     private void startPathDraw()
     {
         Point2D pos = ElementUtils.getMousePositionRelativeToElement(this.getElement());
-//        this._currentPath = new Path(pos.getX(), pos.getY());
-//        this._currentPath.setStrokeColor("#000000");
-//        this._currentPath.setFillOpacity(0);
-//        this._currentPath.setStrokeWidth(this.data.penWidth);
-//        this._currentPath.setStrokeColor(this._strokeColor);
-//        this.add(this._currentPath);
         this._drawingPathExists = true;
         this.drawPen(pos);
         this._prevDrawPos = pos;
     }
 
-    private Circle createDrawingCircle(Point2D pos)
-    {
-        Circle circle = new Circle(pos.getX(), pos.getY(), this.data.penWidth);
-        circle.setFillColor(this._strokeColor);
-        circle.setStrokeWidth(0);
-        return circle;
-    }
 
     private void addLineToPath()
     {
         if (drawingPathExists()) {
             Point2D pos = ElementUtils.getMousePositionRelativeToElement(this.getElement());
             //this._currentPath.lineTo(pos.getX(), pos.getY());
-            if ((false == this._toolbar.isErasing()) && (null != this._prevDrawPos)) {
+            if (null != this._prevDrawPos) {
                 final Point2D offset = pos.minus(this._prevDrawPos);
                 int steps = (int) Math.floor(offset.radius());
                 for (int i = 0 ; i < steps; i += Math.max(1, this.data.penSkip)) {
@@ -275,30 +321,33 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
         }
     }
 
-    private void drawPen(Point2D stepPos)
+    private void drawPen(Point2D mousePos)
     {
+        //this.add(this.createDrawingCircle(stepPos));
+        this._context.setFillStyle(this._strokeColor);
+        this._context.setStrokeStyle("transparent");
+
         if (this._toolbar.isErasing()) {
-            ArrayList<VectorObject> objsToRemove = new ArrayList<VectorObject>();
-            for (int i = 0 ; i < this.getVectorObjectCount(); i++) {
-                VectorObject obj = this.getVectorObject(i);
-                if (obj == this._cursor) {
-                    continue;
-                }
-                if (obj instanceof Positionable) {
-                    Positionable positionableObj = (Positionable) obj;
-                    Point2D objPos = new Point2D(positionableObj.getX(), positionableObj.getY());
-                    if (objPos.minus(stepPos).radius() < this.data.eraserWidth + this.data.penWidth) {
-                        objsToRemove.add(obj);
-                    }
-                }
-            }
-            for (VectorObject obj : objsToRemove) {
-                this.remove(obj);
-            }
+            // We have to erase in both buffers, because when we copy from the front to the back buffer later when resizing, it does not
+            // overwrite with transparent pixels
+            drawEraser(mousePos, this._context);
+            drawEraser(mousePos, this._resizeCanvas1.getContext2d());
+            return;
         }
         else {
-            this.add(this.createDrawingCircle(stepPos));
+            this._context.beginPath();
+            this._context.arc(mousePos.getX(), mousePos.getY(), this.data.penWidth, 0, 2 * Math.PI);
+            this._context.closePath();
+            this._context.fill();
         }
+    }
+
+
+    private void drawEraser(Point2D mousePos, Context2d context)
+    {
+        context.clearRect(mousePos.getX() - this.data.eraserWidth / 2,
+                                mousePos.getY() - this.data.eraserWidth / 2,
+                                this.data.eraserWidth, this.data.eraserWidth);
     }
 
     private boolean drawingPathExists()
@@ -310,45 +359,28 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
     protected void setColor(String arg)
     {
         this._strokeColor = arg;
-        if (drawingPathExists()) {
-            //this._currentPath.setStrokeColor(arg);
-        }
     }
 
     private void terminateDrawingPath()
     {
-        _currentPath = null;
         _drawingPathExists = false;
     }
 
-    private void updateCursor()
-    {
-        if (false == BrowserUtils.supportsDynamicSVG()) {
-            return;
-        }
-        if (null == this._cursor) {
-            this._cursor = this.createDrawingCircle(Point2D.zero);
-            this.add(this._cursor);
-        }
-        Point2D mousePos = ElementUtils.getMousePositionRelativeToElement(this.getElement());
-        this._cursor.setX(mousePos.getX());
-        this._cursor.setY(mousePos.getY());
-        if (this._toolbar.isErasing()) {
-            this._cursor.setFillColor("transparent");
-            this._cursor.setStrokeColor("black");
-            this._cursor.setStrokeWidth(1);
-            this._cursor.setRadius(this.data.eraserWidth);
-        }
-        else {
-            this._cursor.setStrokeWidth(0);
-            this._cursor.setFillColor(this._toolbar.getColor());
-            this._cursor.setRadius(this.data.penWidth);
-        }
-    }
 
     @Override
     public boolean dimOnLoad() {
         return true;
     }
+
+    private String toPxString(int height)
+    {
+        return String.valueOf(height) + "px";
+    }
+
+    private void updateImageFromCanvas()
+    {
+        this._image.setUrl(Strings.nullToEmpty(this._canvas.toDataUrl()));
+    }
 }
+
 

@@ -3,7 +3,7 @@ package com.project.website.canvas.client.canvastools.sketch;
 import com.project.shared.data.Point2D;
 import com.project.website.canvas.client.canvastools.base.CanvasToolFactory;
 import com.project.website.canvas.client.canvastools.base.CanvasToolFactoryBase;
-import com.project.website.canvas.shared.data.VectorGraphicsData;
+import com.project.website.canvas.shared.data.SketchData;
 
 public class SketchToolFactory extends CanvasToolFactoryBase<SketchTool>
     implements CanvasToolFactory<SketchTool>
@@ -23,7 +23,7 @@ public class SketchToolFactory extends CanvasToolFactoryBase<SketchTool>
 
     @Override
     public SketchTool create() {
-        VectorGraphicsData data = new VectorGraphicsData(UNIQUE_ID);
+        SketchData data = new SketchData(UNIQUE_ID);
         data.penWidth = this.penWidth;
         data.penSkip = this.penSkip;
         data.eraserWidth = this.eraserWidth;
