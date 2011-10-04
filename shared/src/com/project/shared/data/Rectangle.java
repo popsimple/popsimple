@@ -169,6 +169,14 @@ public class Rectangle implements ICloneable, Serializable, IsSerializable {
         return false;
     }
 
+    public Rectangle move(Point2D target)
+    {
+        int newRight = this.right - (this.left - target.getX());
+        int newBottom = this.bottom - (this.top - target.getY());
+
+        return new Rectangle(target.getX(), target.getY(), newRight, newBottom);
+    }
+
     @Override
     public Object createInstance() {
         return new Rectangle();

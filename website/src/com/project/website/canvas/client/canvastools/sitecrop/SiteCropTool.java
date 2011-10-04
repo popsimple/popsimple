@@ -47,6 +47,7 @@ import com.project.website.canvas.shared.data.SiteCropElementData;
 //2. set the frame correctly if the page loads again.
 //3. handle View/Edit mode correctly.
 //6. Disable all toolbar when loading.
+//7. Support mouse scroll for movement.
 
 public class SiteCropTool extends Composite implements CanvasTool<SiteCropElementData>{
 
@@ -74,8 +75,6 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
 
     @UiField
     HTMLPanel dragPanel;
-    @UiField
-    FlowPanel coverPanel;
 
     //#endregion
 
@@ -240,34 +239,19 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
 
     private void cropSelectedFrame()
     {
-        Rectangle rect = this._frameSelectionManager.getSelectedRectangle();
-        rect.copyTo(this._data.clipRectangle);
+        Rectangle selectionRect = this._frameSelectionManager.getSelectedRectangle();
 
-        Rectangle coverRectangle = ElementUtils.getElementOffsetRectangle(coverPanel.getElement());
-        coverRectangle.copyTo(this._data.coverRectangle);
-
-        this.setCropParameters();
+        Rectangle frameRect = ElementUtils.getElementOffsetRectangle(this.siteFrame.getElement());
+        frameRect = frameRect.move(new Point2D(
+                frameRect.getLeft() - selectionRect.getLeft(), frameRect.getTop() - selectionRect.getTop()));
+        this.updateFrameDimensions(frameRect);
 
         this._toolEvents.dispatchSelfMoveRequestEvent(new Point2D(
-                this._data.clipRectangle.getLeft(), this._data.clipRectangle.getTop()));
-        ElementUtils.setElementSize(this.getElement(), this._data.clipRectangle.getSize());
+                selectionRect.getLeft(), selectionRect.getTop()));
+        ElementUtils.setElementSize(this.getElement(), selectionRect.getSize());
 
         this._frameSelectionManager.clearSelection();
         this.setDefaultMode();
-    }
-
-    private void setCropParameters()
-    {
-        if (this._data.coverRectangle.equals(Rectangle.empty))
-        {
-            return;
-        }
-
-        ElementUtils.setElementRectangle(coverPanel.getElement(), this._data.coverRectangle);
-
-        Point2D currentPosition = ElementUtils.getElementCSSPosition(this.coverPanel.getElement());
-        ElementUtils.setElementCSSPosition(this.coverPanel.getElement(), currentPosition.minus(
-                new Point2D(this._data.clipRectangle.getLeft(), this._data.clipRectangle.getTop())));
     }
 
     private void enableSiteMove()
@@ -378,7 +362,6 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
         this._toolEvents.dispatchLoadStartedEvent();
 
         this._toolbar.enableCrop(false);
-//        this.loadingPanel.addStyleName(CanvasResources.INSTANCE.main().imageLoadingStyle());
 
         url = UrlUtils.ensureProtocol(url);
 
@@ -411,7 +394,6 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
         this.loadUrl(this._data.url);
 
         this.setFrameParameters();
-        this.setCropParameters();
     }
 
     private void setToolbarData(SiteCropElementData data)
@@ -481,6 +463,13 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
 
     @Override
     public void onResize() {
+//        Rectangle toolRect = ElementUtils.getElementOffsetRectangle(this.getElement());
+//        Rectangle frameRect = ElementUtils.getElementOffsetRectangle(this.siteFrame.getElement());
+//
+//        frameRect.setRight(toolRect.getRight());
+//        frameRect.setBottom(toolRect.getBottom());
+//
+//        ElementUtils.setElementRectangle(this.siteFrame.getElement(), frameRect);
     }
 
     @Override
