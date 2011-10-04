@@ -33,7 +33,7 @@ public class SketchToolbar extends Composite
     ToggleButton eraseButton;
     @UiField
     ToggleButton paintButton;
-    
+
     @UiField
     HTMLPanel colorPanel;
 
@@ -63,7 +63,7 @@ public class SketchToolbar extends Composite
 				colorPanel.setVisible(event.getValue());
 			}
 		});
-        
+
         this.paintButton.setValue(true, true);
     }
 

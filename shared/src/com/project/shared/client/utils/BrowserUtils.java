@@ -5,6 +5,7 @@ public class BrowserUtils
 {
     private static final boolean IS_CHROME = BrowserDetect.get().getBrowser().equals("Chrome");
     private static final boolean IS_SAFARI = BrowserDetect.get().getBrowser().equals("Safari");
+    private static final boolean IS_IE = BrowserDetect.get().getBrowser().equals("Explorer");
 
     public static boolean isChrome() {
         return IS_CHROME;
@@ -29,6 +30,11 @@ public class BrowserUtils
     {
         // TODO: check exactly which versions of safari don't support cursor: none
         return false == BrowserUtils.isSafari();
+    }
+
+    public static boolean isIE()
+    {
+        return IS_IE;
     }
 
 }

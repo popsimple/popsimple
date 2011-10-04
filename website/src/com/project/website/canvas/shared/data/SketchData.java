@@ -3,16 +3,16 @@ package com.project.website.canvas.shared.data;
 import com.google.appengine.api.datastore.Blob;
 import com.google.code.twig.annotation.Type;
 
-public class VectorGraphicsData extends ElementData
+public class SketchData extends ElementData
 {
     private static final long serialVersionUID = 1L;
 
-    public VectorGraphicsData(String uniqueId)
+    public SketchData(String uniqueId)
     {
         super(uniqueId);
     }
 
-    protected VectorGraphicsData()
+    protected SketchData()
     {
         super();
     }
@@ -20,7 +20,7 @@ public class VectorGraphicsData extends ElementData
     public int penWidth;
 
     @Type(Blob.class)
-    public String svgString;
+    public String imageData;
 
     public int penSkip;
 
