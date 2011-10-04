@@ -6,8 +6,8 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.common.base.Objects;
 import com.project.shared.server.HttpServerCookiesUtils;
-import com.project.shared.utils.ObjectUtils;
 import com.project.website.shared.data.User;
 
 public class HttpAuthentication
@@ -31,7 +31,7 @@ public class HttpAuthentication
         if ((null != userName) && (null != userHash)) {
             user = AuthenticationUtils.loadUser(userName);
             if (null != user) {
-                valid = ObjectUtils.areEqual(getUserHash(user, httpRequest, response), userHash);
+                valid = Objects.equal(getUserHash(user, httpRequest, response), userHash);
             }
         }
 

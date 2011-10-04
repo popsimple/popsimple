@@ -1,5 +1,6 @@
 package com.project.shared.client.net;
 
+import com.google.common.base.Strings;
 import com.google.gwt.event.dom.client.ErrorEvent;
 import com.google.gwt.event.dom.client.ErrorHandler;
 import com.google.gwt.event.dom.client.LoadEvent;
@@ -10,7 +11,6 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.data.KeyValue;
-import com.project.shared.utils.StringUtils;
 
 public class ImageLoader
 {
@@ -66,7 +66,7 @@ public class ImageLoader
     {
         this._imageRegs.clear();
         String imageUrl = imageUrls[index];
-        if (StringUtils.isEmptyOrNull(imageUrl))
+        if (Strings.isNullOrEmpty(imageUrl))
         {
             _errorHandler.dispatch(null);
         }

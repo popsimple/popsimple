@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import com.google.common.base.Objects;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -51,7 +52,6 @@ import com.project.shared.client.utils.widgets.WidgetUtils;
 import com.project.shared.data.Point2D;
 import com.project.shared.utils.CloneableUtils;
 import com.project.shared.utils.IterableUtils;
-import com.project.shared.utils.ObjectUtils;
 import com.project.website.canvas.client.canvastools.CursorToolboxItem;
 import com.project.website.canvas.client.canvastools.MoveToolboxItem;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
@@ -622,7 +622,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
     private void onBackgroundImageSelected(ImageInformation arg)
     {
-        if (ObjectUtils.areEqual(this._pageOptions.backgroundImage, arg))
+        if (Objects.equal(this._pageOptions.backgroundImage, arg))
         {
             return;
         }

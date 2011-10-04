@@ -2,6 +2,7 @@ package com.project.website.canvas.client.shared.dialogs;
 
 import java.util.List;
 
+import com.google.common.base.Objects;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -26,7 +27,6 @@ import com.project.shared.client.handlers.SpecificKeyPressHandler;
 import com.project.shared.client.utils.UrlUtils;
 import com.project.shared.data.Point2D;
 import com.project.shared.utils.CloneableUtils;
-import com.project.shared.utils.ObjectUtils;
 import com.project.website.canvas.client.shared.ImageOptionTypes;
 import com.project.website.canvas.client.shared.ImageOptionsProvider;
 import com.project.website.canvas.client.shared.ImageOptionsProviderUtils;
@@ -226,7 +226,7 @@ public class SelectImageDialog extends Composite implements TakesValue<ImageInfo
 
     private void setManualUrl(String url)
     {
-        if (ObjectUtils.areEqual(this._imageInformation.url, url))
+        if (Objects.equal(this._imageInformation.url, url))
         {
             return;
         }

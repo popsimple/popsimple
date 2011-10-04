@@ -14,13 +14,18 @@
 	<inherits name='com.google.gwt.resources.Resources' />
 	<inherits name='com.google.gwt.http.HTTP' />
 
+    <!-- guava-gwt -->
+    <inherits name='com.google.common.base.Base'/>
+    <inherits name="com.google.common.collect.Collect" />
+
+
 	<inherits name='com.project.website.shared.Shared'/>
 	<inherits name='com.project.shared.Shared'/>
 	<inherits name='com.ghusse.dolomite.Dolomite'/>
 	<inherits name='com.project.gwtbing.GwtBing'/>
 	<inherits name='com.project.gwtyoutube.GwtYouTube'/>
 	<inherits name='com.project.gwtmapstraction.GwtMapstraction'/>
-	
+
 	<inherits name='org.vaadin.gwtgraphics.GWTGraphics'/>
 
     <set-configuration-property name="UiBinder.useSafeHtmlTemplates" value="true"/>

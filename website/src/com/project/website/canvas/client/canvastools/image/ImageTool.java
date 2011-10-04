@@ -3,6 +3,8 @@ package com.project.website.canvas.client.canvastools.image;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.google.common.base.Objects;
+import com.google.common.base.Strings;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
@@ -27,7 +29,6 @@ import com.project.shared.client.utils.StyleUtils;
 import com.project.shared.client.utils.UrlUtils;
 import com.project.shared.client.utils.widgets.WidgetUtils;
 import com.project.shared.utils.CloneableUtils;
-import com.project.shared.utils.ObjectUtils;
 import com.project.shared.utils.StringUtils;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
 import com.project.website.canvas.client.canvastools.base.CanvasToolCommon;
@@ -159,7 +160,7 @@ public class ImageTool extends Composite implements CanvasTool<ImageData> {
     }
 
     private void setImageInformation(ImageInformation imageInformation) {
-        if (ObjectUtils.areEqual(data.imageInformation, imageInformation)) {
+        if (Objects.equal(data.imageInformation, imageInformation)) {
             return;
         }
         // Make sure we don't set arbitrary html or invalid urls
@@ -183,7 +184,7 @@ public class ImageTool extends Composite implements CanvasTool<ImageData> {
         this.removeStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
         StyleUtils.clearBackground(this.getElement().getStyle());
 
-        if (StringUtils.isEmptyOrNull(this.data.imageInformation.url)) {
+        if (Strings.isNullOrEmpty(this.data.imageInformation.url)) {
             return;
         }
 

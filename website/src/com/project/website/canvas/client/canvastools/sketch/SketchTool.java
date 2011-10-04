@@ -1,11 +1,9 @@
 package com.project.website.canvas.client.canvastools.sketch;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import org.vaadin.gwtgraphics.client.DrawingArea;
 import org.vaadin.gwtgraphics.client.Positionable;
-import org.vaadin.gwtgraphics.client.Shape;
 import org.vaadin.gwtgraphics.client.VectorObject;
 import org.vaadin.gwtgraphics.client.shape.Circle;
 import org.vaadin.gwtgraphics.client.shape.Path;
@@ -22,6 +20,7 @@ import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.handlers.RegistrationsManager;
+import com.project.shared.client.utils.BrowserUtils;
 import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.NodeUtils;
 import com.project.shared.client.utils.widgets.WidgetUtils;
@@ -324,6 +323,9 @@ public class SketchTool extends DrawingArea implements CanvasTool<VectorGraphics
 
     private void updateCursor()
     {
+        if (false == BrowserUtils.supportsDynamicSVG()) {
+            return;
+        }
         if (null == this._cursor) {
             this._cursor = this.createDrawingCircle(Point2D.zero);
             this.add(this._cursor);

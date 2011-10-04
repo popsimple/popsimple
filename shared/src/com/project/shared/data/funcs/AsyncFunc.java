@@ -58,7 +58,7 @@ public abstract class AsyncFunc<A, B>  {
             @Override
             protected <S, E> void run(A arg, final Func<B, S> successHandler, Func<Throwable, E> errorHandler)
             {
-                successHandler.call(value);
+                successHandler.apply(value);
             }};
     }
 
@@ -104,7 +104,7 @@ public abstract class AsyncFunc<A, B>  {
                     private B _firstResult;
 
                     @Override
-                    public S call(B arg)
+                    public S apply(B arg)
                     {
                         numCompleted[0] += 1;
 
@@ -113,7 +113,7 @@ public abstract class AsyncFunc<A, B>  {
                             return null;
                         }
                         // Both completed
-                        return successHandler.call(new Pair<B, B>(this._firstResult, arg));
+                        return successHandler.apply(new Pair<B, B>(this._firstResult, arg));
                     }};
 
                 left.run(arg, singleSuccessHandler, Action.<Throwable>empty());
@@ -130,7 +130,7 @@ public abstract class AsyncFunc<A, B>  {
             {
                 B res = null;
                 try {
-                    res = func.call(arg);
+                    res = func.apply(arg);
                 }
                 catch (Throwable e) {
                 	// TODO perhaps use the errorHandler here?
@@ -138,7 +138,7 @@ public abstract class AsyncFunc<A, B>  {
                 	Logger.info(this, ThrowableUtils.joinStackTrace(e));
             		throw new RuntimeException(e);
                 }
-                successHandler.call(res);
+                successHandler.apply(res);
             }
         };
     }
@@ -150,7 +150,7 @@ public abstract class AsyncFunc<A, B>  {
             @Override
             protected <S, E> void run(A arg, Func<A, S> successHandler, Func<Throwable, E> errorHandler)
             {
-                successHandler.call(arg);
+                successHandler.apply(arg);
             }
 
             @Override

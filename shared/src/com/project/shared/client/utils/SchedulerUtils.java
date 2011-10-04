@@ -15,7 +15,7 @@ public class SchedulerUtils {
 				Scheduler.get().scheduleDeferred(new ScheduledCommand() {
 					@Override
 					public void execute() {
-						successHandler.call(null);
+						successHandler.apply(null);
 					}
 				});
 			}

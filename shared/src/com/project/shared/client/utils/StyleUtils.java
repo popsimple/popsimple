@@ -2,13 +2,14 @@ package com.project.shared.client.utils;
 
 import java.util.ArrayList;
 
+import com.google.common.base.Function;
+import com.google.common.base.Strings;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.DOM;
 import com.project.shared.data.Rgba;
-import com.project.shared.data.funcs.Func;
-import com.project.shared.utils.IterableUtils;
+import com.project.shared.utils.ArrayUtils;
 import com.project.shared.utils.StringUtils;
 
 public class StyleUtils
@@ -342,9 +343,9 @@ public class StyleUtils
         String[] splitStrings = cssColor.trim().toLowerCase().split("[, \\(\\);]");
         String[] values = new String[4];
 
-        IterableUtils.filter(splitStrings, new Func<String,Boolean>(){
-            @Override public Boolean call(String arg) {
-                return StringUtils.isEmptyOrNull(arg);
+        ArrayUtils.filter(splitStrings, new Function<String,Boolean>(){
+            @Override public Boolean apply(String arg) {
+                return Strings.isNullOrEmpty(arg);
             }});
 
         if (values[0].equals("rgba")) {

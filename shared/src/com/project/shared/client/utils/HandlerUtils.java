@@ -37,7 +37,7 @@ public class HandlerUtils {
             @Override
             public void onFire(A arg)
             {
-                func.call(arg);
+                func.apply(arg);
             }
         };
     }

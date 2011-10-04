@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import com.google.common.base.Objects;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
@@ -22,7 +23,6 @@ import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.UrlUtils;
 import com.project.shared.data.Point2D;
 import com.project.shared.utils.CloneableUtils;
-import com.project.shared.utils.ObjectUtils;
 import com.project.shared.utils.QueryString;
 import com.project.shared.utils.ThrowableUtils;
 import com.project.website.canvas.client.ToolFactories;
@@ -353,7 +353,7 @@ public class WorksheetImpl implements Worksheet
             }
         }
 
-        if (ObjectUtils.areEqual(id, this.page.id)) {
+        if (Objects.equal(id, this.page.id)) {
             return;
         }
 
@@ -610,7 +610,7 @@ public class WorksheetImpl implements Worksheet
         if (null == id) {
         	return;
         }
-        if (false == ObjectUtils.areEqual(this.page.id, id)) {
+        if (false == Objects.equal(this.page.id, id)) {
             // Page id changed.
             // Change the URL hash and trigger a history load event.
             Window.Location.replace(this.buildPageUrl(id, this._inViewMode));
