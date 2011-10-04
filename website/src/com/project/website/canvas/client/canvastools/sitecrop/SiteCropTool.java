@@ -49,7 +49,6 @@ import com.project.website.canvas.shared.data.SiteCropElementData;
 //2. set the frame correctly if the page loads again.
 //3. handle View/Edit mode correctly.
 //6. Disable all toolbar when loading.
-//7. Reset margin when browsing again to the url.
 
 public class SiteCropTool extends Composite implements CanvasTool<SiteCropElementData>{
 
@@ -379,8 +378,11 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
     }
 
     private void setUrl(String url) {
-        this._data.url = url;
-
+        if (false == this._data.url.equalsIgnoreCase(url))
+        {
+            this.resetFramePosition();
+            this._data.url = url;
+        }
         this.loadUrl(url);
     }
 
@@ -408,6 +410,15 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
         this._toolbar.enableBrowse(true);
     }
 
+    private void resetFramePosition()
+    {
+        this.updateFrameDimensions(ElementUtils.getElementOffsetRectangle(
+                this.siteFrame.getElement()).move(new Point2D(0, 0)));
+        this.setMinimalRectangle(Rectangle.empty);
+
+        this.onResize();
+    }
+
     private boolean isValidUrl(String url)
     {
         if (Strings.isNullOrEmpty(url))
@@ -420,10 +431,11 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
     @Override
     public void setValue(SiteCropElementData value) {
         this._data = value;
-        this.setMinimalRectangle(this._data.frameRectangle);
-        this.setToolbarData(value);
 
         this.loadUrl(this._data.url);
+
+        this.setMinimalRectangle(this._data.frameRectangle);
+        this.setToolbarData(value);
 
         this.setFrameParameters();
     }
