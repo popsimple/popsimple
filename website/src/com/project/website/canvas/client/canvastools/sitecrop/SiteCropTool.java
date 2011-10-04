@@ -44,11 +44,15 @@ import com.project.website.canvas.shared.data.ElementData;
 import com.project.website.canvas.shared.data.SiteCropElementData;
 
 //TODO:
-//
-//1. stretch frame when changing the size of the tool after cropping or moving.
 //2. set the frame correctly if the page loads again.
 //3. handle View/Edit mode correctly.
 //6. Disable all toolbar when loading.
+
+//IE9 Problems:
+//Apparently in IE9 they've changed the way IFrames are rendered so now they are rendered using the same engine as
+//the parent page. so if the parent page defines a doctype of HTML5, the child page will also be renderd in the same engine.
+//which causes problems in some sites (e.g.: ynet.co.il) since they are not supposed to work with that rendering engine.
+//http://www.sitepoint.com/forums/showthread.php?743000-IE9-Iframes-DOCTYPES-and-You/page3
 
 public class SiteCropTool extends Composite implements CanvasTool<SiteCropElementData>{
 
@@ -101,6 +105,8 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
     public SiteCropTool() {
         initWidget(uiBinder.createAndBindUi(this));
 
+        this.initializeFrame();
+
         this.addStyleName(CanvasResources.INSTANCE.main().cropSiteToolEmpty());
 
         this.selectionPanel.setVisible(false);
@@ -122,6 +128,12 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
     public ICanvasToolEvents getToolEvents()
     {
         return this._toolEvents;
+    }
+
+    private void initializeFrame()
+    {
+        this.siteFrame.getElement().setPropertyString("scrolling", "no");
+        this.siteFrame.getElement().setPropertyString("frameborder", "0");
     }
 
     private void initializeToolbar()
@@ -401,7 +413,6 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
 
         //TODO: Called twice due to toolbar changes.
         this.siteFrame.setUrl(url);
-        this.siteFrame.getElement().setPropertyString("scrolling", "no");
         ElementUtils.setElementSize(this.getElement(),
                 ElementUtils.getElementOffsetSize(this.getElement()));
         this.removeStyleName(CanvasResources.INSTANCE.main().cropSiteToolEmpty());
