@@ -49,6 +49,7 @@ import com.project.website.canvas.shared.data.SiteCropElementData;
 //2. set the frame correctly if the page loads again.
 //3. handle View/Edit mode correctly.
 //6. Disable all toolbar when loading.
+//7. Reset margin when browsing again to the url.
 
 public class SiteCropTool extends Composite implements CanvasTool<SiteCropElementData>{
 
@@ -92,6 +93,8 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
     private RegistrationsManager _registrationManager = new RegistrationsManager();
     private RegistrationsManager _moveRegistrationManager = new RegistrationsManager();
     private RegistrationsManager _cropRegistrationManager = new RegistrationsManager();
+
+    private Rectangle _minimalRectangle = Rectangle.empty;
 
     //TODO: Make singleton and update according to data when displayed.
     private final SiteCropToolbar _toolbar = new SiteCropToolbar();
@@ -253,6 +256,8 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
                 selectionRect.getLeft(), selectionRect.getTop()));
         ElementUtils.setElementSize(this.getElement(), selectionRect.getSize());
 
+        this.setMinimalRectangle(frameRect);
+
         this._frameSelectionManager.clearSelection();
         this.setDefaultMode();
     }
@@ -352,9 +357,14 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
         this._toolbar.setAcceptCropVisibility(false);
     }
 
+    private void setMinimalRectangle(Rectangle rectangle)
+    {
+        this._minimalRectangle = new Rectangle(rectangle);
+    }
+
     private void updateFrameDimensions(Rectangle rectangle)
     {
-        rectangle.copyTo(this._data.frameRectangle);
+        this._data.frameRectangle = new Rectangle(rectangle);
 
         this.setFrameParameters();
     }
@@ -410,7 +420,7 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
     @Override
     public void setValue(SiteCropElementData value) {
         this._data = value;
-
+        this.setMinimalRectangle(this._data.frameRectangle);
         this.setToolbarData(value);
 
         this.loadUrl(this._data.url);
@@ -485,13 +495,22 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
 
     @Override
     public void onResize() {
-//        Rectangle toolRect = ElementUtils.getElementOffsetRectangle(this.getElement());
-//        Rectangle frameRect = ElementUtils.getElementOffsetRectangle(this.siteFrame.getElement());
-//
-//        frameRect.setRight(toolRect.getRight());
-//        frameRect.setBottom(toolRect.getBottom());
-//
-//        ElementUtils.setElementRectangle(this.siteFrame.getElement(), frameRect);
+        //Only resize the frame if the tool is larger than the minimal rectangle which is set when cropping the frame.
+        //this is done to prevent unwanted movement in the frame during resize due to the fact that after crop the frame
+        //size might be bigger than the actual tool.
+
+        Rectangle frameRect = ElementUtils.getElementOffsetRectangle(this.siteFrame.getElement());
+        Rectangle toolRect = ElementUtils.getElementOffsetRectangle(this.getElement());
+
+        if (toolRect.getSize().getX() >= this._minimalRectangle.getRight())
+        {
+            frameRect.setRight(toolRect.getRight());
+        }
+        if (toolRect.getSize().getY() >= this._minimalRectangle.getBottom())
+        {
+            frameRect.setBottom(toolRect.getBottom());
+        }
+        this.updateFrameDimensions(frameRect);
     }
 
     @Override
