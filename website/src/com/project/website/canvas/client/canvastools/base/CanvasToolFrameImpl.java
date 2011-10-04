@@ -43,6 +43,7 @@ import com.project.shared.client.utils.StyleUtils;
 import com.project.shared.client.utils.widgets.WidgetUtils;
 import com.project.shared.data.Point2D;
 import com.project.shared.data.Rectangle;
+import com.project.website.canvas.client.canvastools.base.eventargs.LoadStartedEventArgs;
 import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.client.shared.widgets.FloatingToolbar;
 import com.project.website.canvas.shared.data.ElementData;
@@ -119,10 +120,6 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
 
         ElementUtils.setTextSelectionEnabled(this.buttonsPanel.getElement(), false);
 
-        if (this.tool.dimOnLoad())
-        {
-            this.loadingPanel.addStyleName(CanvasResources.INSTANCE.main().loadingFillerDim());
-        }
         this.loadingPanel.setVisible(false);
         this.rotatePanel.setVisible(tool.canRotate());
         this.resizePanel.setVisible(tool.getResizeMode() != ResizeMode.NONE);
@@ -232,10 +229,10 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
                 moveStartRequest.dispatch(null);
             }
         }));
-        toolRegs.add(tool.getToolEvents().addLoadStartedEventHandler(new Handler<Void>() {
+        toolRegs.add(tool.getToolEvents().addLoadStartedEventHandler(new Handler<LoadStartedEventArgs>() {
             @Override
-            public void onFire(Void arg) {
-                toolLoadStarted();
+            public void onFire(LoadStartedEventArgs arg) {
+                toolLoadStarted(arg);
             }
         }));
 
@@ -464,8 +461,13 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
         this.updateToolActive();
     }
 
-    private void toolLoadStarted()
+    private void toolLoadStarted(LoadStartedEventArgs args)
     {
+        this.loadingPanel.removeStyleName(CanvasResources.INSTANCE.main().loadingFillerDim());
+        if (args.dimBackground)
+        {
+            this.loadingPanel.addStyleName(CanvasResources.INSTANCE.main().loadingFillerDim());
+        }
         this.loadingPanel.setVisible(true);
     }
 

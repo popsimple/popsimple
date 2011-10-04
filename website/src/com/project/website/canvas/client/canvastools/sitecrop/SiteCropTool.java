@@ -36,6 +36,7 @@ import com.project.website.canvas.client.canvastools.base.CanvasTool;
 import com.project.website.canvas.client.canvastools.base.CanvasToolEvents;
 import com.project.website.canvas.client.canvastools.base.ICanvasToolEvents;
 import com.project.website.canvas.client.canvastools.base.ResizeMode;
+import com.project.website.canvas.client.canvastools.base.eventargs.LoadStartedEventArgs;
 import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.client.worksheet.ElementDragManagerImpl;
 import com.project.website.canvas.client.worksheet.interfaces.ElementDragManager.StopCondition;
@@ -391,7 +392,7 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
             return;
         }
 
-        this._toolEvents.dispatchLoadStartedEvent();
+        this._toolEvents.dispatchLoadStartedEvent(new LoadStartedEventArgs());
 
         this._toolbar.enableCrop(false);
 
@@ -517,10 +518,5 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
     public IsWidget getToolbar()
     {
         return this._toolbar;
-    }
-
-    @Override
-    public boolean dimOnLoad() {
-        return true;
     }
 }

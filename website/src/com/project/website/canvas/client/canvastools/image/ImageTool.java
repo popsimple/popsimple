@@ -35,6 +35,7 @@ import com.project.website.canvas.client.canvastools.base.CanvasToolCommon;
 import com.project.website.canvas.client.canvastools.base.CanvasToolEvents;
 import com.project.website.canvas.client.canvastools.base.ICanvasToolEvents;
 import com.project.website.canvas.client.canvastools.base.ResizeMode;
+import com.project.website.canvas.client.canvastools.base.eventargs.LoadStartedEventArgs;
 import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.client.shared.ImageInformationUtils;
 import com.project.website.canvas.client.shared.dialogs.SelectImageDialog;
@@ -188,7 +189,7 @@ public class ImageTool extends Composite implements CanvasTool<ImageData> {
             return;
         }
 
-        this._toolEvents.dispatchLoadStartedEvent();
+        this._toolEvents.dispatchLoadStartedEvent(new LoadStartedEventArgs(false));
 
         WidgetUtils.setBackgroundImageAsync(this, this.data.imageInformation.url, CanvasResources.INSTANCE
                 .imageUnavailable().getSafeUri().asString(), autoSize,
@@ -262,10 +263,5 @@ public class ImageTool extends Composite implements CanvasTool<ImageData> {
     public IsWidget getToolbar() {
         // TODO Auto-generated method stub
         return null;
-    }
-
-    @Override
-    public boolean dimOnLoad() {
-        return false;
     }
 }

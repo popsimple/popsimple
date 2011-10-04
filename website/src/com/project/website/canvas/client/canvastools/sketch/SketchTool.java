@@ -10,7 +10,6 @@ import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseMoveHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -364,12 +363,6 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
     private void terminateDrawingPath()
     {
         _drawingPathExists = false;
-    }
-
-
-    @Override
-    public boolean dimOnLoad() {
-        return true;
     }
 
     private String toPxString(int height)

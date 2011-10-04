@@ -20,8 +20,6 @@ public interface CanvasTool<T extends ElementData> extends IsWidget, TakesValue<
     ResizeMode getResizeMode();
     boolean canRotate();
 
-    boolean dimOnLoad();
-
     void setViewMode(boolean isViewMode);
 
     //TODO: Replace with a custom Resize event.
