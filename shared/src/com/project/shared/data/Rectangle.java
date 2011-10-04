@@ -51,6 +51,12 @@ public class Rectangle implements ICloneable, Serializable, IsSerializable {
         this.rotation = rotation;
     }
 
+    public Rectangle(Rectangle rectangle)
+    {
+        this(rectangle.getLeft(), rectangle.getTop(),
+                rectangle.getRight(), rectangle.getBottom(), rectangle.getRotation());
+    }
+
     public boolean contains(Point2D point) {
     	Point2D rotatedPoint = point.rotate(-Math.toRadians(rotation), getCenter(), true);
     	int px = rotatedPoint.getX();
