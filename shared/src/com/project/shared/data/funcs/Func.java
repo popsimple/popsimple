@@ -59,13 +59,14 @@ public abstract class Func<A, B> implements Function<A,B>
 
     public static abstract class Action<A> extends Func<A, Void>
     {
-        public abstract void exec(A arg);
         @Override
         public Void apply(A arg)
         {
             this.exec(arg);
             return null;
         }
+
+        public abstract void exec(A arg);
 
         public static Action<Object> empty = new Action<Object>() {
             @Override public void exec(Object arg) {}

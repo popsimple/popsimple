@@ -3,7 +3,7 @@ package com.project.website.canvas.client.canvastools.map;
 import java.util.Collections;
 import java.util.List;
 
-import com.google.appengine.repackaged.com.google.common.collect.Lists;
+import com.google.common.collect.Lists;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.HashBiMap;
