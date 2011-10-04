@@ -245,5 +245,4 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
     public boolean dimOnLoad() {
         return true;
     }
-
 }

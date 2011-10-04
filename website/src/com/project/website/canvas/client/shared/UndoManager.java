@@ -2,8 +2,8 @@ package com.project.website.canvas.client.shared;
 
 import java.util.Stack;
 
-import com.google.common.collect.Lists;
 import com.google.common.base.Objects;
+import com.google.common.collect.Lists;
 import com.project.shared.data.Pair;
 
 public class UndoManager
