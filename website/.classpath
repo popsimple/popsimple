@@ -12,12 +12,12 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/shared"/>
 	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER"/>
-	<classpathentry kind="lib" path="/shared/libs/guava-10.0.jar">
+	<classpathentry kind="lib" path="/shared/libs/guava-10.0.jar" sourcepath="/shared/libs/guava-10.0-sources.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="jar:platform:/resource/shared/libs/guava-10.0-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/shared/libs/guava-gwt-10.0.jar">
+	<classpathentry kind="lib" path="/shared/libs/guava-gwt-10.0.jar" sourcepath="/shared/libs/guava-gwt-10.0-sources.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="jar:platform:/resource/shared/libs/guava-gwt-10.0-javadoc.jar!/"/>
 		</attributes>
