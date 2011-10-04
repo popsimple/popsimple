@@ -32,7 +32,7 @@ public interface CanvasToolFrame extends Focusable, HasFocusHandlers, HasBlurHan
      * padding/margin/border of the tool, otherwise getToolSize and setToolSize
      * will not be compatible (will be using different values.)
      */
-    void setToolSize(Point2D size);
+    Point2D setToolSize(Point2D desiredSize);
     Point2D getToolSize();
     Point2D getToolOffsetInFrame();
 

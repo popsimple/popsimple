@@ -4,7 +4,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -359,28 +358,33 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
      * getToolSize and setToolSize will not be compatible (will be using different values.)
      */
     @Override
-    public void setToolSize(Point2D size) {
+    public Point2D setToolSize(Point2D size) {
         Element toolElement = this.tool.asWidget().getElement();
+        Point2D newSize = Point2D.zero;
+
         switch (this.tool.getResizeMode())
     	{
     	    case BOTH:
-    	        ElementUtils.setElementSize(toolElement, size);
+    	        newSize = size;
     	        break;
     	    case WIDTH_ONLY:
-    	        toolElement.getStyle().setWidth(size.getX(), Unit.PX);
+    	        newSize = new Point2D(size.getX(), this.getToolSize().getY());
     	        break;
     	    case HEIGHT_ONLY:
-    	        toolElement.getStyle().setHeight(size.getY(), Unit.PX);
+    	        newSize = new Point2D(this.getToolSize().getX(), size.getY());
                 break;
     	    case RELATIVE:
     	        int uniformSize = (size.getX() + size.getY()) / 2;
-                ElementUtils.setElementSize(toolElement, new Point2D(uniformSize, uniformSize));
+    	        newSize = new Point2D(uniformSize, uniformSize);
                 break;
     	    case NONE:
     	    default:
-    	        return;
+    	        return this.getToolSize();
     	}
+        ElementUtils.setElementSize(toolElement, newSize);
         this.onResize();
+
+        return newSize;
     }
 
     @Override
