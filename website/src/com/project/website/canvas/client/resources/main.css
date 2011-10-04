@@ -998,18 +998,25 @@
 /*------------------------------------------------------------*/
 
 .sketchTool {
-    cursor: none;
+    cursor: crosshair;
     border-style: solid;
     border-width: 1px;
     border-color: transparent;
+}
+
+@if (com.project.shared.client.utils.BrowserUtils.supportsDynamicSVG()) {
+	.sketchTool {
+		cursor: none;
+	}
 }
 
 .activeToolFrame .sketchTool {
     border-color: #ccc;
 }
 
-.worksheetModeViewOnly .sketchTool {
+.worksheetModeViewOnly .sketchTool, .worksheetModeViewOnly .activeToolFrame .sketchTool  {
     cursor: default;
+    border-color: transparent;
 }
 
 .sketchTool.floatingToolStyle {
