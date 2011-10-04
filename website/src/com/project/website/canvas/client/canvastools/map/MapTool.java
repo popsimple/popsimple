@@ -2,6 +2,8 @@ package com.project.website.canvas.client.canvastools.map;
 
 import java.util.HashMap;
 
+import com.google.common.base.Predicates;
+import com.google.common.collect.Iterables;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -34,7 +36,6 @@ import com.project.shared.data.Location;
 import com.project.shared.data.Point2D;
 import com.project.shared.data.funcs.AsyncFunc;
 import com.project.shared.data.funcs.Func;
-import com.project.shared.utils.ListUtils;
 import com.project.shared.utils.StringUtils;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
 import com.project.website.canvas.client.canvastools.base.CanvasToolCommon;
@@ -54,7 +55,7 @@ public class MapTool extends Composite implements CanvasTool<MapData> {
 
 	// Don't expose the Microsoft maps provider, the way we work with it is buggy...
     private static final Iterable<MapProvider> userAvailableProviders =
-            ListUtils.exclude(MapToolStaticUtils.AVAILABLE_PROVIDERS, MapProvider.MICROSOFT);
+            Iterables.filter(MapToolStaticUtils.AVAILABLE_PROVIDERS, Predicates.not(Predicates.equalTo(MapProvider.MICROSOFT)));
 
 	interface MapToolUiBinder extends UiBinder<Widget, MapTool> {
 	}

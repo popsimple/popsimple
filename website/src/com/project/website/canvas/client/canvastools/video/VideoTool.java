@@ -3,6 +3,7 @@ package com.project.website.canvas.client.canvastools.video;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.google.common.base.Objects;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
@@ -29,7 +30,6 @@ import com.project.shared.client.utils.UrlUtils;
 import com.project.shared.client.utils.widgets.WidgetUtils;
 import com.project.shared.data.Point2D;
 import com.project.shared.utils.CloneableUtils;
-import com.project.shared.utils.ObjectUtils;
 import com.project.shared.utils.StringUtils;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
 import com.project.website.canvas.client.canvastools.base.CanvasToolCommon;
@@ -174,7 +174,7 @@ public class VideoTool extends Composite implements CanvasTool<VideoData>
 
     private void setVideoInformation(VideoInformation videoInformation)
     {
-        if (ObjectUtils.areEqual(data.videoInformation, videoInformation))
+        if (Objects.equal(data.videoInformation, videoInformation))
         {
             return;
         }

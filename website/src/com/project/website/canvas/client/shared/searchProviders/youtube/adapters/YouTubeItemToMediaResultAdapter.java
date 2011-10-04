@@ -45,8 +45,8 @@ public class YouTubeItemToMediaResultAdapter implements MediaResult
     public String getThumbnailUrl() {
         YouTubeThumbnail thumbnail = this._youTubeItem.getThumbnail();
         
-        return StringUtils.defaultIfEmptyOrNull(thumbnail.getDefaultUrl(),
-                StringUtils.defaultIfEmptyOrNull(thumbnail.getSQDefaultUrl(),
+        return StringUtils.defaultIfNullOrEmpty(thumbnail.getDefaultUrl(),
+                StringUtils.defaultIfNullOrEmpty(thumbnail.getSQDefaultUrl(),
                         thumbnail.getHQDefaultUrl()));
     }
 }

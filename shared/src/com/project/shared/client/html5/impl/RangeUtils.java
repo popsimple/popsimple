@@ -29,7 +29,7 @@ public class RangeUtils
         {
             Element elem = wrapIncludedPart(startPoint, endPoint, entry.getKey(), entry.getValue());
             if (null != elem) {
-                func.call(elem);
+                func.apply(elem);
             }
             if (startPoint.getA() == entry.getKey()) {
                 startElem = elem;

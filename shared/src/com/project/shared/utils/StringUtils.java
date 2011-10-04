@@ -1,6 +1,11 @@
 package com.project.shared.utils;
 
 
+import com.google.common.base.CharMatcher;
+import com.google.common.base.Strings;
+
+
+
 public class StringUtils
 {
     public static String splitCamelCase(String camelCasedString, String seperator, boolean makelower)
@@ -22,28 +27,14 @@ public class StringUtils
 
 
 
-    public static String defaultIfEmptyOrNull(String str, String defaultStr)
+    public static String defaultIfNullOrEmpty(String str, String defaultStr)
     {
-        return StringUtils.isEmptyOrNull(str) ? defaultStr : str;
-    }
-
-    public static boolean isEmptyOrNull(String str)
-    {
-        return (str == null) || str.isEmpty();
+        return Strings.isNullOrEmpty(str) ? defaultStr : str;
     }
 
     public static boolean isWhitespaceOrNull(String str)
     {
-        return (str == null) || str.trim().isEmpty();
+        return CharMatcher.WHITESPACE.trimFrom(Strings.nullToEmpty(str)).isEmpty();
     }
 
-    public static String join(String seperator, Iterable<String> strings)
-    {
-        StringBuilder builder = new StringBuilder();
-        for (String str : strings) {
-            builder.append(str);
-            builder.append(seperator);
-        }
-        return builder.substring(0, builder.length() - seperator.length()).toString();
-    }
 }

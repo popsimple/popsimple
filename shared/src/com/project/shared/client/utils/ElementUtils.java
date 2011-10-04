@@ -3,6 +3,9 @@ package com.project.shared.client.utils;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.google.common.base.Objects;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.gwt.animation.client.Animation;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
@@ -16,9 +19,6 @@ import com.project.shared.client.net.ImageLoader;
 import com.project.shared.data.KeyValue;
 import com.project.shared.data.Point2D;
 import com.project.shared.data.Rectangle;
-import com.project.shared.utils.IterableUtils;
-import com.project.shared.utils.ObjectUtils;
-import com.project.shared.utils.StringUtils;
 
 public abstract class ElementUtils
 {
@@ -369,7 +369,7 @@ public abstract class ElementUtils
         {
             Point2D imageSize = new Point2D(image.getWidth(), image.getHeight());
             // getWidth/getHeight return zero if the image size is not known. So don't set it.
-            if (false == ObjectUtils.areEqual(imageSize, Point2D.zero)) {
+            if (false == Objects.equal(imageSize, Point2D.zero)) {
                 ElementUtils.setElementSize(element, imageSize);
             }
         }
@@ -400,7 +400,7 @@ public abstract class ElementUtils
 
     public static void addClassName(Element element, String className)
     {
-        if (StringUtils.isEmptyOrNull(className))
+        if (Strings.isNullOrEmpty(className))
         {
             return;
         }
@@ -409,7 +409,7 @@ public abstract class ElementUtils
 
     public static void removeClassName(Element element, String className)
     {
-        if (StringUtils.isEmptyOrNull(className))
+        if (Strings.isNullOrEmpty(className))
         {
             return;
         }
@@ -461,7 +461,7 @@ public abstract class ElementUtils
                 }
                 Element childElem = Element.as(childNode);
                 if (ElementUtils.isSpanElement(childElem) && StyleUtils.hasCompletelyInheritedStyle(childElem)) {
-                    for (Node grandChildNode : IterableUtils.reverse(ElementUtils.getChildNodes(childElem))) {
+                    for (Node grandChildNode : Lists.reverse(ElementUtils.getChildNodes(childElem))) {
                         grandChildNode.removeFromParent();
                         rootElem.insertAfter(grandChildNode, childElem);
                     }

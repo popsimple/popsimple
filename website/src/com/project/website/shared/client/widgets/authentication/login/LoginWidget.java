@@ -1,5 +1,6 @@
 package com.project.website.shared.client.widgets.authentication.login;
 
+import com.google.common.base.Strings;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -17,7 +18,6 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
-import com.project.shared.utils.StringUtils;
 import com.project.website.shared.contracts.authentication.AuthenticationService;
 import com.project.website.shared.contracts.authentication.AuthenticationServiceAsync;
 import com.project.website.shared.data.QueryParameters;
@@ -144,7 +144,7 @@ public class LoginWidget extends Composite {
     public static void onLoginSuccess()
     {
         String redirectUrl = Window.Location.getParameter(QueryParameters.REDIRECT_URL);
-        if (StringUtils.isEmptyOrNull(redirectUrl))
+        if (Strings.isNullOrEmpty(redirectUrl))
         {
             //We need to keep the current query string because it contains debug information.
             Window.Location.assign(

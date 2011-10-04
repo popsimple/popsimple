@@ -9,7 +9,7 @@ import com.google.gwt.dom.client.Element;
 import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.utils.MapUtils;
 
-//TODO: Think about a better design. 
+//TODO: Think about a better design.
 public abstract class ZIndexAllocator {
     private static int _nextZIndex = 1;
     private static TreeMap<Integer, Element> _zIndexMap = new TreeMap<Integer, Element>();

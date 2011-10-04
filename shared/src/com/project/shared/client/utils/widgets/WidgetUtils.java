@@ -1,5 +1,6 @@
 package com.project.shared.client.utils.widgets;
 
+import com.google.common.base.Strings;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.ContextMenuEvent;
@@ -32,7 +33,6 @@ import com.project.shared.client.utils.HandlerUtils;
 import com.project.shared.data.Point2D;
 import com.project.shared.data.funcs.AsyncFunc;
 import com.project.shared.data.funcs.Func;
-import com.project.shared.utils.StringUtils;
 
 public class WidgetUtils {
 
@@ -136,7 +136,7 @@ public class WidgetUtils {
 			@Override
 			protected <S, E> void run(Void arg, final Func<Void, S> successHandler, Func<Throwable, E> errorHandler) {
 				if (widget.isAttached()) {
-					successHandler.call(null);
+					successHandler.apply(null);
 					return;
 				}
 				final RegistrationsManager regs = new RegistrationsManager();
@@ -147,7 +147,7 @@ public class WidgetUtils {
 							return;
 						}
 						regs.clear();
-						successHandler.call(null);
+						successHandler.apply(null);
 					}
 				}));
 			}
@@ -177,7 +177,7 @@ public class WidgetUtils {
 
     public static void addNonEmptyStyleName(Widget widget, String style)
     {
-        if (StringUtils.isEmptyOrNull(style))
+        if (Strings.isNullOrEmpty(style))
         {
             return;
         }
@@ -186,7 +186,7 @@ public class WidgetUtils {
 
     public static void removeNonEmptyStyleName(Widget widget, String style)
     {
-        if (StringUtils.isEmptyOrNull(style))
+        if (Strings.isNullOrEmpty(style))
         {
             return;
         }

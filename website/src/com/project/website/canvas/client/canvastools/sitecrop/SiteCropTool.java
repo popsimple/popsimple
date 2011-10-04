@@ -1,5 +1,6 @@
 package com.project.website.canvas.client.canvastools.sitecrop;
 
+import com.google.common.base.Strings;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
@@ -29,7 +30,6 @@ import com.project.shared.client.utils.widgets.WidgetUtils;
 import com.project.shared.data.MouseButtons;
 import com.project.shared.data.Point2D;
 import com.project.shared.data.Rectangle;
-import com.project.shared.utils.StringUtils;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
 import com.project.website.canvas.client.canvastools.base.CanvasToolEvents;
 import com.project.website.canvas.client.canvastools.base.ICanvasToolEvents;
@@ -210,7 +210,7 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
 
     private void handleFrameLoaded(LoadEvent event)
     {
-        if (StringUtils.isEmptyOrNull(this.siteFrame.getUrl()))
+        if (Strings.isNullOrEmpty(this.siteFrame.getUrl()))
         {
             return;
         }
@@ -395,7 +395,7 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
 
     private boolean isValidUrl(String url)
     {
-        if (StringUtils.isEmptyOrNull(url))
+        if (Strings.isNullOrEmpty(url))
         {
             return false;
         }

@@ -25,7 +25,7 @@ public class NativeUtils
 
         public B call(Object arg)
         {
-            return this.func.call(arg);
+            return this.func.apply(arg);
         }
 
         public final native JavaScriptObject asJavaScriptObject() /*-{

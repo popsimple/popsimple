@@ -1,9 +1,13 @@
 package com.project.website.canvas.client.canvastools.map;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.google.appengine.repackaged.com.google.common.collect.Lists;
+import com.google.common.base.Function;
+import com.google.common.base.Joiner;
+import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Iterables;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.project.gwtmapstraction.client.mxn.MapProvider;
@@ -14,13 +18,10 @@ import com.project.shared.client.events.SingleEvent;
 import com.project.shared.client.net.DynamicSourceLoader;
 import com.project.shared.client.utils.HandlerUtils;
 import com.project.shared.client.utils.SchedulerUtils;
-import com.project.shared.data.DoubleHashMap;
 import com.project.shared.data.Pair;
 import com.project.shared.data.funcs.AsyncFunc;
 import com.project.shared.data.funcs.Func;
-import com.project.shared.utils.IterableUtils;
-import com.project.shared.utils.ListUtils;
-import com.project.shared.utils.StringUtils;
+import com.project.shared.utils.MapUtils;
 import com.project.website.canvas.shared.data.MapData.MapType;
 
 public class MapToolStaticUtils
@@ -29,20 +30,20 @@ public class MapToolStaticUtils
     private static final String OPENLAYERS_SCRIPT_URL = "http://openlayers.org/api/OpenLayers.js";
     private static final String MICROSOFT_MAP_6_3_URL = "http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.3";
 
-    public static final List<MapProvider> AVAILABLE_PROVIDERS = Collections.unmodifiableList(ListUtils.create(
+    public static final List<MapProvider> AVAILABLE_PROVIDERS = Collections.unmodifiableList(Lists.newArrayList(
         MapProvider.GOOGLE_V3,
         MapProvider.MICROSOFT,
         MapProvider.OPENLAYERS
     ));
 
-    private static final ArrayList<String> MAPSTRACTION_AVAILABLE_API_STRINGS = IterableUtils.select(AVAILABLE_PROVIDERS, new Func<MapProvider, String>(){
+    private static final Iterable<String> MAPSTRACTION_AVAILABLE_API_STRINGS = Iterables.transform(AVAILABLE_PROVIDERS, new Function<MapProvider, String>(){
         @Override
-        public String call(MapProvider arg)
+        public String apply(MapProvider arg)
         {
             return arg.getApiString();
         }
     });
-    private static final String MAPSTRACTION_AVAILABLE_APIS = StringUtils.join(",", MAPSTRACTION_AVAILABLE_API_STRINGS);
+    private static final String MAPSTRACTION_AVAILABLE_APIS = Joiner.on(',').join(MAPSTRACTION_AVAILABLE_API_STRINGS);
     private static final String MAPSTRACTION_SCRIPT_PROVIDER_PREFIX_URL = "mapstraction/mxn.";
     private static final String MAPSTRACTION_SCRIPT_FILE_URL = "mapstraction/mxn.js";
     private static final String MAPSTRACTION_SCRIPT_CORE_FILE_URL = "mapstraction/mxn.core.js";
@@ -73,22 +74,22 @@ public class MapToolStaticUtils
         }
     }
 
-    private static DoubleHashMap<MapType, MapstractionMapType> mapTypeConversionMap =
-            new DoubleHashMap<MapType, MapstractionMapType>(new MapTypePair[]{
-        new MapTypePair(MapType.HYBRID, MapstractionMapType.HYBRID),
-        new MapTypePair(MapType.PHYSICAL, MapstractionMapType.PHYSICAL),
-        new MapTypePair(MapType.ROAD, MapstractionMapType.ROAD),
-        new MapTypePair(MapType.SATELLITE, MapstractionMapType.SATELLITE)
+    private static HashBiMap<MapType, MapstractionMapType> mapTypeConversionMap =
+            MapUtils.putPairs(HashBiMap.<MapType, MapstractionMapType>create(), new MapTypePair[]{
+                new MapTypePair(MapType.HYBRID, MapstractionMapType.HYBRID),
+                new MapTypePair(MapType.PHYSICAL, MapstractionMapType.PHYSICAL),
+                new MapTypePair(MapType.ROAD, MapstractionMapType.ROAD),
+                new MapTypePair(MapType.SATELLITE, MapstractionMapType.SATELLITE)
     });
 
     public static MapType fromMapstractionMapType(MapstractionMapType mapstractionMapType)
     {
-        return mapTypeConversionMap.getByKey2(mapstractionMapType);
+        return mapTypeConversionMap.inverse().get(mapstractionMapType);
     }
 
     public static MapstractionMapType fromMapType(MapType mapType)
     {
-        return mapTypeConversionMap.getByKey1(mapType);
+        return mapTypeConversionMap.get(mapType);
     }
 
     public static void loadMapScriptsAsync(Handler<Void> loadHandler) {
@@ -164,7 +165,7 @@ public class MapToolStaticUtils
                     @Override
                     public void onFire(Void arg)
                     {
-                        successHandler.call(null);
+                        successHandler.apply(null);
                     }
                 });
             }
