@@ -15,4 +15,15 @@ public class CanvasUtils
     {
         return new Point2D(canvas.getCoordinateSpaceWidth(), canvas.getCoordinateSpaceHeight());
     }
+
+    public static void drawOnto(Canvas source, Canvas dest)
+    {
+        dest.getContext2d().drawImage(source.getCanvasElement(), 0, 0);
+    }
+
+    public static void clear(Canvas canvas)
+    {
+        canvas.getContext2d().clearRect(0, 0, canvas.getCoordinateSpaceWidth(), canvas.getCoordinateSpaceHeight());
+    }
+
 }
