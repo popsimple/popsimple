@@ -3,7 +3,6 @@
     xmlns:ui="urn:ui:com.google.gwt.uibinder"
     xmlns:g="urn:import:com.google.gwt.user.client.ui"
     xmlns:w="urn:import:com.project.website.canvas.client.shared.widgets"
-    xmlns:slide="urn:import:com.kiouri.sliderbar.client.solution.simplehorizontal"
     >
     <ui:with field='res' type='com.project.website.canvas.client.resources.CanvasResources'/>
     <ui:style>
@@ -15,9 +14,15 @@
             <g:ToggleButton ui:field="spiroButton">Spiro</g:ToggleButton>
             <g:ToggleButton ui:field="eraseButton">Erase</g:ToggleButton>
         </w:ToggleButtonPanel>
-        <g:HTMLPanel ui:field="colorPanel" addStyleNames="{res.main.canvasToolbarItemWrapper}">
+        <g:HTMLPanel ui:field="paintOptionsPanel" addStyleNames="{res.main.canvasToolbarItemWrapper}">
             <span class="{res.main.canvasToolbarItemTitle}">Color:</span>
-            <w:ColorPicker ui:field="color"></w:ColorPicker>
+            <w:ColorPicker ui:field="paintColor"></w:ColorPicker>
+            <w:Slider ui:field="paintWidthSlider" width="100px" maxValue="100"/>
+        </g:HTMLPanel>
+        <g:HTMLPanel ui:field="eraseOptionsPanel" addStyleNames="{res.main.canvasToolbarItemWrapper}">
+            <w:Slider ui:field="eraseWidthSlider"  width="100px" maxValue="100"/>
+        </g:HTMLPanel>
+        <g:HTMLPanel ui:field="spiroOptionsPanel" addStyleNames="{res.main.canvasToolbarItemWrapper}">
         </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

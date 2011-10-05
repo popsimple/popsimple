@@ -9,8 +9,6 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.event.dom.client.HumanInputEvent;
-import com.google.gwt.event.dom.client.MouseMoveEvent;
-import com.google.gwt.event.dom.client.MouseMoveHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -44,6 +42,8 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
 
     private static final double SPIRO_CURVE_WIDTH = 40;
     private static final double SPIRO_CURVE_SPEED_Y = 0.4;
+	private static final int VELOCITY_SMOOTHING = 15;
+	private static final int POSITION_SMOOTHING = 3;
 
     // TODO: for IE <= 8, call this instead of Canvas.getContext2d
     private static final native Context2d getContext2d(Element canvasElement) /*-{
@@ -56,18 +56,21 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
 
     private final RegistrationsManager registrationsManager = new RegistrationsManager();
     private final SketchToolbar _toolbar = new SketchToolbar();
+    
+    private final PointUtils.MovingAverage _averageVelocity = new PointUtils.MovingAverage(VELOCITY_SMOOTHING);
+    private final PointUtils.MovingAverage _averageDrawPos = new PointUtils.MovingAverage(POSITION_SMOOTHING);
+
     private final Canvas _canvas = Canvas.createIfSupported();
     private final Canvas _cursorCanvas = Canvas.createIfSupported();
     private Canvas _resizeCanvas1 = Canvas.createIfSupported();
-
     private Canvas _resizeCanvas2 = Canvas.createIfSupported();
+    
 //    private Canvas _undoCanvas = Canvas.createIfSupported();
     private boolean _inViewMode = false;
     private boolean _active = false;
     private boolean _bound = false;
-    private final PointUtils.MovingAverage _averageVelocity = new PointUtils.MovingAverage(15);
-
-    private final PointUtils.MovingAverage _averageDrawPos = new PointUtils.MovingAverage(10);
+    
+    
     private String _strokeColor = "#000000";
 
     private SpiroCurveType _curveType = SpiroCurveType.Circle;
@@ -240,7 +243,7 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
         	cursorContext.setStrokeStyle("transparent");
         	cursorContext.setFillStyle(this.data.sketchOptions.penColor);
             cursorContext.beginPath();
-            cursorContext.arc(pos.getX(), pos.getY(), this.data.sketchOptions.penWidth, 0, Math.PI * 2);
+            cursorContext.arc(pos.getX(), pos.getY(), this.data.sketchOptions.penWidth / 2, 0, Math.PI * 2);
             cursorContext.closePath();
             cursorContext.fill();
         }

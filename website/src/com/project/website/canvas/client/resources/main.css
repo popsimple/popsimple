@@ -996,11 +996,11 @@
     border-color: transparent;
 }
 
-@if (com.project.shared.client.utils.BrowserUtils.supportCSSCursorNone()) {
-	.sketchTool {
-	   cursor: none;
-	}
-}
+/* @if (com.project.shared.client.utils.BrowserUtils.supportCSSCursorNone()) { */
+/* 	.sketchTool { */
+/* 	   cursor: none; */
+/* 	} */
+/* } */
 
 .activeToolFrame .sketchTool {
     border-color: #ccc;
@@ -1015,3 +1015,23 @@
 	background-color: #eee;
 	opacity: 0.6;
 }
+
+
+/*-----------------------*/
+@sprite
+.sliderDrag {
+	position: absolute;
+	gwt-image: "sliderIconDrag";
+}
+.sliderLess {
+	gwt-image: "sliderIconHorizontalLess";
+}
+.sliderMore {
+    gwt-image: "sliderIconHorizontalMore";
+}
+.sliderScale {
+	position: relative;
+	height: 10px;
+	background-color: gray;
+}
+

@@ -76,6 +76,8 @@ public interface MainStyles extends CssResource {
 
     String imageToolEmpty();
 
+    String imageToolLoading();
+
     String imageToolOptionsBar();
 
     String imageToolSearchProviderIconStyle();
@@ -87,6 +89,8 @@ public interface MainStyles extends CssResource {
     String link();
 
     String loadingFiller();
+
+    String loadingFillerDim();
 
     String mapCreateModeCanvasStyle();
 
@@ -114,17 +118,25 @@ public interface MainStyles extends CssResource {
 
     String selected();
 
-    String selectionPanelStyle();
-
-    String sketchCreateModeCanvasStyle();
-
 //    String textEditNoToolbars();
 //
 //    String canvasToolbar();
 //
 //    String textEditViewBox();
 
+    String selectionPanelStyle();
+
+    String sketchCreateModeCanvasStyle();
+
     String sketchTool();
+
+    String sliderDrag();
+
+    String sliderLess();
+
+    String sliderMore();
+
+    String sliderScale();
 
     String taskImageChecked();
 
@@ -136,9 +148,9 @@ public interface MainStyles extends CssResource {
 
     String taskListCreateModeCanvasStyle();
 
-    String taskListFooter();
+	String taskListFooter();
 
-    String taskListHeader();
+	String taskListHeader();
 
     String taskListTextChecked();
 
@@ -148,9 +160,9 @@ public interface MainStyles extends CssResource {
 
     String textEdit();
 
-	String textEditBox();
+    String textEditBox();
 
-	String textEditFocused();
+    String textEditFocused();
 
     String textEditNotFocused();
 
@@ -182,7 +194,7 @@ public interface MainStyles extends CssResource {
 
     String toolboxTaskListIconStyle();
 
-    String toolboxTextIconStyle();
+	String toolboxTextIconStyle();
 
     String toolboxTools();
 
@@ -194,7 +206,7 @@ public interface MainStyles extends CssResource {
 
     String toolFrameBottomLeftRotate();
 
-	String toolFrameBottomRightResize();
+    String toolFrameBottomRightResize();
 
     String toolFrameButton();
 
@@ -257,17 +269,13 @@ public interface MainStyles extends CssResource {
     String worksheetModeEditable();
 
     String worksheetModeViewOnly();
-
+    
     String worksheetOptions();
-
+    
     String worksheetPanel();
-
+    
     String worksheetSaveButton();
-
+    
     String worksheetWelcomeLabelHolder();
-
-    String imageToolLoading();
-
-    String loadingFillerDim();
 }
 
