@@ -223,6 +223,7 @@ public class WorksheetImpl implements Worksheet
             }
         });
         tool.bind();
+        tool.setViewMode(this._inViewMode);
         return toolFrame;
     }
 
