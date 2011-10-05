@@ -5,25 +5,20 @@ import java.io.Serializable;
 import com.google.common.base.Objects;
 import com.google.gwt.user.client.rpc.IsSerializable;
 import com.project.shared.data.Point2D;
-import com.project.shared.interfaces.ICloneable;
-import com.project.shared.utils.CloneableUtils;
 
-public class VideoInformation implements Serializable, IsSerializable, ICloneable {
+public class VideoInformation implements Serializable, IsSerializable {
     private static final long serialVersionUID = 1L;
 
     public String url = "";
     public Point2D size = new Point2D();
 
-    @Override
-    public Object createInstance() {
-        return new VideoInformation();
-    }
-    @Override
-    public void copyTo(Object object) {
-        VideoInformation copy = (VideoInformation)object;
+    public VideoInformation() { }
 
-        copy.url = this.url;
-        copy.size = (Point2D)CloneableUtils.clone(this.size);
+    public VideoInformation(VideoInformation videoInformation)
+    {
+        this();
+        this.url = videoInformation.url;
+        this.size = videoInformation.size.getClone();
     }
 
     @Override

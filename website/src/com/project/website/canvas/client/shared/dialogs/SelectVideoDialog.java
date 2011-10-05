@@ -25,7 +25,6 @@ import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.handlers.SpecificKeyPressHandler;
 import com.project.shared.client.utils.UrlUtils;
 import com.project.shared.data.Point2D;
-import com.project.shared.utils.CloneableUtils;
 import com.project.website.canvas.client.shared.searchProviders.interfaces.MediaInfo;
 import com.project.website.canvas.client.shared.searchProviders.interfaces.MediaSearchProvider;
 import com.project.website.canvas.client.shared.widgets.media.MediaSearchPanel;
@@ -194,6 +193,6 @@ public class SelectVideoDialog extends Composite implements TakesValue<VideoInfo
     public void clear()
     {
         this.mediaSearchPanel.clear();
-        this.setValue((VideoInformation)CloneableUtils.clone(this._defaultInformation));
+        this.setValue(new VideoInformation(this._defaultInformation));
     }
 }

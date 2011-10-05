@@ -6,15 +6,25 @@ import com.google.common.base.Objects;
 import com.google.gwt.user.client.rpc.IsSerializable;
 import com.project.shared.data.Point2D;
 import com.project.shared.interfaces.ICloneable;
-import com.project.shared.utils.CloneableUtils;
 
 
-public class ImageInformation implements Serializable, IsSerializable, ICloneable {
+public class ImageInformation implements Serializable, IsSerializable, ICloneable<ImageInformation> {
     private static final long serialVersionUID = 1L;
 
     public String url = "";
     public Point2D size = new Point2D();
     public ImageOptions options = new ImageOptions();
+
+    public ImageInformation() {}
+
+    public ImageInformation(ImageInformation imageInformation)
+    {
+        this();
+        this.url = imageInformation.url;
+        this.size = imageInformation.size.getClone();
+        this.options = imageInformation.options.getClone();
+
+    }
 
     @Override
     public boolean equals(Object obj) {
@@ -39,16 +49,8 @@ public class ImageInformation implements Serializable, IsSerializable, ICloneabl
     }
 
     @Override
-    public Object createInstance() {
-        return new ImageInformation();
-    }
-
-    @Override
-    public void copyTo(Object object) {
-        ImageInformation copy = (ImageInformation)object;
-
-        copy.url = this.url;
-        copy.size = (Point2D)CloneableUtils.clone(this.size);
-        copy.options = (ImageOptions)CloneableUtils.clone(this.options);
+    public ImageInformation getClone()
+    {
+        return new ImageInformation(this);
     }
 }

@@ -30,7 +30,7 @@ public class ImageOptionsProviderUtils
             //TODO: Throw exception;
             return;
         }
-        knownOptions.copyTo(imageOptions);
+        imageOptions = knownOptions.getClone();
     }
 
 }

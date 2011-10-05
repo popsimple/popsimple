@@ -240,11 +240,8 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
 
     private void cropSelectedFrame()
     {
-        Rectangle rect = this._frameSelectionManager.getSelectedRectangle();
-        rect.copyTo(this._data.clipRectangle);
-
-        Rectangle coverRectangle = ElementUtils.getElementOffsetRectangle(coverPanel.getElement());
-        coverRectangle.copyTo(this._data.coverRectangle);
+        this._data.clipRectangle = this._frameSelectionManager.getSelectedRectangle().getClone();
+        this._data.coverRectangle = ElementUtils.getElementOffsetRectangle(coverPanel.getElement()).getClone();
 
         this.setCropParameters();
 
@@ -348,8 +345,7 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
 
     private void updateFrameDimensions(Rectangle rectangle)
     {
-        rectangle.copyTo(this._data.frameRectangle);
-
+        this._data.frameRectangle = rectangle.getClone();
         this.setFrameParameters();
     }
 

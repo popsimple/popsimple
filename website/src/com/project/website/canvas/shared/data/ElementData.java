@@ -32,4 +32,10 @@ public abstract class ElementData implements Serializable, IsSerializable, IsClo
         this();
         this.factoryUniqueId = factoryUniqueId;
     }
+
+    public ElementData(ElementData other)
+    {
+        this();
+        this.factoryUniqueId = other.factoryUniqueId;
+    }
 }

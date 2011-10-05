@@ -9,37 +9,29 @@ public class ImageData extends ElementData implements ICloneable<ImageData>
 
     public ImageInformation imageInformation = new ImageInformation();
 
-    protected ImageData(){
+    protected ImageData() {
+        super();
     }
 
     public ImageData(String factoryUniqueId) {
         super(factoryUniqueId);
     }
 
-    @Override
-    public ElementData createInstance() {
-        return new ImageData();
-    }
-
-    @Override
-    public void copyTo(Object object) {
-        super.copyTo(object);
-
-        ImageData copy = (ImageData)object;
-
-        copy.imageInformation = (ImageInformation)CloneableUtils.clone(this.imageInformation);
-    }
-
-    @Override
-    public ICloneable<ElementData> getCloneable()
+    public ImageData(ImageData imageData)
     {
-        return this;
+        super(imageData);
+        this.imageInformation = imageData.imageInformation.getClone();
     }
 
     @Override
     public ImageData getClone()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return new ImageData(this);
+    }
+
+    @Override
+    public ICloneable<? extends ElementData> getCloneable()
+    {
+        return this;
     }
 }

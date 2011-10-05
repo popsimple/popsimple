@@ -3,11 +3,11 @@ package com.project.website.canvas.client.canvastools.map;
 import java.util.Collections;
 import java.util.List;
 
-import com.google.common.collect.Lists;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.project.gwtmapstraction.client.mxn.MapProvider;

@@ -26,7 +26,6 @@ import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.handlers.SpecificKeyPressHandler;
 import com.project.shared.client.utils.UrlUtils;
 import com.project.shared.data.Point2D;
-import com.project.shared.utils.CloneableUtils;
 import com.project.website.canvas.client.shared.ImageOptionTypes;
 import com.project.website.canvas.client.shared.ImageOptionsProvider;
 import com.project.website.canvas.client.shared.ImageOptionsProviderUtils;
@@ -247,6 +246,6 @@ public class SelectImageDialog extends Composite implements TakesValue<ImageInfo
     public void clear()
     {
         this.mediaSearchPanel.clear();
-        this.setValue((ImageInformation)CloneableUtils.clone(this._defaultInformation));
+        this.setValue(this._defaultInformation.getClone());
     }
 }

@@ -1,14 +1,11 @@
 package com.project.website.canvas.shared.data;
 
 import com.project.shared.data.Rectangle;
-import com.project.shared.utils.CloneableUtils;
+import com.project.shared.interfaces.ICloneable;
 
 //TODO: Move to data.
-public class SiteCropElementData extends ElementData {
-
-    /**
-     *
-     */
+public class SiteCropElementData extends ElementData implements ICloneable<SiteCropElementData>
+{
     private static final long serialVersionUID = 1L;
 
     public String url = "";
@@ -17,28 +14,34 @@ public class SiteCropElementData extends ElementData {
     public Rectangle frameRectangle = new Rectangle();
     public boolean isInteractive = false;
 
-    protected SiteCropElementData(){
+    protected SiteCropElementData() {
+        super();
     }
 
     public SiteCropElementData(String factoryUniqueId) {
         super(factoryUniqueId);
     }
 
-    @Override
-    public ElementData createInstance() {
-        return new SiteCropElementData();
+    public SiteCropElementData(SiteCropElementData other)
+    {
+        super(other);
+        this.url = other.url;
+        this.clipRectangle = other.clipRectangle.getClone();
+        this.coverRectangle = other.coverRectangle.getClone();
+        this.frameRectangle = other.frameRectangle.getClone();
+        this.isInteractive = other.isInteractive;
     }
 
     @Override
-    public void copyTo(Object object) {
-        super.copyTo(object);
+    public ICloneable<? extends ElementData> getCloneable()
+    {
+        return this;
+    }
 
-        SiteCropElementData copy = (SiteCropElementData)object;
-        copy.url = this.url;
-        copy.isInteractive = this.isInteractive;
-        copy.clipRectangle = (Rectangle)CloneableUtils.clone(this.clipRectangle);
-        copy.coverRectangle = (Rectangle)CloneableUtils.clone(this.coverRectangle);
-        copy.frameRectangle = (Rectangle)CloneableUtils.clone(this.frameRectangle);
+    @Override
+    public SiteCropElementData getClone()
+    {
+        return new SiteCropElementData(this);
     }
 
 }
