@@ -18,6 +18,7 @@ import com.kiouri.sliderbar.client.event.BarValueChangedEvent;
 import com.kiouri.sliderbar.client.event.BarValueChangedHandler;
 import com.kiouri.sliderbar.client.solution.simplehorizontal.SliderBarSimpleHorizontal;
 import com.project.shared.client.events.SimpleEvent;
+import com.project.shared.utils.StringUtils;
 import com.project.website.canvas.client.shared.widgets.ColorPicker;
 import com.project.website.canvas.client.shared.widgets.ToggleButtonPanel;
 import com.project.website.canvas.shared.data.SketchOptions;
@@ -102,6 +103,9 @@ public class SketchToolbar extends Composite
         this.optionsChangedEvent.dispatch(this.getOptions());
     }
 
+    /**
+     * Returns a <strong>copy</strong> of the current options used in the toolbar. 
+     */
     public SketchOptions getOptions()
     {
         ToggleButton activeButton = toolTogglePanel.getActiveButton();
@@ -115,6 +119,9 @@ public class SketchToolbar extends Composite
         return new SketchOptions(this._sketchOptions);
     }
 
+    /**
+     * <strong>Copies</strong> the given option object and updates the toolbar to reflect the set options.
+     */
     public void setOptions(SketchOptions options)
     {
         this._sketchOptions = new SketchOptions(options);
@@ -122,14 +129,16 @@ public class SketchToolbar extends Composite
         case ERASE:
             this.eraseButton.setValue(true, false);
             break;
-        case PAINT:
-            this.paintButton.setValue(true, false);
-            break;
         case SPIRO:
             this.spiroButton.setValue(true, false);
             break;
+        case PAINT:
+        	// fall through
+        default:
+            this.paintButton.setValue(true, false);
+            break;
         }
-        this.color.setColor(this._sketchOptions.penColor);
+        this.color.setColor(StringUtils.defaultIfNullOrEmpty(this._sketchOptions.penColor, DEFAULT_STROKE_COLOR));
         this.penWidthSlider.setValue(this._sketchOptions.penWidth);
     }
 
