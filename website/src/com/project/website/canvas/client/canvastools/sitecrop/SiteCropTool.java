@@ -4,7 +4,6 @@ import com.google.common.base.Strings;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.gwt.event.dom.client.LoadHandler;
@@ -29,7 +28,6 @@ import com.project.shared.client.handlers.MouseButtonDownHandler;
 import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.handlers.SpecificKeyPressHandler;
 import com.project.shared.client.utils.ElementUtils;
-import com.project.shared.client.utils.EventUtils;
 import com.project.shared.client.utils.SchedulerUtils.OneTimeScheduler;
 import com.project.shared.client.utils.UrlUtils;
 import com.project.shared.client.utils.WindowUtils;
@@ -54,7 +52,6 @@ import com.project.website.canvas.shared.data.SiteCropElementData;
 //7. Site refreshes after save (Shouldn't)
 //8. Add "Reset" button
 //9. In Chrome after crop and save the frame moves.
-//10. register events only when the tool is active.
 
 //IE9 Problems:
 //Apparently in IE9 they've changed the way IFrames are rendered so now they are rendered using the same engine as
@@ -104,7 +101,7 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
     private ElementDragManagerImpl _frameDragManager = null;
     private SiteFrameSelectionManager _frameSelectionManager = null;
 
-    private RegistrationsManager _generalRegistrations = new RegistrationsManager();
+    private RegistrationsManager _registrationManager = new RegistrationsManager();
     private RegistrationsManager _editModeRegistrations = new RegistrationsManager();
     private RegistrationsManager _viewModeRegistrations = new RegistrationsManager();
 
@@ -112,6 +109,9 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
     private RegistrationsManager _cropRegistrationManager = new RegistrationsManager();
 
     private Rectangle _minimalRectangle = Rectangle.empty;
+
+    private boolean _isViewMode = false;
+    private boolean _isActive = false;
 
     //TODO: Make singleton and update according to data when displayed.
     private final SiteCropToolbar _toolbar = new SiteCropToolbar();
@@ -163,11 +163,11 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
         this._toolbar.setAcceptCropVisibility(false);
     }
 
-    private void registerGeneralHandlers()
+    private void registerGlobalHandlers()
     {
-        this._generalRegistrations.clear();
+        this._registrationManager.clear();
 
-        this._generalRegistrations.add(
+        this._registrationManager.add(
                 this.siteFrame.addLoadHandler(new LoadHandler() {
                     @Override
                     public void onLoad(LoadEvent event) {
@@ -526,11 +526,31 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
 
     @Override
     public void setActive(boolean isActive) {
+        if (isActive == this._isActive)
+        {
+            return;
+        }
+        this._isActive = isActive;
+        if (false == isActive)
+        {
+            this._editModeRegistrations.clear();
+            this._viewModeRegistrations.clear();
+            return;
+        }
+        if (this._isViewMode)
+        {
+            this.registerViewModeHandlers();
+        }
+        else
+        {
+            this.registerEditModeHandlers();
+            this.setDefaultMode();
+        }
     }
 
     @Override
     public void bind() {
-        this.registerGeneralHandlers();
+        this.registerGlobalHandlers();
     }
 
     @Override
@@ -553,23 +573,26 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
         }
     }
 
+    //Don't register any new event handlers here since we only register them in the setActive method so that all the
+    //specific handlers (edit mode/view mode) will get called only when the tool is active.
     private void setViewMode()
     {
+        this._isViewMode = true;
         this._editModeRegistrations.clear();
 
         this.clearSelection();
-        this.registerViewModeHandlers();
 
         this.setFrameInteractive(this._data.isInteractive);
     }
 
+    //Don't register any new event handlers here since we only register them in the setActive method so that all the
+    //specific handlers (edit mode/view mode) will get called only when the tool is active.
     private void setEditMode()
     {
+        this._isViewMode = false;
         this._viewModeRegistrations.clear();
-        this.registerEditModeHandlers();
 
         this.setFrameInteractive(false);
-        this.setDefaultMode();
 
         //Must use Scheduler since it appears that the setEditMode is called during an event and
         //for some reason nothing happens when settings the url of the iframe during that event.
