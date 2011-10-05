@@ -4,6 +4,7 @@ import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.event.dom.client.HumanInputEvent;
@@ -18,6 +19,7 @@ import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.utils.CanvasUtils;
 import com.project.shared.client.utils.ElementUtils;
+import com.project.shared.client.utils.SchedulerUtils.OneTimeScheduler;
 import com.project.shared.client.utils.widgets.WidgetUtils;
 import com.project.shared.data.Point2D;
 import com.project.shared.utils.PointUtils;
@@ -65,6 +67,13 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
     private DrawingTool _activeDrawingTool;
 
     private double _spiroCurveParameter = 0;
+
+    private final ScheduledCommand redrawCommand = new ScheduledCommand() {
+        @Override public void execute() {
+            CanvasUtils.setCoordinateSpaceSize(_canvas, data.transform.size);
+            _context.drawImage(_imageElement, 0, 0);
+        }
+    };
 
     public SketchTool(int width, int height) {
         this._imageElement = ImageElement.as(this._image.getElement());
@@ -117,6 +126,7 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
 
     @Override
     protected void onUnload() {
+        this.updateImageFromCanvas();
         this.registrationsManager.clear();
         UndoManager.get().removeOwner(this);
         super.onUnload();
@@ -125,21 +135,28 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
     @Override
     protected void onLoad()
     {
+        ElementUtils.setTextSelectionEnabled(this.getElement(), false);
+        this.refreshCanvasFromData();
         this.updateViewMode();
     }
 
     @Override
     public void setValue(SketchData value) {
         this.data = value;
-        ElementUtils.setTextSelectionEnabled(this.getElement(), false);
+        this.refreshCanvasFromData();
+    }
 
-        final String imageData = value.imageData;
+
+    private void refreshCanvasFromData()
+    {
+        final String imageData = this.data.imageData;
         if (null != imageData) {
             this._imageElement.setSrc(imageData);
         }
         else {
             if (null != this._canvas) {
-                this._canvas.setCoordinateSpaceHeight(this._canvas.getCoordinateSpaceHeight());
+                clearCanvas(this._canvas);
+                clearCanvas(this._resizeCanvas1);
             }
             return;
         }
@@ -147,8 +164,9 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
         if (null == this._context) {
             return;
         }
-
-        this._context.drawImage(this._imageElement, 0, 0);
+        // For some reason, the canvas does not get updated after a page reload if not using deferred command in IE (at
+        // least, maybe also others)
+        OneTimeScheduler.get().scheduleDeferredOnce(redrawCommand);
     }
 
     @Override
