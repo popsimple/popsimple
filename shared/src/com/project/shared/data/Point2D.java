@@ -10,8 +10,9 @@ public class Point2D implements Serializable, IsSerializable, ICloneable<Point2D
 
     public static final Point2D zero = new Point2D(0, 0);
 
-    private final int _x;
-    private final int _y;
+    // These should have been 'final', but then they will not be serialized.
+    private int _x;
+    private int _y;
 
     public Point2D() {
         this._x = 0;
