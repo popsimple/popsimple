@@ -126,12 +126,16 @@ public class Slider extends Composite implements HasValueChangeHandlers<Double>,
 		value = Math.min(this._maxValue, Math.max(this._minValue, value));
 		Double oldValue = this._value;
 		this._value = value;
-		double newDragX = (this._value - this._minValue) / this.getRange() * this.scalePanel.getOffsetWidth();
+		double newDragX = (this._value - this._minValue) / this.getRange() * this.getMaxAllowedDragPosX();
 		Point2D pos = new Point2D((int)Math.round(newDragX), 0);
 		ElementUtils.setElementCSSPosition(this.dragButton.getElement(), pos);
 		if (fireEvents) {
 			ValueChangeEvent.fireIfNotEqual(this, oldValue, value);
 		}
+	}
+
+	protected int getMaxAllowedDragPosX() {
+		return this.scalePanel.getOffsetWidth() - this.dragButton.getOffsetWidth();
 	}
 
 	protected Point2D getDragPositionRelativeToScalePanel() {
@@ -157,7 +161,7 @@ public class Slider extends Composite implements HasValueChangeHandlers<Double>,
 
 	protected void updateDragPosition(Point2D mousePos) {
 		Point2D pos = mousePos.minus(ElementUtils.getElementAbsolutePosition(this.scalePanel));
-		Point2D maxPos = new Point2D(this.scalePanel.getOffsetWidth() - this.moreButton.getOffsetWidth(), 0);
+		Point2D maxPos = new Point2D(this.getMaxAllowedDragPosX(), 0);
 		pos = Point2D.min(maxPos, Point2D.max(Point2D.zero, pos));
 		ElementUtils.setElementCSSPosition(this.dragButton.getElement(), pos);
 		updateValueFromDragPosition();
