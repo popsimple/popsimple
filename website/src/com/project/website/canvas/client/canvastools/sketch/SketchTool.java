@@ -1,6 +1,5 @@
 package com.project.website.canvas.client.canvastools.sketch;
 
-import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
@@ -23,7 +22,6 @@ import com.project.shared.client.utils.SchedulerUtils.OneTimeScheduler;
 import com.project.shared.client.utils.widgets.WidgetUtils;
 import com.project.shared.data.Point2D;
 import com.project.shared.utils.PointUtils;
-import com.project.shared.utils.loggers.Logger;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
 import com.project.website.canvas.client.canvastools.base.CanvasToolEvents;
 import com.project.website.canvas.client.canvastools.base.ICanvasToolEvents;
@@ -35,10 +33,14 @@ import com.project.website.canvas.shared.data.SketchData;
 
 public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
 {
-    private static final double SPIRO_CURVE_WIDTH = 30;
-    private static final double SPIRO_CURVE_SPEED_X = 1;
-    private static final double SPIRO_CURVE_SPEED_Y = 0.1;
-    private static final double SPIRO_NORMAL_SCALE = 1000;
+    public enum SpiroCurveType {
+        Sine,
+        Circle
+    }
+
+
+    private static final double SPIRO_CURVE_WIDTH = 40;
+    private static final double SPIRO_CURVE_SPEED_Y = 0.4;
 
     private CanvasToolEvents _toolEvents = new CanvasToolEvents(this);
 
@@ -50,11 +52,14 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
     private Canvas _resizeCanvas1 = Canvas.createIfSupported();
     private Canvas _resizeCanvas2 = Canvas.createIfSupported();
 
-    protected boolean _inViewMode = false;
-    protected boolean _active = false;
-    protected boolean _bound = false;
+    private boolean _inViewMode = false;
+    private boolean _active = false;
+    private boolean _bound = false;
+    private final PointUtils.MovingAverage _averageVelocity = new PointUtils.MovingAverage(15);
+    private final PointUtils.MovingAverage _averageDrawPos = new PointUtils.MovingAverage(10);
 
-    protected String _strokeColor = "#000000";
+    private String _strokeColor = "#000000";
+    private SpiroCurveType _curveType = SpiroCurveType.Circle;
 
     private boolean _drawingPathExists;
 
@@ -333,6 +338,8 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
         Point2D pos = ElementUtils.getMousePositionRelativeToElement(this.getElement());
         this._drawingPathExists = true;
         this._context.beginPath();
+        this._averageDrawPos.clear();
+        this._averageVelocity.clear();
         this.drawPen(pos, Point2D.zero);
         this._prevDrawPos = pos;
     }
@@ -343,7 +350,7 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
         if (drawingPathExists()) {
             Point2D pos = ElementUtils.getMousePositionRelativeToElement(this.getElement());
             //this._currentPath.lineTo(pos.getX(), pos.getY());
-            //drawInterpolatedSteps(pos);
+            //this.drawInterpolatedSteps(pos);
             this.drawPen(pos, pos.minus(PointUtils.nullToZero(this._prevDrawPos)));
             this._prevDrawPos = pos;
         }
@@ -367,9 +374,9 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
 
     private void drawPen(Point2D mousePos, Point2D velocity)
     {
-        //this.add(this.createDrawingCircle(stepPos));
+        this._averageVelocity.add(velocity);
+
         this._context.setStrokeStyle(this._strokeColor);
-        //this._context.setStrokeStyle(CanvasPattern)
         this._context.setFillStyle("transparent");
 
         if (isErasing()) {
@@ -381,11 +388,13 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
         }
         else {
             Point2D finalPos = mousePos;
+            Point2D averageVelocity = this._averageVelocity.getAverage();
             if (DrawingTool.SPIRO == this._activeDrawingTool) {
-                if (Objects.equal(Point2D.zero, velocity)) {
+                if (averageVelocity.getRadius() < 1) {
                     return;
                 }
-                finalPos = this.getSpiroPoint(mousePos, velocity, this.getCurvePointForSpiro(velocity.getRadius()));
+                this._averageDrawPos.add(this.getSpiroPoint(mousePos, averageVelocity, this.getCurvePointForSpiro(1)));
+                finalPos = this._averageDrawPos.getAverage();
             }
             //this._context.arc(finalPos.getX(), finalPos.getY(), this.data.penWidth, 0, 2 * Math.PI);
             this._context.lineTo(finalPos.getX(), finalPos.getY());
@@ -416,7 +425,7 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
     }
 
 
-    protected void setColor(String arg)
+    private void setColor(String arg)
     {
         this._strokeColor = arg;
     }
@@ -439,8 +448,17 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
     private Point2D getCurvePointForSpiro(double step)
     {
         this._spiroCurveParameter += step;
-        return new Point2D(0, //(int)(this._spiroCurveParameter * SPIRO_CURVE_SPEED_X),
-                           (int)Math.round(SPIRO_CURVE_WIDTH * Math.cos(this._spiroCurveParameter * SPIRO_CURVE_SPEED_Y)));
+        switch (this._curveType) {
+        case Sine:
+            return new Point2D(0, //(int)(this._spiroCurveParameter * SPIRO_CURVE_SPEED_X),
+                    (int)Math.round(SPIRO_CURVE_WIDTH * Math.cos(this._spiroCurveParameter * SPIRO_CURVE_SPEED_Y)));
+        case Circle:
+            return new Point2D((int)Math.round(SPIRO_CURVE_WIDTH * Math.sin(this._spiroCurveParameter * SPIRO_CURVE_SPEED_Y)),
+                               (int)Math.round(SPIRO_CURVE_WIDTH * Math.cos(this._spiroCurveParameter * SPIRO_CURVE_SPEED_Y)));
+        default:
+            return Point2D.zero;
+        }
+
     }
 
 
@@ -463,7 +481,6 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
      */
     private Point2D getSpiroPoint(Point2D pathPoint, Point2D pathDerivative, Point2D overlayedCurvePoint)
     {
-        Logger.info(pathDerivative);
         double magnitude = pathDerivative.getRadius();
         int x = (int)Math.round((overlayedCurvePoint.getX()*pathDerivative.getX() - overlayedCurvePoint.getY()*pathDerivative.getY()) / magnitude);
         int y = (int)Math.round((overlayedCurvePoint.getX()*pathDerivative.getY() + overlayedCurvePoint.getY()*pathDerivative.getX()) / magnitude);
