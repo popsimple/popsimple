@@ -138,6 +138,14 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
         }
 
         this.registrationsManager.add(Event.addNativePreviewHandler(new NativePreviewHandler() {
+            ScheduledCommand updateButtonStatesCommand = new ScheduledCommand() {
+                @Override public void execute() {
+                    if (that.isActiveElementTree()) {
+                        that.updateButtonStates();
+                    }
+                }
+            };
+
             @Override
             public void onPreviewNativeEvent(NativePreviewEvent event)
             {
@@ -149,13 +157,7 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
                     }))
                 {
                     that.saveSelectedRanges();
-                    SchedulerUtils.OneTimeScheduler.get().scheduleDeferredOnce(new ScheduledCommand() {
-                        @Override public void execute() {
-                            if (that.isActiveElementTree()) {
-                                that.updateButtonStates();
-                            }
-                        }
-                    });
+                    SchedulerUtils.OneTimeScheduler.get().scheduleDeferredOnce(updateButtonStatesCommand);
                 }
             }
         }));
