@@ -38,7 +38,8 @@
        y1="419.88043"
        x2="150.75964"
        y2="419.88043"
-       gradientUnits="userSpaceOnUse" />
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1.9629629,0,0,1,-146.2757,0)" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -77,21 +78,27 @@
     <rect
        style="fill:#000000;fill-opacity:1;stroke:none"
        id="rect3019"
-       width="3.4092648"
+       width="6.6922607"
        height="18.435284"
        x="151.90169"
        y="410.66278"
-       rx="1"
-       ry="1" />
+       rx="1.962963"
+       ry="1"
+       inkscape:export-filename="G:\canvas\website\src\com\project\website\shared\client\resources\images\sliderDrag_10.png"
+       inkscape:export-xdpi="47.459999"
+       inkscape:export-ydpi="47.459999" />
     <rect
        style="fill:url(#linearGradient3857);fill-opacity:1;stroke:none"
        id="rect3019-8"
-       width="3.4092648"
+       width="6.6922607"
        height="18.435284"
        x="151.90169"
        y="410.66278"
-       rx="1"
-       ry="1" />
+       rx="1.962963"
+       ry="1"
+       inkscape:export-filename="G:\canvas\website\src\com\project\website\shared\client\resources\images\sliderDrag_10.png"
+       inkscape:export-xdpi="47.459999"
+       inkscape:export-ydpi="47.459999" />
     <g
        style="font-size:40px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
        id="flowRoot2985"
