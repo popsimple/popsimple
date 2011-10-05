@@ -445,7 +445,7 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
         Button buttonWidget = new Button();
         buttonWidget.getElement().getStyle().setProperty(cssProperty, setValues[0]);
         buttonWidget.getElement().setInnerText(title);
-        buttonWidget.addStyleName(CanvasResources.INSTANCE.main().canvasToolbarToggleButton());
+        buttonWidget.addStyleName(CanvasResources.INSTANCE.main().canvasToolbarButton());
         return buttonWidget;
     }
 

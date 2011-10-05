@@ -7,7 +7,7 @@
     <g:FlowPanel ui:field="optionsBar" addStyleNames="{res.main.canvasToolbar}">
         <g:FlowPanel addStyleNames="{res.main.canvasToolbarItemWrapper}">
             <g:TextBox ui:field="mapSearchTextBox" />
-            <g:Button ui:field="mapSearchButton">Map Search</g:Button>
+            <g:Button ui:field="mapSearchButton" addStyleNames="{res.main.canvasToolbarButton}">Map Search</g:Button>
         </g:FlowPanel>
         <g:Anchor ui:field="optionsLink" addStyleNames="{res.main.link} {res.main.toolOptionsLabel} ">
             Map options...

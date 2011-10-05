@@ -4,11 +4,11 @@
 	<ui:style>
 		
 	</ui:style>
-	<g:HTMLPanel>
-	   <g:Button ui:field="lessButton" addStyleName="{res.main.sliderLess}"/>
-	   <div ui:field="scalePanel" addStyleName="{res.main.sliderScale}">
-           <g:Button ui:field="dragButton" addStyleName="{res.main.sliderDrag}"/>
+	<g:HTMLPanel addStyleNames="{res.main.slider}">
+	   <g:Button ui:field="lessButton" addStyleNames="{res.main.sliderLess}"/>
+	   <div ui:field="scalePanel" class="{res.main.sliderScale}">
+           <g:Button ui:field="dragButton" addStyleNames="{res.main.sliderDrag}"/>
 	   </div>
-       <g:Button ui:field="moreButton" addStyleName="{res.main.sliderMore}"/>
+       <g:Button ui:field="moreButton" addStyleNames="{res.main.sliderMore}"/>
 	</g:HTMLPanel>
 </ui:UiBinder> 

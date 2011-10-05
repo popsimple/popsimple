@@ -16,7 +16,7 @@ public interface MainStyles extends CssResource {
 
     String canvasToolbarListBox();
 
-    String canvasToolbarToggleButton();
+    String canvasToolbarButton();
 
     String colorPickerButton();
 
@@ -129,6 +129,8 @@ public interface MainStyles extends CssResource {
     String sketchCreateModeCanvasStyle();
 
     String sketchTool();
+    
+    String slider();
 
     String sliderDrag();
 

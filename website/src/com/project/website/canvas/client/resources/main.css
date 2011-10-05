@@ -359,7 +359,7 @@
 /*     -ms-border-radius: 3px; */
 }
 
-.canvasToolbar button, .canvasToolbarToggleButton, .canvasToolbar .gwt-ToggleButton {
+.canvasToolbar .canvasToolbarButton {
 	display: inline-block;
     font-size: 0.9em;
 	padding: 2px 3px;
@@ -1018,20 +1018,33 @@
 
 
 /*-----------------------*/
-@sprite
-.sliderDrag {
+.slider {
+	display: inline-block;
+}
+@sprite .sliderDrag {
+	border: none;
+	margin: 0;
+	padding: 0;
 	position: absolute;
 	gwt-image: "sliderIconDrag";
 }
-.sliderLess {
-	gwt-image: "sliderIconHorizontalLess";
+@sprite .sliderLess {
+	border: none;
+    margin: 0;
+    padding: 0;
+    gwt-image: "sliderIconHorizontalLess";
 }
-.sliderMore {
+@sprite .sliderMore {
+	border: none;
+    margin: 0;
+    padding: 0;
     gwt-image: "sliderIconHorizontalMore";
 }
 .sliderScale {
+	display: inline-block;
 	position: relative;
 	height: 10px;
+	width: 100px;
 	background-color: gray;
 }
 
