@@ -168,7 +168,7 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
 
         final Point2D initialCenter = initialRect.getCenter();
         Point2D unrotatedBottomLeftRelativeToCenter = initialRect.getSize().mulCoords(-0.5, 0.5);
-        final double unrotatedBottomLeftAngle = Math.toDegrees(unrotatedBottomLeftRelativeToCenter.radians());
+        final double unrotatedBottomLeftAngle = Math.toDegrees(unrotatedBottomLeftRelativeToCenter.getRadians());
         final double startAngle = ElementUtils.getRotation(toolFrame.asWidget().getElement());
 
         MouseMoveOperationHandler handler = new MouseMoveOperationHandler() {
@@ -204,7 +204,7 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
             final Point2D startDragPos, Point2D pos)
     {
         Point2D rotatedSizeOffset = pos.minus(startDragPos);
-        Point2D sizeOffset = rotatedSizeOffset.rotate(-angle);
+        Point2D sizeOffset = rotatedSizeOffset.getRotated(-angle);
         Point2D size = Point2D.max(initialSize.plus(sizeOffset), Point2D.zero);
         return size;
     }
@@ -297,7 +297,7 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
             final double unrotatedBottomLeftAngle, Point2D pos, int animationDuration)
     {
         Point2D posRelativeToCenter = pos.minus(initialCenter);
-        double rotation = Math.toDegrees(posRelativeToCenter.radians()) - unrotatedBottomLeftAngle;
+        double rotation = Math.toDegrees(posRelativeToCenter.getRadians()) - unrotatedBottomLeftAngle;
         ElementUtils.setRotation(toolFrame.asWidget().getElement(), roundedAngle(rotation), animationDuration);
         toolFrame.onTransformed();
     }

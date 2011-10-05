@@ -5,11 +5,10 @@ import java.io.Serializable;
 import com.google.code.twig.annotation.Embedded;
 import com.google.code.twig.annotation.Id;
 import com.google.gwt.user.client.rpc.IsSerializable;
-import com.project.shared.interfaces.ICloneable;
-import com.project.shared.utils.CloneableUtils;
+import com.project.shared.interfaces.IsCloneable;
 import com.project.shared.utils.RandomUtils;
 
-public class ElementData implements Serializable, IsSerializable, ICloneable {
+public abstract class ElementData implements Serializable, IsSerializable, IsCloneable<ElementData> {
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -32,19 +31,5 @@ public class ElementData implements Serializable, IsSerializable, ICloneable {
     {
         this();
         this.factoryUniqueId = factoryUniqueId;
-    }
-
-    @Override
-    public Object createInstance()
-    {
-    	return new ElementData();
-    }
-
-    @Override
-    public void copyTo(Object object)
-    {
-    	ElementData copy = (ElementData)object;
-    	copy.factoryUniqueId = this.factoryUniqueId;
-    	copy.transform = (Transform2D)CloneableUtils.clone(this.transform);
     }
 }

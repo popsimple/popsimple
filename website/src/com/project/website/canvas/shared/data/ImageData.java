@@ -1,8 +1,9 @@
 package com.project.website.canvas.shared.data;
 
-import com.project.shared.utils.CloneableUtils;
+import com.project.shared.interfaces.ICloneable;
 
-public class ImageData extends ElementData
+
+public class ImageData extends ElementData implements ICloneable<ImageData>
 {
     private static final long serialVersionUID = 1L;
 
@@ -27,5 +28,18 @@ public class ImageData extends ElementData
         ImageData copy = (ImageData)object;
 
         copy.imageInformation = (ImageInformation)CloneableUtils.clone(this.imageInformation);
+    }
+
+    @Override
+    public ICloneable<ElementData> getCloneable()
+    {
+        return this;
+    }
+
+    @Override
+    public ImageData getClone()
+    {
+        // TODO Auto-generated method stub
+        return null;
     }
 }
