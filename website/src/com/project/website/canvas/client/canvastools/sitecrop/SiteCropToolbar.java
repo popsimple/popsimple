@@ -167,7 +167,6 @@ public class SiteCropToolbar extends Composite
 	        return;
 	    }
 	    this.urlTextBox.setValue(url);
-	    this._urlChangeEvent.dispatch(url);
 	}
 
 	public void setIsInteractive(boolean isInteractive)

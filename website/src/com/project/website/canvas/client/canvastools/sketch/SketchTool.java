@@ -408,12 +408,6 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
         _drawingPathExists = false;
     }
 
-
-    @Override
-    public boolean dimOnLoad() {
-        return true;
-    }
-
     private String toPxString(int height)
     {
         return String.valueOf(height) + "px";

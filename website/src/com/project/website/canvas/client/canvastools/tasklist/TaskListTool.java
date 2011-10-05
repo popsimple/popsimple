@@ -184,9 +184,4 @@ public class TaskListTool extends Composite implements CanvasTool<TaskListData>,
         // TODO Auto-generated method stub
         return null;
     }
-
-    @Override
-    public boolean dimOnLoad() {
-        return true;
-    }
 }

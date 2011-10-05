@@ -53,11 +53,8 @@ public class Rectangle implements ICloneable<Rectangle>, Serializable, IsSeriali
 
     public Rectangle(Rectangle rectangle)
     {
-        this.left = rectangle.left;
-        this.top = rectangle.top;
-        this.right = rectangle.right;
-        this.bottom = rectangle.bottom;
-        this.rotation = rectangle.rotation;
+        this(rectangle.getLeft(), rectangle.getTop(),
+                rectangle.getRight(), rectangle.getBottom(), rectangle.getRotation());
     }
 
     public boolean contains(Point2D point) {
@@ -186,6 +183,14 @@ public class Rectangle implements ICloneable<Rectangle>, Serializable, IsSeriali
             }
         }
         return false;
+    }
+
+    public Rectangle move(Point2D target)
+    {
+        int newRight = this.right - (this.left - target.getX());
+        int newBottom = this.bottom - (this.top - target.getY());
+
+        return new Rectangle(target.getX(), target.getY(), newRight, newBottom);
     }
 
     @Override

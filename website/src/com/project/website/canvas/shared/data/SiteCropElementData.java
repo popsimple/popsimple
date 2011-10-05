@@ -3,14 +3,14 @@ package com.project.website.canvas.shared.data;
 import com.project.shared.data.Rectangle;
 import com.project.shared.interfaces.ICloneable;
 
-//TODO: Move to data.
-public class SiteCropElementData extends ElementData implements ICloneable<SiteCropElementData>
-{
+public class SiteCropElementData extends ElementData implements ICloneable<SiteCropElementData> {
+
+    /**
+     *
+     */
     private static final long serialVersionUID = 1L;
 
     public String url = "";
-    public Rectangle clipRectangle = new Rectangle();
-    public Rectangle coverRectangle = new Rectangle();
     public Rectangle frameRectangle = new Rectangle();
     public boolean isInteractive = false;
 
@@ -22,14 +22,12 @@ public class SiteCropElementData extends ElementData implements ICloneable<SiteC
         super(factoryUniqueId);
     }
 
-    public SiteCropElementData(SiteCropElementData other)
+    public SiteCropElementData(SiteCropElementData siteCropElementData)
     {
-        super(other);
-        this.url = other.url;
-        this.clipRectangle = other.clipRectangle.getClone();
-        this.coverRectangle = other.coverRectangle.getClone();
-        this.frameRectangle = other.frameRectangle.getClone();
-        this.isInteractive = other.isInteractive;
+        super(siteCropElementData);
+        this.url = siteCropElementData.url;
+        this.frameRectangle = new Rectangle(siteCropElementData.frameRectangle);
+        this.isInteractive = siteCropElementData.isInteractive;
     }
 
     @Override
@@ -43,5 +41,4 @@ public class SiteCropElementData extends ElementData implements ICloneable<SiteC
     {
         return new SiteCropElementData(this);
     }
-
 }
