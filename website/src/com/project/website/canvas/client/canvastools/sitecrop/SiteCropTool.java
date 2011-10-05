@@ -14,7 +14,6 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusPanel;
@@ -49,7 +48,6 @@ import com.project.website.canvas.shared.data.SiteCropElementData;
 //TODO:
 //2. set the frame correctly if the page loads again.
 //6. Disable all toolbar when loading.
-//7. Site refreshes after save (Shouldn't)
 //8. Add "Reset" button
 //9. In Chrome after crop and save the frame moves.
 
@@ -119,7 +117,7 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
     private final ScheduledCommand _refreshUrlCommand = new ScheduledCommand() {
         @Override
         public void execute() {
-            refreshUrl();
+            loadUrl();
     }};
 
     public SiteCropTool() {
@@ -202,7 +200,7 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
                 this._toolbar.addUrlChangedHandler(new Handler<String>() {
             @Override
             public void onFire(String arg) {
-                setUrl(arg);
+                updateUrl(arg);
             }
         }));
 
@@ -253,7 +251,7 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
                 this._toolbar.addDebugClickRequestHandler(new Handler<Void>() {
             @Override
             public void onFire(Void arg) {
-                setUrl("http://www.google.com");
+                updateUrl("http://www.google.com");
             }
         }));
     }
@@ -276,18 +274,6 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
             return;
         }
         this.onLoadEnded();
-    }
-
-    private void handlePreviewKeyDownEvent(NativePreviewEvent event)
-    {
-        // TODO: Use some sort of KeyMapper.
-        switch (event.getNativeEvent().getKeyCode()) {
-        case KeyCodes.KEY_ESCAPE:
-            _stopMouseOperationEvent.dispatch(null);
-            break;
-        default:
-            break;
-        }
     }
 
     private void setDefaultMode()
@@ -433,32 +419,30 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
         ElementUtils.setElementRectangle(this.siteFrame.getElement(), this._data.frameRectangle);
     }
 
-    private void setUrl(String url) {
+    private void updateUrl(String url) {
         if (false == this._data.url.equalsIgnoreCase(url))
         {
             this.resetFramePosition();
-            this._data.url = url;
+            this._data.url = UrlUtils.ensureProtocol(url);
         }
-        this.loadUrl(url);
+        this.loadUrl();
     }
 
-    private void loadUrl(String url)
+    private void loadUrl()
     {
-        if (false == this.isValidUrl(url))
+        if (false == this.isValidUrl(this._data.url))
         {
             return;
         }
 
         this.onLoadStarted();
 
-        url = UrlUtils.ensureProtocol(url);
-
-        this.siteFrame.setUrl(url);
+        this.siteFrame.setUrl(this._data.url);
         ElementUtils.setElementSize(this.getElement(),
                 ElementUtils.getElementOffsetSize(this.getElement()));
         this.removeStyleName(CanvasResources.INSTANCE.main().cropSiteToolEmpty());
         this.addStyleName(CanvasResources.INSTANCE.main().cropSiteToolSet());
-        this._toolbar.setUrl(url);
+        this._toolbar.setUrl(this._data.url);
         this._toolbar.enableBrowse(true);
     }
 
@@ -472,11 +456,6 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
     {
         this._toolEvents.dispatchLoadEndedEvent();
         this._toolbar.enableCrop(true);
-    }
-
-    private void refreshUrl()
-    {
-        this.loadUrl(this._data.url);
     }
 
     private void resetFramePosition()
@@ -499,9 +478,17 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
 
     @Override
     public void setValue(SiteCropElementData value) {
-        this._data = value;
-
-        this.loadUrl(this._data.url);
+        //Currently, after saving the worksheet, all the tools are updated with the saved element data.
+        //so we want to avoid unnecessary load of the url in case nothing was actually changed.
+        if ((null != this._data) && (this._data.url.equalsIgnoreCase(value.url)))
+        {
+            this._data = value;
+        }
+        else
+        {
+            this._data = value;
+            this.loadUrl();
+        }
 
         this.setMinimalRectangle(this._data.frameRectangle);
         this.setToolbarData(value);
