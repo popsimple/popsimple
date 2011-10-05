@@ -1,5 +1,7 @@
 package com.project.shared.utils;
 
+import java.util.LinkedList;
+
 import com.project.shared.data.Point2D;
 
 public class PointUtils
@@ -46,5 +48,38 @@ public class PointUtils
     {
         int mean = (pos.getX() + pos.getY()) / 2;
         return new Point2D(mean, mean);
+    }
+
+    public static Point2D nullToZero(Point2D pos)
+    {
+        if (null == pos) {
+            return new Point2D(Point2D.zero);
+        }
+        return pos;
+    }
+
+    public class MovingAverage
+    {
+        LinkedList<Point2D> points = new LinkedList<Point2D>();
+        private int _size;
+
+        public MovingAverage(int size) {
+            this._size = size;
+        }
+
+        public void setNext(Point2D point) {
+            this.points.addLast(point);
+            if (this.points.size() > this._size) {
+                this.points.removeFirst();
+            }
+        }
+
+        public Point2D getAverage() {
+            Point2D result = Point2D.zero;
+            for (Point2D point : points) {
+                result = result.plus(point);
+            }
+            return result.mul(1 / this._size);
+        }
     }
 }

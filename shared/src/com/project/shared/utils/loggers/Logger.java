@@ -50,4 +50,9 @@ public class Logger
             Logger.info(ThrowableUtils.joinStackTrace(e));
         }
     }
+
+    public static void info(Object obj)
+    {
+        Logger.info(obj.toString());
+    }
 }

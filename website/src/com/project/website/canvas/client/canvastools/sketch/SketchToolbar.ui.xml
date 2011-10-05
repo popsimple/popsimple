@@ -9,8 +9,9 @@
 
     </ui:style>
     <g:HTMLPanel ui:field="rootPanel" addStyleNames="{res.main.canvasToolbar}">
-        <w:ToggleButtonPanel addStyleNames="{res.main.canvasToolbarItemWrapper}">
+        <w:ToggleButtonPanel ui:field="toolTogglePanel" addStyleNames="{res.main.canvasToolbarItemWrapper}">
             <g:ToggleButton ui:field="paintButton">Paint</g:ToggleButton>
+            <g:ToggleButton ui:field="spiroButton">Spiro</g:ToggleButton>
             <g:ToggleButton ui:field="eraseButton">Erase</g:ToggleButton>
         </w:ToggleButtonPanel>
         <g:HTMLPanel ui:field="colorPanel" addStyleNames="{res.main.canvasToolbarItemWrapper}">
