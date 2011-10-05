@@ -32,6 +32,7 @@ import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.client.shared.UndoManager;
 import com.project.website.canvas.shared.data.ElementData;
 import com.project.website.canvas.shared.data.SketchData;
+import com.project.website.canvas.shared.data.SketchOptions;
 
 public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
 {
@@ -323,16 +324,17 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
                 that.addLineToPath();
             }}, MouseMoveEvent.getType()));
 
-        this.registrationsManager.add(this._toolbar.addColorChangedHandler(new Handler<String>() {
-            @Override public void onFire(String arg) {
-                that.setColor(arg);
-            }}));
-
-        this.registrationsManager.add(this._toolbar.addToolChangedHandler(new Handler<DrawingTool>() {
-            @Override public void onFire(DrawingTool arg) {
-                that._activeDrawingTool = arg;
+        this.registrationsManager.add(this._toolbar.addOptionsChangedHandler(new Handler<SketchOptions>() {
+            @Override public void onFire(SketchOptions arg) {
+                that.setOptions(arg);
             }}));
     }
+
+    protected void setOptions(SketchOptions options)
+    {
+        this.data.sketchOptions = options;
+    }
+
 
     protected void redraw()
     {
@@ -347,16 +349,16 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
         if (this.isErasing()) {
             this._context.setStrokeStyle("black");
             this._cursorCanvas.getContext2d().beginPath();
-            this._cursorCanvas.getContext2d().rect(pos.getX() - this.data.eraserWidth / 2,
-                                                   pos.getY() - this.data.eraserWidth / 2,
-                                                   this.data.eraserWidth, this.data.eraserWidth);
+            this._cursorCanvas.getContext2d().rect(pos.getX() - this.data.sketchOptions.eraserWidth / 2,
+                                                   pos.getY() - this.data.sketchOptions.eraserWidth / 2,
+                                                   this.data.sketchOptions.eraserWidth, this.data.sketchOptions.eraserWidth);
             this._cursorCanvas.getContext2d().stroke();
         }
         else {
             this._context.setStrokeStyle("transparent");
-            this._context.setFillStyle(this._strokeColor);
+            this._context.setFillStyle(this.data.sketchOptions.penColor);
             this._cursorCanvas.getContext2d().beginPath();
-            this._cursorCanvas.getContext2d().arc(pos.getX(), pos.getY(), this.data.penWidth, 0, Math.PI * 2);
+            this._cursorCanvas.getContext2d().arc(pos.getX(), pos.getY(), this.data.sketchOptions.penWidth, 0, Math.PI * 2);
             this._cursorCanvas.getContext2d().closePath();
             this._cursorCanvas.getContext2d().fill();
         }
@@ -382,7 +384,9 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
         if (drawingPathExists()) {
             Point2D pos = ElementUtils.getMousePositionRelativeToElement(this.getElement());
             //this._currentPath.lineTo(pos.getX(), pos.getY());
-            this.drawInterpolatedSteps(pos);
+            if (DrawingTool.PAINT != this.data.sketchOptions.drawingTool) {
+                this.drawInterpolatedSteps(pos);
+            }
             this.drawPen(pos, pos.minus(PointUtils.nullToZero(this._prevDrawPos)));
             this._prevDrawPos = pos;
             this.redraw();
@@ -396,7 +400,7 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
             final Point2D offset = pos.minus(this._prevDrawPos);
             Point2D prevStepPos = this._prevDrawPos;
             int steps = (int) Math.floor(offset.getRadius());
-            for (int i = 0 ; i < steps; i += Math.max(1, this.data.penSkip)) {
+            for (int i = 0 ; i < steps; i += Math.max(1, this.data.sketchOptions.penSkip)) {
                 Point2D stepPos = this._prevDrawPos.plus(offset.mul(((double)i)/steps));
                 this.drawPen(stepPos, stepPos.minus(prevStepPos));
                 prevStepPos = stepPos;
@@ -409,9 +413,9 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
     {
         this._averageVelocity.add(velocity);
 
-        this._context.setStrokeStyle(this._strokeColor);
+        this._context.setStrokeStyle(this.data.sketchOptions.penColor);
         this._context.setFillStyle("transparent");
-        this._context.setLineWidth(this.data.penWidth);
+        this._context.setLineWidth(this.data.sketchOptions.penWidth);
         this._context.setLineJoin(LineJoin.ROUND);
         this._context.setLineCap(LineCap.ROUND);
 
@@ -425,7 +429,7 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
         else {
             Point2D finalPos = mousePos;
             Point2D averageVelocity = this._averageVelocity.getAverage();
-            if (DrawingTool.SPIRO == this._activeDrawingTool) {
+            if (DrawingTool.SPIRO == this.data.sketchOptions.drawingTool) {
                 if (averageVelocity.getRadius() < 1) {
                     return;
                 }
@@ -434,7 +438,7 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
             }
             this._averageDrawPos.add(finalPos);
             finalPos = this._averageDrawPos.getAverage();
-            //this._context.arc(finalPos.getX(), finalPos.getY(), this.data.penWidth, 0, 2 * Math.PI);
+            //this._context.arc(finalPos.getX(), finalPos.getY(), this.data.sketchOptions.penWidth, 0, 2 * Math.PI);
             this._context.lineTo(finalPos.getX(), finalPos.getY());
             this._context.moveTo(finalPos.getX(), finalPos.getY());
             this._context.stroke();
@@ -446,15 +450,15 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
 
     private boolean isErasing()
     {
-        return DrawingTool.ERASE == this._activeDrawingTool;
+        return DrawingTool.ERASE == this.data.sketchOptions.drawingTool;
     }
 
 
     private void drawEraser(Point2D mousePos, Context2d context)
     {
-        context.clearRect(mousePos.getX() - this.data.eraserWidth / 2,
-                          mousePos.getY() - this.data.eraserWidth / 2,
-                          this.data.eraserWidth, this.data.eraserWidth);
+        context.clearRect(mousePos.getX() - this.data.sketchOptions.eraserWidth / 2,
+                          mousePos.getY() - this.data.sketchOptions.eraserWidth / 2,
+                          this.data.sketchOptions.eraserWidth, this.data.sketchOptions.eraserWidth);
     }
 
     private boolean drawingPathExists()
@@ -462,11 +466,6 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
         return this._drawingPathExists;//null != this._currentPath;
     }
 
-
-    private void setColor(String arg)
-    {
-        this._strokeColor = arg;
-    }
 
     private void terminateDrawingPath()
     {

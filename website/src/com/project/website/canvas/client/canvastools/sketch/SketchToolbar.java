@@ -14,9 +14,13 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.gwt.user.client.ui.Widget;
+import com.kiouri.sliderbar.client.event.BarValueChangedEvent;
+import com.kiouri.sliderbar.client.event.BarValueChangedHandler;
+import com.kiouri.sliderbar.client.solution.simplehorizontal.SliderBarSimpleHorizontal;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.website.canvas.client.shared.widgets.ColorPicker;
 import com.project.website.canvas.client.shared.widgets.ToggleButtonPanel;
+import com.project.website.canvas.shared.data.SketchOptions;
 
 public class SketchToolbar extends Composite
 {
@@ -45,12 +49,13 @@ public class SketchToolbar extends Composite
     @UiField
     HTMLPanel colorPanel;
 
-    private final SimpleEvent<String> colorChangedEvent = new SimpleEvent<String>();
-    private final SimpleEvent<DrawingTool> toolChangedEvent = new SimpleEvent<DrawingTool>();
+    private final SimpleEvent<SketchOptions> optionsChangedEvent = new SimpleEvent<SketchOptions>();
     private final HashMap<ToggleButton, DrawingTool> buttonToolMap = new HashMap<ToggleButton, DrawingTool>();
+    private final SliderBarSimpleHorizontal penWidthSlider = new SliderBarSimpleHorizontal(100, "100px", true);
 
     private boolean _initialized = false;
-    private boolean _erasing;
+
+    private SketchOptions _sketchOptions = new SketchOptions();
 
     public SketchToolbar()
     {
@@ -60,58 +65,73 @@ public class SketchToolbar extends Composite
         buttonToolMap.put(this.paintButton, DrawingTool.PAINT);
         buttonToolMap.put(this.spiroButton, DrawingTool.SPIRO);
 
+        this.colorPanel.add(penWidthSlider);
+
+        this.penWidthSlider.addBarValueChangedHandler(new BarValueChangedHandler() {
+            @Override public void onBarValueChanged(BarValueChangedEvent event) {
+                dispatchOptionsChangedEvent();
+            }
+        });
+
         this.color.addChangeHandler(new ChangeHandler() {
             @Override public void onChange(ChangeEvent event) {
-                setErasing(false);
-                dispatchColorChangeEvent();
+                dispatchOptionsChangedEvent();
             }
         });
         this.eraseButton.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
             @Override public void onValueChange(ValueChangeEvent<Boolean> event) {
-            	_erasing = event.getValue();
-                dispatchColorChangeEvent();
-                dispatchToolChangedEvent();
+                dispatchOptionsChangedEvent();
             }
         });
         this.paintButton.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
             @Override public void onValueChange(ValueChangeEvent<Boolean> event) {
-                colorPanel.setVisible(event.getValue());
-                dispatchToolChangedEvent();
+                dispatchOptionsChangedEvent();
             }
         });
         this.spiroButton.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
             @Override public void onValueChange(ValueChangeEvent<Boolean> event) {
-                colorPanel.setVisible(event.getValue());
-                dispatchToolChangedEvent();
+                dispatchOptionsChangedEvent();
             }
         });
 
         this.paintButton.setValue(true, true);
     }
 
-    protected void dispatchToolChangedEvent()
+    protected void dispatchOptionsChangedEvent()
+    {
+        this.optionsChangedEvent.dispatch(this.getOptions());
+    }
+
+    public SketchOptions getOptions()
     {
         ToggleButton activeButton = toolTogglePanel.getActiveButton();
         if (null == activeButton) {
             // todo dispatch indicating no tool active?
-            return;
+            //return;
         }
-        this.toolChangedEvent.dispatch(this.buttonToolMap.get(activeButton));
-
+        this._sketchOptions.drawingTool = this.buttonToolMap.get(activeButton);
+        this._sketchOptions.penWidth = this.penWidthSlider.getValue();
+        this._sketchOptions.penColor = this.color.getColor();
+        return new SketchOptions(this._sketchOptions);
     }
 
-    public boolean isErasing()
+    public void setOptions(SketchOptions options)
     {
-        return _erasing;
+        this._sketchOptions = new SketchOptions(options);
+        switch (this._sketchOptions.drawingTool) {
+        case ERASE:
+            this.eraseButton.setValue(true, false);
+            break;
+        case PAINT:
+            this.paintButton.setValue(true, false);
+            break;
+        case SPIRO:
+            this.spiroButton.setValue(true, false);
+            break;
+        }
+        this.color.setColor(this._sketchOptions.penColor);
+        this.penWidthSlider.setValue(this._sketchOptions.penWidth);
     }
-
-    public void setErasing(boolean isErasing)
-    {
-        this._erasing = isErasing;
-        this.eraseButton.setValue(isErasing);
-    }
-
-
 
     @Override
     protected void onLoad()
@@ -119,50 +139,17 @@ public class SketchToolbar extends Composite
         super.onLoad();
         if (false == this._initialized) {
             this._initialized = true;
-            this.setColor(DEFAULT_STROKE_COLOR);
+            this.setOptions(this._sketchOptions);
         }
     }
-
-
 
     @Override
     protected void onUnload()
     {
-        // TODO Auto-generated method stub
         super.onUnload();
     }
 
-
-
-    public HandlerRegistration addColorChangedHandler(SimpleEvent.Handler<String> handler) {
-        return this.colorChangedEvent.addHandler(handler);
+    public HandlerRegistration addOptionsChangedHandler(SimpleEvent.Handler<SketchOptions> handler) {
+        return this.optionsChangedEvent.addHandler(handler);
     }
-
-    public HandlerRegistration addToolChangedHandler(SimpleEvent.Handler<DrawingTool> handler) {
-        return this.toolChangedEvent.addHandler(handler);
-    }
-
-    public String getColor() {
-        if (this._erasing) {
-            return ERASURE_COLOR;
-        }
-        return this.color.getColor();
-    }
-
-    public void setColor(String color) {
-        this.color.setColor(color);
-    }
-
-
-
-    private void dispatchColorChangeEvent()
-    {
-        if (_erasing) {
-            colorChangedEvent.dispatch(ERASURE_COLOR);
-        }
-        else {
-            colorChangedEvent.dispatch(getColor());
-        }
-    }
-
 }
