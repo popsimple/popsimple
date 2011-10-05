@@ -2,11 +2,12 @@ package com.project.website.canvas.client.shared.widgets;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
-import com.google.gwt.event.dom.client.DomEvent;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HumanInputEvent;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
-import com.google.gwt.event.dom.client.TouchEndEvent;
 import com.google.gwt.event.dom.client.MouseUpEvent;
+import com.google.gwt.event.dom.client.TouchEndEvent;
 import com.google.gwt.event.dom.client.TouchMoveEvent;
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -27,9 +28,10 @@ import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.EventUtils;
 import com.project.shared.client.utils.widgets.WidgetUtils;
 import com.project.shared.data.Point2D;
-import com.project.shared.utils.loggers.Logger;
 
 public class Slider extends Composite implements HasValueChangeHandlers<Double>, HasValue<Double> {
+
+	private static final int MORE_LESS_BUTTON_STEPS = 10;
 
 	interface SliderUiBinder extends UiBinder<Widget, Slider> {
 	}
@@ -56,15 +58,22 @@ public class Slider extends Composite implements HasValueChangeHandlers<Double>,
 		final Slider that = this;
 		WidgetUtils.addMovementStartHandler(dragButton, new Handler<HumanInputEvent<?>>() {
 			@Override public void onFire(HumanInputEvent<?> arg) {
-				Logger.info(that, "start");
 				startDragging();
 			}});
 		
 		WidgetUtils.addMovementMoveHandler(dragButton, new Handler<HumanInputEvent<?>>() {
 			@Override public void onFire(HumanInputEvent<?> arg) {
-				Logger.info(that, "move");
 				double oldValue = that._value;
 				ValueChangeEvent.fireIfNotEqual(that, oldValue, that.getValue());
+			}});
+		
+		this.lessButton.addClickHandler(new ClickHandler() {
+			@Override public void onClick(ClickEvent event) {
+				that.setValue(that.getValue() - that.getRange() / MORE_LESS_BUTTON_STEPS);
+			}});
+		this.moreButton.addClickHandler(new ClickHandler() {
+			@Override public void onClick(ClickEvent event) {
+				that.setValue(that.getValue() + that.getRange() / MORE_LESS_BUTTON_STEPS);
 			}});
 	}
 
@@ -83,8 +92,20 @@ public class Slider extends Composite implements HasValueChangeHandlers<Double>,
 
 	@Override
 	public Double getValue() {
-		this._value = getDragPositionRelativeToScalePanel().getX() / Math.max(1, (this._maxValue - this._minValue));
 		return this._value;
+	}
+
+	protected void updateValueFromDragPosition() {
+		double range = getRange();
+		double maxDragOffsetX = Math.max(1, ElementUtils.getElementOffsetSize(this.scalePanel).getX());
+		double normalizedValue = getDragPositionRelativeToScalePanel().getX() / maxDragOffsetX;
+		double oldValue = this._value;
+		this._value = (normalizedValue * range) + this._minValue;
+		ValueChangeEvent.fireIfNotEqual(this, oldValue, this._value);
+	}
+
+	protected double getRange() {
+		return this._maxValue - this._minValue;
 	}
 
 	public void setMaxValue(double maxValue) {
@@ -105,6 +126,9 @@ public class Slider extends Composite implements HasValueChangeHandlers<Double>,
 		value = Math.min(this._maxValue, Math.max(this._minValue, value));
 		Double oldValue = this._value;
 		this._value = value;
+		double newDragX = (this._value - this._minValue) / this.getRange() * this.scalePanel.getOffsetWidth();
+		Point2D pos = new Point2D((int)Math.round(newDragX), 0);
+		ElementUtils.setElementCSSPosition(this.dragButton.getElement(), pos);
 		if (fireEvents) {
 			ValueChangeEvent.fireIfNotEqual(this, oldValue, value);
 		}
@@ -119,7 +143,7 @@ public class Slider extends Composite implements HasValueChangeHandlers<Double>,
 			@Override public void onPreviewNativeEvent(NativePreviewEvent event) {
 				if (EventUtils.nativePreviewEventTypeIsAny(event, MouseMoveEvent.getType(), TouchMoveEvent.getType())) 
 				{
-					updateDragPosition();
+					updateDragPosition(new Point2D(event.getNativeEvent().getClientX(), event.getNativeEvent().getClientY()));
 					return;
 				}
 				if (EventUtils.nativePreviewEventTypeIsAny(event, MouseUpEvent.getType(), TouchEndEvent.getType())) 
@@ -131,9 +155,11 @@ public class Slider extends Composite implements HasValueChangeHandlers<Double>,
 		}));
 	}
 
-	protected void updateDragPosition() {
-		Point2D pos = ElementUtils.getMousePositionRelativeToElement(this.scalePanel);
-		pos = Point2D.min(new Point2D(this.scalePanel.getOffsetWidth(), 0), Point2D.max(Point2D.zero, pos));
+	protected void updateDragPosition(Point2D mousePos) {
+		Point2D pos = mousePos.minus(ElementUtils.getElementAbsolutePosition(this.scalePanel));
+		Point2D maxPos = new Point2D(this.scalePanel.getOffsetWidth() - this.moreButton.getOffsetWidth(), 0);
+		pos = Point2D.min(maxPos, Point2D.max(Point2D.zero, pos));
 		ElementUtils.setElementCSSPosition(this.dragButton.getElement(), pos);
+		updateValueFromDragPosition();
 	}
 }
