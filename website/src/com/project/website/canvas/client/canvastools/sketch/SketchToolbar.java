@@ -1,5 +1,7 @@
 package com.project.website.canvas.client.canvastools.sketch;
 
+import java.util.HashMap;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -14,6 +16,7 @@ import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.website.canvas.client.shared.widgets.ColorPicker;
+import com.project.website.canvas.client.shared.widgets.ToggleButtonPanel;
 
 public class SketchToolbar extends Composite
 {
@@ -33,11 +36,18 @@ public class SketchToolbar extends Composite
     ToggleButton eraseButton;
     @UiField
     ToggleButton paintButton;
+    @UiField
+    ToggleButton spiroButton;
+
+    @UiField
+    ToggleButtonPanel toolTogglePanel;
 
     @UiField
     HTMLPanel colorPanel;
 
     private final SimpleEvent<String> colorChangedEvent = new SimpleEvent<String>();
+    private final SimpleEvent<DrawingTool> toolChangedEvent = new SimpleEvent<DrawingTool>();
+    private final HashMap<ToggleButton, DrawingTool> buttonToolMap = new HashMap<ToggleButton, DrawingTool>();
 
     private boolean _initialized = false;
     private boolean _erasing;
@@ -46,9 +56,13 @@ public class SketchToolbar extends Composite
     {
         initWidget(uiBinder.createAndBindUi(this));
 
+        buttonToolMap.put(this.eraseButton, DrawingTool.ERASE);
+        buttonToolMap.put(this.paintButton, DrawingTool.PAINT);
+        buttonToolMap.put(this.spiroButton, DrawingTool.SPIRO);
+
         this.color.addChangeHandler(new ChangeHandler() {
             @Override public void onChange(ChangeEvent event) {
-            	setErasing(false);
+                setErasing(false);
                 dispatchColorChangeEvent();
             }
         });
@@ -56,15 +70,34 @@ public class SketchToolbar extends Composite
             @Override public void onValueChange(ValueChangeEvent<Boolean> event) {
             	_erasing = event.getValue();
                 dispatchColorChangeEvent();
+                dispatchToolChangedEvent();
             }
         });
         this.paintButton.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-			@Override public void onValueChange(ValueChangeEvent<Boolean> event) {
-				colorPanel.setVisible(event.getValue());
-			}
-		});
+            @Override public void onValueChange(ValueChangeEvent<Boolean> event) {
+                colorPanel.setVisible(event.getValue());
+                dispatchToolChangedEvent();
+            }
+        });
+        this.spiroButton.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+            @Override public void onValueChange(ValueChangeEvent<Boolean> event) {
+                colorPanel.setVisible(event.getValue());
+                dispatchToolChangedEvent();
+            }
+        });
 
         this.paintButton.setValue(true, true);
+    }
+
+    protected void dispatchToolChangedEvent()
+    {
+        ToggleButton activeButton = toolTogglePanel.getActiveButton();
+        if (null == activeButton) {
+            // todo dispatch indicating no tool active?
+            return;
+        }
+        this.toolChangedEvent.dispatch(this.buttonToolMap.get(activeButton));
+
     }
 
     public boolean isErasing()
@@ -103,6 +136,10 @@ public class SketchToolbar extends Composite
 
     public HandlerRegistration addColorChangedHandler(SimpleEvent.Handler<String> handler) {
         return this.colorChangedEvent.addHandler(handler);
+    }
+
+    public HandlerRegistration addToolChangedHandler(SimpleEvent.Handler<DrawingTool> handler) {
+        return this.toolChangedEvent.addHandler(handler);
     }
 
     public String getColor() {

@@ -5,7 +5,7 @@ import java.io.Serializable;
 import com.google.gwt.user.client.rpc.IsSerializable;
 import com.project.shared.interfaces.ICloneable;
 
-public class ImageOptions implements Serializable, IsSerializable, ICloneable {
+public class ImageOptions implements Serializable, IsSerializable, ICloneable<ImageOptions> {
     private static final long serialVersionUID = 1L;
 
     public boolean repeat = false;
@@ -41,19 +41,21 @@ public class ImageOptions implements Serializable, IsSerializable, ICloneable {
         return true;
     }
 
-    @Override
-    public Object createInstance() {
-        return new ImageOptions();
+    public ImageOptions() {}
+
+    public ImageOptions(ImageOptions other)
+    {
+        this();
+        this.repeat = other.repeat;
+        this.center = other.center;
+        this.stretchWidth = other.stretchWidth;
+        this.stretchHeight = other.stretchHeight;
+        this.useOriginalSize = other.useOriginalSize;
     }
 
     @Override
-    public void copyTo(Object object) {
-        ImageOptions copy = (ImageOptions)object;
-
-        copy.repeat = this.repeat;
-        copy.center = this.center;
-        copy.stretchWidth = this.stretchWidth;
-        copy.stretchHeight = this.stretchHeight;
-        copy.useOriginalSize = this.useOriginalSize;
+    public ImageOptions getClone()
+    {
+        return new ImageOptions(this);
     }
 }

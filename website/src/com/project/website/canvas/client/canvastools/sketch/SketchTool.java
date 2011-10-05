@@ -1,5 +1,6 @@
 package com.project.website.canvas.client.canvastools.sketch;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
@@ -19,6 +20,8 @@ import com.project.shared.client.utils.CanvasUtils;
 import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.widgets.WidgetUtils;
 import com.project.shared.data.Point2D;
+import com.project.shared.utils.PointUtils;
+import com.project.shared.utils.loggers.Logger;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
 import com.project.website.canvas.client.canvastools.base.CanvasToolEvents;
 import com.project.website.canvas.client.canvastools.base.ICanvasToolEvents;
@@ -30,6 +33,11 @@ import com.project.website.canvas.shared.data.SketchData;
 
 public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
 {
+    private static final double SPIRO_CURVE_WIDTH = 30;
+    private static final double SPIRO_CURVE_SPEED_X = 1;
+    private static final double SPIRO_CURVE_SPEED_Y = 0.1;
+    private static final double SPIRO_NORMAL_SCALE = 1000;
+
     private CanvasToolEvents _toolEvents = new CanvasToolEvents(this);
 
     private SketchData data = null;
@@ -53,6 +61,10 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
     private Context2d _context = null;
     private final ImageElement _imageElement;
     private Image _image = new Image();
+
+    private DrawingTool _activeDrawingTool;
+
+    private double _spiroCurveParameter = 0;
 
     public SketchTool(int width, int height) {
         this._imageElement = ImageElement.as(this._image.getElement());
@@ -291,13 +303,19 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
             @Override public void onFire(String arg) {
                 that.setColor(arg);
             }}));
+
+        this.registrationsManager.add(this._toolbar.addToolChangedHandler(new Handler<DrawingTool>() {
+            @Override public void onFire(DrawingTool arg) {
+                that._activeDrawingTool = arg;
+            }}));
     }
 
     private void startPathDraw()
     {
         Point2D pos = ElementUtils.getMousePositionRelativeToElement(this.getElement());
         this._drawingPathExists = true;
-        this.drawPen(pos);
+        this._context.beginPath();
+        this.drawPen(pos, Point2D.zero);
         this._prevDrawPos = pos;
     }
 
@@ -307,26 +325,36 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
         if (drawingPathExists()) {
             Point2D pos = ElementUtils.getMousePositionRelativeToElement(this.getElement());
             //this._currentPath.lineTo(pos.getX(), pos.getY());
-            if (null != this._prevDrawPos) {
-                final Point2D offset = pos.minus(this._prevDrawPos);
-                int steps = (int) Math.floor(offset.radius());
-                for (int i = 0 ; i < steps; i += Math.max(1, this.data.penSkip)) {
-                    Point2D stepPos = this._prevDrawPos.plus(offset.mul(((double)i)/steps));
-                    this.drawPen(stepPos);
-                }
-            }
+            //drawInterpolatedSteps(pos);
+            this.drawPen(pos, pos.minus(PointUtils.nullToZero(this._prevDrawPos)));
             this._prevDrawPos = pos;
-            this.drawPen(pos);
         }
     }
 
-    private void drawPen(Point2D mousePos)
+
+    private void drawInterpolatedSteps(Point2D pos)
+    {
+        if (null != this._prevDrawPos) {
+            final Point2D offset = pos.minus(this._prevDrawPos);
+            Point2D prevStepPos = this._prevDrawPos;
+            int steps = (int) Math.floor(offset.getRadius());
+            for (int i = 0 ; i < steps; i += Math.max(1, this.data.penSkip)) {
+                Point2D stepPos = this._prevDrawPos.plus(offset.mul(((double)i)/steps));
+                this.drawPen(stepPos, stepPos.minus(prevStepPos));
+                prevStepPos = stepPos;
+            }
+            this._prevDrawPos = prevStepPos;
+        }
+    }
+
+    private void drawPen(Point2D mousePos, Point2D velocity)
     {
         //this.add(this.createDrawingCircle(stepPos));
-        this._context.setFillStyle(this._strokeColor);
-        this._context.setStrokeStyle("transparent");
+        this._context.setStrokeStyle(this._strokeColor);
+        //this._context.setStrokeStyle(CanvasPattern)
+        this._context.setFillStyle("transparent");
 
-        if (this._toolbar.isErasing()) {
+        if (isErasing()) {
             // We have to erase in both buffers, because when we copy from the front to the back buffer later when resizing, it does not
             // overwrite with transparent pixels
             drawEraser(mousePos, this._context);
@@ -334,11 +362,26 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
             return;
         }
         else {
-            this._context.beginPath();
-            this._context.arc(mousePos.getX(), mousePos.getY(), this.data.penWidth, 0, 2 * Math.PI);
-            this._context.closePath();
-            this._context.fill();
+            Point2D finalPos = mousePos;
+            if (DrawingTool.SPIRO == this._activeDrawingTool) {
+                if (Objects.equal(Point2D.zero, velocity)) {
+                    return;
+                }
+                finalPos = this.getSpiroPoint(mousePos, velocity, this.getCurvePointForSpiro(velocity.getRadius()));
+            }
+            //this._context.arc(finalPos.getX(), finalPos.getY(), this.data.penWidth, 0, 2 * Math.PI);
+            this._context.lineTo(finalPos.getX(), finalPos.getY());
+            this._context.moveTo(finalPos.getX(), finalPos.getY());
+            this._context.stroke();
+//            this._context.closePath();
+//            this._context.fill();
         }
+    }
+
+
+    private boolean isErasing()
+    {
+        return DrawingTool.ERASE == this._activeDrawingTool;
     }
 
 
@@ -373,6 +416,40 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
     private void updateImageFromCanvas()
     {
         this._image.setUrl(Strings.nullToEmpty(this._canvas.toDataUrl()));
+    }
+
+    private Point2D getCurvePointForSpiro(double step)
+    {
+        this._spiroCurveParameter += step;
+        return new Point2D(0, //(int)(this._spiroCurveParameter * SPIRO_CURVE_SPEED_X),
+                           (int)Math.round(SPIRO_CURVE_WIDTH * Math.cos(this._spiroCurveParameter * SPIRO_CURVE_SPEED_Y)));
+    }
+
+
+    /**
+     * Calculates the point of a "spirograph" - overlay of a curve onto the path of another, which can be seen as
+     * translating each point of the curve to the coordinate system of the tangent to the target path.
+     *
+     * In mathematical terms we are changing the basis of the curve to be the given normalized tangent. It's a matrix multiplication.
+     *
+     * Let
+     * <el><li>(f'x, f'y) be the <em>normalized</em> derivative of the target path f</li>
+     *     <li>(gx, gy) be the curve to be overlayed</li></el>
+     * Then the result (rx, ry) is:
+     * <pre>
+     * (rx) equals (f'x  -f'y)  (gx)
+     * (ry)        (f'y   f'x)  (gy)
+     * </pre>
+     * @param normalizedPathDerivative derivative of the target path at the desired point
+     * @param overlayedCurvePoint the vector of the overlayed curve at the desired point
+     */
+    private Point2D getSpiroPoint(Point2D pathPoint, Point2D pathDerivative, Point2D overlayedCurvePoint)
+    {
+        Logger.info(pathDerivative);
+        double magnitude = pathDerivative.getRadius();
+        int x = (int)Math.round((overlayedCurvePoint.getX()*pathDerivative.getX() - overlayedCurvePoint.getY()*pathDerivative.getY()) / magnitude);
+        int y = (int)Math.round((overlayedCurvePoint.getX()*pathDerivative.getY() + overlayedCurvePoint.getY()*pathDerivative.getX()) / magnitude);
+        return new Point2D(x, y).plus(pathPoint);
     }
 }
 

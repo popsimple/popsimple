@@ -50,7 +50,6 @@ import com.project.shared.client.utils.EventUtils;
 import com.project.shared.client.utils.HandlerUtils;
 import com.project.shared.client.utils.widgets.WidgetUtils;
 import com.project.shared.data.Point2D;
-import com.project.shared.utils.CloneableUtils;
 import com.project.shared.utils.IterableUtils;
 import com.project.website.canvas.client.canvastools.CursorToolboxItem;
 import com.project.website.canvas.client.canvastools.MoveToolboxItem;
@@ -520,8 +519,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
         this._allModesRegistrations.add(this.optionsBackground.addClickHandler(new ClickHandler() {
             @Override public void onClick(ClickEvent event) {
-                _selectImageDialog.setValue(
-                    (ImageInformation)CloneableUtils.clone(_pageOptions.backgroundImage));
+                _selectImageDialog.setValue(_pageOptions.backgroundImage.getClone());
                 _optionsDialog.center();
             }
         }));
@@ -588,7 +586,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     private void createDefaultPageOptions()
     {
         this._pageOptions = new CanvasPageOptions();
-        ImageOptionsProviderUtils.setImageOptions(this._imageOptionsProvider, _pageOptions.backgroundImage.options, ImageOptionTypes.OriginalSize);
+        _pageOptions.backgroundImage.options = ImageOptionsProviderUtils.getImageOptions(this._imageOptionsProvider, ImageOptionTypes.OriginalSize);
     }
 
     private void handleAllModesPreviewEvent(NativePreviewEvent event)

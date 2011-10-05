@@ -191,7 +191,7 @@ public abstract class ElementUtils
     {
         final Rectangle elementAbsoluteRectangle = ElementUtils.getElementAbsoluteRectangle(that);
         return EventUtils.getCurrentMousePos().minus(elementAbsoluteRectangle.getCorners().topLeft)
-                                              .rotate(-Math.toRadians(elementAbsoluteRectangle.getRotation()));
+                                              .getRotated(-Math.toRadians(elementAbsoluteRectangle.getRotation()));
     }
 
 

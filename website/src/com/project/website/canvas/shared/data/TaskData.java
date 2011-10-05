@@ -8,11 +8,13 @@ import com.google.code.twig.annotation.Type;
 import com.google.gwt.user.client.rpc.IsSerializable;
 import com.project.shared.interfaces.ICloneable;
 
-public class TaskData implements Serializable, IsSerializable, ICloneable {
+public class TaskData implements Serializable, IsSerializable, ICloneable<TaskData>
+{
     private static final long serialVersionUID = 1L;
 
-    public @Id
+    @Id
     Long id;
+
     public String description = "";
     public boolean completed = false;
 
@@ -21,15 +23,20 @@ public class TaskData implements Serializable, IsSerializable, ICloneable {
     @Type(Text.class)
     public String imageUrl = "";
 
+    public TaskData(TaskData other)
+    {
+        this();
+        this.description = other.description;
+        this.completed = other.completed;
+        this.imageUrl = other.imageUrl;
+    }
+
+    public TaskData() { }
+
     @Override
-	public Object createInstance() {
-		return new TaskData();
-	}
-	@Override
-	public void copyTo(Object object) {
-		TaskData copy = (TaskData)this.createInstance();
-		copy.description = this.description;
-		copy.completed = this.completed;
-		copy.imageUrl = this.imageUrl;
-	}
+    public TaskData getClone()
+    {
+        return new TaskData(this);
+    }
+
 }

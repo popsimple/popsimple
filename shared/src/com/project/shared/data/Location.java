@@ -12,4 +12,16 @@ public class Location implements Serializable, IsSerializable
     public double latitude;
 
     public String name;
+
+    public Location(Location other)
+    {
+        this();
+        this.longitude = other.longitude;
+        this.latitude = other.latitude;
+        this.name = other.name;
+    }
+
+    public Location() { }
+
+
 }

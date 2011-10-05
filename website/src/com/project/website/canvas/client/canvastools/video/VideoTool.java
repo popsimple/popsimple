@@ -29,7 +29,6 @@ import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.UrlUtils;
 import com.project.shared.client.utils.widgets.WidgetUtils;
 import com.project.shared.data.Point2D;
-import com.project.shared.utils.CloneableUtils;
 import com.project.shared.utils.StringUtils;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
 import com.project.website.canvas.client.canvastools.base.CanvasToolCommon;
@@ -133,8 +132,7 @@ public class VideoTool extends Composite implements CanvasTool<VideoData>
 
     private void showOptionsDialog() {
         initOptionsWidget();
-        this.selectVideoDialog.setValue(
-                (VideoInformation)CloneableUtils.clone(data.videoInformation));
+        this.selectVideoDialog.setValue(new VideoInformation(data.videoInformation));
 
         Scheduler.get().scheduleDeferred(new ScheduledCommand() {
             @Override

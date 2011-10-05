@@ -28,7 +28,6 @@ import com.project.shared.client.utils.HandlerUtils;
 import com.project.shared.client.utils.StyleUtils;
 import com.project.shared.client.utils.UrlUtils;
 import com.project.shared.client.utils.widgets.WidgetUtils;
-import com.project.shared.utils.CloneableUtils;
 import com.project.shared.utils.StringUtils;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
 import com.project.website.canvas.client.canvastools.base.CanvasToolCommon;
@@ -120,7 +119,7 @@ public class ImageTool extends Composite implements CanvasTool<ImageData> {
 
     private void uploadImage() {
         initOptionsWidget();
-        selectImageDialog.setValue((ImageInformation) CloneableUtils.clone(data.imageInformation));
+        selectImageDialog.setValue(data.imageInformation.getClone());
 
         Scheduler.get().scheduleDeferred(new ScheduledCommand() {
             @Override

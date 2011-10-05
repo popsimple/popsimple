@@ -58,7 +58,7 @@ public class MouseDragHandler implements SimpleEvent.Handler<HumanInputEvent<?>>
             return true;
         }
         Point2D currentPosition = EventUtils.getCurrentMousePos();
-        if (currentPosition.minus(this._initialPosition).radius() > this._dragStartSensitivity)
+        if (currentPosition.minus(this._initialPosition).getRadius() > this._dragStartSensitivity)
         {
             return true;
         }

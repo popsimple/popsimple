@@ -6,7 +6,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 import com.project.shared.interfaces.ICloneable;
 
 
-public class Rectangle implements ICloneable, Serializable, IsSerializable {
+public class Rectangle implements ICloneable<Rectangle>, Serializable, IsSerializable {
     public double getRotation()
     {
         return rotation;
@@ -58,7 +58,7 @@ public class Rectangle implements ICloneable, Serializable, IsSerializable {
     }
 
     public boolean contains(Point2D point) {
-    	Point2D rotatedPoint = point.rotate(-Math.toRadians(rotation), getCenter(), true);
+    	Point2D rotatedPoint = point.getRotated(-Math.toRadians(rotation), getCenter(), true);
     	int px = rotatedPoint.getX();
     	int py = rotatedPoint.getY();
     	return ((px >= left) && (px <= right) && (py <= bottom) && (py >= top));
@@ -100,7 +100,7 @@ public class Rectangle implements ICloneable, Serializable, IsSerializable {
             new Point2D(left, top)
         };
         for (int i = 0; i < corners.length; i++) {
-            corners[i] = corners[i].rotate(Math.toRadians(rotation), getCenter(), true);
+            corners[i] = corners[i].getRotated(Math.toRadians(rotation), getCenter(), true);
         }
         return new Corners(corners[0], corners[1], corners[2], corners[3]);
     }
@@ -158,7 +158,7 @@ public class Rectangle implements ICloneable, Serializable, IsSerializable {
     public double externalRadius()
     {
         Point2D corner = new Point2D(right, top);
-        return corner.minus(getCenter()).radius();
+        return corner.minus(getCenter()).getRadius();
     }
 
     /**
@@ -167,7 +167,7 @@ public class Rectangle implements ICloneable, Serializable, IsSerializable {
      */
     public boolean isExternalCircleOverlapping(Rectangle other)
     {
-        return this.getCenter().minus(other.getCenter()).radius() < (this.externalRadius() + other.externalRadius());
+        return this.getCenter().minus(other.getCenter()).getRadius() < (this.externalRadius() + other.externalRadius());
     }
 
     public boolean isOverlapping(Rectangle rect)
@@ -194,21 +194,6 @@ public class Rectangle implements ICloneable, Serializable, IsSerializable {
     }
 
     @Override
-    public Object createInstance() {
-        return new Rectangle();
-    }
-
-    @Override
-    public void copyTo(Object object) {
-        Rectangle copy = (Rectangle)object;
-        copy.top = this.top;
-        copy.left = this.left;
-        copy.right = this.right;
-        copy.bottom = this.bottom;
-        copy.rotation = this.rotation;
-    }
-
-    @Override
     public boolean equals(Object other) {
         if (null == other) {
             return false;
@@ -222,6 +207,12 @@ public class Rectangle implements ICloneable, Serializable, IsSerializable {
                 (this.right == otherRectangle.right) &&
                 (this.top == otherRectangle.top ) &&
                 (this.rotation == otherRectangle.rotation));
+    }
+
+    @Override
+    public Rectangle getClone()
+    {
+        return new Rectangle(this);
     }
 
 //    public boolean isOverlapping(Rectangle rect) {

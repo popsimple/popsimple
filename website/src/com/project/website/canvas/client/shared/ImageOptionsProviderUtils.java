@@ -21,16 +21,9 @@ public class ImageOptionsProviderUtils
         return ImageOptionTypes.Custom;
     }
 
-    public static void setImageOptions(ImageOptionsProvider optionsProvider,
-            ImageOptions imageOptions, ImageOptionTypes imageOptionType)
+    public static ImageOptions getImageOptions(ImageOptionsProvider optionsProvider, ImageOptionTypes imageOptionType)
     {
-        ImageOptions knownOptions = optionsProvider.getImageOptionMap().get(imageOptionType);
-        if (null == knownOptions)
-        {
-            //TODO: Throw exception;
-            return;
-        }
-        knownOptions.copyTo(imageOptions);
+        return optionsProvider.getImageOptionMap().get(imageOptionType).getClone();
     }
 
 }
