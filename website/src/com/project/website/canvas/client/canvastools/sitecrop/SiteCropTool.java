@@ -2,6 +2,8 @@ package com.project.website.canvas.client.canvastools.sitecrop;
 
 import com.google.common.base.Strings;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.LoadEvent;
@@ -28,6 +30,7 @@ import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.EventUtils;
 import com.project.shared.client.utils.UrlUtils;
 import com.project.shared.client.utils.WindowUtils;
+import com.project.shared.client.utils.SchedulerUtils.OneTimeScheduler;
 import com.project.shared.client.utils.widgets.WidgetUtils;
 import com.project.shared.data.MouseButtons;
 import com.project.shared.data.Point2D;
@@ -101,6 +104,12 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
 
     //TODO: Make singleton and update according to data when displayed.
     private final SiteCropToolbar _toolbar = new SiteCropToolbar();
+
+    private final ScheduledCommand _refreshUrlCommand = new ScheduledCommand() {
+        @Override
+        public void execute() {
+            refreshUrl();
+    }};
 
     public SiteCropTool() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -230,8 +239,7 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
         {
             return;
         }
-        this._toolEvents.dispatchLoadEndedEvent();
-        this._toolbar.enableCrop(true);
+        this.onLoadEnded();
     }
 
     private void handlePreviewKeyDownEvent(NativePreviewEvent event)
@@ -405,13 +413,10 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
             return;
         }
 
-        this._toolEvents.dispatchLoadStartedEvent();
-
-        this._toolbar.enableCrop(false);
+        this.onLoadStarted();
 
         url = UrlUtils.ensureProtocol(url);
 
-        //TODO: Called twice due to toolbar changes.
         this.siteFrame.setUrl(url);
         ElementUtils.setElementSize(this.getElement(),
                 ElementUtils.getElementOffsetSize(this.getElement()));
@@ -419,6 +424,23 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
         this.addStyleName(CanvasResources.INSTANCE.main().cropSiteToolSet());
         this._toolbar.setUrl(url);
         this._toolbar.enableBrowse(true);
+    }
+
+    private void onLoadStarted()
+    {
+        this._toolEvents.dispatchLoadStartedEvent();
+        this._toolbar.enableCrop(false);
+    }
+
+    private void onLoadEnded()
+    {
+        this._toolEvents.dispatchLoadEndedEvent();
+        this._toolbar.enableCrop(true);
+    }
+
+    private void refreshUrl()
+    {
+        this.loadUrl(this._data.url);
     }
 
     private void resetFramePosition()
@@ -509,6 +531,11 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
 //        this.registerHandlers();
 
         this.setFrameInteractive(false);
+        this.setDefaultMode();
+
+        //Must use Scheduler since it appears that the setEditMode is called during an event and
+        //for some reason nothing happens when settings the url of the iframe during that event.
+        OneTimeScheduler.get().scheduleDeferredOnce(this._refreshUrlCommand);
     }
 
     private void setFrameInteractive(Boolean isInteractive)
