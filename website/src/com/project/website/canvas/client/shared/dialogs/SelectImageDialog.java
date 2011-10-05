@@ -174,21 +174,25 @@ public class SelectImageDialog extends Composite implements TakesValue<ImageInfo
 
     private void applyBasicImageOptions()
     {
+        ImageOptionTypes imageOptionType = null;
         if (this.originalSizeOption.getValue())
         {
-            ImageOptionsProviderUtils.setImageOptions(this._imageOptionsProvider,
-                    this._imageInformation.options, ImageOptionTypes.OriginalSize);
+            imageOptionType = ImageOptionTypes.OriginalSize;
         }
         else if (this.stretchOption.getValue())
         {
-            ImageOptionsProviderUtils.setImageOptions(this._imageOptionsProvider,
-                    this._imageInformation.options, ImageOptionTypes.Stretch);
+            imageOptionType = ImageOptionTypes.Stretch;
         }
         else if (this.repeatOption.getValue())
         {
-            ImageOptionsProviderUtils.setImageOptions(this._imageOptionsProvider,
-                    this._imageInformation.options, ImageOptionTypes.Repeat);
+            imageOptionType = ImageOptionTypes.Repeat;
         }
+        else {
+            // Unknown option type!
+            // TODO choose a default
+            return;
+        }
+        this._imageInformation.options = ImageOptionsProviderUtils.getImageOptions(this._imageOptionsProvider, imageOptionType);
     }
 
     @Override

@@ -586,7 +586,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     private void createDefaultPageOptions()
     {
         this._pageOptions = new CanvasPageOptions();
-        ImageOptionsProviderUtils.setImageOptions(this._imageOptionsProvider, _pageOptions.backgroundImage.options, ImageOptionTypes.OriginalSize);
+        _pageOptions.backgroundImage.options = ImageOptionsProviderUtils.getImageOptions(this._imageOptionsProvider, ImageOptionTypes.OriginalSize);
     }
 
     private void handleAllModesPreviewEvent(NativePreviewEvent event)

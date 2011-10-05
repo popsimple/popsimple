@@ -23,8 +23,7 @@ public class ImageToolFactory extends CanvasToolFactoryBase<ImageTool>
     {
         ImageData imageData = new ImageData(UNIQUE_ID);
 
-        ImageOptionsProviderUtils.setImageOptions(this._optionsProvider,
-                imageData.imageInformation.options, ImageOptionTypes.OriginalSize);
+        imageData.imageInformation.options = ImageOptionsProviderUtils.getImageOptions(this._optionsProvider, ImageOptionTypes.OriginalSize);
         return imageData;
     }
 
