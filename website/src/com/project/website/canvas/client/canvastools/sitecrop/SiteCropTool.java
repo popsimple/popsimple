@@ -2,7 +2,6 @@ package com.project.website.canvas.client.canvastools.sitecrop;
 
 import com.google.common.base.Strings;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
@@ -28,9 +27,9 @@ import com.project.shared.client.handlers.MouseButtonDownHandler;
 import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.EventUtils;
+import com.project.shared.client.utils.SchedulerUtils.OneTimeScheduler;
 import com.project.shared.client.utils.UrlUtils;
 import com.project.shared.client.utils.WindowUtils;
-import com.project.shared.client.utils.SchedulerUtils.OneTimeScheduler;
 import com.project.shared.client.utils.widgets.WidgetUtils;
 import com.project.shared.data.MouseButtons;
 import com.project.shared.data.Point2D;
@@ -48,8 +47,10 @@ import com.project.website.canvas.shared.data.SiteCropElementData;
 
 //TODO:
 //2. set the frame correctly if the page loads again.
-//3. handle View/Edit mode correctly.
 //6. Disable all toolbar when loading.
+//7. Site refreshes after save (Shouldn't)
+//8. Add "Reset" button
+//9. In Chrome after crop and save the frame moves.
 
 //IE9 Problems:
 //Apparently in IE9 they've changed the way IFrames are rendered so now they are rendered using the same engine as
@@ -96,7 +97,10 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
     private ElementDragManagerImpl _frameDragManager = null;
     private SiteFrameSelectionManager _frameSelectionManager = null;
 
-    private RegistrationsManager _registrationManager = new RegistrationsManager();
+    private RegistrationsManager _generalRegistrations = new RegistrationsManager();
+    private RegistrationsManager _editModeRegistrations = new RegistrationsManager();
+    private RegistrationsManager _viewModeRegistrations = new RegistrationsManager();
+
     private RegistrationsManager _moveRegistrationManager = new RegistrationsManager();
     private RegistrationsManager _cropRegistrationManager = new RegistrationsManager();
 
@@ -130,7 +134,7 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
         this._frameSelectionManager = new SiteFrameSelectionManager(
                 this.frameContainer, this.dragPanel, this.selectionPanel, this._stopMouseOperationEvent);
 
-        this.setDefaultMode();
+        this.setEditMode();
     }
 
     @Override
@@ -152,21 +156,34 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
         this._toolbar.setAcceptCropVisibility(false);
     }
 
-    private void registerHandlers()
+    private void registerGeneralHandlers()
     {
-        this._registrationManager.clear();
+        this._generalRegistrations.clear();
 
-        this._registrationManager.add(this._cropRegistrationManager.asSingleRegistration());
-        this._registrationManager.add(this._moveRegistrationManager.asSingleRegistration());
+        this._generalRegistrations.add(
+                this.siteFrame.addLoadHandler(new LoadHandler() {
+                    @Override
+                    public void onLoad(LoadEvent event) {
+                        handleFrameLoaded(event);
+                    }
+                }));
+    }
 
-        this._registrationManager.add(EventUtils.addNativePreviewEvent(KeyDownEvent.getType(),
+    private void registerEditModeHandlers()
+    {
+        this._editModeRegistrations.clear();
+
+        this._editModeRegistrations.add(this._cropRegistrationManager.asSingleRegistration());
+        this._editModeRegistrations.add(this._moveRegistrationManager.asSingleRegistration());
+
+        this._editModeRegistrations.add(EventUtils.addNativePreviewEvent(KeyDownEvent.getType(),
                 new Handler<NativePreviewEvent>(){
                     @Override
                     public void onFire(NativePreviewEvent arg) {
                         handlePreviewKeyDownEvent(arg);
                     }}));
 
-        this._registrationManager.add(
+        this._editModeRegistrations.add(
                 this._toolbar.addUrlChangedHandler(new Handler<String>() {
             @Override
             public void onFire(String arg) {
@@ -174,7 +191,7 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
             }
         }));
 
-        this._registrationManager.add(
+        this._editModeRegistrations.add(
                 this._toolbar.addToggleMoveModeRequestHandler(new Handler<Boolean>() {
             @Override
             public void onFire(Boolean arg) {
@@ -187,7 +204,7 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
             }
         }));
 
-        this._registrationManager.add(
+        this._editModeRegistrations.add(
                 this._toolbar.addToggleCropModeRequestHandler(new Handler<Boolean>() {
             @Override
             public void onFire(Boolean arg) {
@@ -200,7 +217,7 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
             }
         }));
 
-        this._registrationManager.add(
+        this._editModeRegistrations.add(
                 this._toolbar.addBrowseRequestHandler(new Handler<Void>() {
             @Override
             public void onFire(Void arg) {
@@ -208,7 +225,7 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
             }
         }));
 
-        this._registrationManager.add(
+        this._editModeRegistrations.add(
                 this._toolbar.addIsInteractiveChangedHandler(new ValueChangeHandler<Boolean>() {
                     @Override
                     public void onValueChange(ValueChangeEvent<Boolean> event) {
@@ -216,21 +233,19 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
                     }
                 }));
 
-        this._registrationManager.add(
-            this.siteFrame.addLoadHandler(new LoadHandler() {
-                @Override
-                public void onLoad(LoadEvent event) {
-                    handleFrameLoaded(event);
-                }
-            }));
-
 //      ONLY FOR DEBUG
-        this._toolbar.addDebugClickRequestHandler(new Handler<Void>() {
+        this._editModeRegistrations.add(
+                this._toolbar.addDebugClickRequestHandler(new Handler<Void>() {
             @Override
             public void onFire(Void arg) {
                 setUrl("http://www.google.com");
             }
-        });
+        }));
+    }
+
+    private void registerViewModeHandlers()
+    {
+        this._viewModeRegistrations.clear();
     }
 
     private void handleFrameLoaded(LoadEvent event)
@@ -494,7 +509,7 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
 
     @Override
     public void bind() {
-        this.registerHandlers();
+        this.registerGeneralHandlers();
     }
 
     @Override
@@ -519,16 +534,18 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
 
     private void setViewMode()
     {
-      //TODO: Set actual view mode;
-//        this._registrationManager.clear();
+        this._editModeRegistrations.clear();
+
+        this._frameSelectionManager.clearSelection();
+        this.registerViewModeHandlers();
 
         this.setFrameInteractive(this._data.isInteractive);
     }
 
     private void setEditMode()
     {
-        //TODO: Set actual edit mode.
-//        this.registerHandlers();
+        this._viewModeRegistrations.clear();
+        this.registerEditModeHandlers();
 
         this.setFrameInteractive(false);
         this.setDefaultMode();
