@@ -5,6 +5,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.gwt.event.dom.client.LoadHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
@@ -17,6 +18,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.Frame;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -25,6 +27,7 @@ import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.handlers.MouseButtonDownHandler;
 import com.project.shared.client.handlers.RegistrationsManager;
+import com.project.shared.client.handlers.SpecificKeyPressHandler;
 import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.EventUtils;
 import com.project.shared.client.utils.SchedulerUtils.OneTimeScheduler;
@@ -51,6 +54,7 @@ import com.project.website.canvas.shared.data.SiteCropElementData;
 //7. Site refreshes after save (Shouldn't)
 //8. Add "Reset" button
 //9. In Chrome after crop and save the frame moves.
+//10. register events only when the tool is active.
 
 //IE9 Problems:
 //Apparently in IE9 they've changed the way IFrames are rendered so now they are rendered using the same engine as
@@ -70,6 +74,9 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
     //#endregion
 
     //#region UiFields
+
+    @UiField
+    FocusPanel rootPanel;
 
     @UiField
     Frame siteFrame;
@@ -176,12 +183,20 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
         this._editModeRegistrations.add(this._cropRegistrationManager.asSingleRegistration());
         this._editModeRegistrations.add(this._moveRegistrationManager.asSingleRegistration());
 
-        this._editModeRegistrations.add(EventUtils.addNativePreviewEvent(KeyDownEvent.getType(),
-                new Handler<NativePreviewEvent>(){
-                    @Override
-                    public void onFire(NativePreviewEvent arg) {
-                        handlePreviewKeyDownEvent(arg);
-                    }}));
+//        this._editModeRegistrations.add(EventUtils.addNativePreviewEvent(KeyDownEvent.getType(),
+//                new Handler<NativePreviewEvent>(){
+//                    @Override
+//                    public void onFire(NativePreviewEvent arg) {
+//                        handlePreviewKeyDownEvent(arg);
+//                    }}));
+
+        this._editModeRegistrations.add(this.rootPanel.addKeyPressHandler(
+                new SpecificKeyPressHandler(KeyCodes.KEY_ESCAPE) {
+            @Override
+            public void onSpecificKeyPress(KeyPressEvent event) {
+                clearSelection();
+            }
+        }));
 
         this._editModeRegistrations.add(
                 this._toolbar.addUrlChangedHandler(new Handler<String>() {
@@ -248,6 +263,12 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
         this._viewModeRegistrations.clear();
     }
 
+    private void clearSelection()
+    {
+        _stopMouseOperationEvent.dispatch(null);
+        this._frameSelectionManager.clearSelection();
+    }
+
     private void handleFrameLoaded(LoadEvent event)
     {
         if (Strings.isNullOrEmpty(this.siteFrame.getUrl()))
@@ -292,7 +313,7 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
 
         this.setMinimalRectangle(frameRect);
 
-        this._frameSelectionManager.clearSelection();
+        this.clearSelection();
         this.setDefaultMode();
     }
 
@@ -387,7 +408,7 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
     private void disableSiteCrop()
     {
         this._cropRegistrationManager.clear();
-        this._frameSelectionManager.clearSelection();
+        this.clearSelection();
         this._toolbar.setAcceptCropVisibility(false);
     }
 
@@ -536,7 +557,7 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
     {
         this._editModeRegistrations.clear();
 
-        this._frameSelectionManager.clearSelection();
+        this.clearSelection();
         this.registerViewModeHandlers();
 
         this.setFrameInteractive(this._data.isInteractive);
