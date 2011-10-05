@@ -1020,6 +1020,9 @@
 /*-----------------------*/
 .slider {
 	display: inline-block;
+	min-width: 30px;
+	height: 10px;
+    position: relative;
 }
 @sprite .sliderDrag {
 	border: none;
@@ -1029,22 +1032,29 @@
 	gwt-image: "sliderIconDrag";
 }
 @sprite .sliderLess {
+    position: absolute;
+    left: 0;
 	border: none;
     margin: 0;
     padding: 0;
     gwt-image: "sliderIconHorizontalLess";
 }
 @sprite .sliderMore {
+    position: absolute;
+    right: 0;
 	border: none;
     margin: 0;
     padding: 0;
     gwt-image: "sliderIconHorizontalMore";
 }
 .sliderScale {
+    position: absolute;
+    left: 10px;
+	right: 10px;
 	display: inline-block;
-	position: relative;
-	height: 10px;
-	width: 100px;
+    margin: 0;
+    padding: 0;
+    height: 10px;
 	background-color: gray;
 }
 
