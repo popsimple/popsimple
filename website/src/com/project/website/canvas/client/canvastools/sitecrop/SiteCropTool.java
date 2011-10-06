@@ -51,9 +51,6 @@ import com.project.website.canvas.shared.data.SiteCropElementData;
 //Chrome Problems:
 //Sometimes when dragging the inner frame an exception is thrown due to null mouse position
 
-//IE9 Problems (1):
-//The block panel doesn't block input.
-
 //IE9 Problems (2):
 //Apparently in IE9 they've changed the way IFrames are rendered so now they are rendered using the same engine as
 //the parent page. so if the parent page defines a doctype of HTML5, the child page will also be renderd in the same engine.

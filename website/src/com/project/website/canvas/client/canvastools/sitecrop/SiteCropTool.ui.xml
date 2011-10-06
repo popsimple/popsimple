@@ -25,6 +25,9 @@
 		.blockPanel {
 		    z-index: 1000;
 			position: absolute;
+			/*It seems that IE9 passes events to any element under the panel when using color: transparent*/
+			background-color: rgba(0, 0, 0, 0);
+
 			top: 0;
 			left: 0;
 			right: 0;
