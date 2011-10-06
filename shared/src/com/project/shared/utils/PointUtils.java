@@ -2,6 +2,7 @@ package com.project.shared.utils;
 
 import java.util.LinkedList;
 
+import com.project.shared.data.Pair;
 import com.project.shared.data.Point2D;
 
 public class PointUtils
@@ -85,5 +86,24 @@ public class PointUtils
             }
             return result.mul(1.0 / this.points.size());
         }
+    }
+
+    /**
+     * Calculates the required control points for a segment of a bezier curve to follow exactly through the given points.
+     * @See <a href="http://scaledinnovation.com/analytics/splines/splines.html">Spline Interpolation</a> on scaledinnovation.com
+     */
+    public static Pair<Point2D, Point2D> getBezierControlPoints(Point2D segmentStart, Point2D segmentEnd, Point2D nextSegmentEnd, double tension)
+    {
+        double startToEnd = segmentStart.minus(segmentEnd).getRadius();
+        double endToNext = segmentEnd.minus(nextSegmentEnd).getRadius();
+
+        double fa = tension * startToEnd / (startToEnd + endToNext);
+        double fb = fa - tension;
+
+        final Point2D startToNext = segmentStart.minus(nextSegmentEnd);
+        Point2D control1 = startToNext.mul(fa).plus(segmentEnd);
+        Point2D control2 = startToNext.mul(fb).plus(segmentEnd);
+
+        return new Pair<Point2D, Point2D>(control1, control2);
     }
 }

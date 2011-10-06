@@ -9,9 +9,6 @@ import com.google.gwt.canvas.dom.client.Context2d.LineJoin;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
-import com.google.gwt.dom.client.Style.BorderStyle;
-import com.google.gwt.dom.client.Style.Position;
-import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.HumanInputEvent;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
@@ -22,12 +19,13 @@ import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.utils.CanvasUtils;
 import com.project.shared.client.utils.ElementUtils;
-import com.project.shared.client.utils.EventUtils;
 import com.project.shared.client.utils.SchedulerUtils.OneTimeScheduler;
 import com.project.shared.client.utils.widgets.WidgetUtils;
+import com.project.shared.data.Pair;
 import com.project.shared.data.Point2D;
 import com.project.shared.data.Rectangle;
 import com.project.shared.utils.PointUtils;
+import com.project.shared.utils.loggers.Logger;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
 import com.project.website.canvas.client.canvastools.base.CanvasToolEvents;
 import com.project.website.canvas.client.canvastools.base.ICanvasToolEvents;
@@ -49,7 +47,8 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
     private static final double SPIRO_CURVE_WIDTH = 40;
     private static final double SPIRO_CURVE_SPEED_Y = 0.4;
 	private static final int VELOCITY_SMOOTHING = 15;
-	private static final int POSITION_SMOOTHING = 3;
+	private static final int POSITION_SMOOTHING = 1;
+    private static final double DEFAULT_SPLINE_TENSION = 0.3;
 
     // TODO: for IE <= 8, call this instead of Canvas.getContext2d
     private static final native Context2d getContext2d(Element canvasElement) /*-{
@@ -83,7 +82,12 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
 
     private boolean _drawingPathExists;
 
-    private Point2D _prevDrawPos = Point2D.zero;
+    private Point2D _prevMousePos = Point2D.zero;
+
+    private Point2D _prevDrawPos1 = Point2D.zero;
+    private Point2D _prevDrawPos2 = Point2D.zero;
+    private Point2D _prevControlPoint = Point2D.zero;
+
     private Context2d _context = null;
     private final ImageElement _imageElement;
 
@@ -242,11 +246,11 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
         if (drawingPathExists()) {
             Point2D pos = ElementUtils.getMousePositionRelativeToElement(this.getElement());
             //this._currentPath.lineTo(pos.getX(), pos.getY());
-            if (DrawingTool.PAINT != this.data.sketchOptions.drawingTool) {
-                this.drawInterpolatedSteps(pos);
+            if (DrawingTool.ERASE == this.data.sketchOptions.drawingTool) {
+                this.drawLinearInterpolatedSteps(pos);
             }
-            this.drawPen(pos, pos.minus(PointUtils.nullToZero(this._prevDrawPos)));
-            this._prevDrawPos = pos;
+            this.drawPen(pos, pos.minus(PointUtils.nullToZero(this._prevMousePos)));
+            this._prevMousePos = pos;
             this.redraw();
         }
     }
@@ -291,18 +295,18 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
     }
 
 
-    private void drawInterpolatedSteps(Point2D pos)
+    private void drawLinearInterpolatedSteps(Point2D pos)
     {
-        if (null != this._prevDrawPos) {
-            final Point2D offset = pos.minus(this._prevDrawPos);
-            Point2D prevStepPos = this._prevDrawPos;
+        if (null != this._prevMousePos) {
+            final Point2D offset = pos.minus(this._prevMousePos);
+            Point2D prevStepPos = this._prevMousePos;
             int steps = (int) Math.floor(offset.getRadius());
             for (int i = 0 ; i < steps; i += Math.max(1, this.data.sketchOptions.penSkip)) {
-                Point2D stepPos = this._prevDrawPos.plus(offset.mul(((double)i)/steps));
+                Point2D stepPos = this._prevMousePos.plus(offset.mul(((double)i)/steps));
                 this.drawPen(stepPos, stepPos.minus(prevStepPos));
                 prevStepPos = stepPos;
             }
-            this._prevDrawPos = prevStepPos;
+            this._prevMousePos = prevStepPos;
         }
     }
 
@@ -337,9 +341,27 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
             this._averageDrawPos.add(finalPos);
             finalPos = this._averageDrawPos.getAverage();
             //this._context.arc(finalPos.getX(), finalPos.getY(), this.data.sketchOptions.penWidth, 0, 2 * Math.PI);
-            this._context.lineTo(finalPos.getX(), finalPos.getY());
-            this._context.moveTo(finalPos.getX(), finalPos.getY());
+
+            // -----------
+            Pair<Point2D, Point2D> controlPoints = PointUtils.getBezierControlPoints(this._prevDrawPos2, this._prevDrawPos1, finalPos, DEFAULT_SPLINE_TENSION);
+            Point2D cp0 = this._prevControlPoint;
+            Point2D cp1 = controlPoints.getA();
+            Point2D cp2 = controlPoints.getB();
+            this._context.beginPath();
+            this._context.moveTo(this._prevDrawPos2.getX(), this._prevDrawPos2.getY());
+            this._context.bezierCurveTo(cp0.getX(), cp0.getY(), cp1.getX(), cp1.getY(), this._prevDrawPos1.getX(), this._prevDrawPos1.getY());
             this._context.stroke();
+
+            // -----------
+            this._prevDrawPos2 = this._prevDrawPos1;
+            this._prevDrawPos1 = finalPos;
+            this._prevControlPoint = cp2;
+
+//            Logger.info("from: " + this._prevDrawPos2.toString() + " to: " + this._prevDrawPos1.toString() + " next: " + finalPos.toString());
+//            Logger.info("cp1: " + cp1.toString() + " cp2: " + cp2.toString());
+
+
+            //this._context.lineTo(finalPos.getX(), finalPos.getY());
 //            this._context.closePath();
 //            this._context.fill();
         }
@@ -480,7 +502,7 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
 
         this.registrationsManager.add(this.addDomHandler(new MouseOutHandler() {
             @Override public void onMouseOut(MouseOutEvent event) {
-                that._prevDrawPos = null;
+                that._prevMousePos = null;
                 that.redraw(false); // cursor left the canvas area
             }
         }, MouseOutEvent.getType()));
@@ -536,8 +558,11 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
         this._context.beginPath();
         this._averageDrawPos.clear();
         this._averageVelocity.clear();
+        this._prevMousePos = pos;
+        this._prevDrawPos1 = pos;
+        this._prevDrawPos2 = pos;
+
         this.drawPen(pos, Point2D.zero);
-        this._prevDrawPos = pos;
     }
 
     private void swapResizeCanvases()
