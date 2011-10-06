@@ -47,7 +47,6 @@ import com.project.website.canvas.shared.data.SiteCropElementData;
 
 //TODO:
 //2. set the frame correctly if the page loads again.
-//6. Disable all toolbar when loading.
 //8. Add "Reset" button
 //9. In Chrome after crop and save the frame moves.
 
@@ -100,8 +99,8 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
     private SiteFrameSelectionManager _frameSelectionManager = null;
 
     private RegistrationsManager _registrationManager = new RegistrationsManager();
-    private RegistrationsManager _editModeRegistrations = new RegistrationsManager();
-    private RegistrationsManager _viewModeRegistrations = new RegistrationsManager();
+    private RegistrationsManager _modeRegistrations = new RegistrationsManager();
+    private RegistrationsManager _loadedRegistrations = new RegistrationsManager();
 
     private RegistrationsManager _moveRegistrationManager = new RegistrationsManager();
     private RegistrationsManager _cropRegistrationManager = new RegistrationsManager();
@@ -110,6 +109,7 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
 
     private boolean _isViewMode = false;
     private boolean _isActive = false;
+    private boolean _isLoaded = false;
 
     //TODO: Make singleton and update according to data when displayed.
     private final SiteCropToolbar _toolbar = new SiteCropToolbar();
@@ -157,6 +157,7 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
     private void initializeToolbar()
     {
         this._toolbar.enableCrop(false);
+        this._toolbar.enableDrag(false);
         this._toolbar.enableBrowse(false);
         this._toolbar.setAcceptCropVisibility(false);
     }
@@ -176,19 +177,13 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
 
     private void registerEditModeHandlers()
     {
-        this._editModeRegistrations.clear();
+        this._modeRegistrations.clear();
 
-        this._editModeRegistrations.add(this._cropRegistrationManager.asSingleRegistration());
-        this._editModeRegistrations.add(this._moveRegistrationManager.asSingleRegistration());
+        this._modeRegistrations.add(this._loadedRegistrations.asSingleRegistration());
+        this._modeRegistrations.add(this._cropRegistrationManager.asSingleRegistration());
+        this._modeRegistrations.add(this._moveRegistrationManager.asSingleRegistration());
 
-//        this._editModeRegistrations.add(EventUtils.addNativePreviewEvent(KeyDownEvent.getType(),
-//                new Handler<NativePreviewEvent>(){
-//                    @Override
-//                    public void onFire(NativePreviewEvent arg) {
-//                        handlePreviewKeyDownEvent(arg);
-//                    }}));
-
-        this._editModeRegistrations.add(this.rootPanel.addKeyPressHandler(
+        this._modeRegistrations.add(this.rootPanel.addKeyPressHandler(
                 new SpecificKeyPressHandler(KeyCodes.KEY_ESCAPE) {
             @Override
             public void onSpecificKeyPress(KeyPressEvent event) {
@@ -196,7 +191,7 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
             }
         }));
 
-        this._editModeRegistrations.add(
+        this._modeRegistrations.add(
                 this._toolbar.addUrlChangedHandler(new Handler<String>() {
             @Override
             public void onFire(String arg) {
@@ -204,8 +199,56 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
             }
         }));
 
-        this._editModeRegistrations.add(
-                this._toolbar.addToggleMoveModeRequestHandler(new Handler<Boolean>() {
+        this._modeRegistrations.add(
+                this._toolbar.addBrowseRequestHandler(new Handler<Void>() {
+            @Override
+            public void onFire(Void arg) {
+                WindowUtils.openNewTab(siteFrame.getUrl());
+            }
+        }));
+
+        this._modeRegistrations.add(
+                this._toolbar.addIsInteractiveChangedHandler(new ValueChangeHandler<Boolean>() {
+                    @Override
+                    public void onValueChange(ValueChangeEvent<Boolean> event) {
+                        _data.isInteractive = event.getValue();
+                    }
+                }));
+
+        if (this._isLoaded)
+        {
+            this.registerLoadedEditModeHandlers();
+        }
+
+//      ONLY FOR DEBUG
+        this._modeRegistrations.add(
+                this._toolbar.addDebugClickRequestHandler(new Handler<Void>() {
+            @Override
+            public void onFire(Void arg) {
+                updateUrl("http://www.google.com");
+            }
+        }));
+    }
+
+    private void registerViewModeHandlers()
+    {
+        this._modeRegistrations.clear();
+    }
+
+    private void registerLoadedEditModeHandlers()
+    {
+        this._loadedRegistrations.clear();
+
+        this._loadedRegistrations.add(
+                this.addDomHandler(new MouseWheelHandler() {
+                    @Override
+                    public void onMouseWheel(MouseWheelEvent event) {
+                        handleMouseScroll(event);
+                    }
+                }, MouseWheelEvent.getType()));;
+
+        this._loadedRegistrations.add(
+                this._toolbar.addToggleDragRequestHandler(new Handler<Boolean>() {
             @Override
             public void onFire(Boolean arg) {
                 if (arg) {
@@ -217,7 +260,7 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
             }
         }));
 
-        this._editModeRegistrations.add(
+        this._loadedRegistrations.add(
                 this._toolbar.addToggleCropModeRequestHandler(new Handler<Boolean>() {
             @Override
             public void onFire(Boolean arg) {
@@ -229,36 +272,6 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
                 }
             }
         }));
-
-        this._editModeRegistrations.add(
-                this._toolbar.addBrowseRequestHandler(new Handler<Void>() {
-            @Override
-            public void onFire(Void arg) {
-                WindowUtils.openNewTab(siteFrame.getUrl());
-            }
-        }));
-
-        this._editModeRegistrations.add(
-                this._toolbar.addIsInteractiveChangedHandler(new ValueChangeHandler<Boolean>() {
-                    @Override
-                    public void onValueChange(ValueChangeEvent<Boolean> event) {
-                        _data.isInteractive = event.getValue();
-                    }
-                }));
-
-//      ONLY FOR DEBUG
-        this._editModeRegistrations.add(
-                this._toolbar.addDebugClickRequestHandler(new Handler<Void>() {
-            @Override
-            public void onFire(Void arg) {
-                updateUrl("http://www.google.com");
-            }
-        }));
-    }
-
-    private void registerViewModeHandlers()
-    {
-        this._viewModeRegistrations.clear();
     }
 
     private void clearSelection()
@@ -278,7 +291,7 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
 
     private void setDefaultMode()
     {
-        this._toolbar.toggleMoveMode();
+        this._toolbar.toggleDrag();
         //We don't know if all the handlers are already registered and therefore we can't count on the toolbar
         //to raise the appropriate event which will enable the actual behavior.
         this.enableSiteMove();
@@ -341,18 +354,11 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
                                 handler, StopCondition.STOP_CONDITION_MOVEMENT_STOP);
                     }
                 }, MouseDownEvent.getType()));
-
-        this._moveRegistrationManager.add(
-                this.addDomHandler(new MouseWheelHandler() {
-                    @Override
-                    public void onMouseWheel(MouseWheelEvent event) {
-                        handleMouseScroll(event);
-                    }
-                }, MouseWheelEvent.getType()));;
     }
 
     private void handleMouseScroll(MouseWheelEvent event)
     {
+        this.clearSelection();
         Rectangle frameRect = ElementUtils.getElementOffsetRectangle(siteFrame.getElement());
         this.updateFrameDimensions(this.moveFrame(frameRect, new Point2D(0, event.getDeltaY() * -(MOUSE_SCROLL_PIXELS))));
     }
@@ -378,8 +384,13 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
             this.blockPanel.addDomHandler(new MouseButtonDownHandler(MouseButtons.Left) {
                 @Override
                 public void onMouseButtonDown(MouseDownEvent event) {
-                    _toolbar.setAcceptCropVisibility(true);
-                    _frameSelectionManager.startSelectionDrag(event);
+                    _toolbar.setAcceptCropVisibility(false);
+                    _frameSelectionManager.startSelectionDrag(event, new Handler<Void>() {
+                        @Override
+                        public void onFire(Void arg) {
+                            _toolbar.setAcceptCropVisibility(true);
+                        }
+                    });
                 }
             }, MouseDownEvent.getType()));
         this._cropRegistrationManager.add(
@@ -448,14 +459,28 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
 
     private void onLoadStarted()
     {
+        this._isLoaded = false;
+
         this._toolEvents.dispatchLoadStartedEvent();
         this._toolbar.enableCrop(false);
+        this._toolbar.enableDrag(false);
+
+        this._loadedRegistrations.clear();
     }
 
     private void onLoadEnded()
     {
+        this._isLoaded = true;
+
         this._toolEvents.dispatchLoadEndedEvent();
+
         this._toolbar.enableCrop(true);
+        this._toolbar.enableDrag(true);
+
+        if (this._isActive)
+        {
+            this.reRegisterModeHandlers();
+        }
     }
 
     private void resetFramePosition()
@@ -520,10 +545,14 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
         this._isActive = isActive;
         if (false == isActive)
         {
-            this._editModeRegistrations.clear();
-            this._viewModeRegistrations.clear();
+            this._modeRegistrations.clear();
             return;
         }
+        this.reRegisterModeHandlers();
+    }
+
+    private void reRegisterModeHandlers()
+    {
         if (this._isViewMode)
         {
             this.registerViewModeHandlers();
@@ -565,7 +594,7 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
     private void setViewMode()
     {
         this._isViewMode = true;
-        this._editModeRegistrations.clear();
+        this._modeRegistrations.clear();
 
         this.clearSelection();
 
@@ -577,7 +606,7 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
     private void setEditMode()
     {
         this._isViewMode = false;
-        this._viewModeRegistrations.clear();
+        this._modeRegistrations.clear();
 
         this.setFrameInteractive(false);
 
