@@ -946,13 +946,6 @@
 	padding-bottom: 10px;
 }
 
-.cropSiteBox {
-	display: block;
-	border-radius: 2px;
-	text-align: center;
-	overflow: visible;
-}
-
 @sprite .cropSiteToolEmpty {
 	gwt-image: "cropSiteToolEmptyBackground";
 	background-position: center;
