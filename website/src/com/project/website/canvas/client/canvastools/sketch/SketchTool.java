@@ -3,6 +3,7 @@ package com.project.website.canvas.client.canvastools.sketch;
 import com.google.common.base.Strings;
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.canvas.dom.client.Context2d.Composite;
 import com.google.gwt.canvas.dom.client.Context2d.LineCap;
 import com.google.gwt.canvas.dom.client.Context2d.LineJoin;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
@@ -56,7 +57,7 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
 
     private final RegistrationsManager registrationsManager = new RegistrationsManager();
     private final SketchToolbar _toolbar = new SketchToolbar();
-    
+
     private final PointUtils.MovingAverage _averageVelocity = new PointUtils.MovingAverage(VELOCITY_SMOOTHING);
     private final PointUtils.MovingAverage _averageDrawPos = new PointUtils.MovingAverage(POSITION_SMOOTHING);
 
@@ -64,13 +65,13 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
     private final Canvas _cursorCanvas = Canvas.createIfSupported();
     private Canvas _resizeCanvas1 = Canvas.createIfSupported();
     private Canvas _resizeCanvas2 = Canvas.createIfSupported();
-    
+
 //    private Canvas _undoCanvas = Canvas.createIfSupported();
     private boolean _inViewMode = false;
     private boolean _active = false;
     private boolean _bound = false;
-    
-    
+
+
     private String _strokeColor = "#000000";
 
     private SpiroCurveType _curveType = SpiroCurveType.Circle;
@@ -160,12 +161,12 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
         Point2D targetSize = ElementUtils.getElementOffsetSize(this.getElement());
 
         this.expandBackCanvas(targetSize);
-        CanvasUtils.drawOnto(this._canvas, this._resizeCanvas1);
+        CanvasUtils.drawOnto(this._canvas, this._resizeCanvas1, Composite.COPY);
 
         this.setWidth(targetSize.getX());
         this.setHeight(targetSize.getY());
 
-        CanvasUtils.drawOnto(this._resizeCanvas1, this._canvas);
+        CanvasUtils.drawOnto(this._resizeCanvas1, this._canvas, Composite.COPY);
     }
 
 
@@ -283,6 +284,8 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
         this._averageVelocity.add(velocity);
 
         this._context.setStrokeStyle(this.data.sketchOptions.penColor);
+        this._context.setShadowColor(this.data.sketchOptions.penColor);
+        this._context.setShadowBlur(2);
         this._context.setFillStyle("transparent");
         this._context.setLineWidth(this.data.sketchOptions.penWidth);
         this._context.setLineJoin(LineJoin.ROUND);
@@ -321,7 +324,7 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
         Point2D maxSize = Point2D.max(CanvasUtils.getCoorinateSpaceSize(this._resizeCanvas1), targetSize);
         CanvasUtils.setCoordinateSpaceSize(this._resizeCanvas2, maxSize);
 
-        CanvasUtils.drawOnto(this._resizeCanvas1, this._resizeCanvas2);
+        CanvasUtils.drawOnto(this._resizeCanvas1, this._resizeCanvas2, Composite.COPY);
         this.swapResizeCanvases();
     }
 
@@ -375,8 +378,8 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
     private void redraw()
     {
         CanvasUtils.setCoordinateSpaceSize(this._cursorCanvas, CanvasUtils.getCoorinateSpaceSize(this._canvas));
-        CanvasUtils.drawOnto(this._canvas, this._cursorCanvas);
         this.drawCursor();
+        CanvasUtils.drawOnto(this._canvas, this._cursorCanvas, Composite.DESTINATION_OVER);
     }
 
 
