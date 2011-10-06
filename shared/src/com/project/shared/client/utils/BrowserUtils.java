@@ -1,5 +1,7 @@
 package com.project.shared.client.utils;
 
+import com.google.gwt.event.dom.client.TouchEvent;
+
 
 public class BrowserUtils
 {
@@ -35,6 +37,18 @@ public class BrowserUtils
     public static boolean isIE()
     {
         return IS_IE;
+    }
+
+    public static boolean isTouchSupported()
+    {
+        return TouchEvent.isSupported();
+    }
+
+    public static boolean isMainInterfaceTouch()
+    {
+        return BrowserUtils.isTouchSupported()
+            || BrowserDetect.get().getOS().equals("iPhone/iPod")
+            || BrowserDetect.get().getOS().equals("Android");
     }
 
 }

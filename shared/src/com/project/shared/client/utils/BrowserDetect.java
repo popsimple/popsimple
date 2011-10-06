@@ -148,6 +148,11 @@ public final class BrowserDetect extends JavaScriptObject
                     string: $wnd.navigator.platform,
                     subString: "Linux",
                     identity: "Linux"
+                },
+                {
+                       string: $wnd.navigator.userAgent,
+                       subString: "Android",
+                       identity: "Android"
                 }
             ]
 

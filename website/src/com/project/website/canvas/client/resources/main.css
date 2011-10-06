@@ -27,6 +27,8 @@
 @def toolboxHeaderBackgroundColor #222;
 @def toolboxHeaderTextColor #ddd;
 
+@def minimalTouchButtonSize 40px;
+
 @external gwt-RadioButton, gwt-ToggleButton;
 .monospace {
 	font-family: monospace;
@@ -200,6 +202,7 @@
     background-position: 0 4px;
     background-repeat: no-repeat;
     background-size: 12px 12px;
+    -webkit-background-size: 12px 12px;
     color: topBarTextColor;
     cursor: default;
     vertical-align: text-top;
@@ -299,6 +302,7 @@
 	width: toolboxIconSize;
 	height: toolboxIconSize;
 	background-size: toolboxIconSize auto;
+	-webkit-background-size: toolboxIconSize auto;
     background-position: center center;
     padding: 5px 0;
 }
@@ -313,6 +317,7 @@
     width: toolboxIconExpandedSize;
     height: toolboxIconExpandedSize;
     background-size: toolboxIconExpandedSize auto;
+    -webkit-background-size: toolboxIconExpandedSize auto;
 }
 .toolboxCommonSelectedIconStyle .toolboxInnerIconStyle, .toolboxCommonSelectedIconStyle:hover .toolboxInnerIconStyle {
 	border-color: #aaa;
@@ -503,6 +508,7 @@
 .imageToolSet {
 	background-repeat: no-repeat;
 	background-size: 100% 100%;
+	-webkit-background-size: 100% 100%;
 }
 
 .imageToolContentPanel {
@@ -705,6 +711,17 @@
 	padding: 0;
 }
 
+/* change the size of tool-frame buttons on touch-enabled browsers to make them easier to touch */
+@if (com.project.shared.client.utils.BrowserUtils.isMainInterfaceTouch()) {
+    .toolFrameBottomLeftRotate, .toolFrameBottomRightResize, .toolFrameButton {
+        -webkit-background-size: minimalTouchButtonSize auto;
+        background-size: minimalTouchButtonSize auto;
+        height: minimalTouchButtonSize;
+        width: minimalTouchButtonSize;
+    }
+}
+
+
 /*---------------------------------------------*/
 .worksheetModeViewOnly .toolOptionsBarContainer, .worksheetModeViewOnly .toolOptionsBar {
 	display: none;
@@ -741,6 +758,7 @@
 	background-position: center center;
 	background-repeat: no-repeat;
 	background-size: 100%;
+	-webkit-background-size: 100%;
 	border-radius: 2px 2px 2px 2px;
 	display: inline-block;
 	height: 100px;
@@ -884,6 +902,7 @@
 	background-repeat: no-repeat !important;
 	background-position: center center !important;
 	background-size: 48px !important;
+	-webkit-background-size: 48px !important;
 }
 
 .loadingFiller {
