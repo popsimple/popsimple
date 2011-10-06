@@ -9,6 +9,9 @@ import com.google.gwt.canvas.dom.client.Context2d.LineJoin;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
+import com.google.gwt.dom.client.Style.BorderStyle;
+import com.google.gwt.dom.client.Style.Position;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.HumanInputEvent;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
@@ -19,9 +22,11 @@ import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.utils.CanvasUtils;
 import com.project.shared.client.utils.ElementUtils;
+import com.project.shared.client.utils.EventUtils;
 import com.project.shared.client.utils.SchedulerUtils.OneTimeScheduler;
 import com.project.shared.client.utils.widgets.WidgetUtils;
 import com.project.shared.data.Point2D;
+import com.project.shared.data.Rectangle;
 import com.project.shared.utils.PointUtils;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
 import com.project.website.canvas.client.canvastools.base.CanvasToolEvents;
@@ -105,12 +110,24 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
     public SketchTool(int width, int height) {
         this._imageElement = ImageElement.as(this._image.getElement());
         this.add(this._image);
-        this.updateImageVisibilty();
 
         if (Canvas.isSupported()) {
             this.add(this._cursorCanvas);
             this._context = this._canvas.getContext2d();
+
+//            // DEBUGGING
+//            this.add(this._resizeCanvas1);
+//            this._resizeCanvas1.getElement().getStyle().setPosition(Position.ABSOLUTE);
+//            this._resizeCanvas1.getElement().getStyle().setLeft(100, Unit.PCT);
+//            this._resizeCanvas1.getElement().getStyle().setBorderStyle(BorderStyle.SOLID);
+//            this.add(this._resizeCanvas2);
+//            this._resizeCanvas2.getElement().getStyle().setPosition(Position.ABSOLUTE);
+//            this._resizeCanvas2.getElement().getStyle().setTop(100, Unit.PCT);
+//            this._resizeCanvas1.getElement().getStyle().setBorderStyle(BorderStyle.DASHED);
+//            // ---------
         }
+
+        this.updateImageVisibilty();
         this.setWidth(width);
         this.setHeight(height);
         this.addStyleName(CanvasResources.INSTANCE.main().sketchTool());
@@ -160,13 +177,20 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
     {
         Point2D targetSize = ElementUtils.getElementOffsetSize(this.getElement());
 
+        // make sure resizeCanvas1 is big enough for the new canvas size
         this.expandBackCanvas(targetSize);
-        CanvasUtils.drawOnto(this._canvas, this._resizeCanvas1, Composite.COPY);
 
+        // TODO: it should have been enough to draw with Composite.COPY, and no need to clear-before-draw
+        // but that seems to screw up the transparency.
+        CanvasUtils.drawOnto(this._canvas, this._resizeCanvas1, Composite.SOURCE_OVER, true, true);
+
+        // this will clear _canvas
         this.setWidth(targetSize.getX());
         this.setHeight(targetSize.getY());
 
-        CanvasUtils.drawOnto(this._resizeCanvas1, this._canvas, Composite.COPY);
+        CanvasUtils.drawOnto(this._resizeCanvas1, this._canvas, Composite.SOURCE_OVER);
+
+        this.redraw();
     }
 
 
@@ -230,14 +254,18 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
     private void drawCursor()
     {
         Point2D pos = ElementUtils.getMousePositionRelativeToElement(this.getElement());
+        final Rectangle sizeRectangle = new Rectangle(Point2D.zero, ElementUtils.getElementOffsetSize(this.getElement()));
+        if ((null == pos) || (false == sizeRectangle.contains(pos))) {
+            return;
+        }
         Context2d cursorContext = this._cursorCanvas.getContext2d();
 		if (this.isErasing()) {
 			cursorContext.setStrokeStyle("black");
             cursorContext.setLineWidth(1);
             cursorContext.beginPath();
             cursorContext.rect(pos.getX() - this.data.sketchOptions.eraserWidth / 2,
-                                                   pos.getY() - this.data.sketchOptions.eraserWidth / 2,
-                                                   this.data.sketchOptions.eraserWidth, this.data.sketchOptions.eraserWidth);
+                               pos.getY() - this.data.sketchOptions.eraserWidth / 2,
+                               this.data.sketchOptions.eraserWidth, this.data.sketchOptions.eraserWidth);
             cursorContext.stroke();
         }
         else {
@@ -283,13 +311,11 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
     {
         this._averageVelocity.add(velocity);
 
+        this.setContextConstantProperties();
+
         this._context.setStrokeStyle(this.data.sketchOptions.penColor);
         this._context.setShadowColor(this.data.sketchOptions.penColor);
-        this._context.setShadowBlur(2);
-        this._context.setFillStyle("transparent");
         this._context.setLineWidth(this.data.sketchOptions.penWidth);
-        this._context.setLineJoin(LineJoin.ROUND);
-        this._context.setLineCap(LineCap.ROUND);
 
         if (isErasing()) {
             // We have to erase in both buffers, because when we copy from the front to the back buffer later when resizing, it does not
@@ -319,6 +345,19 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
         }
     }
 
+
+    private void setContextConstantProperties()
+    {
+        this._context.setGlobalAlpha(0.1);
+        this._context.setShadowBlur(2);
+        this._context.setFillStyle("transparent");
+        this._context.setLineJoin(LineJoin.ROUND);
+        this._context.setLineCap(LineCap.ROUND);
+    }
+
+    /**
+     *  Increases the size of the resize canvases to be at least as big as the given target size, while retaining the bitmap data they are storing.
+     */
     private void expandBackCanvas(Point2D targetSize)
     {
         Point2D maxSize = Point2D.max(CanvasUtils.getCoorinateSpaceSize(this._resizeCanvas1), targetSize);
@@ -377,8 +416,15 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
 
     private void redraw()
     {
+        this.redraw(true);
+    }
+
+    private void redraw(boolean drawCursor)
+    {
         CanvasUtils.setCoordinateSpaceSize(this._cursorCanvas, CanvasUtils.getCoorinateSpaceSize(this._canvas));
-        this.drawCursor();
+        if (drawCursor) {
+            this.drawCursor();
+        }
         CanvasUtils.drawOnto(this._canvas, this._cursorCanvas, Composite.DESTINATION_OVER);
     }
 
@@ -423,9 +469,19 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
         final SketchTool that = this;
         this.registrationsManager.clear();
 
+        this.registrationsManager.add(this._toolbar.addOptionsChangedHandler(new Handler<SketchOptions>() {
+            @Override public void onFire(SketchOptions arg) {
+                that.setOptions(arg);
+            }}));
+
+        if (false == Canvas.isSupported()) {
+            return;
+        }
+
         this.registrationsManager.add(this.addDomHandler(new MouseOutHandler() {
             @Override public void onMouseOut(MouseOutEvent event) {
                 that._prevDrawPos = null;
+                that.redraw(false); // cursor left the canvas area
             }
         }, MouseOutEvent.getType()));
         this.registrationsManager.add(WidgetUtils.addMovementStartHandler(this, new Handler<HumanInputEvent<?>>() {
@@ -461,11 +517,6 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
                 that.addLineToPath();
 			}
 		}));
-
-        this.registrationsManager.add(this._toolbar.addOptionsChangedHandler(new Handler<SketchOptions>() {
-            @Override public void onFire(SketchOptions arg) {
-                that.setOptions(arg);
-            }}));
     }
 
 
@@ -557,6 +608,7 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
         }
         else if (this._bound) {
             this.setRegistrations();
+            this.redraw();
         }
         this.updateImageVisibilty();
     }

@@ -483,10 +483,10 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         this._editModeRegistrations.add(this.worksheetPanel.addDomHandler(new MouseDownHandler() {
             @Override
             public void onMouseDown(MouseDownEvent event) {
-                /**
-                 * TODO: don't use getRelativeX/Y, see ElementUtils.relativePosition
-                 * */
                 Point2D posRelativeToWorksheet = ElementUtils.getMousePositionRelativeToElement(worksheetPanel.getElement());
+                if (null == posRelativeToWorksheet) {
+                    return;
+                }
                 if (posRelativeToWorksheet.getX() < 0 || posRelativeToWorksheet.getY() < 0)
                 {
                     return;
