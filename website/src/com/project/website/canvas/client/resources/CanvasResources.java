@@ -4,6 +4,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.DataResource;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.resources.client.ImageResource.ImageOptions;
 
 public interface CanvasResources extends ClientBundle {
     public static final CanvasResources INSTANCE = GWT.create(CanvasResources.class);
@@ -124,4 +125,15 @@ public interface CanvasResources extends ClientBundle {
 
     @Source("com/project/website/shared/client/resources/images/bitmaps/closeIcon.png")
     ImageResource cropCancelIcon();
+
+    @Source("com/project/website/shared/client/resources/images/bitmaps/sliderHorizontalLeft_10.png")
+    @ImageOptions(flipRtl = true)
+    ImageResource sliderIconHorizontalLess();
+
+    @Source("com/project/website/shared/client/resources/images/bitmaps/sliderHorizontalRight_10.png")
+    @ImageOptions(flipRtl = true)
+    ImageResource sliderIconHorizontalMore();
+
+    @Source("com/project/website/shared/client/resources/images/bitmaps/sliderDrag_10.png")
+    ImageResource sliderIconDrag();
 }

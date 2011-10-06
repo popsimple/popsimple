@@ -15,7 +15,7 @@ import com.project.shared.utils.loggers.Logger;
 
 public class EventUtils
 {
-    public static <H extends EventHandler> boolean nativePreviewEventTypeIsAny(NativePreviewEvent nativePreviewEvent, DomEvent.Type<?>[] domEventTypes)
+    public static <H extends EventHandler> boolean nativePreviewEventTypeIsAny(NativePreviewEvent nativePreviewEvent, DomEvent.Type<?>... domEventTypes)
     {
         for (DomEvent.Type<?> domEventType : domEventTypes)
         {

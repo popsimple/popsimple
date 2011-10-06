@@ -69,14 +69,14 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
     @Override
     public void startDragCanvasToolFrame(final CanvasToolFrame toolFrame)
     {
-        Element toolFrameElement = toolFrame.asWidget().getElement();
+        final Element toolFrameElement = toolFrame.asWidget().getElement();
         final Point2D initialPos =  ElementUtils.getElementCSSPosition(toolFrameElement);
         final Point2D originalOffsetFromFramePos = ElementUtils.getMousePositionRelativeToElement(this._container.getElement()).minus(initialPos);
 
         MouseMoveOperationHandler handler = new MouseMoveOperationHandler() {
             @Override public void onStop(Point2D pos) {
                 toolFrame.setDragging(false);
-                addDragUndoStep(toolFrame, initialPos, calcDragTargetPos(initialPos, originalOffsetFromFramePos, pos));
+                addDragUndoStep(toolFrame, initialPos, ElementUtils.getElementAbsolutePosition(toolFrameElement));
             }
 
             @Override public void onStart() {

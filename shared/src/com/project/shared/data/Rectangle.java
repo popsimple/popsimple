@@ -7,14 +7,24 @@ import com.project.shared.interfaces.ICloneable;
 
 
 public class Rectangle implements ICloneable<Rectangle>, Serializable, IsSerializable {
-    public double getRotation()
-    {
-        return rotation;
-    }
+    public class Corners {
+        public final Point2D topRight;
 
-    public void setRotation(double rotation)
-    {
-        this.rotation = rotation;
+        public final Point2D bottomRight;
+
+        public final Point2D bottomLeft;
+        public final Point2D topLeft;
+        public Corners(Point2D topRight, Point2D bottomRight, Point2D bottomLeft, Point2D topLeft)
+        {
+            this.topRight = topRight;
+            this.bottomRight = bottomRight;
+            this.bottomLeft = bottomLeft;
+            this.topLeft = topLeft;
+        }
+        public Point2D[] asArray()
+        {
+            return new Point2D[] { this.topRight, this.bottomRight, this.bottomLeft, this.topLeft };
+        }
     }
 
     /**
@@ -25,6 +35,7 @@ public class Rectangle implements ICloneable<Rectangle>, Serializable, IsSeriali
     public static final Rectangle empty = new Rectangle(0, 0, 0, 0);
 
     private int left = 0;
+
     private int top = 0;
     private int right = 0;
     private int bottom = 0;
@@ -35,12 +46,12 @@ public class Rectangle implements ICloneable<Rectangle>, Serializable, IsSeriali
     	this(0, 0, 0, 0);
     }
 
-    public Rectangle(int left, int top, int right, int bottom) {
-        this(left, top, right, bottom, 0);
-    }
-
     public Rectangle(int left, int top, int size) {
         this(left, top, left + size, top + size);
+    }
+
+    public Rectangle(int left, int top, int right, int bottom) {
+        this(left, top, right, bottom, 0);
     }
 
     public Rectangle(int left, int top, int right, int bottom, double rotation) {
@@ -54,7 +65,13 @@ public class Rectangle implements ICloneable<Rectangle>, Serializable, IsSeriali
     public Rectangle(Rectangle rectangle)
     {
         this(rectangle.getLeft(), rectangle.getTop(),
-                rectangle.getRight(), rectangle.getBottom(), rectangle.getRotation());
+             rectangle.getRight(), rectangle.getBottom(), rectangle.getRotation());
+    }
+
+    public Rectangle(Point2D topLeft, Point2D bottomRight)
+    {
+        this(topLeft.getX(), topLeft.getY(),
+             bottomRight.getX(), bottomRight.getY());
     }
 
     public boolean contains(Point2D point) {
@@ -64,29 +81,45 @@ public class Rectangle implements ICloneable<Rectangle>, Serializable, IsSeriali
     	return ((px >= left) && (px <= right) && (py <= bottom) && (py >= top));
     }
 
+    @Override
+    public boolean equals(Object other) {
+        if (null == other) {
+            return false;
+        }
+        if (other.getClass() != this.getClass()) {
+            return false;
+        }
+        Rectangle otherRectangle = (Rectangle)other;
+        return ((this.bottom == otherRectangle.bottom) &&
+                (this.left == otherRectangle.left) &&
+                (this.right == otherRectangle.right) &&
+                (this.top == otherRectangle.top ) &&
+                (this.rotation == otherRectangle.rotation));
+    }
+
+    /**
+     * @return radius of smallest circle containing the rectangle
+     */
+    public double externalRadius()
+    {
+        Point2D corner = new Point2D(right, top);
+        return corner.minus(getCenter()).getRadius();
+    }
+
+
+    public int getBottom()
+    {
+    	return this.bottom;
+    }
+
     public Point2D getCenter() {
         return new Point2D((left + right) / 2, (top + bottom) / 2);
     }
 
-
-    public class Corners {
-        public Corners(Point2D topRight, Point2D bottomRight, Point2D bottomLeft, Point2D topLeft)
-        {
-            this.topRight = topRight;
-            this.bottomRight = bottomRight;
-            this.bottomLeft = bottomLeft;
-            this.topLeft = topLeft;
-        }
-
-        public Point2D[] asArray()
-        {
-            return new Point2D[] { this.topRight, this.bottomRight, this.bottomLeft, this.topLeft };
-        }
-
-        public final Point2D topRight;
-        public final Point2D bottomRight;
-        public final Point2D bottomLeft;
-        public final Point2D topLeft;
+    @Override
+    public Rectangle getClone()
+    {
+        return new Rectangle(this);
     }
 
     /**
@@ -110,39 +143,14 @@ public class Rectangle implements ICloneable<Rectangle>, Serializable, IsSeriali
     	return this.left;
     }
 
-    public int getTop()
-    {
-    	return this.top;
-    }
-
     public int getRight()
     {
     	return this.right;
     }
 
-    public int getBottom()
+    public double getRotation()
     {
-    	return this.bottom;
-    }
-
-    public void setLeft(int left)
-    {
-    	this.left = left;
-    }
-
-    public void setTop(int top)
-    {
-    	this.top = top;
-    }
-
-    public void setRight(int right)
-    {
-    	this.right = right;
-    }
-
-    public void setBottom(int bottom)
-    {
-    	this.bottom = bottom;
+        return rotation;
     }
 
     public Point2D getSize()
@@ -152,13 +160,9 @@ public class Rectangle implements ICloneable<Rectangle>, Serializable, IsSeriali
     			Math.abs((this.bottom - this.top)));
     }
 
-    /**
-     * @return radius of smallest circle containing the rectangle
-     */
-    public double externalRadius()
+    public int getTop()
     {
-        Point2D corner = new Point2D(right, top);
-        return corner.minus(getCenter()).getRadius();
+    	return this.top;
     }
 
     /**
@@ -175,16 +179,6 @@ public class Rectangle implements ICloneable<Rectangle>, Serializable, IsSeriali
         return this.hasCornerInOther(rect) || rect.hasCornerInOther(this);
     }
 
-    private boolean hasCornerInOther(Rectangle rect)
-    {
-        for (Point2D corner : this.getCorners().asArray()) {
-            if (rect.contains(corner)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public Rectangle move(Point2D target)
     {
         int newRight = this.right - (this.left - target.getX());
@@ -193,26 +187,39 @@ public class Rectangle implements ICloneable<Rectangle>, Serializable, IsSeriali
         return new Rectangle(target.getX(), target.getY(), newRight, newBottom);
     }
 
-    @Override
-    public boolean equals(Object other) {
-        if (null == other) {
-            return false;
-        }
-        if (other.getClass() != this.getClass()) {
-            return false;
-        }
-        Rectangle otherRectangle = (Rectangle)other;
-        return ((this.bottom == otherRectangle.bottom) &&
-                (this.left == otherRectangle.left) &&
-                (this.right == otherRectangle.right) &&
-                (this.top == otherRectangle.top ) &&
-                (this.rotation == otherRectangle.rotation));
+    public void setBottom(int bottom)
+    {
+    	this.bottom = bottom;
     }
 
-    @Override
-    public Rectangle getClone()
+    public void setLeft(int left)
     {
-        return new Rectangle(this);
+    	this.left = left;
+    }
+
+    public void setRight(int right)
+    {
+    	this.right = right;
+    }
+
+    public void setRotation(double rotation)
+    {
+        this.rotation = rotation;
+    }
+
+    public void setTop(int top)
+    {
+    	this.top = top;
+    }
+
+    private boolean hasCornerInOther(Rectangle rect)
+    {
+        for (Point2D corner : this.getCorners().asArray()) {
+            if (rect.contains(corner)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 //    public boolean isOverlapping(Rectangle rect) {

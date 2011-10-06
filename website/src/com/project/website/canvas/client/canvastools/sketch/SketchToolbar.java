@@ -15,22 +15,22 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent;
+import com.project.shared.utils.StringUtils;
 import com.project.website.canvas.client.shared.widgets.ColorPicker;
+import com.project.website.canvas.client.shared.widgets.Slider;
 import com.project.website.canvas.client.shared.widgets.ToggleButtonPanel;
+import com.project.website.canvas.shared.data.SketchOptions;
 
 public class SketchToolbar extends Composite
 {
-
-    private static final String DEFAULT_STROKE_COLOR = "#000000";
-    private static final String ERASURE_COLOR = "transparent";
-
     private static SketchToolbarUiBinder uiBinder = GWT.create(SketchToolbarUiBinder.class);
 
-    interface SketchToolbarUiBinder extends UiBinder<Widget, SketchToolbar>
-    {}
+    interface SketchToolbarUiBinder extends UiBinder<Widget, SketchToolbar>{}
+
+    private static final String DEFAULT_STROKE_COLOR = "#000000";
 
     @UiField
-    ColorPicker color;
+    ColorPicker paintColor;
 
     @UiField
     ToggleButton eraseButton;
@@ -43,75 +43,129 @@ public class SketchToolbar extends Composite
     ToggleButtonPanel toolTogglePanel;
 
     @UiField
-    HTMLPanel colorPanel;
+    HTMLPanel paintOptionsPanel;
+    @UiField
+    HTMLPanel eraseOptionsPanel;
+    @UiField
+    HTMLPanel spiroOptionsPanel;
 
-    private final SimpleEvent<String> colorChangedEvent = new SimpleEvent<String>();
-    private final SimpleEvent<DrawingTool> toolChangedEvent = new SimpleEvent<DrawingTool>();
+    @UiField
+    Slider paintWidthSlider;
+    @UiField
+    Slider eraseWidthSlider;
+
+    private final SimpleEvent<SketchOptions> optionsChangedEvent = new SimpleEvent<SketchOptions>();
     private final HashMap<ToggleButton, DrawingTool> buttonToolMap = new HashMap<ToggleButton, DrawingTool>();
-
+    
     private boolean _initialized = false;
-    private boolean _erasing;
+
+    private SketchOptions _sketchOptions = new SketchOptions();
 
     public SketchToolbar()
     {
         initWidget(uiBinder.createAndBindUi(this));
-
+        
         buttonToolMap.put(this.eraseButton, DrawingTool.ERASE);
         buttonToolMap.put(this.paintButton, DrawingTool.PAINT);
         buttonToolMap.put(this.spiroButton, DrawingTool.SPIRO);
 
-        this.color.addChangeHandler(new ChangeHandler() {
-            @Override public void onChange(ChangeEvent event) {
-                setErasing(false);
-                dispatchColorChangeEvent();
-            }
-        });
-        this.eraseButton.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-            @Override public void onValueChange(ValueChangeEvent<Boolean> event) {
-            	_erasing = event.getValue();
-                dispatchColorChangeEvent();
-                dispatchToolChangedEvent();
-            }
-        });
-        this.paintButton.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-            @Override public void onValueChange(ValueChangeEvent<Boolean> event) {
-                colorPanel.setVisible(event.getValue());
-                dispatchToolChangedEvent();
-            }
-        });
-        this.spiroButton.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-            @Override public void onValueChange(ValueChangeEvent<Boolean> event) {
-                colorPanel.setVisible(event.getValue());
-                dispatchToolChangedEvent();
-            }
-        });
+        this.paintOptionsPanel.add(paintWidthSlider);
+        this.eraseOptionsPanel.add(eraseWidthSlider);
 
-        this.paintButton.setValue(true, true);
+        ValueChangeHandler<Double> barValueChangedHandler = new ValueChangeHandler<Double>() {
+			@Override public void onValueChange(ValueChangeEvent<Double> event) {
+                handleOptionChanged();
+			}};
+        
+        ValueChangeHandler<Boolean> optionsChangedHandleBool = new ValueChangeHandler<Boolean>() {
+            @Override public void onValueChange(ValueChangeEvent<Boolean> event) {
+                handleOptionChanged();
+            }
+        };
+
+        this.paintColor.addChangeHandler(new ChangeHandler() {
+            @Override public void onChange(ChangeEvent event) {
+                handleOptionChanged();
+            }
+        });
+        
+		this.paintWidthSlider.addValueChangeHandler(barValueChangedHandler);
+		this.eraseWidthSlider.addValueChangeHandler(barValueChangedHandler);
+        
+		this.eraseButton.addValueChangeHandler(optionsChangedHandleBool);
+        this.paintButton.addValueChangeHandler(optionsChangedHandleBool);
+        this.spiroButton.addValueChangeHandler(optionsChangedHandleBool);
+
+        // TODO: replace with set default values?
+        //this.paintButton.setValue(true, false);
     }
 
-    protected void dispatchToolChangedEvent()
+    protected void handleOptionChanged()
+    {
+        SketchOptions options = this.getOptions();
+        hideAllOptionPanels();
+        switch (options.drawingTool) {
+        case ERASE:
+        	this.eraseOptionsPanel.setVisible(true);
+        	break;
+        case SPIRO:
+        	this.spiroOptionsPanel.setVisible(true);
+        	// fall through
+        case PAINT:
+        	// fall through
+    	default:
+        	this.paintOptionsPanel.setVisible(true);
+        	break;
+        }
+		this.optionsChangedEvent.dispatch(options);
+    }
+
+	protected void hideAllOptionPanels() {
+		this.eraseOptionsPanel.setVisible(false);
+        this.paintOptionsPanel.setVisible(false);
+        this.spiroOptionsPanel.setVisible(false);
+	}
+
+    /**
+     * Returns a <strong>copy</strong> of the current options used in the toolbar. 
+     */
+    public SketchOptions getOptions()
     {
         ToggleButton activeButton = toolTogglePanel.getActiveButton();
         if (null == activeButton) {
             // todo dispatch indicating no tool active?
-            return;
+            //return;
         }
-        this.toolChangedEvent.dispatch(this.buttonToolMap.get(activeButton));
-
+        this._sketchOptions.drawingTool = this.buttonToolMap.get(activeButton);
+        this._sketchOptions.penWidth = Math.max(1, this.paintWidthSlider.getValue().intValue());
+        this._sketchOptions.penColor = this.paintColor.getColor();
+        this._sketchOptions.eraserWidth = Math.max(1, this.eraseWidthSlider.getValue().intValue());
+        return new SketchOptions(this._sketchOptions);
     }
 
-    public boolean isErasing()
+    /**
+     * <strong>Copies</strong> the given option object and updates the toolbar to reflect the set options.
+     */
+    public void setOptions(SketchOptions options)
     {
-        return _erasing;
+        this._sketchOptions = new SketchOptions(options);
+        switch (this._sketchOptions.drawingTool) {
+        case ERASE:
+            this.eraseButton.setValue(true, false);
+            break;
+        case SPIRO:
+            this.spiroButton.setValue(true, false);
+            break;
+        case PAINT:
+        	// fall through
+        default:
+            this.paintButton.setValue(true, false);
+            break;
+        }
+        this.paintColor.setColor(StringUtils.defaultIfNullOrEmpty(this._sketchOptions.penColor, DEFAULT_STROKE_COLOR));
+        this.paintWidthSlider.setValue(Double.valueOf(this._sketchOptions.penWidth));
+        this.eraseWidthSlider.setValue(Double.valueOf(this._sketchOptions.eraserWidth));
     }
-
-    public void setErasing(boolean isErasing)
-    {
-        this._erasing = isErasing;
-        this.eraseButton.setValue(isErasing);
-    }
-
-
 
     @Override
     protected void onLoad()
@@ -119,50 +173,17 @@ public class SketchToolbar extends Composite
         super.onLoad();
         if (false == this._initialized) {
             this._initialized = true;
-            this.setColor(DEFAULT_STROKE_COLOR);
+            this.setOptions(this._sketchOptions);
         }
     }
-
-
 
     @Override
     protected void onUnload()
     {
-        // TODO Auto-generated method stub
         super.onUnload();
     }
 
-
-
-    public HandlerRegistration addColorChangedHandler(SimpleEvent.Handler<String> handler) {
-        return this.colorChangedEvent.addHandler(handler);
+    public HandlerRegistration addOptionsChangedHandler(SimpleEvent.Handler<SketchOptions> handler) {
+        return this.optionsChangedEvent.addHandler(handler);
     }
-
-    public HandlerRegistration addToolChangedHandler(SimpleEvent.Handler<DrawingTool> handler) {
-        return this.toolChangedEvent.addHandler(handler);
-    }
-
-    public String getColor() {
-        if (this._erasing) {
-            return ERASURE_COLOR;
-        }
-        return this.color.getColor();
-    }
-
-    public void setColor(String color) {
-        this.color.setColor(color);
-    }
-
-
-
-    private void dispatchColorChangeEvent()
-    {
-        if (_erasing) {
-            colorChangedEvent.dispatch(ERASURE_COLOR);
-        }
-        else {
-            colorChangedEvent.dispatch(getColor());
-        }
-    }
-
 }

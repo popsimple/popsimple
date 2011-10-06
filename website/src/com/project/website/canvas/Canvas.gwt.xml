@@ -18,7 +18,6 @@
     <inherits name='com.google.common.base.Base'/>
     <inherits name="com.google.common.collect.Collect" />
 
-
 	<inherits name='com.project.website.shared.Shared'/>
 	<inherits name='com.project.shared.Shared'/>
 	<inherits name='com.ghusse.dolomite.Dolomite'/>

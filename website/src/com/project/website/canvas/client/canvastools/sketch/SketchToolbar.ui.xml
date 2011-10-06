@@ -10,13 +10,19 @@
     </ui:style>
     <g:HTMLPanel ui:field="rootPanel" addStyleNames="{res.main.canvasToolbar}">
         <w:ToggleButtonPanel ui:field="toolTogglePanel" addStyleNames="{res.main.canvasToolbarItemWrapper}">
-            <g:ToggleButton ui:field="paintButton">Paint</g:ToggleButton>
-            <g:ToggleButton ui:field="spiroButton">Spiro</g:ToggleButton>
-            <g:ToggleButton ui:field="eraseButton">Erase</g:ToggleButton>
+            <g:ToggleButton ui:field="paintButton" addStyleNames="{res.main.canvasToolbarButton}">Paint</g:ToggleButton>
+            <g:ToggleButton ui:field="spiroButton" addStyleNames="{res.main.canvasToolbarButton}">Spiro</g:ToggleButton>
+            <g:ToggleButton ui:field="eraseButton" addStyleNames="{res.main.canvasToolbarButton}">Erase</g:ToggleButton>
         </w:ToggleButtonPanel>
-        <g:HTMLPanel ui:field="colorPanel" addStyleNames="{res.main.canvasToolbarItemWrapper}">
+        <g:HTMLPanel ui:field="paintOptionsPanel" addStyleNames="{res.main.canvasToolbarItemWrapper}">
             <span class="{res.main.canvasToolbarItemTitle}">Color:</span>
-            <w:ColorPicker ui:field="color"></w:ColorPicker>
+            <w:ColorPicker ui:field="paintColor"></w:ColorPicker>
+            <w:Slider ui:field="paintWidthSlider" width="100px" maxValue="100" minValue="1"/>
+        </g:HTMLPanel>
+        <g:HTMLPanel ui:field="eraseOptionsPanel" addStyleNames="{res.main.canvasToolbarItemWrapper}">
+            <w:Slider ui:field="eraseWidthSlider"  width="100px" maxValue="100"  minValue="1"/>
+        </g:HTMLPanel>
+        <g:HTMLPanel ui:field="spiroOptionsPanel" addStyleNames="{res.main.canvasToolbarItemWrapper}">
         </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

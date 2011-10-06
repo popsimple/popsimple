@@ -1,5 +1,6 @@
 package com.project.website.canvas.shared.data;
 
+
 import com.google.appengine.api.datastore.Blob;
 import com.google.code.twig.annotation.Type;
 import com.project.shared.interfaces.ICloneable;
@@ -8,14 +9,10 @@ public class SketchData extends ElementData implements ICloneable<SketchData>
 {
     private static final long serialVersionUID = 1L;
 
-    public int penWidth;
-
     @Type(Blob.class)
     public String imageData;
 
-    public int penSkip;
-
-    public int eraserWidth;
+    public SketchOptions sketchOptions;
 
     public SketchData(String uniqueId)
     {
@@ -30,10 +27,8 @@ public class SketchData extends ElementData implements ICloneable<SketchData>
     public SketchData(SketchData sketchData)
     {
         super(sketchData);
-        this.penSkip = sketchData.penSkip;
-        this.penWidth = sketchData.penWidth;
         this.imageData = sketchData.imageData;
-        this.eraserWidth = sketchData.eraserWidth;
+        this.sketchOptions = new SketchOptions(sketchData.sketchOptions);
     }
 
     @Override

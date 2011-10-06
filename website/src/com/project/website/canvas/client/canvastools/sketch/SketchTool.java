@@ -1,14 +1,18 @@
 package com.project.website.canvas.client.canvastools.sketch;
 
-import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.canvas.dom.client.Context2d.Composite;
+import com.google.gwt.canvas.dom.client.Context2d.LineCap;
+import com.google.gwt.canvas.dom.client.Context2d.LineJoin;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
+import com.google.gwt.dom.client.Style.BorderStyle;
+import com.google.gwt.dom.client.Style.Position;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.HumanInputEvent;
-import com.google.gwt.event.dom.client.MouseMoveEvent;
-import com.google.gwt.event.dom.client.MouseMoveHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -18,10 +22,12 @@ import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.utils.CanvasUtils;
 import com.project.shared.client.utils.ElementUtils;
+import com.project.shared.client.utils.EventUtils;
+import com.project.shared.client.utils.SchedulerUtils.OneTimeScheduler;
 import com.project.shared.client.utils.widgets.WidgetUtils;
 import com.project.shared.data.Point2D;
+import com.project.shared.data.Rectangle;
 import com.project.shared.utils.PointUtils;
-import com.project.shared.utils.loggers.Logger;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
 import com.project.website.canvas.client.canvastools.base.CanvasToolEvents;
 import com.project.website.canvas.client.canvastools.base.ICanvasToolEvents;
@@ -30,67 +36,20 @@ import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.client.shared.UndoManager;
 import com.project.website.canvas.shared.data.ElementData;
 import com.project.website.canvas.shared.data.SketchData;
+import com.project.website.canvas.shared.data.SketchOptions;
 
 public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
 {
-    private static final double SPIRO_CURVE_WIDTH = 30;
-    private static final double SPIRO_CURVE_SPEED_X = 1;
-    private static final double SPIRO_CURVE_SPEED_Y = 0.1;
-    private static final double SPIRO_NORMAL_SCALE = 1000;
-
-    private CanvasToolEvents _toolEvents = new CanvasToolEvents(this);
-
-    private SketchData data = null;
-    private final RegistrationsManager registrationsManager = new RegistrationsManager();
-
-    private final SketchToolbar _toolbar = new SketchToolbar();
-    private final Canvas _canvas = Canvas.createIfSupported();
-    private Canvas _resizeCanvas1 = Canvas.createIfSupported();
-    private Canvas _resizeCanvas2 = Canvas.createIfSupported();
-
-    protected boolean _inViewMode = false;
-    protected boolean _active = false;
-    protected boolean _bound = false;
-
-    protected String _strokeColor = "#000000";
-
-    private boolean _drawingPathExists;
-
-    private Point2D _prevDrawPos = Point2D.zero;
-
-    private Context2d _context = null;
-    private final ImageElement _imageElement;
-    private Image _image = new Image();
-
-    private DrawingTool _activeDrawingTool;
-
-    private double _spiroCurveParameter = 0;
-
-    public SketchTool(int width, int height) {
-        this._imageElement = ImageElement.as(this._image.getElement());
-        this.add(this._image);
-        this.updateImageVisibilty();
-
-        if (null != _canvas) {
-            this.add(this._canvas);
-            this._context = this._canvas.getContext2d();
-        }
-        this.setWidth(width);
-        this.setHeight(height);
-        this.addStyleName(CanvasResources.INSTANCE.main().sketchTool());
+    public enum SpiroCurveType {
+        Sine,
+        Circle
     }
 
 
-    private void updateImageVisibilty()
-    {
-        final boolean imageVisible = this._inViewMode || (null == _canvas);
-        if (imageVisible) {
-            this.updateImageFromCanvas();
-        }
-        this._image.setVisible(imageVisible);
-        this._canvas.setVisible((false == this._inViewMode) && (null != _canvas));
-    }
-
+    private static final double SPIRO_CURVE_WIDTH = 40;
+    private static final double SPIRO_CURVE_SPEED_Y = 0.4;
+	private static final int VELOCITY_SMOOTHING = 15;
+	private static final int POSITION_SMOOTHING = 3;
 
     // TODO: for IE <= 8, call this instead of Canvas.getContext2d
     private static final native Context2d getContext2d(Element canvasElement) /*-{
@@ -98,57 +57,109 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
         return el.getContext('2d');
     }-*/;
 
-    private void setHeight(int height)
-    {
-        super.setHeight(toPxString(height));
-        this._canvas.setCoordinateSpaceHeight(height);
+    private CanvasToolEvents _toolEvents = new CanvasToolEvents(this);
+    private SketchData data = null;
+
+    private final RegistrationsManager registrationsManager = new RegistrationsManager();
+    private final SketchToolbar _toolbar = new SketchToolbar();
+
+    private final PointUtils.MovingAverage _averageVelocity = new PointUtils.MovingAverage(VELOCITY_SMOOTHING);
+    private final PointUtils.MovingAverage _averageDrawPos = new PointUtils.MovingAverage(POSITION_SMOOTHING);
+
+    private final Canvas _canvas = Canvas.createIfSupported();
+    private final Canvas _cursorCanvas = Canvas.createIfSupported();
+    private Canvas _resizeCanvas1 = Canvas.createIfSupported();
+    private Canvas _resizeCanvas2 = Canvas.createIfSupported();
+
+//    private Canvas _undoCanvas = Canvas.createIfSupported();
+    private boolean _inViewMode = false;
+    private boolean _active = false;
+    private boolean _bound = false;
+
+
+    private String _strokeColor = "#000000";
+
+    private SpiroCurveType _curveType = SpiroCurveType.Circle;
+
+    private boolean _drawingPathExists;
+
+    private Point2D _prevDrawPos = Point2D.zero;
+    private Context2d _context = null;
+    private final ImageElement _imageElement;
+
+    private Image _image = new Image();
+
+    private DrawingTool _activeDrawingTool;
+
+    private double _spiroCurveParameter = 0;
+
+    private final ScheduledCommand drawFromImageCommand = new ScheduledCommand() {
+        @Override public void execute() {
+            CanvasUtils.setCoordinateSpaceSize(_canvas, data.transform.size);
+            _context.drawImage(_imageElement, 0, 0);
+        }
+    };
+
+    private final ScheduledCommand redrawCommand = new ScheduledCommand() {
+        @Override public void execute() {
+            redraw();
+        }
+    };
+
+
+    public SketchTool(int width, int height) {
+        this._imageElement = ImageElement.as(this._image.getElement());
+        this.add(this._image);
+
+        if (Canvas.isSupported()) {
+            this.add(this._cursorCanvas);
+            this._context = this._canvas.getContext2d();
+
+//            // DEBUGGING
+//            this.add(this._resizeCanvas1);
+//            this._resizeCanvas1.getElement().getStyle().setPosition(Position.ABSOLUTE);
+//            this._resizeCanvas1.getElement().getStyle().setLeft(100, Unit.PCT);
+//            this._resizeCanvas1.getElement().getStyle().setBorderStyle(BorderStyle.SOLID);
+//            this.add(this._resizeCanvas2);
+//            this._resizeCanvas2.getElement().getStyle().setPosition(Position.ABSOLUTE);
+//            this._resizeCanvas2.getElement().getStyle().setTop(100, Unit.PCT);
+//            this._resizeCanvas1.getElement().getStyle().setBorderStyle(BorderStyle.DASHED);
+//            // ---------
+        }
+
+        this.updateImageVisibilty();
+        this.setWidth(width);
+        this.setHeight(height);
+        this.addStyleName(CanvasResources.INSTANCE.main().sketchTool());
     }
-    private void setWidth(int width)
-    {
-        super.setWidth(toPxString(width));
-        this._canvas.setCoordinateSpaceWidth(width);
+
+
+    @Override
+    public void bind() {
+        this._bound = true;
+        this.updateViewMode();
+    }
+
+    @Override
+    public boolean canRotate() {
+        // TODO: disabled because we don't know how to translate mouse coordinates when the tool is rotated. It needs to
+        // be done relative to the tool frame, because that is the element that is rotated (not the tool itself).
+        return true;
+    }
+    @Override
+    public ResizeMode getResizeMode() {
+        return ResizeMode.BOTH;
+    }
+
+    @Override
+    public IsWidget getToolbar() {
+        return this._toolbar;
     }
 
     @Override
     public ICanvasToolEvents getToolEvents()
     {
         return this._toolEvents;
-    }
-
-    @Override
-    protected void onUnload() {
-        this.registrationsManager.clear();
-        UndoManager.get().removeOwner(this);
-        super.onUnload();
-    }
-
-    @Override
-    protected void onLoad()
-    {
-        this.updateViewMode();
-    }
-
-    @Override
-    public void setValue(SketchData value) {
-        this.data = value;
-        ElementUtils.setTextSelectionEnabled(this.getElement(), false);
-
-        final String imageData = value.imageData;
-        if (null != imageData) {
-            this._imageElement.setSrc(imageData);
-        }
-        else {
-            if (null != this._canvas) {
-                this._canvas.setCoordinateSpaceHeight(this._canvas.getCoordinateSpaceHeight());
-            }
-            return;
-        }
-
-        if (null == this._context) {
-            return;
-        }
-
-        this._context.drawImage(this._imageElement, 0, 0);
     }
 
     @Override
@@ -162,9 +173,26 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
     }
 
     @Override
-    public void setElementData(ElementData data) {
-        this.setValue((SketchData) data);
+    public void onResize()
+    {
+        Point2D targetSize = ElementUtils.getElementOffsetSize(this.getElement());
+
+        // make sure resizeCanvas1 is big enough for the new canvas size
+        this.expandBackCanvas(targetSize);
+
+        // TODO: it should have been enough to draw with Composite.COPY, and no need to clear-before-draw
+        // but that seems to screw up the transparency.
+        CanvasUtils.drawOnto(this._canvas, this._resizeCanvas1, Composite.SOURCE_OVER, true, true);
+
+        // this will clear _canvas
+        this.setWidth(targetSize.getX());
+        this.setHeight(targetSize.getY());
+
+        CanvasUtils.drawOnto(this._resizeCanvas1, this._canvas, Composite.SOURCE_OVER);
+
+        this.redraw();
     }
+
 
     @Override
     public void setActive(boolean isActive) {
@@ -174,23 +202,16 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
         }
     }
 
-
     @Override
-    public void bind() {
-        this._bound = true;
-        this.updateViewMode();
+    public void setElementData(ElementData data) {
+        this.setValue((SketchData) data);
     }
 
     @Override
-    public ResizeMode getResizeMode() {
-        return ResizeMode.BOTH;
-    }
-
-    @Override
-    public boolean canRotate() {
-        // TODO: disabled because we don't know how to translate mouse coordinates when the tool is rotated. It needs to
-        // be done relative to the tool frame, because that is the element that is rotated (not the tool itself).
-        return true;
+    public void setValue(SketchData value) {
+        this.data = value;
+        this._toolbar.setOptions(this.data.sketchOptions);
+        this.refreshCanvasFromData();
     }
 
     @Override
@@ -199,136 +220,74 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
         this.updateViewMode();
     }
 
-    private void updateViewMode()
+
+    @Override
+    protected void onLoad()
     {
-        if (this._inViewMode) {
-            this.registrationsManager.clear();
-        }
-        else if (this._bound) {
-            this.setRegistrations();
-        }
-        this.updateImageVisibilty();
+        ElementUtils.setTextSelectionEnabled(this.getElement(), false);
+        this.refreshCanvasFromData();
+        this.updateViewMode();
     }
 
     @Override
-    public void onResize()
-    {
-        Point2D targetSize = ElementUtils.getElementOffsetSize(this.getElement());
-
-        this.expandBackCanvas(targetSize);
-        copyCanvas(this._canvas, this._resizeCanvas1);
-
-        this.setWidth(targetSize.getX());
-        this.setHeight(targetSize.getY());
-
-        copyCanvas(this._resizeCanvas1, this._canvas);
-    }
-
-
-    private void expandBackCanvas(Point2D targetSize)
-    {
-        Point2D maxSize = Point2D.max(CanvasUtils.getCoorinateSpaceSize(this._resizeCanvas1), targetSize);
-        CanvasUtils.setCoordinateSpaceSize(this._resizeCanvas2, maxSize);
-
-        copyCanvas(this._resizeCanvas1, this._resizeCanvas2);
-        this.swapResizeCanvases();
-    }
-
-
-    private void swapResizeCanvases()
-    {
-        Canvas tempCanvas = this._resizeCanvas2;
-        this._resizeCanvas2 = this._resizeCanvas1;
-        this._resizeCanvas1 = tempCanvas;
-    }
-
-    private static void copyCanvas(Canvas source, Canvas dest)
-    {
-        dest.getContext2d().drawImage(source.getCanvasElement(), 0, 0);
-    }
-
-    private static void clearCanvas(Canvas canvas)
-    {
-        canvas.getContext2d().clearRect(0, 0, canvas.getCoordinateSpaceWidth(), canvas.getCoordinateSpaceHeight());
-    }
-
-    @Override
-    public IsWidget getToolbar() {
-        return this._toolbar;
-    }
-
-    private void setRegistrations()
-    {
-        final SketchTool that = this;
+    protected void onUnload() {
+        this.updateImageFromCanvas();
         this.registrationsManager.clear();
-
-        this.registrationsManager.add(this.addDomHandler(new MouseOutHandler() {
-            @Override public void onMouseOut(MouseOutEvent event) {
-                that._prevDrawPos = null;
-            }
-        }, MouseOutEvent.getType()));
-        this.registrationsManager.add(WidgetUtils.addMovementStartHandler(this, new Handler<HumanInputEvent<?>>() {
-            @Override public void onFire(HumanInputEvent<?> arg) {
-                // TODO request to be activated instead of doing this forcefully?
-                // we want the tool frame to know it is activated.
-                that.setActive(true);
-                that.startPathDraw();
-            }}));
-        this.registrationsManager.add(WidgetUtils.addMovementStopHandler(this, new Handler<HumanInputEvent<?>>() {
-            @Override public void onFire(HumanInputEvent<?> arg) {
-                if ((false == that._active) || (false == that.drawingPathExists())) {
-                    return;
-                }
-                terminateDrawingPath();
-            }}));
-
-        this.registrationsManager.add(this.addDomHandler(new MouseMoveHandler(){
-            @Override public void onMouseMove(MouseMoveEvent event) {
-                if (false == that._active) {
-                    return;
-                }
-                // We can't use getButton or event.getNativeButton
-                // from within a MouseMove event handler.
-                // see: http://code.google.com/p/google-web-toolkit/issues/detail?id=3983
-//                int buttonFlags = event.getNativeButton();
-//                if (0 != (buttonFlags & NativeEvent.BUTTON_LEFT)) {
-//                    if (null == that._currentPath) {
-//                        that.startPathDraw();
-//                    }
-//                }
-                that.addLineToPath();
-            }}, MouseMoveEvent.getType()));
-
-        this.registrationsManager.add(this._toolbar.addColorChangedHandler(new Handler<String>() {
-            @Override public void onFire(String arg) {
-                that.setColor(arg);
-            }}));
-
-        this.registrationsManager.add(this._toolbar.addToolChangedHandler(new Handler<DrawingTool>() {
-            @Override public void onFire(DrawingTool arg) {
-                that._activeDrawingTool = arg;
-            }}));
+        UndoManager.get().removeOwner(this);
+        super.onUnload();
     }
-
-    private void startPathDraw()
-    {
-        Point2D pos = ElementUtils.getMousePositionRelativeToElement(this.getElement());
-        this._drawingPathExists = true;
-        this._context.beginPath();
-        this.drawPen(pos, Point2D.zero);
-        this._prevDrawPos = pos;
-    }
-
 
     private void addLineToPath()
     {
         if (drawingPathExists()) {
             Point2D pos = ElementUtils.getMousePositionRelativeToElement(this.getElement());
             //this._currentPath.lineTo(pos.getX(), pos.getY());
-            //drawInterpolatedSteps(pos);
+            if (DrawingTool.PAINT != this.data.sketchOptions.drawingTool) {
+                this.drawInterpolatedSteps(pos);
+            }
             this.drawPen(pos, pos.minus(PointUtils.nullToZero(this._prevDrawPos)));
             this._prevDrawPos = pos;
+            this.redraw();
         }
+    }
+
+    private void drawCursor()
+    {
+        Point2D pos = ElementUtils.getMousePositionRelativeToElement(this.getElement());
+        final Rectangle sizeRectangle = new Rectangle(Point2D.zero, ElementUtils.getElementOffsetSize(this.getElement()));
+        if ((null == pos) || (false == sizeRectangle.contains(pos))) {
+            return;
+        }
+        Context2d cursorContext = this._cursorCanvas.getContext2d();
+		if (this.isErasing()) {
+			cursorContext.setStrokeStyle("black");
+            cursorContext.setLineWidth(1);
+            cursorContext.beginPath();
+            cursorContext.rect(pos.getX() - this.data.sketchOptions.eraserWidth / 2,
+                               pos.getY() - this.data.sketchOptions.eraserWidth / 2,
+                               this.data.sketchOptions.eraserWidth, this.data.sketchOptions.eraserWidth);
+            cursorContext.stroke();
+        }
+        else {
+        	cursorContext.setStrokeStyle("transparent");
+        	cursorContext.setFillStyle(this.data.sketchOptions.penColor);
+            cursorContext.beginPath();
+            cursorContext.arc(pos.getX(), pos.getY(), this.data.sketchOptions.penWidth / 2, 0, Math.PI * 2);
+            cursorContext.closePath();
+            cursorContext.fill();
+        }
+    }
+
+    private void drawEraser(Point2D mousePos, Context2d context)
+    {
+        context.clearRect(mousePos.getX() - this.data.sketchOptions.eraserWidth / 2,
+                          mousePos.getY() - this.data.sketchOptions.eraserWidth / 2,
+                          this.data.sketchOptions.eraserWidth, this.data.sketchOptions.eraserWidth);
+    }
+
+    private boolean drawingPathExists()
+    {
+        return this._drawingPathExists;//null != this._currentPath;
     }
 
 
@@ -338,7 +297,7 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
             final Point2D offset = pos.minus(this._prevDrawPos);
             Point2D prevStepPos = this._prevDrawPos;
             int steps = (int) Math.floor(offset.getRadius());
-            for (int i = 0 ; i < steps; i += Math.max(1, this.data.penSkip)) {
+            for (int i = 0 ; i < steps; i += Math.max(1, this.data.sketchOptions.penSkip)) {
                 Point2D stepPos = this._prevDrawPos.plus(offset.mul(((double)i)/steps));
                 this.drawPen(stepPos, stepPos.minus(prevStepPos));
                 prevStepPos = stepPos;
@@ -347,12 +306,16 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
         }
     }
 
+
     private void drawPen(Point2D mousePos, Point2D velocity)
     {
-        //this.add(this.createDrawingCircle(stepPos));
-        this._context.setStrokeStyle(this._strokeColor);
-        //this._context.setStrokeStyle(CanvasPattern)
-        this._context.setFillStyle("transparent");
+        this._averageVelocity.add(velocity);
+
+        this.setContextConstantProperties();
+
+        this._context.setStrokeStyle(this.data.sketchOptions.penColor);
+        this._context.setShadowColor(this.data.sketchOptions.penColor);
+        this._context.setLineWidth(this.data.sketchOptions.penWidth);
 
         if (isErasing()) {
             // We have to erase in both buffers, because when we copy from the front to the back buffer later when resizing, it does not
@@ -363,13 +326,17 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
         }
         else {
             Point2D finalPos = mousePos;
-            if (DrawingTool.SPIRO == this._activeDrawingTool) {
-                if (Objects.equal(Point2D.zero, velocity)) {
+            Point2D averageVelocity = this._averageVelocity.getAverage();
+            if (DrawingTool.SPIRO == this.data.sketchOptions.drawingTool) {
+                if (averageVelocity.getRadius() < 1) {
                     return;
                 }
-                finalPos = this.getSpiroPoint(mousePos, velocity, this.getCurvePointForSpiro(velocity.getRadius()));
+                finalPos = this.getSpiroPoint(mousePos, averageVelocity, this.getCurvePointForSpiro(1));
+                //finalPos = this._averageDrawPos.getAverage();
             }
-            //this._context.arc(finalPos.getX(), finalPos.getY(), this.data.penWidth, 0, 2 * Math.PI);
+            this._averageDrawPos.add(finalPos);
+            finalPos = this._averageDrawPos.getAverage();
+            //this._context.arc(finalPos.getX(), finalPos.getY(), this.data.sketchOptions.penWidth, 0, 2 * Math.PI);
             this._context.lineTo(finalPos.getX(), finalPos.getY());
             this._context.moveTo(finalPos.getX(), finalPos.getY());
             this._context.stroke();
@@ -379,52 +346,42 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
     }
 
 
-    private boolean isErasing()
+    private void setContextConstantProperties()
     {
-        return DrawingTool.ERASE == this._activeDrawingTool;
+        this._context.setGlobalAlpha(0.1);
+        this._context.setShadowBlur(2);
+        this._context.setFillStyle("transparent");
+        this._context.setLineJoin(LineJoin.ROUND);
+        this._context.setLineCap(LineCap.ROUND);
     }
 
-
-    private void drawEraser(Point2D mousePos, Context2d context)
+    /**
+     *  Increases the size of the resize canvases to be at least as big as the given target size, while retaining the bitmap data they are storing.
+     */
+    private void expandBackCanvas(Point2D targetSize)
     {
-        context.clearRect(mousePos.getX() - this.data.eraserWidth / 2,
-                                mousePos.getY() - this.data.eraserWidth / 2,
-                                this.data.eraserWidth, this.data.eraserWidth);
-    }
+        Point2D maxSize = Point2D.max(CanvasUtils.getCoorinateSpaceSize(this._resizeCanvas1), targetSize);
+        CanvasUtils.setCoordinateSpaceSize(this._resizeCanvas2, maxSize);
 
-    private boolean drawingPathExists()
-    {
-        return this._drawingPathExists;//null != this._currentPath;
-    }
-
-
-    protected void setColor(String arg)
-    {
-        this._strokeColor = arg;
-    }
-
-    private void terminateDrawingPath()
-    {
-        _drawingPathExists = false;
-    }
-
-    private String toPxString(int height)
-    {
-        return String.valueOf(height) + "px";
-    }
-
-    private void updateImageFromCanvas()
-    {
-        this._image.setUrl(Strings.nullToEmpty(this._canvas.toDataUrl()));
+        CanvasUtils.drawOnto(this._resizeCanvas1, this._resizeCanvas2, Composite.COPY);
+        this.swapResizeCanvases();
     }
 
     private Point2D getCurvePointForSpiro(double step)
     {
         this._spiroCurveParameter += step;
-        return new Point2D(0, //(int)(this._spiroCurveParameter * SPIRO_CURVE_SPEED_X),
-                           (int)Math.round(SPIRO_CURVE_WIDTH * Math.cos(this._spiroCurveParameter * SPIRO_CURVE_SPEED_Y)));
-    }
+        switch (this._curveType) {
+        case Sine:
+            return new Point2D(0, //(int)(this._spiroCurveParameter * SPIRO_CURVE_SPEED_X),
+                    (int)Math.round(SPIRO_CURVE_WIDTH * Math.cos(this._spiroCurveParameter * SPIRO_CURVE_SPEED_Y)));
+        case Circle:
+            return new Point2D((int)Math.round(SPIRO_CURVE_WIDTH * Math.sin(this._spiroCurveParameter * SPIRO_CURVE_SPEED_Y)),
+                               (int)Math.round(SPIRO_CURVE_WIDTH * Math.cos(this._spiroCurveParameter * SPIRO_CURVE_SPEED_Y)));
+        default:
+            return Point2D.zero;
+        }
 
+    }
 
     /**
      * Calculates the point of a "spirograph" - overlay of a curve onto the path of another, which can be seen as
@@ -445,11 +402,215 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
      */
     private Point2D getSpiroPoint(Point2D pathPoint, Point2D pathDerivative, Point2D overlayedCurvePoint)
     {
-        Logger.info(pathDerivative);
         double magnitude = pathDerivative.getRadius();
         int x = (int)Math.round((overlayedCurvePoint.getX()*pathDerivative.getX() - overlayedCurvePoint.getY()*pathDerivative.getY()) / magnitude);
         int y = (int)Math.round((overlayedCurvePoint.getX()*pathDerivative.getY() + overlayedCurvePoint.getY()*pathDerivative.getX()) / magnitude);
         return new Point2D(x, y).plus(pathPoint);
+    }
+
+
+    private boolean isErasing()
+    {
+        return DrawingTool.ERASE == this.data.sketchOptions.drawingTool;
+    }
+
+    private void redraw()
+    {
+        this.redraw(true);
+    }
+
+    private void redraw(boolean drawCursor)
+    {
+        CanvasUtils.setCoordinateSpaceSize(this._cursorCanvas, CanvasUtils.getCoorinateSpaceSize(this._canvas));
+        if (drawCursor) {
+            this.drawCursor();
+        }
+        CanvasUtils.drawOnto(this._canvas, this._cursorCanvas, Composite.DESTINATION_OVER);
+    }
+
+
+    private void refreshCanvasFromData()
+    {
+        final String imageData = this.data.imageData;
+        if (null != imageData) {
+            this._imageElement.setSrc(imageData);
+        }
+        else {
+            if (null != this._canvas) {
+                CanvasUtils.clear(this._canvas);
+                CanvasUtils.clear(this._resizeCanvas1);
+            }
+            return;
+        }
+
+        if (null == this._context) {
+            return;
+        }
+        // For some reason, the canvas does not get updated after a page reload if not using deferred command in IE (at
+        // least, maybe also others)
+        OneTimeScheduler.get().scheduleDeferredOnce(drawFromImageCommand);
+    }
+
+
+    private void setHeight(int height)
+    {
+        super.setHeight(toPxString(height));
+        this._canvas.setCoordinateSpaceHeight(height);
+    }
+
+
+    private void setOptions(SketchOptions options)
+    {
+        this.data.sketchOptions = options;
+    }
+
+    private void setRegistrations()
+    {
+        final SketchTool that = this;
+        this.registrationsManager.clear();
+
+        this.registrationsManager.add(this._toolbar.addOptionsChangedHandler(new Handler<SketchOptions>() {
+            @Override public void onFire(SketchOptions arg) {
+                that.setOptions(arg);
+            }}));
+
+        if (false == Canvas.isSupported()) {
+            return;
+        }
+
+        this.registrationsManager.add(this.addDomHandler(new MouseOutHandler() {
+            @Override public void onMouseOut(MouseOutEvent event) {
+                that._prevDrawPos = null;
+                that.redraw(false); // cursor left the canvas area
+            }
+        }, MouseOutEvent.getType()));
+        this.registrationsManager.add(WidgetUtils.addMovementStartHandler(this, new Handler<HumanInputEvent<?>>() {
+            @Override public void onFire(HumanInputEvent<?> arg) {
+                // TODO request to be activated instead of doing this forcefully?
+                // we want the tool frame to know it is activated.
+                that.setActive(true);
+                that.startPathDraw();
+            }}));
+        this.registrationsManager.add(WidgetUtils.addMovementStopHandler(this, new Handler<HumanInputEvent<?>>() {
+            @Override public void onFire(HumanInputEvent<?> arg) {
+                if ((false == that._active) || (false == that.drawingPathExists())) {
+                    return;
+                }
+                that.terminateDrawingPath();
+            }}));
+
+        this.registrationsManager.add(WidgetUtils.addMovementMoveHandler(this, new Handler<HumanInputEvent<?>>() {
+			@Override public void onFire(HumanInputEvent<?> arg) {
+                that.redraw();
+                if (false == that._active) {
+                    return;
+                }
+                // We can't use getButton or event.getNativeButton
+                // from within a MouseMove event handler.
+                // see: http://code.google.com/p/google-web-toolkit/issues/detail?id=3983
+//                int buttonFlags = event.getNativeButton();
+//                if (0 != (buttonFlags & NativeEvent.BUTTON_LEFT)) {
+//                    if (null == that._currentPath) {
+//                        that.startPathDraw();
+//                    }
+//                }
+                that.addLineToPath();
+			}
+		}));
+    }
+
+
+    private void setWidth(int width)
+    {
+        super.setWidth(toPxString(width));
+        this._canvas.setCoordinateSpaceWidth(width);
+    }
+
+
+    private void startPathDraw()
+    {
+//        this.saveToUndoCanvas();
+
+        Point2D pos = ElementUtils.getMousePositionRelativeToElement(this.getElement());
+        this._drawingPathExists = true;
+        this._context.beginPath();
+        this._averageDrawPos.clear();
+        this._averageVelocity.clear();
+        this.drawPen(pos, Point2D.zero);
+        this._prevDrawPos = pos;
+    }
+
+    private void swapResizeCanvases()
+    {
+        Canvas tempCanvas = this._resizeCanvas2;
+        this._resizeCanvas2 = this._resizeCanvas1;
+        this._resizeCanvas1 = tempCanvas;
+    }
+
+
+    private void terminateDrawingPath()
+    {
+        _drawingPathExists = false;
+        // TODO: handle undo
+//        // We can only handle one undo step.
+//        UndoManager.get().removeOwner(this);
+//        UndoManager.get().add(this, new UndoRedoPair() {
+//            @Override
+//            public void undo()
+//            {
+//
+//            }
+//
+//            @Override
+//            public void redo()
+//            {
+//            }
+//        });
+    }
+
+//    private void saveToUndoCanvas()
+//    {
+//        CanvasUtils.setCoordinateSpaceSize(this._undoCanvas, CanvasUtils.getCoorinateSpaceSize(this._canvas));
+//        CanvasUtils.drawOnto(this._canvas, this._undoCanvas);
+//    }
+//
+//    private void restoreFromUndoCanvas()
+//    {
+//        CanvasUtils.drawOnto(this._undoCanvas, this._canvas);
+//    }
+//
+
+    private String toPxString(int height)
+    {
+        return String.valueOf(height) + "px";
+    }
+
+    private void updateImageFromCanvas()
+    {
+        this._image.setUrl(Strings.nullToEmpty(this._canvas.toDataUrl()));
+    }
+
+    private void updateImageVisibilty()
+    {
+        final boolean imageVisible = this._inViewMode || (null == _canvas);
+        if (imageVisible) {
+            this.updateImageFromCanvas();
+        }
+        this._image.setVisible(imageVisible);
+        this._cursorCanvas.setVisible((false == this._inViewMode) && (null != _canvas));
+    }
+
+
+    private void updateViewMode()
+    {
+        if (this._inViewMode) {
+            this.registrationsManager.clear();
+        }
+        else if (this._bound) {
+            this.setRegistrations();
+            this.redraw();
+        }
+        this.updateImageVisibilty();
     }
 }
 

@@ -35,6 +35,12 @@ public class FloatingToolbar extends FlowPanel
 
     protected Widget _editedWidget = null;
 
+    private final ScheduledCommand updatePositionCommand = new ScheduledCommand() {
+        @Override public void execute() {
+            actualUpdatePosition();
+        }
+    };
+
     public FloatingToolbar()
     {
         this.addStyleName(CanvasResources.INSTANCE.main().floatingToolbar());
@@ -104,11 +110,7 @@ public class FloatingToolbar extends FlowPanel
 
     public void updatePosition()
     {
-        SchedulerUtils.OneTimeScheduler.get().scheduleDeferredOnce(new ScheduledCommand() {
-            @Override public void execute() {
-                actualUpdatePosition();
-            }
-        });
+        SchedulerUtils.OneTimeScheduler.get().scheduleDeferredOnce(updatePositionCommand);
     }
 
     public void actualUpdatePosition()

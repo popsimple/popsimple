@@ -359,7 +359,7 @@
 /*     -ms-border-radius: 3px; */
 }
 
-.canvasToolbar button, .canvasToolbarToggleButton, .canvasToolbar .gwt-ToggleButton {
+.canvasToolbar .canvasToolbarButton {
 	display: inline-block;
     font-size: 0.9em;
 	padding: 2px 3px;
@@ -989,6 +989,12 @@
     border-color: transparent;
 }
 
+/* @if (com.project.shared.client.utils.BrowserUtils.supportCSSCursorNone()) { */
+/* 	.sketchTool { */
+/* 	   cursor: none; */
+/* 	} */
+/* } */
+
 .activeToolFrame .sketchTool {
     border-color: #ccc;
 }
@@ -1002,3 +1008,46 @@
 	background-color: #eee;
 	opacity: 0.6;
 }
+
+
+/*-----------------------*/
+.slider {
+	display: inline-block;
+	min-width: 30px;
+	height: 10px;
+    position: relative;
+}
+@sprite .sliderDrag {
+	border: none;
+	margin: 0;
+	padding: 0;
+	position: absolute;
+	gwt-image: "sliderIconDrag";
+}
+@sprite .sliderLess {
+    position: absolute;
+    left: 0;
+	border: none;
+    margin: 0;
+    padding: 0;
+    gwt-image: "sliderIconHorizontalLess";
+}
+@sprite .sliderMore {
+    position: absolute;
+    right: 0;
+	border: none;
+    margin: 0;
+    padding: 0;
+    gwt-image: "sliderIconHorizontalMore";
+}
+.sliderScale {
+    position: absolute;
+    left: 10px;
+	right: 10px;
+	display: inline-block;
+    margin: 0;
+    padding: 0;
+    height: 10px;
+	background-color: #bbb;
+}
+

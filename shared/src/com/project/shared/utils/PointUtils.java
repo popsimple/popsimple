@@ -58,7 +58,7 @@ public class PointUtils
         return pos;
     }
 
-    public class MovingAverage
+    public static class MovingAverage
     {
         LinkedList<Point2D> points = new LinkedList<Point2D>();
         private int _size;
@@ -67,7 +67,11 @@ public class PointUtils
             this._size = size;
         }
 
-        public void setNext(Point2D point) {
+        public void clear() {
+            this.points.clear();
+        }
+
+        public void add(Point2D point) {
             this.points.addLast(point);
             if (this.points.size() > this._size) {
                 this.points.removeFirst();
@@ -79,7 +83,7 @@ public class PointUtils
             for (Point2D point : points) {
                 result = result.plus(point);
             }
-            return result.mul(1 / this._size);
+            return result.mul(1.0 / this.points.size());
         }
     }
 }

@@ -4,6 +4,7 @@ import com.project.shared.data.Point2D;
 import com.project.website.canvas.client.canvastools.base.CanvasToolFactory;
 import com.project.website.canvas.client.canvastools.base.CanvasToolFactoryBase;
 import com.project.website.canvas.shared.data.SketchData;
+import com.project.website.canvas.shared.data.SketchOptions;
 
 public class SketchToolFactory extends CanvasToolFactoryBase<SketchTool>
     implements CanvasToolFactory<SketchTool>
@@ -13,20 +14,17 @@ public class SketchToolFactory extends CanvasToolFactoryBase<SketchTool>
     private static final int DEFAULT_PEN_SKIP = DEFAULT_PEN_WIDTH;
     public static final String UNIQUE_ID = "SketchToolFactory";
 
-    private final static int DEFAULT_WIDTH = 400;
-    private final static int DEFAULT_HEIGHT = 400;
+    private static final int DEFAULT_WIDTH = 400;
+    private static final int DEFAULT_HEIGHT = 400;
+    private static final DrawingTool DEFAULT_DRAWING_TOOL = DrawingTool.PAINT;
 
+    private SketchOptions defaultSketchOptions = new SketchOptions(DEFAULT_PEN_WIDTH, DEFAULT_PEN_SKIP, DEFAULT_ERASER_WIDTH, DEFAULT_DRAWING_TOOL, "black");
 
-    private int penWidth = DEFAULT_PEN_WIDTH;
-    private int penSkip = DEFAULT_PEN_SKIP;
-    private int eraserWidth = DEFAULT_ERASER_WIDTH;
 
     @Override
     public SketchTool create() {
         SketchData data = new SketchData(UNIQUE_ID);
-        data.penWidth = this.penWidth;
-        data.penSkip = this.penSkip;
-        data.eraserWidth = this.eraserWidth;
+        data.sketchOptions = new SketchOptions(this.defaultSketchOptions);
         SketchTool tool = new SketchTool(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         tool.setValue(data);
         return tool;

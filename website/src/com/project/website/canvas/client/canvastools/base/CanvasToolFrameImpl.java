@@ -105,6 +105,12 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
 	private boolean _viewMode = false;
     private boolean _isActive = false;
 
+    private final ScheduledCommand onTransformCommand = new ScheduledCommand() {
+        @Override public void execute() {
+            handleOnTransform();
+        }
+    };
+
 
     public CanvasToolFrameImpl(CanvasTool<?> canvasTool) {
         initWidget(uiBinder.createAndBindUi(this));
@@ -498,11 +504,7 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
     @Override
     public void onTransformed()
     {
-        SchedulerUtils.OneTimeScheduler.get().scheduleDeferredOnce(new ScheduledCommand() {
-            @Override public void execute() {
-                handleOnTransform();
-            }
-        });
+        SchedulerUtils.OneTimeScheduler.get().scheduleDeferredOnce(onTransformCommand);
     }
 
     private void onResize()
