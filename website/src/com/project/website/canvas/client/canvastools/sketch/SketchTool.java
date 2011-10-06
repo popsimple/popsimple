@@ -25,7 +25,6 @@ import com.project.shared.data.Pair;
 import com.project.shared.data.Point2D;
 import com.project.shared.data.Rectangle;
 import com.project.shared.utils.PointUtils;
-import com.project.shared.utils.loggers.Logger;
 import com.project.website.canvas.client.canvastools.base.CanvasTool;
 import com.project.website.canvas.client.canvastools.base.CanvasToolEvents;
 import com.project.website.canvas.client.canvastools.base.ICanvasToolEvents;
@@ -43,12 +42,14 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
         Circle
     }
 
+    private static final double DEFAULT_GLOBAL_ALPHA = 1;
+    private static final int DEFAULT_SHADOW_BLUR = 2;
 
     private static final double SPIRO_CURVE_WIDTH = 40;
     private static final double SPIRO_CURVE_SPEED_Y = 0.4;
-	private static final int VELOCITY_SMOOTHING = 15;
-	private static final int POSITION_SMOOTHING = 1;
-    private static final double DEFAULT_SPLINE_TENSION = 0.3;
+	private static final int VELOCITY_SMOOTHING = 3;
+	private static final int POSITION_SMOOTHING = 2;
+    private static final double DEFAULT_SPLINE_TENSION = 0.4;
 
     // TODO: for IE <= 8, call this instead of Canvas.getContext2d
     private static final native Context2d getContext2d(Element canvasElement) /*-{
@@ -246,7 +247,7 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
         if (drawingPathExists()) {
             Point2D pos = ElementUtils.getMousePositionRelativeToElement(this.getElement());
             //this._currentPath.lineTo(pos.getX(), pos.getY());
-            if (DrawingTool.ERASE == this.data.sketchOptions.drawingTool) {
+            if (DrawingTool.PAINT != this.data.sketchOptions.drawingTool) {
                 this.drawLinearInterpolatedSteps(pos);
             }
             this.drawPen(pos, pos.minus(PointUtils.nullToZero(this._prevMousePos)));
@@ -344,8 +345,8 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
 
             // -----------
             Pair<Point2D, Point2D> controlPoints = PointUtils.getBezierControlPoints(this._prevDrawPos2, this._prevDrawPos1, finalPos, DEFAULT_SPLINE_TENSION);
-            Point2D cp0 = this._prevControlPoint;
             Point2D cp1 = controlPoints.getA();
+            Point2D cp0 = null != this._prevControlPoint ? this._prevControlPoint : cp1;
             Point2D cp2 = controlPoints.getB();
             this._context.beginPath();
             this._context.moveTo(this._prevDrawPos2.getX(), this._prevDrawPos2.getY());
@@ -370,8 +371,8 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
 
     private void setContextConstantProperties()
     {
-        this._context.setGlobalAlpha(0.1);
-        this._context.setShadowBlur(2);
+        this._context.setGlobalAlpha(DEFAULT_GLOBAL_ALPHA);
+        this._context.setShadowBlur(DEFAULT_SHADOW_BLUR);
         this._context.setFillStyle("transparent");
         this._context.setLineJoin(LineJoin.ROUND);
         this._context.setLineCap(LineCap.ROUND);
@@ -561,6 +562,7 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
         this._prevMousePos = pos;
         this._prevDrawPos1 = pos;
         this._prevDrawPos2 = pos;
+        this._prevControlPoint = null;
 
         this.drawPen(pos, Point2D.zero);
     }
