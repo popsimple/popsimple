@@ -32,8 +32,6 @@ public interface MainStyles extends CssResource {
 
     String cropSelectButton();
 
-    String cropSiteBox();
-
     String cropSiteCreateModeCanvasStyle();
 
     String cropSiteToolEmpty();

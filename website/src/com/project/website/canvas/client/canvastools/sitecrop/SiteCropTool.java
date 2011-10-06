@@ -46,11 +46,15 @@ import com.project.website.canvas.shared.data.ElementData;
 import com.project.website.canvas.shared.data.SiteCropElementData;
 
 //TODO:
-//2. set the frame correctly if the page loads again.
 //8. Add "Reset" button
-//9. In Chrome after crop and save the frame moves.
 
-//IE9 Problems:
+//Chrome Problems:
+//Sometimes when dragging the inner frame an exception is thrown due to null mouse position
+
+//IE9 Problems (1):
+//The block panel doesn't block input.
+
+//IE9 Problems (2):
 //Apparently in IE9 they've changed the way IFrames are rendered so now they are rendered using the same engine as
 //the parent page. so if the parent page defines a doctype of HTML5, the child page will also be renderd in the same engine.
 //which causes problems in some sites (e.g.: ynet.co.il) since they are not supposed to work with that rendering engine.

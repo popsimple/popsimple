@@ -6,10 +6,12 @@
     <ui:style>
 		.frameContainer{
 			overflow: hidden;
+			top: 0px;
+			left: 0px;
 			width: 100%;
 			height: 100%;
 			position: relative;
-			margin: auto;
+
 		}
 		.dragPanel {
 		    z-index: 1000;
@@ -46,9 +48,12 @@
 			left: 0px;
 			top: 0px;
 		}
+		.cropSiteBox {
+			outline: none; /* prevent Google Chrome yelloe outline on selection */
+		}
 
     </ui:style>
-    <g:FocusPanel ui:field="rootPanel" addStyleNames="{res.main.cropSiteBox}">
+    <g:FocusPanel ui:field="rootPanel" addStyleNames="{style.cropSiteBox}">
         <g:FlowPanel ui:field="frameContainer" addStyleNames="{style.frameContainer}">
 	       	<g:HTMLPanel ui:field="selectionPanel" addStyleNames="{style.selectionPanel}" />
 	       	<g:HTMLPanel ui:field="blockPanel" addStyleNames="{style.blockPanel}"></g:HTMLPanel>
