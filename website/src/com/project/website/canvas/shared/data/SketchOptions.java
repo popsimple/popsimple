@@ -13,12 +13,14 @@ public class SketchOptions implements IsSerializable, Serializable {
     public int eraserWidth;
     public DrawingTool drawingTool;
     public String penColor;
+    public boolean useBezierSmoothing;
 
     public SketchOptions() { }
 
-    public SketchOptions(int penWidth, int penSkip, int eraserWidth, DrawingTool defaultDrawingTool, String penColor)
+    public SketchOptions(int penWidth, int penSkip, int eraserWidth, DrawingTool defaultDrawingTool, String penColor, boolean useBezierSmoothing)
     {
         super();
+        this.useBezierSmoothing = useBezierSmoothing;
         this.penWidth = penWidth;
         this.penSkip = penSkip;
         this.eraserWidth = eraserWidth;
@@ -27,6 +29,6 @@ public class SketchOptions implements IsSerializable, Serializable {
     }
 
     public SketchOptions(SketchOptions other) {
-        this(other.penWidth, other.penSkip, other.eraserWidth, other.drawingTool, other.penColor);
+        this(other.penWidth, other.penSkip, other.eraserWidth, other.drawingTool, other.penColor, other.useBezierSmoothing);
     }
 }

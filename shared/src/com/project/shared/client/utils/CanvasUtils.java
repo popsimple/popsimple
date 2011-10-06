@@ -3,6 +3,7 @@ package com.project.shared.client.utils;
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.canvas.dom.client.Context2d.Composite;
+import com.google.gwt.dom.client.Element;
 import com.project.shared.data.Point2D;
 
 public class CanvasUtils
@@ -51,4 +52,10 @@ public class CanvasUtils
         canvas.getContext2d().clearRect(0, 0, canvas.getCoordinateSpaceWidth(), canvas.getCoordinateSpaceHeight());
     }
 
+
+    // TODO: for IE <= 8, call this instead of Canvas.getContext2d
+    private static final native Context2d getExplorerContext2d(Element canvasElement) /*-{
+        $wnd.G_vmlCanvasManager.initElement(el);
+        return el.getContext('2d');
+    }-*/;
 }

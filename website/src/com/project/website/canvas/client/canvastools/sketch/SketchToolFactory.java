@@ -18,7 +18,12 @@ public class SketchToolFactory extends CanvasToolFactoryBase<SketchTool>
     private static final int DEFAULT_HEIGHT = 400;
     private static final DrawingTool DEFAULT_DRAWING_TOOL = DrawingTool.PAINT;
 
-    private SketchOptions defaultSketchOptions = new SketchOptions(DEFAULT_PEN_WIDTH, DEFAULT_PEN_SKIP, DEFAULT_ERASER_WIDTH, DEFAULT_DRAWING_TOOL, "black");
+    private SketchOptions defaultSketchOptions = new SketchOptions(DEFAULT_PEN_WIDTH,
+                                                                   DEFAULT_PEN_SKIP,
+                                                                   DEFAULT_ERASER_WIDTH,
+                                                                   DEFAULT_DRAWING_TOOL,
+                                                                   "black",
+                                                                   false);
 
 
     @Override
