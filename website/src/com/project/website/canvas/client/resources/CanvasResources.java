@@ -45,7 +45,7 @@ public interface CanvasResources extends ClientBundle {
     @Source("com/project/website/shared/client/resources/images/bitmaps/moveFrontIcon.png")
     ImageResource moveFrontIcon();
 
-    @Source("com/project/website/shared/client/resources/images/bitmaps/helpIcon_blue_32.png")
+    @Source("com/project/website/shared/client/resources/images/bitmaps/system-help.png")
     ImageResource taskDefaultIcon();
 
     @Source("com/project/website/shared/client/resources/images/bitmaps/bank_32.png")

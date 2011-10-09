@@ -6,8 +6,6 @@ import com.google.gwt.regexp.shared.RegExp;
 import com.project.website.canvas.client.resources.CanvasResources;
 
 public class ImageProvider {
-    private static String UNKNOWN_IMAGE_URL = "http://cdn2.iconfinder.com/data/icons/oxygen/32x32/categories/system-help.png";
-
     HashMap<String, String> images = new HashMap<String, String>();
 
     public ImageProvider() {
@@ -24,7 +22,7 @@ public class ImageProvider {
         this.images.put("gay", CanvasResources.INSTANCE.rainbowIcon32().getSafeUri().asString());
     }
 
-    public String getDefaultImageUrl() {
+    public static String getDefaultImageUrl() {
         return CanvasResources.INSTANCE.taskDefaultIcon().getSafeUri().asString();
     }
 
@@ -35,6 +33,6 @@ public class ImageProvider {
                 return this.images.get(key);
             }
         }
-        return UNKNOWN_IMAGE_URL;
+        return ImageProvider.getDefaultImageUrl();
     }
 }

@@ -17,6 +17,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent;
+import com.project.shared.client.utils.StyleUtils;
 import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.shared.data.TaskData;
 
@@ -80,12 +81,12 @@ public class TaskTool extends Composite implements Focusable, TakesValue<TaskDat
             }
         });
 
-        this.setImageUrl(imageProvider.getDefaultImageUrl());
+        this.setImageUrl(ImageProvider.getDefaultImageUrl());
     }
 
-    // TODO: Share with ImageTool.
     protected void setImageUrl(String url) {
-        this.imageTask.getElement().getStyle().setBackgroundImage("url(\"" + url + "\")");
+        this.imageTask.getElement().getStyle().setBackgroundImage(
+                StyleUtils.buildBackgroundUrl(url));
     }
 
     public void addKillRequestEventHandler(SimpleEvent.Handler<TaskTool> handler) {
@@ -147,19 +148,8 @@ public class TaskTool extends Composite implements Focusable, TakesValue<TaskDat
     public TaskData getValue() {
         this.data.description = this.textTask.getText();
         this.data.completed = this.checkTask.getValue();
-        this.data.imageUrl = this.getImageUrl();
+        this.data.imageUrl = StyleUtils.getBackgroundUrl(this.imageTask.getElement().getStyle());
         // TODO: Support image alternate text
         return this.data;
     }
-
-    // TODO: Share with ImageTool.
-    protected String getImageUrl() {
-        String imageCss = this.imageTask.getElement().getStyle().getBackgroundImage();
-        if (imageCss.contains("url(")) {
-            return imageCss.substring("url(\"".length(), imageCss.length() - "\")".length());
-        } else {
-            return "";
-        }
-    }
-
 }
