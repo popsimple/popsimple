@@ -208,10 +208,23 @@ public class StyleUtils
         target.style.cssText = '';
     }-*/;
 
-
     public static final String buildBackgroundUrl(String imageUrl)
     {
         return "url(\"" + imageUrl + "\")";
+    }
+
+    public static final String getBackgroundUrl(Style style)
+    {
+        String backgroundImage = style.getBackgroundImage();
+        if (Strings.isNullOrEmpty(backgroundImage))
+        {
+            return "";
+        }
+        if (backgroundImage.contains("url(")) {
+            return backgroundImage.substring("url(\"".length(), backgroundImage.length() - "\")".length());
+        } else {
+            return backgroundImage;
+        }
     }
 
     public static void clearBackground(Style style)
