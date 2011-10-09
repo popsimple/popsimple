@@ -10,13 +10,13 @@ public interface MainStyles extends CssResource {
 
     String canvasToolbar();
 
+    String canvasToolbarButton();
+
     String canvasToolbarItemTitle();
 
     String canvasToolbarItemWrapper();
 
     String canvasToolbarListBox();
-
-    String canvasToolbarButton();
 
     String colorPickerButton();
 
@@ -127,7 +127,7 @@ public interface MainStyles extends CssResource {
     String sketchCreateModeCanvasStyle();
 
     String sketchTool();
-    
+
     String slider();
 
     String sliderDrag();
@@ -256,6 +256,8 @@ public interface MainStyles extends CssResource {
 
     String worksheetFullView();
 
+    String worksheetGridOption();
+
     String worksheetHeader();
 
     String worksheetHeaderLeft();
@@ -269,13 +271,13 @@ public interface MainStyles extends CssResource {
     String worksheetModeEditable();
 
     String worksheetModeViewOnly();
-    
+
     String worksheetOptions();
-    
+
     String worksheetPanel();
-    
+
     String worksheetSaveButton();
-    
+
     String worksheetWelcomeLabelHolder();
 }
 

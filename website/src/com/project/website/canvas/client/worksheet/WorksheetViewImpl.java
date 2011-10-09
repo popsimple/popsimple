@@ -26,6 +26,8 @@ import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.event.logical.shared.AttachEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -34,6 +36,7 @@ import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -123,6 +126,9 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
     @UiField
     Label statusLabel;
+
+    @UiField
+    CheckBox gridCheckBox;
 
 
     private ToolboxItem _activeToolboxItem;
@@ -550,6 +556,11 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
                 }
             }
         }));
+        this._allModesRegistrations.add(this.gridCheckBox.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+            @Override public void onValueChange(ValueChangeEvent<Boolean> event) {
+                that._toolFrameTransformer.setSnapToGrid(event.getValue());
+            }
+        }));
     }
 
     private void changeStatusLabel(Anchor button, OperationStatus status, String pendingText, String doneText) {
@@ -824,15 +835,21 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     private void startDraggingFloatingWidget(final ToolboxItem toolboxItem) {
         final WorksheetViewImpl that = this;
         final CanvasToolFactory<? extends CanvasTool<? extends ElementData>> toolFactory = toolboxItem.getToolFactory();
+        final Point2D floatingWidgetCreationOffset = toolFactory.getFloatingWidgetCreationOffset();
         MouseMoveOperationHandler handler = new MouseMoveOperationHandler() {
             @Override public void onStop(Point2D pos) {
-                _toolCreationRequestEvent.dispatch(new ToolCreationRequest(pos, toolFactory));
+                _toolCreationRequestEvent.dispatch(new ToolCreationRequest(that._toolFrameTransformer.applySnapToGrid(pos), toolFactory));
             }
 
             @Override public void onStart() { }
 
             @Override public void onMouseMove(Point2D pos) {
-                ElementUtils.setElementCSSPosition(that._floatingWidget.getElement(), pos.plus(toolFactory.getFloatingWidgetCreationOffset()));
+                ElementUtils.setElementCSSPosition(that._floatingWidget.getElement(), this.calcTargetPos(pos));
+            }
+
+            private Point2D calcTargetPos(Point2D pos)
+            {
+                return that._toolFrameTransformer.applySnapToGrid(pos.plus(floatingWidgetCreationOffset));
             }
 
             @Override public void onCancel() { }

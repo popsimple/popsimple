@@ -22,12 +22,16 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
     // 1 = best, higer value means bigger angle steps (lower resolution)
     private static final int ROTATION_ROUND_RESOLUTION = 3;
 
-    private static final double GRID_RESOLUTION = 15;
+    private static final double GRID_RESOLUTION = 50;
 
     protected static final int DEFAULT_ANIMATION_DURATION = 300;
 
     private final Widget _container;
     private final ElementDragManager _elementDragManager;
+
+    private double gridResolution = GRID_RESOLUTION;
+    private boolean snapToGrid = false;
+
 
     public ToolFrameTransformerImpl(Widget container, Widget dragPanel, SimpleEvent<Void> stopOperationEvent)
     {
@@ -229,29 +233,39 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
 
     private Point2D transformMovement(Point2D coords, Point2D initialCoords, boolean allowMean)
     {
-        Point2D sizeDelta = coords.minus(initialCoords);
         Event event = Event.getCurrentEvent();
-        if (null != event) {
-            ConstraintMode mode = ConstraintMode.NONE;
-            if (allowMean && event.getCtrlKey()) {
-                mode = ConstraintMode.KEEP_RATIO;
-            }
-            else if (event.getShiftKey() && event.getAltKey()) {
-                // do nothing here.
-            }
-            else if (event.getShiftKey()) {
-                mode = ConstraintMode.SNAP_Y;
-            }
-            else if (event.getAltKey()) {
-                mode = ConstraintMode.SNAP_X;
-            }
-            sizeDelta = PointUtils.constrain(sizeDelta, initialCoords, mode);
-            if (event.getShiftKey() && event.getAltKey()) {
-                // Snap to grid.
-                sizeDelta = sizeDelta.mul(1/GRID_RESOLUTION).mul(GRID_RESOLUTION);
-            }
+        if (null == event) {
+            return this.applySnapToGrid(coords);
         }
-        return initialCoords.plus(sizeDelta);
+        Point2D sizeDelta = coords.minus(initialCoords);
+        ConstraintMode mode = ConstraintMode.NONE;
+        if (allowMean && event.getCtrlKey()) {
+            mode = ConstraintMode.KEEP_RATIO;
+        }
+        else if (event.getShiftKey() && event.getAltKey()) {
+            // do nothing here.
+        }
+        else if (event.getShiftKey()) {
+            mode = ConstraintMode.SNAP_Y;
+        }
+        else if (event.getAltKey()) {
+            mode = ConstraintMode.SNAP_X;
+        }
+        sizeDelta = PointUtils.constrain(sizeDelta, initialCoords, mode);
+        if (this.snapToGrid || (event.getShiftKey() && event.getAltKey())) {
+            sizeDelta = applySnapToGrid(sizeDelta);
+        }
+        return this.applySnapToGrid(initialCoords.plus(sizeDelta));
+    }
+
+
+    @Override
+    public Point2D applySnapToGrid(Point2D sizeDelta)
+    {
+        if (this.snapToGrid) {
+            return sizeDelta.mul(1/gridResolution).mul(gridResolution);
+        }
+        return sizeDelta;
     }
 
 
@@ -302,4 +316,28 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
         toolFrame.onTransformed();
     }
 
+    @Override
+    public double getGridResolution()
+    {
+        return gridResolution;
+    }
+
+    @Override
+    public void setGridResolution(double gridResolution)
+    {
+        this.gridResolution = gridResolution;
+    }
+
+    @Override
+    public boolean isSnapToGrid()
+    {
+        return snapToGrid;
+    }
+
+
+    @Override
+    public void setSnapToGrid(boolean snapToGrid)
+    {
+        this.snapToGrid = snapToGrid;
+    }
 }

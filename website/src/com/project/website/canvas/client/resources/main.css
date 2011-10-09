@@ -98,6 +98,15 @@
 	top: 0;
 }
 
+.worksheetHeader input[type=checkbox] {
+
+    vertical-align: bottom;
+}
+
+.worksheetGridOption {
+	margin-left: 5px;
+}
+
 /*************************************/
 
 .outOfBounds {
