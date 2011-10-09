@@ -11,6 +11,7 @@ import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.data.Point2D;
 import com.project.website.canvas.client.canvastools.base.eventargs.LoadStartedEventArgs;
+import com.project.website.canvas.client.canvastools.base.interfaces.ICanvasToolEvents;
 
 public class CanvasToolEvents implements ICanvasToolEvents
 {

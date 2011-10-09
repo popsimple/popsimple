@@ -1,8 +1,8 @@
 package com.project.website.canvas.client.canvastools.sketch;
 
 import com.project.shared.data.Point2D;
-import com.project.website.canvas.client.canvastools.base.CanvasToolFactory;
 import com.project.website.canvas.client.canvastools.base.CanvasToolFactoryBase;
+import com.project.website.canvas.client.canvastools.base.interfaces.CanvasToolFactory;
 import com.project.website.canvas.shared.data.SketchData;
 import com.project.website.canvas.shared.data.SketchOptions;
 

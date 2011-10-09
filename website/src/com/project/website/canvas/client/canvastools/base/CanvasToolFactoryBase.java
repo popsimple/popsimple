@@ -2,6 +2,8 @@ package com.project.website.canvas.client.canvastools.base;
 
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.data.Point2D;
+import com.project.website.canvas.client.canvastools.base.interfaces.CanvasTool;
+import com.project.website.canvas.client.canvastools.base.interfaces.CanvasToolFactory;
 
 public abstract class CanvasToolFactoryBase<T extends CanvasTool<?>> implements CanvasToolFactory<T> {
     @Override

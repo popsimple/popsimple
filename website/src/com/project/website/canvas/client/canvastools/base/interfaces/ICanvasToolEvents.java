@@ -1,4 +1,4 @@
-package com.project.website.canvas.client.canvastools.base;
+package com.project.website.canvas.client.canvastools.base.interfaces;
 
 import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.FocusHandler;

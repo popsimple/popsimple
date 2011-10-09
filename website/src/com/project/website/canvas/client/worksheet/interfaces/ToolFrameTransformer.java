@@ -1,7 +1,7 @@
 package com.project.website.canvas.client.worksheet.interfaces;
 
 import com.project.shared.data.Point2D;
-import com.project.website.canvas.client.canvastools.base.CanvasToolFrame;
+import com.project.website.canvas.client.canvastools.base.interfaces.CanvasToolFrame;
 
 public interface ToolFrameTransformer
 {

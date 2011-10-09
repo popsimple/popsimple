@@ -1,7 +1,8 @@
-package com.project.website.canvas.client.canvastools.base;
+package com.project.website.canvas.client.canvastools.base.interfaces;
 
 import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.project.website.canvas.client.canvastools.base.ResizeMode;
 import com.project.website.canvas.shared.data.ElementData;
 
 // TODO change getvalue to updateValue to reflect the fact that it mutates the instance of data that was given in the setValue?

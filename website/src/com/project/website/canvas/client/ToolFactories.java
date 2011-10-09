@@ -2,8 +2,8 @@ package com.project.website.canvas.client;
 
 import java.util.HashMap;
 
-import com.project.website.canvas.client.canvastools.base.CanvasTool;
-import com.project.website.canvas.client.canvastools.base.CanvasToolFactory;
+import com.project.website.canvas.client.canvastools.base.interfaces.CanvasTool;
+import com.project.website.canvas.client.canvastools.base.interfaces.CanvasToolFactory;
 import com.project.website.canvas.shared.data.ElementData;
 
 public class ToolFactories {
