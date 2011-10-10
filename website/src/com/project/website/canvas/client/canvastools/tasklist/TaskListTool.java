@@ -159,7 +159,7 @@ public class TaskListTool extends Composite implements CanvasTool<TaskListData>,
 
 	@Override
 	public ResizeMode getResizeMode() {
-		return ResizeMode.BOTH;
+		return ResizeMode.WIDTH_ONLY;
 	}
 
     @Override
