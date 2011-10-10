@@ -13,27 +13,28 @@
 	</ui:style>
 	<g:FlowPanel ui:field="formPanel"  addStyleNames="{res.main.dialogContentPanel}">
 		<g:HTMLPanel>
-			<g:HTMLPanel addStyleNames="{res.main.dialogSectionPanel}">
-			    <g:Label addStyleNames="{res.main.dialogSectionPanelHeader}">Image Search</g:Label>
+            <div class="{res.main.dialogSectionPanel}">
+			    <g:Label addStyleNames="{res.main.dialogSectionPanelHeader} {res.main.selectMediaSearchHeader}">Image Search</g:Label>
 				<my:MediaSearchPanel ui:field="mediaSearchPanel"/>
-			</g:HTMLPanel>
-            <g:HTMLPanel addStyleNames="{res.main.dialogSectionPanel}">
-                <g:Label addStyleNames="{res.main.dialogSectionPanelHeader}">Get by URL</g:Label>
+			</div>
+            <div class="{res.main.dialogSectionPanel}">
+                <g:Label addStyleNames="{res.main.dialogSectionPanelHeader} {res.main.selectMediaURLHeader}">Get by URL</g:Label>
                 Paste a link to the image here:
                 <g:HTMLPanel addStyleNames="{style.urlPanel}">
                     <g:TextBox ui:field="urlTextBox" addStyleNames="{res.main.urlTextBox}"/>
                     <g:Button ui:field="clearButton">Clear</g:Button>
                 </g:HTMLPanel>
-            </g:HTMLPanel>
-			<div>
+            </div>
+			<div class="{res.main.dialogSectionPanel}">
+                <g:Label addStyleNames="{res.main.dialogSectionPanelHeader}">Image size</g:Label>
 				<g:RadioButton ui:field="stretchOption" name="imageStyle" formValue="false">Stretch</g:RadioButton >
 				<g:RadioButton ui:field="repeatOption" name="imageStyle" formValue="false">Repeat</g:RadioButton >
 				<g:RadioButton ui:field="originalSizeOption" name="imageStyle" formValue="false">Use Original Size</g:RadioButton >
 			</div>
-			<g:HTMLPanel addStyleNames="{res.main.dialogButtonsPanel}">
+			<div class="{res.main.dialogButtonsPanel}">
 				<g:Button ui:field="doneButton">Done</g:Button>
 				<g:Button ui:field="cancelButton">Cancel</g:Button>
-			</g:HTMLPanel>
+			</div>
 		</g:HTMLPanel>
 	</g:FlowPanel>
 </ui:UiBinder>

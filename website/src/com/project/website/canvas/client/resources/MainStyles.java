@@ -124,6 +124,10 @@ public interface MainStyles extends CssResource {
 
     String selectionPanelStyle();
 
+    String selectMediaSearchHeader();
+
+    String selectMediaURLHeader();
+
     String sketchCreateModeCanvasStyle();
 
     String sketchTool();
@@ -138,23 +142,31 @@ public interface MainStyles extends CssResource {
 
     String sliderScale();
 
+    String taskCell();
+
+    String taskCheckbox();
+
     String taskImageChecked();
 
-    String taskImageContainer();
+	String taskImageContainer();
 
-    String taskList();
+	String taskList();
 
     String taskListBody();
 
+    String taskListBodyWrapper();
+
     String taskListCreateModeCanvasStyle();
 
-	String taskListFooter();
+    String taskListFooter();
 
-	String taskListHeader();
+    String taskListHeader();
 
     String taskListTextChecked();
 
     String taskRemoveImage();
+
+    String taskRow();
 
     String textBoxCreateModeCanvasStyle();
 
@@ -182,7 +194,7 @@ public interface MainStyles extends CssResource {
 
     String toolboxHeader();
 
-    String toolboxImageIconStyle();
+	String toolboxImageIconStyle();
 
     String toolboxInnerIconStyle();
 
@@ -194,7 +206,7 @@ public interface MainStyles extends CssResource {
 
     String toolboxTaskListIconStyle();
 
-	String toolboxTextIconStyle();
+    String toolboxTextIconStyle();
 
     String toolboxTools();
 
@@ -279,13 +291,5 @@ public interface MainStyles extends CssResource {
     String worksheetSaveButton();
 
     String worksheetWelcomeLabelHolder();
-
-    String taskRow();
-
-    String taskCell();
-
-    String taskCheckbox();
-
-    String taskListBodyWrapper();
 }
 
