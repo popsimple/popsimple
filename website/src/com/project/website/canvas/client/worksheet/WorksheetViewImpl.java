@@ -62,8 +62,6 @@ import com.project.website.canvas.client.canvastools.base.interfaces.CanvasToolF
 import com.project.website.canvas.client.canvastools.base.interfaces.ToolboxItem;
 import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.client.shared.ImageInformationUtils;
-import com.project.website.canvas.client.shared.ImageOptionTypes;
-import com.project.website.canvas.client.shared.ImageOptionsProviderUtils;
 import com.project.website.canvas.client.shared.UndoManager;
 import com.project.website.canvas.client.shared.ZIndexAllocator;
 import com.project.website.canvas.client.shared.dialogs.SelectImageDialog;
@@ -170,8 +168,6 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
     public WorksheetViewImpl() {
         initWidget(uiBinder.createAndBindUi(this));
-
-        this.createDefaultPageOptions();
 
         this._toolFrameTransformer = new ToolFrameTransformerImpl(worksheetPanel, dragPanel, _stopOperationEvent);
         this.dragPanel.setVisible(false);
@@ -592,13 +588,6 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         this._floatingWidgetTerminated.dispatch(null);
         this._floatingWidgetTerminated.clearAllHandlers();
         this._floatingWidget = null;
-    }
-
-
-    private void createDefaultPageOptions()
-    {
-        this._pageOptions = new CanvasPageOptions();
-        _pageOptions.backgroundImage.options = ImageOptionsProviderUtils.getImageOptions(this._imageOptionsProvider, ImageOptionTypes.OriginalSize);
     }
 
     private void handleAllModesPreviewEvent(NativePreviewEvent event)

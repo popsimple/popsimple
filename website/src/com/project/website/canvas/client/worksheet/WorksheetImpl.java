@@ -30,6 +30,8 @@ import com.project.website.canvas.client.canvastools.base.interfaces.CanvasTool;
 import com.project.website.canvas.client.canvastools.base.interfaces.CanvasToolFactory;
 import com.project.website.canvas.client.canvastools.base.interfaces.CanvasToolFrame;
 import com.project.website.canvas.client.canvastools.base.interfaces.ToolboxItem;
+import com.project.website.canvas.client.shared.ImageOptionTypes;
+import com.project.website.canvas.client.shared.ImageOptionsProviderUtils;
 import com.project.website.canvas.client.shared.ZIndexAllocator;
 import com.project.website.canvas.client.shared.widgets.DialogWithZIndex;
 import com.project.website.canvas.client.worksheet.interfaces.Worksheet;
@@ -62,6 +64,9 @@ public class WorksheetImpl implements Worksheet
     private final RegistrationsManager viewModeRegistrations = new RegistrationsManager();
     private boolean _inViewMode = false;
 
+    //TODO: Think about something else. (Hadas)
+    private final WorksheetImageOptionsProvider _imageOptionsProvider = new WorksheetImageOptionsProvider();
+
     public WorksheetImpl(WorksheetView view)
     {
         super();
@@ -69,6 +74,8 @@ public class WorksheetImpl implements Worksheet
         AuthenticationServiceAsync service = getAuthService();
         updateUserSpecificInfo(view, service);
         setRegistrations();
+
+        this.setDefaultPageOptions();
     }
 
     @Override
@@ -619,6 +626,13 @@ public class WorksheetImpl implements Worksheet
         }
         // Page id not changed, just reload
         this.load(idStr);
+    }
+
+    private void setDefaultPageOptions()
+    {
+        this.page.options.backgroundImage.options = ImageOptionsProviderUtils.getImageOptions(
+                this._imageOptionsProvider, ImageOptionTypes.OriginalSize);
+        view.setOptions(this.page.options);
     }
 
     private void updateOptions(CanvasPageOptions value)
