@@ -4,6 +4,7 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent;
+import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.data.Point2D;
 import com.project.shared.data.Rectangle;
@@ -20,14 +21,14 @@ public class SiteFrameSelectionManager {
 	private Widget _container = null;
 
 	public SiteFrameSelectionManager(Widget container, Widget dragPanel,
-	        Widget selectionPanel, SimpleEvent<Void> stopOperationEvent) {
+	        Widget selectionPanel, SimpleEvent<Void> cancelOperationEvent) {
 		this._container = container;
 		this._selectionPanel = selectionPanel;
 		this._selectionDragManager = new ElementDragManagerImpl(container,
-				dragPanel, stopOperationEvent);
+				dragPanel, cancelOperationEvent);
 	}
 
-	public void startSelectionDrag(MouseDownEvent event) {
+	public void startSelectionDrag(MouseDownEvent event, final Handler<Void> doneHandler) {
         ElementUtils.setTextSelectionEnabled(_container.getElement(), false);
 
 		final Point2D initialPosition =
@@ -42,6 +43,10 @@ public class SiteFrameSelectionManager {
                 if (false == isValidSelection())
                 {
                     clearSelection();
+                }
+                else
+                {
+                    doneHandler.onFire(null);
                 }
             }
 
@@ -60,7 +65,7 @@ public class SiteFrameSelectionManager {
         };
 
 		this._selectionDragManager.startMouseMoveOperation(this._container.getElement(),
-		        Point2D.zero, handler, StopCondition.STOP_CONDITION_MOUSE_UP);
+		        Point2D.zero, handler, StopCondition.STOP_CONDITION_MOVEMENT_STOP);
 	}
 
 	public Rectangle getSelectedRectangle()

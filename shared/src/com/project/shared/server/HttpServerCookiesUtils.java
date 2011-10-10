@@ -4,7 +4,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.project.shared.utils.ObjectUtils;
+import com.google.common.base.Objects;
 import com.project.shared.utils.StringUtils;
 
 public class HttpServerCookiesUtils
@@ -25,7 +25,7 @@ public class HttpServerCookiesUtils
     {
         Cookie cookie = HttpServerCookiesUtils.getCookie(cookieName, cookies);
         String cookieValue = cookie == null ? null : cookie.getValue();
-        return StringUtils.defaultIfEmptyOrNull(cookieValue, null);
+        return StringUtils.defaultIfNullOrEmpty(cookieValue, null);
     }
 
 
@@ -37,7 +37,7 @@ public class HttpServerCookiesUtils
         }
         for (Cookie cookie : cookies)
         {
-            if ((null != cookie) && (ObjectUtils.areEqual(cookie.getName(), cookieName)))
+            if ((null != cookie) && (Objects.equal(cookie.getName(), cookieName)))
             {
                 return cookie;
             }

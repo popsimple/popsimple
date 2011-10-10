@@ -3,6 +3,7 @@ package com.project.website.canvas.client.canvastools.video;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.google.common.base.Objects;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
@@ -28,14 +29,13 @@ import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.UrlUtils;
 import com.project.shared.client.utils.widgets.WidgetUtils;
 import com.project.shared.data.Point2D;
-import com.project.shared.utils.CloneableUtils;
-import com.project.shared.utils.ObjectUtils;
 import com.project.shared.utils.StringUtils;
-import com.project.website.canvas.client.canvastools.base.CanvasTool;
 import com.project.website.canvas.client.canvastools.base.CanvasToolCommon;
 import com.project.website.canvas.client.canvastools.base.CanvasToolEvents;
-import com.project.website.canvas.client.canvastools.base.ICanvasToolEvents;
 import com.project.website.canvas.client.canvastools.base.ResizeMode;
+import com.project.website.canvas.client.canvastools.base.eventargs.LoadStartedEventArgs;
+import com.project.website.canvas.client.canvastools.base.interfaces.CanvasTool;
+import com.project.website.canvas.client.canvastools.base.interfaces.ICanvasToolEvents;
 import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.client.shared.dialogs.SelectVideoDialog;
 import com.project.website.canvas.client.shared.searchProviders.interfaces.VideoSearchProvider;
@@ -132,8 +132,7 @@ public class VideoTool extends Composite implements CanvasTool<VideoData>
 
     private void showOptionsDialog() {
         initOptionsWidget();
-        this.selectVideoDialog.setValue(
-                (VideoInformation)CloneableUtils.clone(data.videoInformation));
+        this.selectVideoDialog.setValue(new VideoInformation(data.videoInformation));
 
         Scheduler.get().scheduleDeferred(new ScheduledCommand() {
             @Override
@@ -174,7 +173,7 @@ public class VideoTool extends Composite implements CanvasTool<VideoData>
 
     private void setVideoInformation(VideoInformation videoInformation)
     {
-        if (ObjectUtils.areEqual(data.videoInformation, videoInformation))
+        if (Objects.equal(data.videoInformation, videoInformation))
         {
             return;
         }
@@ -247,7 +246,7 @@ public class VideoTool extends Composite implements CanvasTool<VideoData>
         }
         // Only set the url if it changed, because there will be a refresh of the iframe
         if (autoSize || (false == UrlUtils.areEquivalent(url, videoFrame.getUrl()))) {
-            _toolEvents.dispatchLoadStartedEvent();
+            _toolEvents.dispatchLoadStartedEvent(new LoadStartedEventArgs(false));
             videoFrame.setUrl(url);
         }
         optionsLabel.setText(OPTIONS_LABEL_VIDEO_SET);
@@ -295,10 +294,5 @@ public class VideoTool extends Composite implements CanvasTool<VideoData>
     {
         // TODO Auto-generated method stub
         return null;
-    }
-
-    @Override
-    public boolean dimOnLoad() {
-        return false;
     }
 }

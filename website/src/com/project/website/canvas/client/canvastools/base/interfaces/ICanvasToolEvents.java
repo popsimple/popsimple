@@ -1,4 +1,4 @@
-package com.project.website.canvas.client.canvastools.base;
+package com.project.website.canvas.client.canvastools.base.interfaces;
 
 import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.FocusHandler;
@@ -6,6 +6,7 @@ import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.data.Point2D;
+import com.project.website.canvas.client.canvastools.base.eventargs.LoadStartedEventArgs;
 
 public interface ICanvasToolEvents
 {
@@ -17,7 +18,7 @@ public interface ICanvasToolEvents
     // Tool wants to move an offset
     HandlerRegistration addSelfMoveRequestEventHandler(Handler<Point2D> handler);
 
-    HandlerRegistration addLoadStartedEventHandler(Handler<Void> handler);
+    HandlerRegistration addLoadStartedEventHandler(Handler<LoadStartedEventArgs> handler);
 
     HandlerRegistration addLoadEndedEventHandler(Handler<Void> handler);
 

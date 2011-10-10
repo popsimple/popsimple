@@ -1,31 +1,37 @@
 package com.project.website.canvas.shared.data;
 
-import com.project.shared.utils.CloneableUtils;
+import com.project.shared.interfaces.ICloneable;
 
-public class ImageData extends ElementData
+
+public class ImageData extends ElementData implements ICloneable<ImageData>
 {
     private static final long serialVersionUID = 1L;
 
     public ImageInformation imageInformation = new ImageInformation();
 
-    protected ImageData(){
+    protected ImageData() {
+        super();
     }
 
     public ImageData(String factoryUniqueId) {
         super(factoryUniqueId);
     }
 
-    @Override
-    public ElementData createInstance() {
-        return new ImageData();
+    public ImageData(ImageData imageData)
+    {
+        super(imageData);
+        this.imageInformation = imageData.imageInformation.getClone();
     }
 
     @Override
-    public void copyTo(Object object) {
-        super.copyTo(object);
+    public ImageData getClone()
+    {
+        return new ImageData(this);
+    }
 
-        ImageData copy = (ImageData)object;
-
-        copy.imageInformation = (ImageInformation)CloneableUtils.clone(this.imageInformation);
+    @Override
+    public ICloneable<? extends ElementData> getCloneable()
+    {
+        return this;
     }
 }

@@ -1,4 +1,4 @@
-package com.project.website.canvas.client.canvastools.base;
+package com.project.website.canvas.client.canvastools.base.interfaces;
 
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.data.Point2D;

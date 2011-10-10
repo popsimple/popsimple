@@ -1,7 +1,7 @@
 package com.project.website.canvas.client.worksheet.interfaces;
 
 import com.project.shared.data.Point2D;
-import com.project.website.canvas.client.canvastools.base.CanvasToolFrame;
+import com.project.website.canvas.client.canvastools.base.interfaces.CanvasToolFrame;
 
 public interface ToolFrameTransformer
 {
@@ -14,4 +14,12 @@ public interface ToolFrameTransformer
      void startRotateCanvasToolFrame(CanvasToolFrame toolFrame);
 
      void setToolFramePosition(CanvasToolFrame toolFrame, Point2D pos);
+
+    double getGridResolution();
+    void setGridResolution(double gridResolution);
+
+    boolean isSnapToGrid();
+    void setSnapToGrid(boolean snapToGrid);
+
+    Point2D applySnapToGrid(Point2D sizeDelta);
 }

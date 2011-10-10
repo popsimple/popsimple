@@ -16,9 +16,10 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.common.base.Objects;
+import com.google.common.base.Strings;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.project.shared.server.ServerQueryString;
-import com.project.shared.utils.ObjectUtils;
 import com.project.shared.utils.StringUtils;
 import com.project.website.shared.contracts.authentication.AuthenticationService;
 import com.project.website.shared.data.Invitation;
@@ -80,7 +81,7 @@ public class AuthenticationServiceImpl extends RemoteServiceServlet implements A
     {
         this.logout();
 
-        if (StringUtils.isEmptyOrNull(username))
+        if (Strings.isNullOrEmpty(username))
         {
             this.onAuthenticationFailed();
             return;
@@ -94,7 +95,7 @@ public class AuthenticationServiceImpl extends RemoteServiceServlet implements A
             this.onAuthenticationFailed();
             return;
         }
-        if ((false == user.isEnabled) || (false == ObjectUtils.areEqual(user.password, AuthenticationUtils.hashPassword(password))))
+        if ((false == user.isEnabled) || (false == Objects.equal(user.password, AuthenticationUtils.hashPassword(password))))
         {
             this.onAuthenticationFailed();
             return;
@@ -204,7 +205,7 @@ public class AuthenticationServiceImpl extends RemoteServiceServlet implements A
         if (null == user) {
             return false;
         }
-        return ObjectUtils.areEqual(user.username, ADMIN_USERNAME);
+        return Objects.equal(user.username, ADMIN_USERNAME);
     }
 
     private User getAuthenticatedUser()

@@ -9,10 +9,12 @@ import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.ui.TextBox;
+import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.website.canvas.client.resources.CanvasResources;
 
 public class HoverTextBox extends TextBox {
     private boolean isEditing = false;
+    private RegistrationsManager _registrations = new RegistrationsManager();
 
     public HoverTextBox() {
         this.enterViewMode();
@@ -30,39 +32,60 @@ public class HoverTextBox extends TextBox {
     }
 
     private void startEditing() {
+        if (this.isEditing)
+        {
+            return;
+        }
         enterEditMode();
         isEditing = true;
     }
 
     private void stopEditing() {
+        if (false == this.isEditing)
+        {
+            return;
+        }
         enterViewMode();
+        this.setCursorPos(0);
         isEditing = false;
     }
 
+    @Override
+    public void setReadOnly(boolean readOnly) {
+        super.setReadOnly(readOnly);
+
+        if (readOnly)
+        {
+            this._registrations.clear();
+            this.enterViewMode();
+        }
+        else
+        {
+            this.registerHandlers();
+        }
+    }
+
     private void registerHandlers() {
-        this.addBlurHandler(new BlurHandler() {
+        this._registrations.add(this.addBlurHandler(new BlurHandler() {
             public void onBlur(BlurEvent event) {
                 stopEditing();
             }
-        });
-        this.addMouseOverHandler(new MouseOverHandler() {
+        }));
+        this._registrations.add(this.addMouseOverHandler(new MouseOverHandler() {
             public void onMouseOver(MouseOverEvent event) {
                 enterEditMode();
             }
-        });
-        this.addFocusHandler(new FocusHandler() {
+        }));
+        this._registrations.add(this.addFocusHandler(new FocusHandler() {
 
             public void onFocus(FocusEvent event) {
-                // TODO Auto-generated method stub
                 startEditing();
             }
-        });
-        this.addMouseOutHandler(new MouseOutHandler() {
+        }));
+        this._registrations.add(this.addMouseOutHandler(new MouseOutHandler() {
             public void onMouseOut(MouseOutEvent event) {
-                if (false == isEditing) {
-                    enterViewMode();
-                }
+                enterViewMode();
             }
-        });
+        }));
     }
 }

@@ -1,28 +1,38 @@
 package com.project.shared.client.utils.widgets;
 
+import com.google.common.base.Strings;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.ContextMenuEvent;
 import com.google.gwt.event.dom.client.ContextMenuHandler;
+import com.google.gwt.event.dom.client.HumanInputEvent;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseMoveHandler;
+import com.google.gwt.event.dom.client.MouseUpEvent;
+import com.google.gwt.event.dom.client.MouseUpHandler;
+import com.google.gwt.event.dom.client.TouchEndEvent;
+import com.google.gwt.event.dom.client.TouchEndHandler;
+import com.google.gwt.event.dom.client.TouchMoveEvent;
+import com.google.gwt.event.dom.client.TouchMoveHandler;
+import com.google.gwt.event.dom.client.TouchStartEvent;
+import com.google.gwt.event.dom.client.TouchStartHandler;
 import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent;
+import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.HandlerUtils;
 import com.project.shared.data.Point2D;
 import com.project.shared.data.funcs.AsyncFunc;
 import com.project.shared.data.funcs.Func;
-import com.project.shared.utils.StringUtils;
 
 public class WidgetUtils {
 
@@ -32,11 +42,12 @@ public class WidgetUtils {
                 arg0.stopPropagation();
             }
         }, ClickEvent.getType());
-        widget.addDomHandler(new MouseDownHandler() {
-            public void onMouseDown(MouseDownEvent arg0) {
-                arg0.stopPropagation();
-            }
-        }, MouseDownEvent.getType());
+        WidgetUtils.addMovementStartHandler(widget, new Handler<HumanInputEvent<?>>() {
+            @Override
+            public void onFire(HumanInputEvent<?> arg)
+            {
+                arg.stopPropagation();
+            }});
     }
 
     public static <T extends Widget & Focusable> void addEscapeUnfocusesHandler(final T widget) {
@@ -60,12 +71,12 @@ public class WidgetUtils {
     }
 
     public static void mouseDownPreventDefault(Widget widget) {
-        widget.addDomHandler(new MouseDownHandler() {
+        WidgetUtils.addMovementStartHandler(widget, new Handler<HumanInputEvent<?>>() {
             @Override
-            public void onMouseDown(MouseDownEvent event) {
-                event.preventDefault();
-            }
-        }, MouseDownEvent.getType());
+            public void onFire(HumanInputEvent<?> arg)
+            {
+                arg.preventDefault();
+            }});
     }
 
 	public static void setWidgetSize(Widget widget, Point2D editSize) {
@@ -125,7 +136,7 @@ public class WidgetUtils {
 			@Override
 			protected <S, E> void run(Void arg, final Func<Void, S> successHandler, Func<Throwable, E> errorHandler) {
 				if (widget.isAttached()) {
-					successHandler.call(null);
+					successHandler.apply(null);
 					return;
 				}
 				final RegistrationsManager regs = new RegistrationsManager();
@@ -136,7 +147,7 @@ public class WidgetUtils {
 							return;
 						}
 						regs.clear();
-						successHandler.call(null);
+						successHandler.apply(null);
 					}
 				}));
 			}
@@ -166,7 +177,7 @@ public class WidgetUtils {
 
     public static void addNonEmptyStyleName(Widget widget, String style)
     {
-        if (StringUtils.isEmptyOrNull(style))
+        if (Strings.isNullOrEmpty(style))
         {
             return;
         }
@@ -175,10 +186,58 @@ public class WidgetUtils {
 
     public static void removeNonEmptyStyleName(Widget widget, String style)
     {
-        if (StringUtils.isEmptyOrNull(style))
+        if (Strings.isNullOrEmpty(style))
         {
             return;
         }
         widget.removeStyleName(style);
+    }
+
+    public static HandlerRegistration addMovementStartHandler(Widget widget, final SimpleEvent.Handler<HumanInputEvent<?>> handler)
+    {
+        RegistrationsManager regs = new RegistrationsManager();
+        regs.add(widget.addDomHandler(new MouseDownHandler() {
+            @Override public void onMouseDown(MouseDownEvent event) {
+                handler.onFire(event);
+            }
+        }, MouseDownEvent.getType()));
+        regs.add(widget.addDomHandler(new TouchStartHandler() {
+            @Override public void onTouchStart(TouchStartEvent event) {
+                handler.onFire(event);
+            }
+        }, TouchStartEvent.getType()));
+        return regs.asSingleRegistration();
+    }
+
+    public static HandlerRegistration addMovementStopHandler(Widget widget, final SimpleEvent.Handler<HumanInputEvent<?>> handler)
+    {
+        RegistrationsManager regs = new RegistrationsManager();
+        regs.add(widget.addDomHandler(new MouseUpHandler() {
+            @Override public void onMouseUp(MouseUpEvent event) {
+                handler.onFire(event);
+            }
+        }, MouseUpEvent.getType()));
+        regs.add(widget.addDomHandler(new TouchEndHandler() {
+            @Override public void onTouchEnd(TouchEndEvent event) {
+                handler.onFire(event);
+            }
+        }, TouchEndEvent.getType()));
+        return regs.asSingleRegistration();
+    }
+
+    public static HandlerRegistration addMovementMoveHandler(Widget widget, final SimpleEvent.Handler<HumanInputEvent<?>> handler)
+    {
+        RegistrationsManager regs = new RegistrationsManager();
+        regs.add(widget.addDomHandler(new MouseMoveHandler() {
+            @Override public void onMouseMove(MouseMoveEvent event) {
+                handler.onFire(event);
+            }
+        }, MouseMoveEvent.getType()));
+        regs.add(widget.addDomHandler(new TouchMoveHandler() {
+            @Override public void onTouchMove(TouchMoveEvent event) {
+                handler.onFire(event);
+            }
+        }, TouchMoveEvent.getType()));
+        return regs.asSingleRegistration();
     }
 }

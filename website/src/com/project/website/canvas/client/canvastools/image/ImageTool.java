@@ -3,6 +3,8 @@ package com.project.website.canvas.client.canvastools.image;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.google.common.base.Objects;
+import com.google.common.base.Strings;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
@@ -26,14 +28,13 @@ import com.project.shared.client.utils.HandlerUtils;
 import com.project.shared.client.utils.StyleUtils;
 import com.project.shared.client.utils.UrlUtils;
 import com.project.shared.client.utils.widgets.WidgetUtils;
-import com.project.shared.utils.CloneableUtils;
-import com.project.shared.utils.ObjectUtils;
 import com.project.shared.utils.StringUtils;
-import com.project.website.canvas.client.canvastools.base.CanvasTool;
 import com.project.website.canvas.client.canvastools.base.CanvasToolCommon;
 import com.project.website.canvas.client.canvastools.base.CanvasToolEvents;
-import com.project.website.canvas.client.canvastools.base.ICanvasToolEvents;
 import com.project.website.canvas.client.canvastools.base.ResizeMode;
+import com.project.website.canvas.client.canvastools.base.eventargs.LoadStartedEventArgs;
+import com.project.website.canvas.client.canvastools.base.interfaces.CanvasTool;
+import com.project.website.canvas.client.canvastools.base.interfaces.ICanvasToolEvents;
 import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.client.shared.ImageInformationUtils;
 import com.project.website.canvas.client.shared.dialogs.SelectImageDialog;
@@ -118,13 +119,13 @@ public class ImageTool extends Composite implements CanvasTool<ImageData> {
 
     private void uploadImage() {
         initOptionsWidget();
-        selectImageDialog.setValue((ImageInformation) CloneableUtils.clone(data.imageInformation));
+        selectImageDialog.setValue(data.imageInformation.getClone());
 
         Scheduler.get().scheduleDeferred(new ScheduledCommand() {
             @Override
             public void execute() {
-                selectImageDialog.setFocus(true);
                 dialogContainer.center();
+                selectImageDialog.setFocus(true);
             }
         });
     }
@@ -159,7 +160,7 @@ public class ImageTool extends Composite implements CanvasTool<ImageData> {
     }
 
     private void setImageInformation(ImageInformation imageInformation) {
-        if (ObjectUtils.areEqual(data.imageInformation, imageInformation)) {
+        if (Objects.equal(data.imageInformation, imageInformation)) {
             return;
         }
         // Make sure we don't set arbitrary html or invalid urls
@@ -183,11 +184,11 @@ public class ImageTool extends Composite implements CanvasTool<ImageData> {
         this.removeStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
         StyleUtils.clearBackground(this.getElement().getStyle());
 
-        if (StringUtils.isEmptyOrNull(this.data.imageInformation.url)) {
+        if (Strings.isNullOrEmpty(this.data.imageInformation.url)) {
             return;
         }
 
-        this._toolEvents.dispatchLoadStartedEvent();
+        this._toolEvents.dispatchLoadStartedEvent(new LoadStartedEventArgs(false));
 
         WidgetUtils.setBackgroundImageAsync(this, this.data.imageInformation.url, CanvasResources.INSTANCE
                 .imageUnavailable().getSafeUri().asString(), autoSize,
@@ -261,10 +262,5 @@ public class ImageTool extends Composite implements CanvasTool<ImageData> {
     public IsWidget getToolbar() {
         // TODO Auto-generated method stub
         return null;
-    }
-
-    @Override
-    public boolean dimOnLoad() {
-        return false;
     }
 }

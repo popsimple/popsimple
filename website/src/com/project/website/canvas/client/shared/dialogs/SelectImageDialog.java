@@ -2,6 +2,7 @@ package com.project.website.canvas.client.shared.dialogs;
 
 import java.util.List;
 
+import com.google.common.base.Objects;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -25,8 +26,6 @@ import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.handlers.SpecificKeyPressHandler;
 import com.project.shared.client.utils.UrlUtils;
 import com.project.shared.data.Point2D;
-import com.project.shared.utils.CloneableUtils;
-import com.project.shared.utils.ObjectUtils;
 import com.project.website.canvas.client.shared.ImageOptionTypes;
 import com.project.website.canvas.client.shared.ImageOptionsProvider;
 import com.project.website.canvas.client.shared.ImageOptionsProviderUtils;
@@ -175,21 +174,25 @@ public class SelectImageDialog extends Composite implements TakesValue<ImageInfo
 
     private void applyBasicImageOptions()
     {
+        ImageOptionTypes imageOptionType = null;
         if (this.originalSizeOption.getValue())
         {
-            ImageOptionsProviderUtils.setImageOptions(this._imageOptionsProvider,
-                    this._imageInformation.options, ImageOptionTypes.OriginalSize);
+            imageOptionType = ImageOptionTypes.OriginalSize;
         }
         else if (this.stretchOption.getValue())
         {
-            ImageOptionsProviderUtils.setImageOptions(this._imageOptionsProvider,
-                    this._imageInformation.options, ImageOptionTypes.Stretch);
+            imageOptionType = ImageOptionTypes.Stretch;
         }
         else if (this.repeatOption.getValue())
         {
-            ImageOptionsProviderUtils.setImageOptions(this._imageOptionsProvider,
-                    this._imageInformation.options, ImageOptionTypes.Repeat);
+            imageOptionType = ImageOptionTypes.Repeat;
         }
+        else {
+            // Unknown option type!
+            // TODO choose a default
+            return;
+        }
+        this._imageInformation.options = ImageOptionsProviderUtils.getImageOptions(this._imageOptionsProvider, imageOptionType);
     }
 
     @Override
@@ -199,22 +202,22 @@ public class SelectImageDialog extends Composite implements TakesValue<ImageInfo
 
     @Override
     public int getTabIndex() {
-        return this.urlTextBox.getTabIndex();
+        return this.mediaSearchPanel.getTabIndex();
     }
 
     @Override
     public void setAccessKey(char key) {
-        this.urlTextBox.setAccessKey(key);
+        this.mediaSearchPanel.setAccessKey(key);
     }
 
     @Override
     public void setFocus(boolean focused) {
-        this.urlTextBox.setFocus(focused);
+        this.mediaSearchPanel.setFocus(focused);
     }
 
     @Override
     public void setTabIndex(int index) {
-        this.urlTextBox.setTabIndex(index);
+        this.mediaSearchPanel.setTabIndex(index);
     }
 
     private void setSearchData(MediaInfo mediaInfo)
@@ -226,7 +229,7 @@ public class SelectImageDialog extends Composite implements TakesValue<ImageInfo
 
     private void setManualUrl(String url)
     {
-        if (ObjectUtils.areEqual(this._imageInformation.url, url))
+        if (Objects.equal(this._imageInformation.url, url))
         {
             return;
         }
@@ -247,6 +250,6 @@ public class SelectImageDialog extends Composite implements TakesValue<ImageInfo
     public void clear()
     {
         this.mediaSearchPanel.clear();
-        this.setValue((ImageInformation)CloneableUtils.clone(this._defaultInformation));
+        this.setValue(this._defaultInformation.getClone());
     }
 }

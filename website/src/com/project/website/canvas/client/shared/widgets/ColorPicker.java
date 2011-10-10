@@ -8,6 +8,8 @@ import com.project.website.canvas.client.resources.CanvasResources;
 
 public class ColorPicker extends TextBox
 {
+	private String _colorToSetOnAttach = null;
+	
     public ColorPicker()
     {
         /* color class is used by jscolor.js */
@@ -28,6 +30,10 @@ public class ColorPicker extends TextBox
     {
         super.onLoad();
         this.bindJsColor(this.getElement());
+        if (null != this._colorToSetOnAttach) {
+        	this.setColor(this._colorToSetOnAttach);
+        	this._colorToSetOnAttach = null;
+        }
     }
 
     private final native void bindJsColor(Element elem)
@@ -67,6 +73,10 @@ public class ColorPicker extends TextBox
 
     public void setColor(String color)
     {
+    	if (false == this.isAttached()) {
+    		this._colorToSetOnAttach = color;
+    		return;
+    	}
         this.getElement().getStyle().setBackgroundColor(color);
     }
 

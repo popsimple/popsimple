@@ -1,10 +1,9 @@
 package com.project.website.canvas.shared.data;
 
 import com.project.shared.data.Rectangle;
-import com.project.shared.utils.CloneableUtils;
+import com.project.shared.interfaces.ICloneable;
 
-//TODO: Move to data.
-public class SiteCropElementData extends ElementData {
+public class SiteCropElementData extends ElementData implements ICloneable<SiteCropElementData> {
 
     /**
      *
@@ -12,33 +11,34 @@ public class SiteCropElementData extends ElementData {
     private static final long serialVersionUID = 1L;
 
     public String url = "";
-    public Rectangle clipRectangle = new Rectangle();
-    public Rectangle coverRectangle = new Rectangle();
     public Rectangle frameRectangle = new Rectangle();
     public boolean isInteractive = false;
 
-    protected SiteCropElementData(){
+    protected SiteCropElementData() {
+        super();
     }
 
     public SiteCropElementData(String factoryUniqueId) {
         super(factoryUniqueId);
     }
 
-    @Override
-    public ElementData createInstance() {
-        return new SiteCropElementData();
+    public SiteCropElementData(SiteCropElementData siteCropElementData)
+    {
+        super(siteCropElementData);
+        this.url = siteCropElementData.url;
+        this.frameRectangle = new Rectangle(siteCropElementData.frameRectangle);
+        this.isInteractive = siteCropElementData.isInteractive;
     }
 
     @Override
-    public void copyTo(Object object) {
-        super.copyTo(object);
-
-        SiteCropElementData copy = (SiteCropElementData)object;
-        copy.url = this.url;
-        copy.isInteractive = this.isInteractive;
-        copy.clipRectangle = (Rectangle)CloneableUtils.clone(this.clipRectangle);
-        copy.coverRectangle = (Rectangle)CloneableUtils.clone(this.coverRectangle);
-        copy.frameRectangle = (Rectangle)CloneableUtils.clone(this.frameRectangle);
+    public ICloneable<? extends ElementData> getCloneable()
+    {
+        return this;
     }
 
+    @Override
+    public SiteCropElementData getClone()
+    {
+        return new SiteCropElementData(this);
+    }
 }

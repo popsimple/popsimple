@@ -27,7 +27,9 @@
 @def toolboxHeaderBackgroundColor #222;
 @def toolboxHeaderTextColor #ddd;
 
-@external gwt-RadioButton;
+@def minimalTouchButtonSize 40px;
+
+@external gwt-RadioButton, gwt-ToggleButton;
 .monospace {
 	font-family: monospace;
 }
@@ -94,6 +96,15 @@
 
 .worksheetFullView .worksheetBackground {
 	top: 0;
+}
+
+.worksheetHeader input[type=checkbox] {
+
+    vertical-align: bottom;
+}
+
+.worksheetGridOption {
+	margin-left: 5px;
 }
 
 /*************************************/
@@ -200,6 +211,7 @@
     background-position: 0 4px;
     background-repeat: no-repeat;
     background-size: 12px 12px;
+    -webkit-background-size: 12px 12px;
     color: topBarTextColor;
     cursor: default;
     vertical-align: text-top;
@@ -299,6 +311,7 @@
 	width: toolboxIconSize;
 	height: toolboxIconSize;
 	background-size: toolboxIconSize auto;
+	-webkit-background-size: toolboxIconSize auto;
     background-position: center center;
     padding: 5px 0;
 }
@@ -313,6 +326,7 @@
     width: toolboxIconExpandedSize;
     height: toolboxIconExpandedSize;
     background-size: toolboxIconExpandedSize auto;
+    -webkit-background-size: toolboxIconExpandedSize auto;
 }
 .toolboxCommonSelectedIconStyle .toolboxInnerIconStyle, .toolboxCommonSelectedIconStyle:hover .toolboxInnerIconStyle {
 	border-color: #aaa;
@@ -359,7 +373,7 @@
 /*     -ms-border-radius: 3px; */
 }
 
-.canvasToolbar button, .canvasToolbarToggleButton {
+.canvasToolbar .canvasToolbarButton {
 	display: inline-block;
     font-size: 0.9em;
 	padding: 2px 3px;
@@ -388,6 +402,12 @@
 	margin-right: 3px;
 }
 
+.canvasToolbar .slider {
+	width: 100px;
+}
+
+
+/*---------------------------------------------------*/
 
 .textBoxCreateModeCanvasStyle {
 	cursor: text;
@@ -414,12 +434,26 @@
 	padding: 1px;
 }
 
+.taskRow{
+	display: table-row;
+	width: 100%;
+}
+
+.taskCell{
+	display: table-cell;
+}
+
 .taskImageChecked {
 	opacity: 0.2;
 }
 
 .taskListCreateModeCanvasStyle {
 
+}
+
+.taskListWrapper {
+	height: 100%;
+   	min-width: 250px;
 }
 
 .taskList {
@@ -439,6 +473,29 @@
 	display: inline-block;
 }
 
+.taskCheckboxWrapper{
+	width: 16px;
+	vertical-align: middle;
+}
+
+.taskImageWrapper{
+	width: 32px;
+}
+
+.taskRemoveWrapper{
+	width: 16px;
+}
+
+.taskTextWrapper{
+	vertical-align: middle;
+	padding-right: 10px;
+}
+
+.taskText{
+	width: 100%;
+	text-overflow: ellipsis;
+}
+
 .taskListTextChecked {
 	border-style: none;
 	text-decoration: line-through;
@@ -447,9 +504,11 @@
 
 .taskListBody {
 	position: relative;
-	padding: 5px 5px 5px 5px;
 	border-bottom-left-radius: 5px;
 	border-bottom-right-radius: 5px;
+	display: table;
+	width: 100%;
+	height: 100%;
 }
 
 .taskListHeader {
@@ -460,6 +519,11 @@
 	text-align: center;
 	padding-top: 5px;
 	padding-bottom: 5px;
+}
+
+.taskListBodyWrapper
+{
+	padding: 5px;
 }
 
 .taskListFooter {
@@ -503,11 +567,27 @@
 .imageToolSet {
 	background-repeat: no-repeat;
 	background-size: 100% 100%;
+	-webkit-background-size: 100% 100%;
 }
 
 .imageToolContentPanel {
     border-radius: 2px;
 }
+
+
+@sprite .selectMediaSearchHeader {
+    gwt-image: "web_search_24";
+    padding-left: 28px;
+    width: auto !important;
+}
+
+@sprite .selectMediaURLHeader {
+    gwt-image: "web_pointer_24";
+    padding-left: 28px;
+    width: auto !important;
+}
+
+
 
 .displayNone {
 	display: none;
@@ -705,6 +785,17 @@
 	padding: 0;
 }
 
+/* change the size of tool-frame buttons on touch-enabled browsers to make them easier to touch */
+@if (com.project.shared.client.utils.BrowserUtils.isMainInterfaceTouch()) {
+    .toolFrameBottomLeftRotate, .toolFrameBottomRightResize, .toolFrameButton {
+        -webkit-background-size: minimalTouchButtonSize auto;
+        background-size: minimalTouchButtonSize auto;
+        height: minimalTouchButtonSize;
+        width: minimalTouchButtonSize;
+    }
+}
+
+
 /*---------------------------------------------*/
 .worksheetModeViewOnly .toolOptionsBarContainer, .worksheetModeViewOnly .toolOptionsBar {
 	display: none;
@@ -741,6 +832,7 @@
 	background-position: center center;
 	background-repeat: no-repeat;
 	background-size: 100%;
+	-webkit-background-size: 100%;
 	border-radius: 2px 2px 2px 2px;
 	display: inline-block;
 	height: 100px;
@@ -884,6 +976,7 @@
 	background-repeat: no-repeat !important;
 	background-position: center center !important;
 	background-size: 48px !important;
+	-webkit-background-size: 48px !important;
 }
 
 .loadingFiller {
@@ -925,21 +1018,6 @@
 
 .dialogSectionPanel {
 	padding-bottom: 10px;
-}
-
-.cropSiteFrame{
-	width: 100%;
-	height: 100%;
-	border-style: none;
-	overflow: hidden;
-	position:relative
-}
-
-.cropSiteBox {
-	display: block;
-	border-radius: 2px;
-	text-align: center;
-	overflow: visible;
 }
 
 @sprite .cropSiteToolEmpty {
@@ -986,13 +1064,16 @@
 .colorPickerButton {
 	cursor: pointer;
 	height: 18px;
-    margin: 0;
+    margin: 0 0 1px;
     padding: 0;
     vertical-align: middle;
     width: 18px;
     background-image: none;
     overflow: hidden;
     font-size: 0;
+    border-style: solid;
+    border-color: #aaaaaa;
+    border-width: 1px;
 }
 
 /*------------------------------------------------------------*/
@@ -1004,15 +1085,75 @@
     border-color: transparent;
 }
 
+/* @if (com.project.shared.client.utils.BrowserUtils.supportCSSCursorNone()) { */
+/* 	.sketchTool { */
+/* 	   cursor: none; */
+/* 	} */
+/* } */
+
 .activeToolFrame .sketchTool {
     border-color: #ccc;
 }
 
-.worksheetModeViewOnly .sketchTool {
+.worksheetModeViewOnly .sketchTool, .worksheetModeViewOnly .activeToolFrame .sketchTool  {
     cursor: default;
+    border-color: transparent;
 }
 
 .sketchTool.floatingToolStyle {
 	background-color: #eee;
 	opacity: 0.6;
+}
+
+
+/*-----------------------*/
+.slider {
+	display: inline-block;
+	min-width: 30px;
+	height: 10px;
+    position: relative;
+}
+@sprite .sliderDrag {
+	border: none;
+	margin: 0;
+	padding: 0;
+	position: absolute;
+	gwt-image: "sliderIconDrag";
+}
+@sprite .sliderLess {
+    position: absolute;
+    left: 0;
+	border: none;
+    margin: 0;
+    padding: 0;
+    gwt-image: "sliderIconHorizontalLess";
+}
+@sprite .sliderMore {
+    position: absolute;
+    right: 0;
+	border: none;
+    margin: 0;
+    padding: 0;
+    gwt-image: "sliderIconHorizontalMore";
+}
+.sliderScale {
+    position: absolute;
+    left: 10px;
+	right: 10px;
+	display: inline-block;
+    margin: 0;
+    padding: 0;
+    height: 10px;
+	background-color: #bbb;
+}
+
+.sliderValueText {
+	width: 30px;
+	vertical-align: middle;
+	margin: 0 0 1px;
+    padding: 0;
+}
+
+.sliderWrapper {
+	display:inline-block;
 }

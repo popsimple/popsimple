@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Button;
@@ -14,11 +16,14 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent.Handler;
-import com.project.website.canvas.client.canvastools.base.CanvasTool;
+import com.project.shared.client.handlers.RegistrationsManager;
+import com.project.shared.client.handlers.SpecificKeyPressHandler;
+import com.project.shared.client.utils.ListUtils;
 import com.project.website.canvas.client.canvastools.base.CanvasToolCommon;
 import com.project.website.canvas.client.canvastools.base.CanvasToolEvents;
-import com.project.website.canvas.client.canvastools.base.ICanvasToolEvents;
 import com.project.website.canvas.client.canvastools.base.ResizeMode;
+import com.project.website.canvas.client.canvastools.base.interfaces.CanvasTool;
+import com.project.website.canvas.client.canvastools.base.interfaces.ICanvasToolEvents;
 import com.project.website.canvas.shared.data.ElementData;
 import com.project.website.canvas.shared.data.TaskData;
 import com.project.website.canvas.shared.data.TaskListData;
@@ -62,6 +67,11 @@ public class TaskListTool extends Composite implements CanvasTool<TaskListData>,
 
     @Override
     public void bind() {
+        this.registerHandlers();
+    }
+
+    private void registerHandlers()
+    {
         buttonAdd.addClickHandler(new ClickHandler() {
 
             public void onClick(ClickEvent event) {
@@ -77,16 +87,48 @@ public class TaskListTool extends Composite implements CanvasTool<TaskListData>,
         taskWidget.setFocus(true);
     }
 
-    public void addTaskWidget(TaskTool taskWidget) {
-        taskWidget.addKillRequestEventHandler(new Handler<TaskTool>() {
-
-            public void onFire(TaskTool arg) {
-                // TODO Auto-generated method stub
-                removeTaskWidget(arg);
-            }
-        });
+    public void addTaskWidget(final TaskTool taskWidget) {
         taskWidgets.add(taskWidget);
         panelTaskList.add(taskWidget);
+
+        final RegistrationsManager taskRegistrations = new RegistrationsManager();
+
+        taskRegistrations.add(taskWidget.addKillRequestEventHandler(new Handler<TaskTool>() {
+
+            public void onFire(TaskTool arg) {
+                removeTaskWidget(arg);
+                taskRegistrations.clear();
+            }
+        }));
+
+        taskRegistrations.add(taskWidget.textTask.addKeyPressHandler(
+                new SpecificKeyPressHandler(KeyCodes.KEY_ENTER) {
+            @Override
+            public void onSpecificKeyPress(KeyPressEvent event) {
+                    activateTask(ListUtils.getNext(taskWidgets, taskWidget, true));
+            }
+        }));
+
+        taskRegistrations.add(taskWidget.textTask.addKeyPressHandler(
+                new SpecificKeyPressHandler(KeyCodes.KEY_DOWN) {
+            @Override
+            public void onSpecificKeyPress(KeyPressEvent event) {
+                activateTask(ListUtils.getNext(taskWidgets, taskWidget, true));
+            }
+        }));
+
+        taskRegistrations.add(taskWidget.textTask.addKeyPressHandler(
+                new SpecificKeyPressHandler(KeyCodes.KEY_UP) {
+            @Override
+            public void onSpecificKeyPress(KeyPressEvent event) {
+                activateTask(ListUtils.getPrevious(taskWidgets, taskWidget, true));
+            }
+        }));
+    }
+
+    private void activateTask(TaskTool taskTool)
+    {
+        taskTool.setFocus(true);
     }
 
     private void removeTaskWidget(TaskTool taskWidget) {
@@ -159,7 +201,7 @@ public class TaskListTool extends Composite implements CanvasTool<TaskListData>,
 
 	@Override
 	public ResizeMode getResizeMode() {
-		return ResizeMode.BOTH;
+		return ResizeMode.WIDTH_ONLY;
 	}
 
     @Override
@@ -183,10 +225,5 @@ public class TaskListTool extends Composite implements CanvasTool<TaskListData>,
     {
         // TODO Auto-generated method stub
         return null;
-    }
-
-    @Override
-    public boolean dimOnLoad() {
-        return true;
     }
 }

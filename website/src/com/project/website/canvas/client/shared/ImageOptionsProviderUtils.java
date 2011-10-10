@@ -2,7 +2,7 @@ package com.project.website.canvas.client.shared;
 
 import java.util.Map.Entry;
 
-import com.project.shared.utils.ObjectUtils;
+import com.google.common.base.Objects;
 import com.project.website.canvas.shared.data.ImageOptions;
 
 public class ImageOptionsProviderUtils
@@ -13,7 +13,7 @@ public class ImageOptionsProviderUtils
         for (Entry<ImageOptionTypes, ImageOptions> entry :
                 optionsProvider.getImageOptionMap().entrySet())
         {
-            if (ObjectUtils.areEqual(entry.getValue(), imageOptions))
+            if (Objects.equal(entry.getValue(), imageOptions))
             {
                 return entry.getKey();
             }
@@ -21,16 +21,9 @@ public class ImageOptionsProviderUtils
         return ImageOptionTypes.Custom;
     }
 
-    public static void setImageOptions(ImageOptionsProvider optionsProvider,
-            ImageOptions imageOptions, ImageOptionTypes imageOptionType)
+    public static ImageOptions getImageOptions(ImageOptionsProvider optionsProvider, ImageOptionTypes imageOptionType)
     {
-        ImageOptions knownOptions = optionsProvider.getImageOptionMap().get(imageOptionType);
-        if (null == knownOptions)
-        {
-            //TODO: Throw exception;
-            return;
-        }
-        knownOptions.copyTo(imageOptions);
+        return optionsProvider.getImageOptionMap().get(imageOptionType).getClone();
     }
 
 }

@@ -45,7 +45,7 @@ public class SiteCropToolbar extends Composite
     CheckBox chkAutoSize;
 
     @UiField
-    ToggleButton moveButton;
+    ToggleButton dragButton;
 
     @UiField
     PushButton browseButton;
@@ -74,7 +74,7 @@ public class SiteCropToolbar extends Composite
 
 		this.registerHandlers();
 
-		this.toggleButtonPanel.setDefaultButton(this.moveButton);
+		this.toggleButtonPanel.setDefaultButton(this.dragButton);
 
 		this.browseButton.getUpFace().setImage(
 		        new Image(CanvasResources.INSTANCE.cropBrowseIcon()));
@@ -90,9 +90,9 @@ public class SiteCropToolbar extends Composite
         });
 	}
 
-	public HandlerRegistration addToggleMoveModeRequestHandler(final Handler<Boolean> handler)
+	public HandlerRegistration addToggleDragRequestHandler(final Handler<Boolean> handler)
     {
-        return this.moveButton.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+        return this.dragButton.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
             @Override
             public void onValueChange(ValueChangeEvent<Boolean> event) {
                 handler.onFire(event.getValue());
@@ -130,14 +130,19 @@ public class SiteCropToolbar extends Composite
 	    this.acceptCropButton.setVisible(visible);
 	}
 
-	public void enableCrop(boolean enable)
+	public void enableCrop(boolean enabled)
 	{
-	    this.cropButton.setEnabled(enable);
+	    this.cropButton.setEnabled(enabled);
 	}
 
-	public void enableBrowse(boolean enable)
+	public void enableBrowse(boolean enabled)
 	{
-	    this.browseButton.setEnabled(enable);
+	    this.browseButton.setEnabled(enabled);
+	}
+
+	public void enableDrag(boolean enabled)
+	{
+	    this.dragButton.setEnabled(enabled);
 	}
 
 	public HandlerRegistration addBrowseRequestHandler(final Handler<Void> handler)
@@ -150,14 +155,14 @@ public class SiteCropToolbar extends Composite
 	    return this.interactiveCheckBox.addValueChangeHandler(handler);
 	}
 
-	public void toggleMoveMode()
+	public void toggleDrag()
 	{
-	    this.moveButton.setValue(true, true);
+	    this.dragButton.setValue(true, true);
 	}
 
-	public void toggleCropMode()
+	public void toggleCrop()
     {
-        this.moveButton.setValue(true, true);
+        this.dragButton.setValue(true, true);
     }
 
 	public void setUrl(String url)
@@ -167,7 +172,6 @@ public class SiteCropToolbar extends Composite
 	        return;
 	    }
 	    this.urlTextBox.setValue(url);
-	    this._urlChangeEvent.dispatch(url);
 	}
 
 	public void setIsInteractive(boolean isInteractive)

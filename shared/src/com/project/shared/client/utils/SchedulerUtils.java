@@ -3,7 +3,9 @@ package com.project.shared.client.utils;
 import java.util.HashSet;
 
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.RepeatingCommand;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.project.shared.data.funcs.AsyncFunc;
 import com.project.shared.data.funcs.Func;
 
@@ -15,7 +17,7 @@ public class SchedulerUtils {
 				Scheduler.get().scheduleDeferred(new ScheduledCommand() {
 					@Override
 					public void execute() {
-						successHandler.call(null);
+						successHandler.apply(null);
 					}
 				});
 			}
@@ -50,4 +52,30 @@ public class SchedulerUtils {
             });
 	    }
 	}
+
+	public static interface StoppableRepeatingCommand extends RepeatingCommand {
+	    void stop();
+	}
+
+    public static HandlerRegistration scheduleFixedPeriod(final RepeatingCommand command, int delayMs)
+    {
+        final StoppableRepeatingCommand commandWrapper = new StoppableRepeatingCommand() {
+            private boolean _stop = false;
+            public void stop() {
+                this._stop = true;
+            }
+            @Override public boolean execute() {
+                if (this._stop) {
+                    return true;
+                }
+                return command.execute();
+            }
+        };
+        Scheduler.get().scheduleFixedPeriod(commandWrapper, delayMs);
+        return new HandlerRegistration() {
+            @Override public void removeHandler() {
+                commandWrapper.stop();
+            }
+        };
+    }
 }

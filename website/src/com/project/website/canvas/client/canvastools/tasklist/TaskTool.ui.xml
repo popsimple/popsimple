@@ -4,14 +4,19 @@
 	xmlns:my="urn:import:com.project.website.canvas.client.canvastools.tasklist">
 	<ui:with field='res' type='com.project.website.canvas.client.resources.CanvasResources'/>
 	<ui:style>
-		
 	</ui:style>
-	<g:HTMLPanel>
-		<g:FlowPanel>
+	<g:HTMLPanel addStyleNames="{res.main.taskRow}">
+		<div class="{res.main.taskCell} {res.main.taskCheckboxWrapper}">
 			<g:CheckBox ui:field="checkTask"></g:CheckBox>
+		</div>
+		<div class="{res.main.taskCell} {res.main.taskImageWrapper}">
 			<g:FlowPanel ui:field="imageTask" addStyleNames="{res.main.taskImageContainer}"></g:FlowPanel>
-			<my:HoverTextBox ui:field="textTask">Type your task here...</my:HoverTextBox>
-			<g:Anchor ui:field="imageRemove" addStyleNames="{res.main.taskRemoveImage}"></g:Anchor>
-		</g:FlowPanel>
+		</div>
+		<div class="{res.main.taskCell} {res.main.taskTextWrapper}">
+			<my:HoverTextBox ui:field="textTask" addStyleNames="{res.main.taskText}">Type your task here...</my:HoverTextBox>
+		</div>
+		<div class="{res.main.taskCell} {res.main.taskRemoveWrapper}">
+			<g:Button ui:field="imageRemove" addStyleNames="{res.main.taskRemoveImage}"></g:Button>
+		</div>
 	</g:HTMLPanel>
-</ui:UiBinder> 
+</ui:UiBinder>

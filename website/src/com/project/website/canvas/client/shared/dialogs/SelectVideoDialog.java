@@ -2,6 +2,7 @@ package com.project.website.canvas.client.shared.dialogs;
 
 import java.util.List;
 
+import com.google.common.base.Objects;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -24,8 +25,6 @@ import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.handlers.SpecificKeyPressHandler;
 import com.project.shared.client.utils.UrlUtils;
 import com.project.shared.data.Point2D;
-import com.project.shared.utils.CloneableUtils;
-import com.project.shared.utils.ObjectUtils;
 import com.project.website.canvas.client.shared.searchProviders.interfaces.MediaInfo;
 import com.project.website.canvas.client.shared.searchProviders.interfaces.MediaSearchProvider;
 import com.project.website.canvas.client.shared.widgets.media.MediaSearchPanel;
@@ -147,22 +146,22 @@ public class SelectVideoDialog extends Composite implements TakesValue<VideoInfo
 
     @Override
     public int getTabIndex() {
-        return this.urlTextBox.getTabIndex();
+        return this.mediaSearchPanel.getTabIndex();
     }
 
     @Override
     public void setAccessKey(char key) {
-        this.urlTextBox.setAccessKey(key);
+        this.mediaSearchPanel.setAccessKey(key);
     }
 
     @Override
     public void setFocus(boolean focused) {
-        this.urlTextBox.setFocus(focused);
+        this.mediaSearchPanel.setFocus(focused);
     }
 
     @Override
     public void setTabIndex(int index) {
-        this.urlTextBox.setTabIndex(index);
+        this.mediaSearchPanel.setTabIndex(index);
     }
 
     private void setSearchData(MediaInfo mediaInfo)
@@ -174,7 +173,7 @@ public class SelectVideoDialog extends Composite implements TakesValue<VideoInfo
 
     private void setManualUrl(String url)
     {
-        if (ObjectUtils.areEqual(this._videoInformation.url, url))
+        if (Objects.equal(this._videoInformation.url, url))
         {
             return;
         }
@@ -194,6 +193,6 @@ public class SelectVideoDialog extends Composite implements TakesValue<VideoInfo
     public void clear()
     {
         this.mediaSearchPanel.clear();
-        this.setValue((VideoInformation)CloneableUtils.clone(this._defaultInformation));
+        this.setValue(new VideoInformation(this._defaultInformation));
     }
 }

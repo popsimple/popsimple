@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import com.google.common.base.Objects;
+import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
@@ -43,8 +45,6 @@ import com.project.shared.client.utils.StyleUtils;
 import com.project.shared.client.utils.widgets.ListBoxUtils;
 import com.project.shared.data.funcs.Func;
 import com.project.shared.data.funcs.Func.Action;
-import com.project.shared.utils.ListUtils;
-import com.project.shared.utils.ObjectUtils;
 import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.client.shared.widgets.ColorPicker;
 
@@ -111,7 +111,7 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
     {
         this.clearRegistrations();
         for (Func<Void,Void> func : this.onUnloadFuncs) {
-            func.call(null);
+            func.apply(null);
         }
         super.onUnload();
     }
@@ -138,6 +138,14 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
         }
 
         this.registrationsManager.add(Event.addNativePreviewHandler(new NativePreviewHandler() {
+            ScheduledCommand updateButtonStatesCommand = new ScheduledCommand() {
+                @Override public void execute() {
+                    if (that.isActiveElementTree()) {
+                        that.updateButtonStates();
+                    }
+                }
+            };
+
             @Override
             public void onPreviewNativeEvent(NativePreviewEvent event)
             {
@@ -149,13 +157,7 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
                     }))
                 {
                     that.saveSelectedRanges();
-                    SchedulerUtils.OneTimeScheduler.get().scheduleDeferredOnce(new ScheduledCommand() {
-                        @Override public void execute() {
-                            if (that.isActiveElementTree()) {
-                                that.updateButtonStates();
-                            }
-                        }
-                    });
+                    SchedulerUtils.OneTimeScheduler.get().scheduleDeferredOnce(updateButtonStatesCommand);
                 }
             }
         }));
@@ -262,7 +264,7 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
 
     private Iterable<String> getFontFamilies()
     {
-        return ListUtils.create("Arial", "Georgia", "Julee", "Monospace", "Verdana", "Times", "Tulpen One");
+        return Lists.newArrayList("Arial", "Georgia", "Julee", "Monospace", "Verdana", "Times", "Tulpen One");
     }
 
     private void addCssStringValueListBox(final String cssProperty, String title, final boolean setOptionsStyles, final Iterable<String> values, String... addStyleNames)
@@ -443,7 +445,7 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
         Button buttonWidget = new Button();
         buttonWidget.getElement().getStyle().setProperty(cssProperty, setValues[0]);
         buttonWidget.getElement().setInnerText(title);
-        buttonWidget.addStyleName(CanvasResources.INSTANCE.main().canvasToolbarToggleButton());
+        buttonWidget.addStyleName(CanvasResources.INSTANCE.main().canvasToolbarButton());
         return buttonWidget;
     }
 
@@ -622,7 +624,7 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
     private Boolean isCssPropertySet(final String cssProperty, final String[] setValues, Element element)
     {
         String currentValue = null;
-        if (ObjectUtils.areEqual(cssProperty, "textDecoration")) {
+        if (Objects.equal(cssProperty, "textDecoration")) {
             currentValue = StyleUtils.getInheritedTextDecoration(element);
         } else {
             currentValue = StyleUtils.getComputedStyle(element, null).getProperty(cssProperty);
@@ -632,7 +634,7 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
             return false;
         }
         for (String setValue : setValues) {
-            if (ObjectUtils.areEqual(setValue, "")) {
+            if (Objects.equal(setValue, "")) {
                 if ((currentValue.equals("inherit") || (currentValue.equals("")))) {
                     // treat empty values as inherit, and only consider "" set if the css property is set or is inherit
                     return true;
@@ -661,7 +663,7 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
         {
             return "";
         }
-        if (ObjectUtils.areEqual(cssProperty, "fontFamily")) {
+        if (Objects.equal(cssProperty, "fontFamily")) {
             // css heuristic: pick out only the first part of the value
             value = value.split("[,]")[0];
         }
@@ -677,7 +679,7 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
         int selectedIndex = 0;
         for (int i = 0;  i < listBox.getItemCount(); i++)
         {
-            if (ObjectUtils.areEqual(listBox.getValue(i).toLowerCase(), value.toLowerCase())) {
+            if (Objects.equal(listBox.getValue(i).toLowerCase(), value.toLowerCase())) {
                 selectedIndex = i;
                 found = true;
                 break;

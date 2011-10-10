@@ -1,5 +1,6 @@
 package com.project.shared.client.utils;
 
+import com.google.common.base.Objects;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Touch;
 import com.google.gwt.event.dom.client.DomEvent;
@@ -10,12 +11,11 @@ import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.data.Point2D;
-import com.project.shared.utils.ObjectUtils;
 import com.project.shared.utils.loggers.Logger;
 
 public class EventUtils
 {
-    public static <H extends EventHandler> boolean nativePreviewEventTypeIsAny(NativePreviewEvent nativePreviewEvent, DomEvent.Type<?>[] domEventTypes)
+    public static <H extends EventHandler> boolean nativePreviewEventTypeIsAny(NativePreviewEvent nativePreviewEvent, DomEvent.Type<?>... domEventTypes)
     {
         for (DomEvent.Type<?> domEventType : domEventTypes)
         {
@@ -32,7 +32,7 @@ public class EventUtils
         {
             return false;
         }
-        return (ObjectUtils.areEqual(nativePreviewEvent.getNativeEvent().getType(), domEventType.getName()));
+        return (Objects.equal(nativePreviewEvent.getNativeEvent().getType(), domEventType.getName()));
     }
 
     public static Point2D getCurrentMousePos()
@@ -72,4 +72,5 @@ public class EventUtils
     public static native final boolean hasTouches(NativeEvent evt) /*-{
         return (undefined !== evt.touches);
     }-*/;
+
 }

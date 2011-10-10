@@ -43,14 +43,14 @@ public class ToggleButtonPanel extends FlowPanel
             throw new ButtonNotContainedOnPanelException();
         }
         this._defaultButton = button;
-        if (null != this.getToggledButton())
+        if (null != this.getActiveButton())
         {
             return;
         }
         this._defaultButton.setValue(true, true);
     }
 
-    protected ToggleButton getToggledButton()
+    public ToggleButton getActiveButton()
     {
         for (ToggleButton button : this._buttonList)
         {

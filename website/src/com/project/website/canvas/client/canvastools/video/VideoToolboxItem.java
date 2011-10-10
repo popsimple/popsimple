@@ -1,8 +1,8 @@
 package com.project.website.canvas.client.canvastools.video;
 
-import com.project.website.canvas.client.canvastools.base.CanvasTool;
-import com.project.website.canvas.client.canvastools.base.CanvasToolFactory;
-import com.project.website.canvas.client.canvastools.base.ToolboxItem;
+import com.project.website.canvas.client.canvastools.base.interfaces.CanvasTool;
+import com.project.website.canvas.client.canvastools.base.interfaces.CanvasToolFactory;
+import com.project.website.canvas.client.canvastools.base.interfaces.ToolboxItem;
 import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.shared.data.ElementData;
 

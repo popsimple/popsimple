@@ -3,7 +3,7 @@ package com.project.website.canvas.client.worksheet;
 import java.util.HashSet;
 
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.event.dom.client.MouseDownEvent;
+import com.google.gwt.event.dom.client.HumanInputEvent;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent;
@@ -11,7 +11,7 @@ import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.data.Point2D;
 import com.project.shared.data.Rectangle;
 import com.project.shared.utils.RectangleUtils;
-import com.project.website.canvas.client.canvastools.base.CanvasToolFrame;
+import com.project.website.canvas.client.canvastools.base.interfaces.CanvasToolFrame;
 import com.project.website.canvas.client.worksheet.interfaces.ElementDragManager.StopCondition;
 import com.project.website.canvas.client.worksheet.interfaces.MouseMoveOperationHandler;
 import com.project.website.canvas.client.worksheet.interfaces.WorksheetView;
@@ -73,14 +73,13 @@ public class ToolFrameSelectionManager {
 	    return true;
 	}
 
-	public void startSelectionDrag(MouseDownEvent event) {
+	public void startSelectionDrag(HumanInputEvent<?> event) {
         ElementUtils.setTextSelectionEnabled(_container.getElement(), false);
 
 		if (false == event.isControlKeyDown()) {
 			this._worksheetView.clearToolFrameSelection();
 		}
-		final Point2D initialPosition =
-			ElementUtils.getRelativePosition(event, this._container.getElement());
+		final Point2D initialPosition = ElementUtils.getMousePositionRelativeToElement(this._container.getElement());
 		ElementUtils.setElementRectangle(this._selectionPanel.getElement(),
 				new Rectangle(initialPosition.getX(), initialPosition.getY(), 0));
 
@@ -114,7 +113,7 @@ public class ToolFrameSelectionManager {
         };
 
 		this._selectionDragManager.startMouseMoveOperation(this._container.getElement(),
-		        Point2D.zero, handler, StopCondition.STOP_CONDITION_MOUSE_UP);
+		        Point2D.zero, handler, StopCondition.STOP_CONDITION_MOVEMENT_STOP);
 	}
 
 	private void hideSelectionPanel() {
@@ -124,8 +123,8 @@ public class ToolFrameSelectionManager {
 
 	private void selectFramesByRectangle(Rectangle selectionRectangle, HashSet<CanvasToolFrame> selectedFrameSet) {
 		for (CanvasToolFrame toolFrame : this._worksheetView.getToolFrames()) {
-			if (selectionRectangle.isOverlapping(ElementUtils
-					.getElementOffsetRectangle(toolFrame.asWidget().getElement()))) {
+			if (selectionRectangle.isOverlapping(ElementUtils.getElementOffsetRectangle(toolFrame.asWidget().getElement())))
+			{
 				if (false == this._worksheetView.isToolFrameSelected(toolFrame)) {
 					selectedFrameSet.add(toolFrame);
 					this._worksheetView.selectToolFrame(toolFrame);

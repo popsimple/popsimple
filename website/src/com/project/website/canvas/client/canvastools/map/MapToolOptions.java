@@ -1,5 +1,6 @@
 package com.project.website.canvas.client.canvastools.map;
 
+import com.google.common.collect.HashBiMap;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
@@ -19,7 +20,6 @@ import com.google.gwt.user.client.ui.Widget;
 import com.project.gwtmapstraction.client.mxn.MapProvider;
 import com.project.gwtmapstraction.client.mxn.MapstractionMapType;
 import com.project.shared.client.events.SimpleEvent;
-import com.project.shared.data.DoubleHashMap;
 import com.project.website.canvas.shared.data.MapData;
 import com.project.website.canvas.shared.data.MapData.MapType;
 
@@ -48,8 +48,8 @@ public class MapToolOptions extends Composite implements TakesValue<MapData>, Ha
     SimpleEvent<Void> doneEvent = new SimpleEvent<Void>();
 
     private MapData mapData;
-    private DoubleHashMap<MapProvider, RadioButton> providerButtons = new DoubleHashMap<MapProvider, RadioButton>();
-    private DoubleHashMap<MapType, RadioButton> mapTypeButtons = new DoubleHashMap<MapType, RadioButton>();
+    private HashBiMap<MapProvider, RadioButton> providerButtons = HashBiMap.create();
+    private HashBiMap<MapType, RadioButton> mapTypeButtons = HashBiMap.create();
 
     private boolean _updatingOptions;
 
@@ -115,8 +115,8 @@ public class MapToolOptions extends Composite implements TakesValue<MapData>, Ha
     {
         this.mapData = value;
         this.clearButtons();
-        this.providerButtons.getByKey1(MapProvider.valueOf(value.provider)).setValue(true);
-        this.mapTypeButtons.getByKey1(value.mapType).setValue(true);
+        this.providerButtons.get(MapProvider.valueOf(value.provider)).setValue(true);
+        this.mapTypeButtons.get(value.mapType).setValue(true);
         this.updateAvailableOptions();
     }
 
@@ -133,7 +133,7 @@ public class MapToolOptions extends Composite implements TakesValue<MapData>, Ha
 
         for (RadioButton button : this.mapTypeButtons.values()) {
             if (button.getValue()) {
-                this.mapData.mapType = this.mapTypeButtons.getByKey2(button);
+                this.mapData.mapType = this.mapTypeButtons.inverse().get(button);
             }
         }
         return this.mapData;
@@ -154,7 +154,7 @@ public class MapToolOptions extends Composite implements TakesValue<MapData>, Ha
         RadioButton firstEnabledButton = null;
         for (MapstractionMapType mapstractionMapType : provider.getSupportedMapTypes()) {
             MapType mapType = MapToolStaticUtils.fromMapstractionMapType(mapstractionMapType);
-            RadioButton button = this.mapTypeButtons.getByKey1(mapType);
+            RadioButton button = this.mapTypeButtons.get(mapType);
             button.setEnabled(true);
             if (null == firstEnabledButton) {
                 firstEnabledButton = button;
@@ -172,7 +172,7 @@ public class MapToolOptions extends Composite implements TakesValue<MapData>, Ha
         MapProvider provider = null;
         for (RadioButton button : this.providerButtons.values()) {
             if (button.getValue()) {
-                provider = this.providerButtons.getByKey2(button);
+                provider = this.providerButtons.inverse().get(button);
             }
         }
         return provider;

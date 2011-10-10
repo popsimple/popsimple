@@ -8,8 +8,8 @@ import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.data.Point2D;
 import com.project.shared.data.Rectangle;
 import com.project.shared.utils.PointUtils;
-import com.project.shared.utils.PointUtils.TransformationMode;
-import com.project.website.canvas.client.canvastools.base.CanvasToolFrame;
+import com.project.shared.utils.PointUtils.ConstraintMode;
+import com.project.website.canvas.client.canvastools.base.interfaces.CanvasToolFrame;
 import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.client.shared.UndoManager;
 import com.project.website.canvas.client.shared.UndoManager.UndoRedoPair;
@@ -22,12 +22,16 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
     // 1 = best, higer value means bigger angle steps (lower resolution)
     private static final int ROTATION_ROUND_RESOLUTION = 3;
 
-    private static final double GRID_RESOLUTION = 15;
+    private static final double GRID_RESOLUTION = 50;
 
     protected static final int DEFAULT_ANIMATION_DURATION = 300;
 
     private final Widget _container;
     private final ElementDragManager _elementDragManager;
+
+    private double gridResolution = GRID_RESOLUTION;
+    private boolean snapToGrid = false;
+
 
     public ToolFrameTransformerImpl(Widget container, Widget dragPanel, SimpleEvent<Void> stopOperationEvent)
     {
@@ -69,14 +73,14 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
     @Override
     public void startDragCanvasToolFrame(final CanvasToolFrame toolFrame)
     {
-        Element toolFrameElement = toolFrame.asWidget().getElement();
-        final Point2D initialPos = getElementCSSPositionFallback(toolFrameElement);
-        final Point2D originalOffsetFromFramePos = ElementUtils.getMousePositionRelativeToElement(toolFrameElement);
+        final Element toolFrameElement = toolFrame.asWidget().getElement();
+        final Point2D initialPos =  ElementUtils.getElementCSSPosition(toolFrameElement);
+        final Point2D originalOffsetFromFramePos = ElementUtils.getMousePositionRelativeToElement(this._container.getElement()).minus(initialPos);
 
         MouseMoveOperationHandler handler = new MouseMoveOperationHandler() {
             @Override public void onStop(Point2D pos) {
                 toolFrame.setDragging(false);
-                addDragUndoStep(toolFrame, initialPos, calcDragTargetPos(initialPos, originalOffsetFromFramePos, pos));
+                addDragUndoStep(toolFrame, initialPos, ElementUtils.getElementAbsolutePosition(toolFrameElement));
             }
 
             @Override public void onStart() {
@@ -94,19 +98,7 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
         };
 
         _elementDragManager.startMouseMoveOperation(toolFrameElement, _container.getElement(),
-                Point2D.zero, handler, ElementDragManager.StopCondition.STOP_CONDITION_MOUSE_UP);
-    }
-
-
-    private Point2D getElementCSSPositionFallback(Element toolFrameElement)
-    {
-        Point2D pos = ElementUtils.getElementCSSPosition(toolFrameElement);
-        if (null == pos) {
-            // Less good..
-            // Fallback in case the css left+top is not set.
-            pos = ElementUtils.getMousePositionRelativeToElement(toolFrameElement);
-        }
-        return pos;
+                Point2D.zero, handler, ElementDragManager.StopCondition.STOP_CONDITION_MOVEMENT_STOP);
     }
 
 
@@ -170,7 +162,7 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
 
 
         _elementDragManager.startMouseMoveOperation(toolFrameElement, _container.getElement(),
-                Point2D.zero, handler, ElementDragManager.StopCondition.STOP_CONDITION_MOUSE_UP);
+                Point2D.zero, handler, ElementDragManager.StopCondition.STOP_CONDITION_MOVEMENT_STOP);
     }
 
     @Override
@@ -180,7 +172,7 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
 
         final Point2D initialCenter = initialRect.getCenter();
         Point2D unrotatedBottomLeftRelativeToCenter = initialRect.getSize().mulCoords(-0.5, 0.5);
-        final double unrotatedBottomLeftAngle = Math.toDegrees(unrotatedBottomLeftRelativeToCenter.radians());
+        final double unrotatedBottomLeftAngle = Math.toDegrees(unrotatedBottomLeftRelativeToCenter.getRadians());
         final double startAngle = ElementUtils.getRotation(toolFrame.asWidget().getElement());
 
         MouseMoveOperationHandler handler = new MouseMoveOperationHandler() {
@@ -209,14 +201,14 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
         };
 
         _elementDragManager.startMouseMoveOperation(toolFrame.asWidget().getElement(), _container.getElement(),
-                Point2D.zero, handler, ElementDragManager.StopCondition.STOP_CONDITION_MOUSE_UP);
+                Point2D.zero, handler, ElementDragManager.StopCondition.STOP_CONDITION_MOVEMENT_STOP);
     }
 
     private Point2D sizeFromRotatedSizeOffset(final double angle, final Point2D initialSize,
             final Point2D startDragPos, Point2D pos)
     {
         Point2D rotatedSizeOffset = pos.minus(startDragPos);
-        Point2D sizeOffset = rotatedSizeOffset.rotate(-angle);
+        Point2D sizeOffset = rotatedSizeOffset.getRotated(-angle);
         Point2D size = Point2D.max(initialSize.plus(sizeOffset), Point2D.zero);
         return size;
     }
@@ -234,36 +226,46 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
         return (int) Math.round(ROTATION_ROUND_RESOLUTION * (rotation / ROTATION_ROUND_RESOLUTION));
     }
 
-    private Point2D transformMovement(Point2D size, Point2D initialCoords)
+    private Point2D transformMovement(Point2D coords, Point2D initialCoords)
     {
-        return transformMovement(size, initialCoords, true);
+        return transformMovement(coords, initialCoords, true);
     }
 
-    private Point2D transformMovement(Point2D size, Point2D initialCoords, boolean allowMean)
+    private Point2D transformMovement(Point2D coords, Point2D initialCoords, boolean allowMean)
     {
-        Point2D sizeDelta = size.minus(initialCoords);
         Event event = Event.getCurrentEvent();
-        if (null != event) {
-            TransformationMode mode = TransformationMode.NONE;
-            if (allowMean && event.getCtrlKey()) {
-                mode = TransformationMode.MEAN;
-            }
-            else if (event.getShiftKey() && event.getAltKey()) {
-                // do nothing here.
-            }
-            else if (event.getShiftKey()) {
-                mode = TransformationMode.SNAP_Y;
-            }
-            else if (event.getAltKey()) {
-                mode = TransformationMode.SNAP_X;
-            }
-            sizeDelta = PointUtils.transform(sizeDelta, mode);
-            if (event.getShiftKey() && event.getAltKey()) {
-                // Snap to grid.
-                sizeDelta = sizeDelta.mul(1/GRID_RESOLUTION).mul(GRID_RESOLUTION);
-            }
+        if (null == event) {
+            return this.applySnapToGrid(coords);
         }
-        return initialCoords.plus(sizeDelta);
+        Point2D sizeDelta = coords.minus(initialCoords);
+        ConstraintMode mode = ConstraintMode.NONE;
+        if (allowMean && event.getCtrlKey()) {
+            mode = ConstraintMode.KEEP_RATIO;
+        }
+        else if (event.getShiftKey() && event.getAltKey()) {
+            // do nothing here.
+        }
+        else if (event.getShiftKey()) {
+            mode = ConstraintMode.SNAP_Y;
+        }
+        else if (event.getAltKey()) {
+            mode = ConstraintMode.SNAP_X;
+        }
+        sizeDelta = PointUtils.constrain(sizeDelta, initialCoords, mode);
+        if (this.snapToGrid || (event.getShiftKey() && event.getAltKey())) {
+            sizeDelta = applySnapToGrid(sizeDelta);
+        }
+        return this.applySnapToGrid(initialCoords.plus(sizeDelta));
+    }
+
+
+    @Override
+    public Point2D applySnapToGrid(Point2D sizeDelta)
+    {
+        if (this.snapToGrid) {
+            return sizeDelta.mul(1/gridResolution).mul(gridResolution);
+        }
+        return sizeDelta;
     }
 
 
@@ -309,9 +311,33 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
             final double unrotatedBottomLeftAngle, Point2D pos, int animationDuration)
     {
         Point2D posRelativeToCenter = pos.minus(initialCenter);
-        double rotation = Math.toDegrees(posRelativeToCenter.radians()) - unrotatedBottomLeftAngle;
+        double rotation = Math.toDegrees(posRelativeToCenter.getRadians()) - unrotatedBottomLeftAngle;
         ElementUtils.setRotation(toolFrame.asWidget().getElement(), roundedAngle(rotation), animationDuration);
         toolFrame.onTransformed();
     }
 
+    @Override
+    public double getGridResolution()
+    {
+        return gridResolution;
+    }
+
+    @Override
+    public void setGridResolution(double gridResolution)
+    {
+        this.gridResolution = gridResolution;
+    }
+
+    @Override
+    public boolean isSnapToGrid()
+    {
+        return snapToGrid;
+    }
+
+
+    @Override
+    public void setSnapToGrid(boolean snapToGrid)
+    {
+        this.snapToGrid = snapToGrid;
+    }
 }

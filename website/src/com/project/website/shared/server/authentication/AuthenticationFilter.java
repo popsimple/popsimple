@@ -15,6 +15,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.common.base.Joiner;
 import com.project.shared.server.ServerQueryString;
 import com.project.shared.utils.StringUtils;
 import com.project.website.shared.data.QueryParameters;
@@ -103,7 +104,7 @@ public class AuthenticationFilter implements Filter
         {
             this._excludePatternStrings.add(pattern.trim());
         }
-        this._excludePattern = Pattern.compile(StringUtils.join("|", this._excludePatternStrings), Pattern.CASE_INSENSITIVE);
+        this._excludePattern = Pattern.compile(Joiner.on('|').join(this._excludePatternStrings), Pattern.CASE_INSENSITIVE);
     }
 
 }

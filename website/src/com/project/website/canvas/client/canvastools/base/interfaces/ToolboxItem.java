@@ -1,4 +1,4 @@
-package com.project.website.canvas.client.canvastools.base;
+package com.project.website.canvas.client.canvastools.base.interfaces;
 
 import com.project.website.canvas.shared.data.ElementData;
 

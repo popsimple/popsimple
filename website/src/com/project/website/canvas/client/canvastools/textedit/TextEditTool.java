@@ -13,11 +13,11 @@ import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.StyleUtils;
 import com.project.shared.client.utils.widgets.WidgetUtils;
 import com.project.shared.data.funcs.Func;
-import com.project.website.canvas.client.canvastools.base.CanvasTool;
 import com.project.website.canvas.client.canvastools.base.CanvasToolCommon;
 import com.project.website.canvas.client.canvastools.base.CanvasToolEvents;
-import com.project.website.canvas.client.canvastools.base.ICanvasToolEvents;
 import com.project.website.canvas.client.canvastools.base.ResizeMode;
+import com.project.website.canvas.client.canvastools.base.interfaces.CanvasTool;
+import com.project.website.canvas.client.canvastools.base.interfaces.ICanvasToolEvents;
 import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.shared.data.ElementData;
 import com.project.website.canvas.shared.data.TextData;
@@ -240,10 +240,4 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
             setActive(false);
         }
     }
-
-    @Override
-    public boolean dimOnLoad() {
-        return true;
-    }
-
 }

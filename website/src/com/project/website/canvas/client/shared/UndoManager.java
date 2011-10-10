@@ -2,9 +2,9 @@ package com.project.website.canvas.client.shared;
 
 import java.util.Stack;
 
+import com.google.common.base.Objects;
+import com.google.common.collect.Lists;
 import com.project.shared.data.Pair;
-import com.project.shared.utils.IterableUtils;
-import com.project.shared.utils.ObjectUtils;
 
 public class UndoManager
 {
@@ -61,8 +61,8 @@ public class UndoManager
 
     private static void filter(Object owner, Stack<Pair<Object, UndoRedoPair>> stack)
     {
-        for (Pair<Object, UndoRedoPair> step : IterableUtils.toList(stack)) {
-            if (ObjectUtils.areEqual(step.getA(), owner)) {
+        for (Pair<Object, UndoRedoPair> step : Lists.newArrayList(stack)) {
+            if (Objects.equal(step.getA(), owner)) {
                 stack.remove(step);
             }
         }

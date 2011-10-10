@@ -10,6 +10,8 @@ import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.data.Point2D;
+import com.project.website.canvas.client.canvastools.base.eventargs.LoadStartedEventArgs;
+import com.project.website.canvas.client.canvastools.base.interfaces.ICanvasToolEvents;
 
 public class CanvasToolEvents implements ICanvasToolEvents
 {
@@ -18,7 +20,7 @@ public class CanvasToolEvents implements ICanvasToolEvents
     private final SimpleEvent<Void> _killRequestEvent = new SimpleEvent<Void>();
     private final SimpleEvent<MouseEvent<?>> _moveStartRequestEvent = new SimpleEvent<MouseEvent<?>>();
     private SimpleEvent<Point2D> _selfMoveRequestEvent = new SimpleEvent<Point2D>();
-    private final SimpleEvent<Void> _loadStartedEvent = new SimpleEvent<Void>();
+    private final SimpleEvent<LoadStartedEventArgs> _loadStartedEvent = new SimpleEvent<LoadStartedEventArgs>();
     private final SimpleEvent<Void> _loadEndedEvent = new SimpleEvent<Void>();
 
     private Widget _domDispatcher = null;
@@ -71,13 +73,18 @@ public class CanvasToolEvents implements ICanvasToolEvents
     }
 
     @Override
-    public HandlerRegistration addLoadStartedEventHandler(Handler<Void> handler) {
+    public HandlerRegistration addLoadStartedEventHandler(Handler<LoadStartedEventArgs> handler) {
         return this._loadStartedEvent.addHandler(handler);
     }
 
     public void dispatchLoadStartedEvent()
     {
-        this._loadStartedEvent.dispatch(null);
+        this._loadStartedEvent.dispatch(new LoadStartedEventArgs());
+    }
+
+    public void dispatchLoadStartedEvent(LoadStartedEventArgs args)
+    {
+        this._loadStartedEvent.dispatch(args);
     }
 
     @Override

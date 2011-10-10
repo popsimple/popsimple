@@ -8,6 +8,8 @@ import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
+import com.google.gwt.event.dom.client.TouchStartEvent;
+import com.google.gwt.event.dom.client.TouchStartHandler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.Event;
@@ -32,6 +34,12 @@ public class FloatingToolbar extends FlowPanel
     private final RegistrationsManager registrationsManager = new RegistrationsManager();
 
     protected Widget _editedWidget = null;
+
+    private final ScheduledCommand updatePositionCommand = new ScheduledCommand() {
+        @Override public void execute() {
+            actualUpdatePosition();
+        }
+    };
 
     public FloatingToolbar()
     {
@@ -63,6 +71,10 @@ public class FloatingToolbar extends FlowPanel
             @Override public void onMouseDown(MouseDownEvent event) {
                 that.updatePosition();
             }}, MouseDownEvent.getType()));
+        this.registrationsManager.add(this._editedWidget.addDomHandler(new TouchStartHandler() {
+            @Override public void onTouchStart(TouchStartEvent event) {
+                that.updatePosition();
+            }}, TouchStartEvent.getType()));
 //        this.registrationsManager.add(this._editedWidget.addDomHandler(new MouseUpHandler() {
 //            @Override public void onMouseUp(MouseUpEvent event) {
 //                that.updatePosition();
@@ -98,11 +110,7 @@ public class FloatingToolbar extends FlowPanel
 
     public void updatePosition()
     {
-        SchedulerUtils.OneTimeScheduler.get().scheduleDeferredOnce(new ScheduledCommand() {
-            @Override public void execute() {
-                actualUpdatePosition();
-            }
-        });
+        SchedulerUtils.OneTimeScheduler.get().scheduleDeferredOnce(updatePositionCommand);
     }
 
     public void actualUpdatePosition()
@@ -130,8 +138,8 @@ public class FloatingToolbar extends FlowPanel
         if (fixedTargetPos.getY() > minCorner.getY())
         {
             // The toolbar will be inside the element, move it to below it instead of trying to fit it above.
-            fixedTargetPos.setY(maxCorner.getY() + TOOLBAR_MARGIN);
-            fixedTargetPos = fixedTargetPos.limitTo(Point2D.zero, maxToolbarPosInWindow);
+            fixedTargetPos = new Point2D(fixedTargetPos.getX(), maxCorner.getY() + TOOLBAR_MARGIN)
+                           .limitTo(Point2D.zero, maxToolbarPosInWindow);
         }
 
         ElementUtils.setElementCSSPosition(this.getElement(), fixedTargetPos, 300);

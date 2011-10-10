@@ -7,7 +7,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.website.canvas.client.canvastools.base.BuiltinTools;
-import com.project.website.canvas.client.canvastools.base.ToolboxItem;
+import com.project.website.canvas.client.canvastools.base.interfaces.ToolboxItem;
 import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.client.worksheet.WorksheetImpl;
 import com.project.website.canvas.client.worksheet.WorksheetViewImpl;

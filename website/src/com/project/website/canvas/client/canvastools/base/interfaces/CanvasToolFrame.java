@@ -1,25 +1,25 @@
-package com.project.website.canvas.client.canvastools.base;
+package com.project.website.canvas.client.canvastools.base.interfaces;
 
 import com.google.gwt.event.dom.client.HasBlurHandlers;
 import com.google.gwt.event.dom.client.HasFocusHandlers;
 import com.google.gwt.event.dom.client.MouseDownHandler;
-import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.project.shared.client.events.SimpleEvent;
+import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.data.Point2D;
 import com.project.website.canvas.shared.data.ElementData;
 
 public interface CanvasToolFrame extends Focusable, HasFocusHandlers, HasBlurHandlers, IsWidget
 {
     HandlerRegistration addCloseRequestHandler(SimpleEvent.Handler<Void> handler);
-    HandlerRegistration addMoveStartRequestHandler(SimpleEvent.Handler<MouseEvent<?>> handler);
+    HandlerRegistration addMoveStartRequestHandler(Handler<Void> handler);
     HandlerRegistration addMoveBackRequestHandler(SimpleEvent.Handler<Void> handler);
     HandlerRegistration addMoveFrontRequestHandler(SimpleEvent.Handler<Void> handler);
-    HandlerRegistration addResizeStartRequestHandler(SimpleEvent.Handler<MouseEvent<?>> handler);
-    HandlerRegistration addRotateStartRequestHandler(SimpleEvent.Handler<MouseEvent<?>> handler);
+    HandlerRegistration addResizeStartRequestHandler(SimpleEvent.Handler<Void> handler);
+    HandlerRegistration addRotateStartRequestHandler(SimpleEvent.Handler<Void> handler);
     HandlerRegistration addMouseDownHandler(MouseDownHandler handler);
     HandlerRegistration addMouseUpHandler(MouseUpHandler handler);
 
@@ -32,7 +32,7 @@ public interface CanvasToolFrame extends Focusable, HasFocusHandlers, HasBlurHan
      * padding/margin/border of the tool, otherwise getToolSize and setToolSize
      * will not be compatible (will be using different values.)
      */
-    void setToolSize(Point2D size);
+    Point2D setToolSize(Point2D desiredSize);
     Point2D getToolSize();
     Point2D getToolOffsetInFrame();
 

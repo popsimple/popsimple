@@ -10,13 +10,13 @@ public interface MainStyles extends CssResource {
 
     String canvasToolbar();
 
+    String canvasToolbarButton();
+
     String canvasToolbarItemTitle();
 
     String canvasToolbarItemWrapper();
 
     String canvasToolbarListBox();
-
-    String canvasToolbarToggleButton();
 
     String colorPickerButton();
 
@@ -32,11 +32,7 @@ public interface MainStyles extends CssResource {
 
     String cropSelectButton();
 
-    String cropSiteBox();
-
     String cropSiteCreateModeCanvasStyle();
-
-    String cropSiteFrame();
 
     String cropSiteToolEmpty();
 
@@ -78,6 +74,8 @@ public interface MainStyles extends CssResource {
 
     String imageToolEmpty();
 
+    String imageToolLoading();
+
     String imageToolOptionsBar();
 
     String imageToolSearchProviderIconStyle();
@@ -89,6 +87,8 @@ public interface MainStyles extends CssResource {
     String link();
 
     String loadingFiller();
+
+    String loadingFillerDim();
 
     String mapCreateModeCanvasStyle();
 
@@ -116,25 +116,51 @@ public interface MainStyles extends CssResource {
 
     String selected();
 
-    String selectionPanelStyle();
-
-    String sketchCreateModeCanvasStyle();
-
 //    String textEditNoToolbars();
 //
 //    String canvasToolbar();
 //
 //    String textEditViewBox();
 
+    String selectionPanelStyle();
+
+    String selectMediaSearchHeader();
+
+    String selectMediaURLHeader();
+
+    String sketchCreateModeCanvasStyle();
+
     String sketchTool();
+
+    String slider();
+
+    String sliderDrag();
+
+    String sliderLess();
+
+    String sliderMore();
+
+    String sliderScale();
+
+    String sliderValueText();
+
+    String sliderWrapper();
+
+	String taskCell();
+
+	String taskCheckboxWrapper();
 
     String taskImageChecked();
 
     String taskImageContainer();
 
+    String taskImageWrapper();
+
     String taskList();
 
     String taskListBody();
+
+    String taskListBodyWrapper();
 
     String taskListCreateModeCanvasStyle();
 
@@ -144,19 +170,29 @@ public interface MainStyles extends CssResource {
 
     String taskListTextChecked();
 
+    String taskListWrapper();
+
     String taskRemoveImage();
+
+    String taskRemoveWrapper();
+
+    String taskRow();
+
+    String taskText();
+
+    String taskTextWrapper();
 
     String textBoxCreateModeCanvasStyle();
 
     String textEdit();
 
-	String textEditBox();
+    String textEditBox();
 
-	String textEditFocused();
+    String textEditFocused();
 
     String textEditNotFocused();
 
-    String textEditToolbarFontFamilyList();
+	String textEditToolbarFontFamilyList();
 
     String textSelectionDisabled();
 
@@ -196,7 +232,7 @@ public interface MainStyles extends CssResource {
 
     String toolFrameBottomLeftRotate();
 
-	String toolFrameBottomRightResize();
+    String toolFrameBottomRightResize();
 
     String toolFrameButton();
 
@@ -246,6 +282,8 @@ public interface MainStyles extends CssResource {
 
     String worksheetFullView();
 
+    String worksheetGridOption();
+
     String worksheetHeader();
 
     String worksheetHeaderLeft();
@@ -267,9 +305,5 @@ public interface MainStyles extends CssResource {
     String worksheetSaveButton();
 
     String worksheetWelcomeLabelHolder();
-
-    String imageToolLoading();
-
-    String loadingFillerDim();
 }
 

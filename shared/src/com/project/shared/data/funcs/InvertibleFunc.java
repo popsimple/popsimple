@@ -5,5 +5,5 @@ package com.project.shared.data.funcs;
  */
 public abstract class InvertibleFunc<A,B> extends Func<A,B>
 {
-    public abstract A invertCall(B arg);
+    public abstract Func<B,A> invert();
 }

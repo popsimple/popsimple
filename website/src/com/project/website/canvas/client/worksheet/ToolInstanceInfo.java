@@ -4,8 +4,8 @@ import java.util.Date;
 
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.project.shared.client.handlers.RegistrationsManager;
-import com.project.website.canvas.client.canvastools.base.CanvasToolFactory;
 import com.project.website.canvas.client.canvastools.base.CanvasToolFrameImpl;
+import com.project.website.canvas.client.canvastools.base.interfaces.CanvasToolFactory;
 
 class ToolInstanceInfo {
     public ToolInstanceInfo(CanvasToolFactory<?> factory, CanvasToolFrameImpl toolFrame,

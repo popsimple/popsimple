@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import com.google.common.base.Objects;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
@@ -21,16 +22,16 @@ import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.UrlUtils;
 import com.project.shared.data.Point2D;
-import com.project.shared.utils.CloneableUtils;
-import com.project.shared.utils.ObjectUtils;
 import com.project.shared.utils.QueryString;
 import com.project.shared.utils.ThrowableUtils;
 import com.project.website.canvas.client.ToolFactories;
-import com.project.website.canvas.client.canvastools.base.CanvasTool;
-import com.project.website.canvas.client.canvastools.base.CanvasToolFactory;
-import com.project.website.canvas.client.canvastools.base.CanvasToolFrame;
 import com.project.website.canvas.client.canvastools.base.CanvasToolFrameImpl;
-import com.project.website.canvas.client.canvastools.base.ToolboxItem;
+import com.project.website.canvas.client.canvastools.base.interfaces.CanvasTool;
+import com.project.website.canvas.client.canvastools.base.interfaces.CanvasToolFactory;
+import com.project.website.canvas.client.canvastools.base.interfaces.CanvasToolFrame;
+import com.project.website.canvas.client.canvastools.base.interfaces.ToolboxItem;
+import com.project.website.canvas.client.shared.ImageOptionTypes;
+import com.project.website.canvas.client.shared.ImageOptionsProviderUtils;
 import com.project.website.canvas.client.shared.ZIndexAllocator;
 import com.project.website.canvas.client.shared.widgets.DialogWithZIndex;
 import com.project.website.canvas.client.worksheet.interfaces.Worksheet;
@@ -63,6 +64,9 @@ public class WorksheetImpl implements Worksheet
     private final RegistrationsManager viewModeRegistrations = new RegistrationsManager();
     private boolean _inViewMode = false;
 
+    //TODO: Think about something else. (Hadas)
+    private final WorksheetImageOptionsProvider _imageOptionsProvider = new WorksheetImageOptionsProvider();
+
     public WorksheetImpl(WorksheetView view)
     {
         super();
@@ -70,6 +74,8 @@ public class WorksheetImpl implements Worksheet
         AuthenticationServiceAsync service = getAuthService();
         updateUserSpecificInfo(view, service);
         setRegistrations();
+
+        this.setDefaultPageOptions();
     }
 
     @Override
@@ -108,8 +114,8 @@ public class WorksheetImpl implements Worksheet
         ArrayList<ElementData> activeElems = new ArrayList<ElementData>();
         for (Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo> entry : toolInfoMap.entrySet()) {
             ToolInstanceInfo toolInfo = entry.getValue();
-            ElementData toolData = this.updateToolData(toolInfo.toolFrame);
-            activeElems.add(toolData);
+            this.updateToolData(toolInfo.toolFrame);
+            activeElems.add(toolInfo.toolFrame.getTool().getValue());
         }
         this.page.elements.clear();
         this.page.elements.addAll(activeElems);
@@ -180,8 +186,9 @@ public class WorksheetImpl implements Worksheet
         this._toolClipboard.clear();
         for (CanvasToolFrame toolFrame : toolFrames)
         {
-            this._toolClipboard.add((ElementData)CloneableUtils.clone(
-                    updateToolData(toolFrame)));
+            this.updateToolData(toolFrame);
+            ElementData data = toolFrame.getTool().getValue();
+            this._toolClipboard.add(data.getCloneable().getClone());
         }
     }
 
@@ -223,6 +230,7 @@ public class WorksheetImpl implements Worksheet
             }
         });
         tool.bind();
+        tool.setViewMode(this._inViewMode);
         return toolFrame;
     }
 
@@ -309,9 +317,9 @@ public class WorksheetImpl implements Worksheet
         this.updateOptions(this.page.options);
         this.updateHistoryToken();
 
-        HashMap<Long, ElementData> newElements = new HashMap<Long, ElementData>();
+        HashMap<String, ElementData> newElements = new HashMap<String, ElementData>();
         for (ElementData elem : this.page.elements) {
-            newElements.put(elem.id, elem);
+            newElements.put(elem.uniqueId, elem);
         }
 
         HashSet<Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo>> entries =
@@ -322,11 +330,11 @@ public class WorksheetImpl implements Worksheet
             CanvasTool<? extends ElementData> tool = entry.getKey();
             ToolInstanceInfo toolInfo = entry.getValue();
             ElementData oldData = tool.getValue();
-            ElementData newData = newElements.get(oldData.id);
+            ElementData newData = newElements.get(oldData.uniqueId);
             if (null != newData) {
                 tool.setElementData(newData);
                 view.setToolFrameTransform(toolInfo.toolFrame, newData.transform, Point2D.zero);
-                newElements.remove(oldData.id);
+                newElements.remove(oldData.uniqueId);
             } else {
                 this.removeToolInstance(toolInfo.toolFrame);
             }
@@ -353,7 +361,7 @@ public class WorksheetImpl implements Worksheet
             }
         }
 
-        if (ObjectUtils.areEqual(id, this.page.id)) {
+        if (Objects.equal(id, this.page.id)) {
             return;
         }
 
@@ -422,7 +430,7 @@ public class WorksheetImpl implements Worksheet
         view.clearToolFrameSelection();
         for (ElementData data : _toolClipboard)
         {
-            ElementData offsetData = (ElementData)CloneableUtils.clone(data);
+            ElementData offsetData = data.getCloneable().getClone();
             //TODO: does it make sense that the Worksheet will add the offset?
             offsetData.transform.translation =
                 offsetData.transform.translation.plus(new Point2D(10, 10));
@@ -610,7 +618,7 @@ public class WorksheetImpl implements Worksheet
         if (null == id) {
         	return;
         }
-        if (false == ObjectUtils.areEqual(this.page.id, id)) {
+        if (false == Objects.equal(this.page.id, id)) {
             // Page id changed.
             // Change the URL hash and trigger a history load event.
             Window.Location.replace(this.buildPageUrl(id, this._inViewMode));
@@ -618,6 +626,13 @@ public class WorksheetImpl implements Worksheet
         }
         // Page id not changed, just reload
         this.load(idStr);
+    }
+
+    private void setDefaultPageOptions()
+    {
+        this.page.options.backgroundImage.options = ImageOptionsProviderUtils.getImageOptions(
+                this._imageOptionsProvider, ImageOptionTypes.OriginalSize);
+        view.setOptions(this.page.options);
     }
 
     private void updateOptions(CanvasPageOptions value)
@@ -629,13 +644,12 @@ public class WorksheetImpl implements Worksheet
         view.setOptions(value);
     }
 
-    private ElementData updateToolData(CanvasToolFrame toolFrame){
+    private void updateToolData(CanvasToolFrame toolFrame){
         ElementData toolData = toolFrame.getTool().getValue();
         Element frameElement = toolFrame.asWidget().getElement();
         toolData.zIndex = ZIndexAllocator.getElementZIndex(frameElement);
         toolData.transform = new Transform2D(ElementUtils.getElementOffsetPosition(frameElement),
                 toolFrame.getToolSize(), ElementUtils.getRotation(frameElement));
-        return toolData;
     }
 
     private void updateUserSpecificInfo(WorksheetView view, AuthenticationServiceAsync service)
