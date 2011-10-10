@@ -1,7 +1,5 @@
 package com.project.website.canvas.client.canvastools.tasklist;
 
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.FocusEvent;
@@ -11,10 +9,12 @@ import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.ui.TextBox;
+import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.website.canvas.client.resources.CanvasResources;
 
 public class HoverTextBox extends TextBox {
     private boolean isEditing = false;
+    private RegistrationsManager _registrations = new RegistrationsManager();
 
     public HoverTextBox() {
         this.enterViewMode();
@@ -37,13 +37,6 @@ public class HoverTextBox extends TextBox {
             return;
         }
         enterEditMode();
-        Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-
-            @Override
-            public void execute() {
-                selectAll();
-            }
-        });
         isEditing = true;
     }
 
@@ -57,27 +50,42 @@ public class HoverTextBox extends TextBox {
         isEditing = false;
     }
 
+    @Override
+    public void setReadOnly(boolean readOnly) {
+        super.setReadOnly(readOnly);
+
+        if (readOnly)
+        {
+            this._registrations.clear();
+            this.enterViewMode();
+        }
+        else
+        {
+            this.registerHandlers();
+        }
+    }
+
     private void registerHandlers() {
-        this.addBlurHandler(new BlurHandler() {
+        this._registrations.add(this.addBlurHandler(new BlurHandler() {
             public void onBlur(BlurEvent event) {
                 stopEditing();
             }
-        });
-        this.addMouseOverHandler(new MouseOverHandler() {
+        }));
+        this._registrations.add(this.addMouseOverHandler(new MouseOverHandler() {
             public void onMouseOver(MouseOverEvent event) {
                 enterEditMode();
             }
-        });
-        this.addFocusHandler(new FocusHandler() {
+        }));
+        this._registrations.add(this.addFocusHandler(new FocusHandler() {
 
             public void onFocus(FocusEvent event) {
                 startEditing();
             }
-        });
-        this.addMouseOutHandler(new MouseOutHandler() {
+        }));
+        this._registrations.add(this.addMouseOutHandler(new MouseOutHandler() {
             public void onMouseOut(MouseOutEvent event) {
                 enterViewMode();
             }
-        });
+        }));
     }
 }
