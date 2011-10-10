@@ -322,13 +322,14 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
     @Override
     public Point2D getToolOffsetInFrame()
     {
-        Element toolPanelElement = this.toolPanel.getElement();
+        /*Element toolPanelElement = this.toolPanel.getElement();
         Point2D offset = ElementUtils.getElementOffsetPosition(toolPanelElement);
         Rectangle paddingRect = ElementUtils.tryGetPaddingRectangle(toolPanelElement);
         if (null != paddingRect) {
             offset = offset.plus(paddingRect.getCorners().topLeft);
         }
-        return offset;
+        return offset;*/
+        return ElementUtils.getElementAbsolutePosition(this.toolPanel.getElement()).minus(ElementUtils.getElementAbsolutePosition(this.getElement()));
     }
 
 
