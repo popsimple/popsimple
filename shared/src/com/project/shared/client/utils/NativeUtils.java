@@ -7,10 +7,16 @@ import com.project.shared.data.funcs.Func;
 
 public class NativeUtils
 {
+    public static final int SPACE_CHAR_CODE = 32;
 
     public static boolean keyIsEnter(KeyPressEvent event)
     {
         return event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ENTER;
+    }
+
+    public static boolean keyIsSpace(KeyPressEvent event)
+    {
+        return event.getNativeEvent().getCharCode() == SPACE_CHAR_CODE;
     }
 
     /**
