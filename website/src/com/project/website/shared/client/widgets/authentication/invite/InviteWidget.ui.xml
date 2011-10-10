@@ -21,7 +21,7 @@
 					</p>
 					<p>
 						<g:Label addStyleNames="{res.main.formLabel}">Additional message (optional):</g:Label>
-						<g:TextArea ui:field="textMessage" addStyleNames="{res.main.messageArea}"></g:TextArea>
+						<g:TextArea ui:field="textMessage" addStyleNames="{res.main.invitationMessageArea}"></g:TextArea>
 					</p>
 					<p class="{res.main.buttonRow}">
                         <g:HTMLPanel ui:field="errorPanel" addStyleNames="{res.main.errorPanel}">

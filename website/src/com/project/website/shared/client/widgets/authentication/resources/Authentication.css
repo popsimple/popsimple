@@ -94,11 +94,13 @@
 	color: #FA89A4;
 }
 
-.messageArea {
+.invitationMessageArea {
 	width: 17em;
 	border: #ccc 1px solid;
 	font-size: 20px;
 	border-radius: 5px 5px 5px 5px;
+	resize: vertical;
+	max-height: 140px;
 }
 
 .buttonRow {

@@ -33,7 +33,7 @@ public interface Authentication extends CssResource
 
     String nameTextBox();
 
-    String messageArea();
+    String invitationMessageArea();
 
     String buttonRow();
 
