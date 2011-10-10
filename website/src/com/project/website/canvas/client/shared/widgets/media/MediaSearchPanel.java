@@ -21,6 +21,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.RadioButton;
@@ -38,7 +39,7 @@ import com.project.website.canvas.client.shared.searchProviders.interfaces.Media
 import com.project.website.canvas.client.shared.searchProviders.interfaces.MediaSearchResult;
 import com.project.website.canvas.client.shared.widgets.RadioButtonPanel;
 
-public class MediaSearchPanel extends Composite {
+public class MediaSearchPanel extends Composite implements Focusable {
 
     private static MediaSearchPanelUiBinder uiBinder = GWT.create(MediaSearchPanelUiBinder.class);
 
@@ -291,5 +292,29 @@ public class MediaSearchPanel extends Composite {
         resultsPanel.clear();
         resultsPanelContainer.scrollToTop();
         photoSizesPanel.clear();
+    }
+
+    @Override
+    public int getTabIndex()
+    {
+        return this.searchText.getTabIndex();
+    }
+
+    @Override
+    public void setAccessKey(char key)
+    {
+        this.searchText.setAccessKey(key);
+    }
+
+    @Override
+    public void setFocus(boolean focused)
+    {
+        this.searchText.setFocus(focused);
+    }
+
+    @Override
+    public void setTabIndex(int index)
+    {
+        this.searchText.setTabIndex(index);
     }
 }
