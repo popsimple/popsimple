@@ -75,17 +75,20 @@ public class SketchToolbar extends Composite
 
         ValueChangeHandler<Double> barValueChangedHandler = new ValueChangeHandler<Double>() {
 			@Override public void onValueChange(ValueChangeEvent<Double> event) {
+		        updateOptionsFromToolbar();
                 handleOptionChanged(true);
 			}};
 
         ValueChangeHandler<Boolean> optionsChangedHandleBool = new ValueChangeHandler<Boolean>() {
             @Override public void onValueChange(ValueChangeEvent<Boolean> event) {
+                updateOptionsFromToolbar();
                 handleOptionChanged(true);
             }
         };
 
         this.paintColor.addChangeHandler(new ChangeHandler() {
             @Override public void onChange(ChangeEvent event) {
+                updateOptionsFromToolbar();
                 handleOptionChanged(true);
             }
         });
@@ -105,24 +108,21 @@ public class SketchToolbar extends Composite
 
     protected void handleOptionChanged(boolean fireEvent)
     {
-        this.updateOptionsFromToolbar();
         hideAllOptionPanels();
         switch (this._sketchOptions.drawingTool) {
         case ERASE:
-            this.eraseButton.setValue(true, false);
         	this.eraseOptionsPanel.setVisible(true);
         	break;
         case SPIRO:
-            this.spiroButton.setValue(true, false);
         	this.spiroOptionsPanel.setVisible(true);
         	// fall through
         case PAINT:
         	// fall through
     	default:
-            this.paintButton.setValue(true, false);
         	this.paintOptionsPanel.setVisible(true);
         	break;
         }
+        this.updateButtonStatesFromOptions();
         this.paintColor.setColor(StringUtils.defaultIfNullOrEmpty(this._sketchOptions.penColor, DEFAULT_STROKE_COLOR));
         this.paintWidthSlider.setValue(Double.valueOf(this._sketchOptions.penWidth), false);
         this.eraseWidthSlider.setValue(Double.valueOf(this._sketchOptions.eraserWidth), false);
@@ -130,6 +130,22 @@ public class SketchToolbar extends Composite
             this.optionsChangedEvent.dispatch(new SketchOptions(this._sketchOptions));
         }
     }
+
+	private void updateButtonStatesFromOptions() {
+		switch (this._sketchOptions.drawingTool) {
+        case ERASE:
+            this.eraseButton.setValue(true, false);
+        	break;
+        case SPIRO:
+            this.spiroButton.setValue(true, false);
+            break;
+        case PAINT:
+        	// fall through
+    	default:
+            this.paintButton.setValue(true, false);
+        	break;
+        }
+	}
 
 	protected void hideAllOptionPanels() {
 		this.eraseOptionsPanel.setVisible(false);
@@ -148,8 +164,7 @@ public class SketchToolbar extends Composite
 
     private void updateOptionsFromToolbar()
     {
-        ToggleButton activeButton = toolTogglePanel.getActiveButton();
-        this._sketchOptions.drawingTool = this.buttonToolMap.get(activeButton);
+        this._sketchOptions.drawingTool = this.buttonToolMap.get(toolTogglePanel.getActiveButton());
         this._sketchOptions.penWidth = Math.max(1, this.paintWidthSlider.getValue().intValue());
         this._sketchOptions.penColor = this.paintColor.getColor();
         this._sketchOptions.eraserWidth = Math.max(1, this.eraseWidthSlider.getValue().intValue());
