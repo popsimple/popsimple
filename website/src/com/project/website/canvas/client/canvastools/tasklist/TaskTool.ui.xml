@@ -4,23 +4,19 @@
 	xmlns:my="urn:import:com.project.website.canvas.client.canvastools.tasklist">
 	<ui:with field='res' type='com.project.website.canvas.client.resources.CanvasResources'/>
 	<ui:style>
-		.taskText{
-			width: 100%;
-			text-overflow: ellipsis;
-		}
 	</ui:style>
 	<g:HTMLPanel addStyleNames="{res.main.taskRow}">
-		<div class="{res.main.taskCell} {res.main.taskCheckbox}">
-		<g:CheckBox ui:field="checkTask"></g:CheckBox>
+		<div class="{res.main.taskCell} {res.main.taskCheckboxWrapper}">
+			<g:CheckBox ui:field="checkTask"></g:CheckBox>
 		</div>
-		<div class="{res.main.taskCell}" style="width: 32px;">
-		<g:FlowPanel ui:field="imageTask" addStyleNames="{res.main.taskImageContainer}"></g:FlowPanel>
+		<div class="{res.main.taskCell} {res.main.taskImageWrapper}">
+			<g:FlowPanel ui:field="imageTask" addStyleNames="{res.main.taskImageContainer}"></g:FlowPanel>
 		</div>
-		<div class="{res.main.taskCell}" style="vertical-align: middle; padding-right: 10px;">
-		<my:HoverTextBox ui:field="textTask" addStyleNames="{style.taskText}">Type your task here...</my:HoverTextBox>
+		<div class="{res.main.taskCell} {res.main.taskTextWrapper}">
+			<my:HoverTextBox ui:field="textTask" addStyleNames="{res.main.taskText}">Type your task here...</my:HoverTextBox>
 		</div>
-		<div class="{res.main.taskCell}" style="width: 16px;">
-		<g:Anchor ui:field="imageRemove" addStyleNames="{res.main.taskRemoveImage}"></g:Anchor>
+		<div class="{res.main.taskCell} {res.main.taskRemoveWrapper}">
+			<g:Button ui:field="imageRemove" addStyleNames="{res.main.taskRemoveImage}"></g:Button>
 		</div>
 	</g:HTMLPanel>
 </ui:UiBinder>

@@ -144,13 +144,15 @@ public interface MainStyles extends CssResource {
 
     String taskCell();
 
-    String taskCheckbox();
+    String taskCheckboxWrapper();
 
-    String taskImageChecked();
+	String taskImageChecked();
 
 	String taskImageContainer();
 
-	String taskList();
+    String taskImageWrapper();
+
+    String taskList();
 
     String taskListBody();
 
@@ -164,9 +166,17 @@ public interface MainStyles extends CssResource {
 
     String taskListTextChecked();
 
+    String taskListWrapper();
+
     String taskRemoveImage();
 
+    String taskRemoveWrapper();
+
     String taskRow();
+
+    String taskText();
+
+    String taskTextWrapper();
 
     String textBoxCreateModeCanvasStyle();
 
@@ -182,7 +192,7 @@ public interface MainStyles extends CssResource {
 
     String textSelectionDisabled();
 
-    String toolbox();
+	String toolbox();
 
     String toolboxCommonIconStyle();
 
@@ -194,7 +204,7 @@ public interface MainStyles extends CssResource {
 
     String toolboxHeader();
 
-	String toolboxImageIconStyle();
+    String toolboxImageIconStyle();
 
     String toolboxInnerIconStyle();
 
