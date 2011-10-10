@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 import com.project.shared.interfaces.ICloneable;
-import com.project.shared.utils.PointUtils;
+import com.project.shared.utils.PolygonUtils;
 
 
 public class Rectangle implements ICloneable<Rectangle>, Serializable, IsSerializable {
@@ -178,62 +178,11 @@ public class Rectangle implements ICloneable<Rectangle>, Serializable, IsSeriali
         return this.getCenter().minus(other.getCenter()).getRadius() < (this.externalRadius() + other.externalRadius());
     }
 
-    /**
-     * Returns true of the two rectangles overlap.
-     * @See <a href="http://stackoverflow.com/questions/115426/algorithm-to-detect-intersection-of-two-rectangles">http://stackoverflow.com/questions/115426/algorithm-to-detect-intersection-of-two-rectangles</a>
-     */
-    public boolean isOverlapping(Rectangle rect)
+    public boolean isOverlapping(Rectangle other)
     {
-    	Point2D[] myCorners = this.getCorners().asArray();
-    	Point2D[] myEdges = PointUtils.getEdgeVectors(myCorners);
-    	
-    	Point2D[] otherCorners = rect.getCorners().asArray();
-    	Point2D[] otherEdges = PointUtils.getEdgeVectors(otherCorners);
-    	
-    	int numCorners = myCorners.length;
-		for (int i = 0; i < numCorners; i++) {
-    		if (isSeparatingEdge(myCorners, myEdges, otherCorners, i)) {
-    			return false;
-    		}
-    		if (isSeparatingEdge(otherCorners, otherEdges, myCorners, i)) {
-    			return false;
-    		}
-    	}
-		return true;
+    	return PolygonUtils.areOverlapping(this.getCorners().asArray(), other.getCorners().asArray());
     }
-
-	private static boolean isSeparatingEdge(Point2D[] myCorners, Point2D[] myEdges, Point2D[] otherCorners, int i) 
-	{
-		int numCorners = myCorners.length;
-		Point2D edgeNormal = myEdges[i].getRotatedBy90Deg();
-		Point2D cornerOnOpposingEdge = myCorners[(i + 2) % numCorners];
-		Point2D edgeVertex = myCorners[i];
-		// Check what side of the edge a vertex of this rect belongs to
-		int mySide = getSideOfPointOnEdge(edgeVertex, edgeNormal, cornerOnOpposingEdge);
-		// Check the first corner of the other rect to see its side
-		int otherRectSide = getSideOfPointOnEdge(edgeVertex, edgeNormal, otherCorners[0]);
-		if (mySide == otherRectSide) {
-			// the edge is NOT a separating line, because one of our vertices
-			// and the other rect's vertices are on the same side.
-			return false;
-		}
-		for (int j = 1; j < numCorners; j++) {
-			if (otherRectSide != getSideOfPointOnEdge(edgeVertex, edgeNormal, otherCorners[j])) {
-				// the edge is NOT a separating line, because two vertices of the other rect 
-				// are on two different sides of the edge.
-				return false;
-			}
-		}
-		return true;
-	}
-
-    /**
-     * Returns the side of a point relative to the given edge. 
-     */
-	private static int getSideOfPointOnEdge(Point2D edgeVertex, Point2D edgeNormal, Point2D testPoint) {
-		return Integer.signum(edgeNormal.dotProduct(testPoint.minus(edgeVertex)));
-	}
-
+    
     public Rectangle move(Point2D target)
     {
         int newRight = this.right - (this.left - target.getX());
