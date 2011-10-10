@@ -35,7 +35,7 @@ public class CanvasUtils
         if (clearDestRectBeforeCopy) {
             destContext.clearRect(0, 0, source.getCoordinateSpaceWidth(), source.getCoordinateSpaceHeight());
         }
-//        destContext.setGlobalCompositeOperation(composite);
+        destContext.setGlobalCompositeOperation(composite);
 //        destContext.setTransform(1, 0, 0, 1, 0, 0);
 //        destContext.beginPath();
 //        destContext.rect(0, 0, source.getCoordinateSpaceWidth(), source.getCoordinateSpaceHeight());
