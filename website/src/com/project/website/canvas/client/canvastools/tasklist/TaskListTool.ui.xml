@@ -4,13 +4,8 @@
 	xmlns:my="urn:import:com.project.website.canvas.client.canvastools.tasklist">
 	<ui:with field='res' type='com.project.website.canvas.client.resources.CanvasResources'/>
 	<ui:style>
-	   .wrapper {
-	       display: inline-block;
-		   height: 100%;
-		   min-width: 250px;
-	   }
 	</ui:style>
-    <g:HTMLPanel addStyleNames="{style.wrapper}">
+    <g:HTMLPanel addStyleNames="{res.main.taskListWrapper}">
     	<g:HTMLPanel ui:field="panelMain" addStyleNames="{res.main.taskList}" >
      		<g:FlowPanel ui:field="header" addStyleNames="{res.main.taskListHeader}">
      			<my:HoverTextBox ui:field="title">My Task List</my:HoverTextBox>

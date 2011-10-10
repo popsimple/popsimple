@@ -284,8 +284,18 @@ public interface MainStyles extends CssResource {
 
     String taskCell();
 
-    String taskCheckbox();
+    String taskCheckboxWrapper();
 
     String taskListBodyWrapper();
+
+    String taskListWrapper();
+
+    String taskText();
+
+    String taskTextWrapper();
+
+    String taskImageWrapper();
+
+    String taskRemoveWrapper();
 }
 
