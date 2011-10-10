@@ -1,5 +1,7 @@
 package com.project.website.canvas.client.canvastools.tasklist;
 
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.FocusEvent;
@@ -30,12 +32,28 @@ public class HoverTextBox extends TextBox {
     }
 
     private void startEditing() {
+        if (this.isEditing)
+        {
+            return;
+        }
         enterEditMode();
+        Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+
+            @Override
+            public void execute() {
+                selectAll();
+            }
+        });
         isEditing = true;
     }
 
     private void stopEditing() {
+        if (false == this.isEditing)
+        {
+            return;
+        }
         enterViewMode();
+        this.setCursorPos(0);
         isEditing = false;
     }
 
@@ -53,15 +71,12 @@ public class HoverTextBox extends TextBox {
         this.addFocusHandler(new FocusHandler() {
 
             public void onFocus(FocusEvent event) {
-                // TODO Auto-generated method stub
                 startEditing();
             }
         });
         this.addMouseOutHandler(new MouseOutHandler() {
             public void onMouseOut(MouseOutEvent event) {
-                if (false == isEditing) {
-                    enterViewMode();
-                }
+                enterViewMode();
             }
         });
     }
