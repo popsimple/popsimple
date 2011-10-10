@@ -41,7 +41,6 @@ import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.SchedulerUtils;
 import com.project.shared.client.utils.widgets.WidgetUtils;
 import com.project.shared.data.Point2D;
-import com.project.shared.data.Rectangle;
 import com.project.website.canvas.client.canvastools.base.eventargs.LoadStartedEventArgs;
 import com.project.website.canvas.client.canvastools.base.interfaces.CanvasTool;
 import com.project.website.canvas.client.canvastools.base.interfaces.CanvasToolFrame;

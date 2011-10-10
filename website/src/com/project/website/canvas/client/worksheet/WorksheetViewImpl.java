@@ -262,8 +262,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         tempRegs.add(toolFrame.asWidget().addAttachHandler(new AttachEvent.Handler() {
             @Override public void onAttachOrDetach(AttachEvent event) {
                 if (event.isAttached()) {
-                    final Point2D toolOffsetInFrame = toolFrame.getToolOffsetInFrame();
-                    final Point2D innerFrameOffset = addFrameInnerOffset ? toolOffsetInFrame : Point2D.zero;
+                    final Point2D innerFrameOffset = addFrameInnerOffset ? toolFrame.getToolOffsetInFrame() : Point2D.zero;
                     setToolFrameTransform(toolFrame, transform, additionalOffset.minus(innerFrameOffset));
                     tempRegs.clear();
                 }
