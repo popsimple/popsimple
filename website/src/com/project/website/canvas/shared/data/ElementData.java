@@ -37,5 +37,7 @@ public abstract class ElementData implements Serializable, IsSerializable, IsClo
     {
         this();
         this.factoryUniqueId = other.factoryUniqueId;
+        this.transform = other.transform.getClone();
+        this.zIndex = other.zIndex;
     }
 }
