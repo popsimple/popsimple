@@ -4,16 +4,16 @@ import java.io.Serializable;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 import com.project.shared.interfaces.ICloneable;
+import com.project.shared.utils.PolygonUtils;
 
 
 public class Rectangle implements ICloneable<Rectangle>, Serializable, IsSerializable {
     public class Corners {
         public final Point2D topRight;
-
         public final Point2D bottomRight;
-
         public final Point2D bottomLeft;
         public final Point2D topLeft;
+        
         public Corners(Point2D topRight, Point2D bottomRight, Point2D bottomLeft, Point2D topLeft)
         {
             this.topRight = topRight;
@@ -21,6 +21,7 @@ public class Rectangle implements ICloneable<Rectangle>, Serializable, IsSeriali
             this.bottomLeft = bottomLeft;
             this.topLeft = topLeft;
         }
+        
         public Point2D[] asArray()
         {
             return new Point2D[] { this.topRight, this.bottomRight, this.bottomLeft, this.topLeft };
@@ -75,7 +76,10 @@ public class Rectangle implements ICloneable<Rectangle>, Serializable, IsSeriali
     }
 
     public boolean contains(Point2D point) {
-    	Point2D rotatedPoint = point.getRotated(-Math.toRadians(rotation), getCenter(), true);
+    	// We compare by rotating the point to axis of the rectangle.
+    	// An alternative implementation using crossing number or winding number may be more efficient
+    	// see http://softsurfer.com/Archive/algorithm_0103/algorithm_0103.htm
+    	Point2D rotatedPoint = point.getRotated(-Math.toRadians(rotation), getCenter());
     	int px = rotatedPoint.getX();
     	int py = rotatedPoint.getY();
     	return ((px >= left) && (px <= right) && (py <= bottom) && (py >= top));
@@ -133,7 +137,7 @@ public class Rectangle implements ICloneable<Rectangle>, Serializable, IsSeriali
             new Point2D(left, top)
         };
         for (int i = 0; i < corners.length; i++) {
-            corners[i] = corners[i].getRotated(Math.toRadians(rotation), getCenter(), true);
+            corners[i] = corners[i].getRotated(Math.toRadians(rotation), getCenter());
         }
         return new Corners(corners[0], corners[1], corners[2], corners[3]);
     }
@@ -174,11 +178,11 @@ public class Rectangle implements ICloneable<Rectangle>, Serializable, IsSeriali
         return this.getCenter().minus(other.getCenter()).getRadius() < (this.externalRadius() + other.externalRadius());
     }
 
-    public boolean isOverlapping(Rectangle rect)
+    public boolean isOverlapping(Rectangle other)
     {
-        return this.hasCornerInOther(rect) || rect.hasCornerInOther(this);
+    	return PolygonUtils.areOverlapping(this.getCorners().asArray(), other.getCorners().asArray());
     }
-
+    
     public Rectangle move(Point2D target)
     {
         int newRight = this.right - (this.left - target.getX());
@@ -211,30 +215,4 @@ public class Rectangle implements ICloneable<Rectangle>, Serializable, IsSeriali
     {
     	this.top = top;
     }
-
-    private boolean hasCornerInOther(Rectangle rect)
-    {
-        for (Point2D corner : this.getCorners().asArray()) {
-            if (rect.contains(corner)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-//    public boolean isOverlapping(Rectangle rect) {
-//        if (this.right < rect.left) {
-//            return false;
-//        }
-//        if (this.left > rect.right) {
-//            return false;
-//        }
-//        if (this.bottom < rect.top) {
-//            return false;
-//        }
-//        if (this.top > rect.bottom) {
-//            return false;
-//        }
-//        return true;
-//    }
 }

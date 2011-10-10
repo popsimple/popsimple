@@ -106,4 +106,20 @@ public class PointUtils
 
         return new Pair<Point2D, Point2D>(control1, control2);
     }
+    
+	/**
+	 * Given the vertices (corners) of a polygon, returns an array of the edge
+	 * vectors. An edge vector is a vector from one vertex (corner) to the next.
+	 * 
+	 * <pre>Edge number i = v[i] - v[(i-1) mod n]</pre>
+	 */
+    public static Point2D[] getEdgeVectors(Point2D[] corners)
+    {
+    	Point2D[] result = new Point2D[corners.length];
+    	for (int i = 1; i <= corners.length; i++) {
+    		int modI = i % corners.length;
+    		result[modI] = corners[modI].minus(corners[i - 1]);
+    	}
+    	return result;
+    }
 }

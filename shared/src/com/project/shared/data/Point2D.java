@@ -75,6 +75,10 @@ public class Point2D implements Serializable, IsSerializable, ICloneable<Point2D
         return new Point2D(this._x + other._x, this._y + other._y);
     }
 
+    public int dotProduct(Point2D other) {
+    	return (this._x * other._x + this._y * other._y);
+    }
+    
     public double getRadians() {
         return Math.atan2(this._y, this._x);
     }
@@ -86,26 +90,41 @@ public class Point2D implements Serializable, IsSerializable, ICloneable<Point2D
 
     public Point2D getRotated(double radians)
     {
-    	double newAngle = this.getRadians() + radians;
-    	return Point2D.fromPolar(this.getRadius(), newAngle);
+    	return this.getRotated(radians, 0, 0);
+    }
+    
+    /**
+     * Returns the result of rotating this point by 90 degrees.
+     * This method is much faster than using {@link #getRotated(double)} or its variants for these angles.
+     * @param times Number of times to rotate by 90 degrees.
+     */
+    public Point2D getRotatedBy90Deg()
+    {
+    	return new Point2D(-this._y, this._x);
     }
 
 	/**
-	 * Transforms a given point to and from rotated and unrotated coordinates, relative to the given axis point
-	 * @param radians rotation angle in radians
-	 * @param axisOffset
-	 * @param toRotated true = from unrotated to rotated, false = opposite transformation
-	 * @return transformed point
+	 * Returns the result of rotating the point around the given axis point
 	 */
-	public Point2D getRotated(double radians, Point2D axisOffset, boolean toRotated)
+	public Point2D getRotated(double radians, Point2D axisOffset)
 	{
-		int direction = toRotated ? 1 : -1;
-		return this.minus(axisOffset).getRotated(radians * direction).plus(axisOffset);
+		int tx = axisOffset.getX();
+		int ty = axisOffset.getY();
+    	return getRotated(radians, tx, ty);
+	}
+
+	private Point2D getRotated(double radians, int tx, int ty) {
+		double cos = Math.cos(radians);
+		double sin = Math.sin(radians);
+		int sx = this._x - tx;
+		int sy = this._y - ty;
+		return new Point2D((int) Math.round(sx * cos - sy * sin + tx),
+    			           (int) Math.round(sx * sin + sy * cos + ty));
 	}
 
     public static Point2D fromPolar(double radius, double radians)
     {
-    	return new Point2D((int)(radius * Math.cos(radians)), (int) (radius * Math.sin(radians)));
+    	return new Point2D((int)Math.round(radius * Math.cos(radians)), (int) Math.round(radius * Math.sin(radians)));
     }
 
     public static Point2D max(Point2D first, Point2D other) {
