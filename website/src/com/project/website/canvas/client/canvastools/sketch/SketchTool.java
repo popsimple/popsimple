@@ -48,6 +48,7 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
     private static final int VELOCITY_SMOOTHING = 10;
     private static final int POSITION_SMOOTHING = 2;
     private static final double DEFAULT_SPLINE_TENSION = 0.4;
+    private static final double DEFAULT_SPIRO_RESOLUTION = 1;
 
     private CanvasToolEvents _toolEvents = new CanvasToolEvents(this);
     private SketchData data = null;
@@ -91,14 +92,6 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
         {
             CanvasUtils.setCoordinateSpaceSize(_canvas, data.transform.size);
             _context.drawImage(_imageElement, 0, 0);
-        }
-    };
-
-    private final ScheduledCommand redrawCommand = new ScheduledCommand() {
-        @Override
-        public void execute()
-        {
-            redraw();
         }
     };
 
@@ -301,7 +294,7 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
         }
         final Point2D offset = pos.minus(this._prevMousePos);
         Point2D prevStepPos = this._prevMousePos;
-        int steps = (int) Math.floor(offset.getRadius());
+        int steps = (int) Math.floor(offset.getRadius() * DEFAULT_SPIRO_RESOLUTION);
         for (int i = 0; i < steps; i += Math.max(1, this.data.sketchOptions.penSkip)) {
             Point2D stepPos = this._prevMousePos.plus(offset.mul(((double) i) / steps));
             this.drawPen(stepPos, stepPos.minus(prevStepPos));
@@ -310,15 +303,17 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
         this._prevMousePos = prevStepPos;
     }
 
-    private void drawPen(Point2D mousePos, Point2D velocity)
+    private void drawPen(final Point2D mousePos, final Point2D velocity)
     {
+        SketchOptions sketchOptions = this.data.sketchOptions;
+
         this._averageVelocity.add(velocity);
 
         this.setContextConstantProperties();
 
-        this._context.setStrokeStyle(this.data.sketchOptions.penColor);
-        this._context.setShadowColor(this.data.sketchOptions.penColor);
-        this._context.setLineWidth(this.data.sketchOptions.penWidth);
+        this._context.setStrokeStyle(sketchOptions.penColor);
+        this._context.setShadowColor(sketchOptions.penColor);
+        this._context.setLineWidth(sketchOptions.penWidth);
 
         if (isErasing()) {
             // We have to erase in both buffers, because when we copy from the front to the back buffer later when
@@ -330,7 +325,7 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
         } else {
             Point2D finalPos = mousePos;
             Point2D averageVelocity = this._averageVelocity.getAverage();
-            if (DrawingTool.SPIRO == this.data.sketchOptions.drawingTool) {
+            if (DrawingTool.SPIRO == sketchOptions.drawingTool) {
                 if (averageVelocity.getRadius() < 1) {
                     return;
                 }
@@ -340,7 +335,7 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
             this._averageDrawPos.add(finalPos);
             finalPos = this._averageDrawPos.getAverage();
 
-            if (this.data.sketchOptions.useBezierSmoothing) {
+            if (sketchOptions.useBezierSmoothing) {
                 this.drawBezierLine(finalPos);
             } else {
                 this._context.lineTo(finalPos.getX(), finalPos.getY());
@@ -406,9 +401,8 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
             return new Point2D(0, // (int)(this._spiroCurveParameter * SPIRO_CURVE_SPEED_X),
                     (int) Math.round(SPIRO_CURVE_WIDTH * Math.cos(this._spiroCurveParameter * SPIRO_CURVE_SPEED_Y)));
         case Circle:
-            return new Point2D((int) Math.round(SPIRO_CURVE_WIDTH
-                    * Math.sin(this._spiroCurveParameter * SPIRO_CURVE_SPEED_Y)), (int) Math.round(SPIRO_CURVE_WIDTH
-                    * Math.cos(this._spiroCurveParameter * SPIRO_CURVE_SPEED_Y)));
+            return new Point2D((int) Math.round(SPIRO_CURVE_WIDTH * Math.sin(this._spiroCurveParameter * SPIRO_CURVE_SPEED_Y)),
+                               (int) Math.round(SPIRO_CURVE_WIDTH * Math.cos(this._spiroCurveParameter * SPIRO_CURVE_SPEED_Y)));
         default:
             return Point2D.zero;
         }

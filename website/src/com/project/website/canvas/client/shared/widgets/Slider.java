@@ -23,7 +23,9 @@ import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.handlers.RegistrationsManager;
@@ -36,11 +38,11 @@ import com.project.shared.data.Rectangle;
 
 public class Slider extends Composite implements HasValueChangeHandlers<Double>, HasValue<Double> {
 
-	private static final int SCALE_PANEL_CHANGE_DELAY = 10;
-    private static final int MORE_LESS_BUTTON_STEPS = 10;
-
 	interface SliderUiBinder extends UiBinder<Widget, Slider> {
 	}
+    private static final int SCALE_PANEL_CHANGE_DELAY = 10;
+
+	private static final int MORE_LESS_BUTTON_STEPS = 10;
 
 	private static SliderUiBinder uiBinder = GWT.create(SliderUiBinder.class);
 
@@ -52,6 +54,10 @@ public class Slider extends Composite implements HasValueChangeHandlers<Double>,
 	Button dragButton;
 	@UiField
 	FlowPanel scalePanel;
+	@UiField
+	TextBox valueText;
+	@UiField
+	HTMLPanel sliderPanel;
 
 	private double _maxValue = 100;
 	private double _minValue = 0;
@@ -60,8 +66,7 @@ public class Slider extends Composite implements HasValueChangeHandlers<Double>,
 	private final RegistrationsManager dragRegs = new RegistrationsManager();
 	private final RegistrationsManager scalePanelPressedRegs = new RegistrationsManager();
 
-    protected boolean _scalePanelPressed;
-
+    private boolean _scalePanelPressed;
     private boolean _isDragging;
 
     /**
@@ -73,6 +78,8 @@ public class Slider extends Composite implements HasValueChangeHandlers<Double>,
 		initWidget(uiBinder.createAndBindUi(this));
 		final Slider that = this;
 
+		this.setShowText(false);
+
 		WidgetUtils.addMovementStartHandler(dragButton, new Handler<HumanInputEvent<?>>() {
 			@Override public void onFire(HumanInputEvent<?> arg) {
 				startDragging();
@@ -80,7 +87,7 @@ public class Slider extends Composite implements HasValueChangeHandlers<Double>,
 
 		WidgetUtils.addMovementMoveHandler(dragButton, new Handler<HumanInputEvent<?>>() {
 			@Override public void onFire(HumanInputEvent<?> arg) {
-				double oldValue = that._value;
+				double oldValue = that.getValue();
 				ValueChangeEvent.fireIfNotEqual(that, oldValue, that.getValue());
 			}});
 
@@ -113,23 +120,20 @@ public class Slider extends Composite implements HasValueChangeHandlers<Double>,
                     handleScalePanelPressed();
                 }
             }});
+
+        this.valueText.addValueChangeHandler(new ValueChangeHandler<String>() {
+            @Override public void onValueChange(ValueChangeEvent<String> event) {
+                that.setValue(Double.valueOf(event.getValue()), true, true, false);
+            }
+        });
 	}
 
 	@Override
-    protected void onLoad()
-    {
-        super.onLoad();
-        final int scalePanelWidth = this.scalePanel.getOffsetWidth();
-        final int dragButtonWidth = this.dragButton.getOffsetWidth();
-        this._valuesPerDragButtonWidth = Math.max(1, (int) Math.round((this.getRange() / scalePanelWidth) * dragButtonWidth));
-    }
-
-    @Override
 	public HandlerRegistration addValueChangeHandler(ValueChangeHandler<Double> handler) {
 		return this.addHandler(handler, ValueChangeEvent.getType());
 	}
 
-	public double getMaxValue() {
+    public double getMaxValue() {
 		return _maxValue;
 	}
 
@@ -142,18 +146,10 @@ public class Slider extends Composite implements HasValueChangeHandlers<Double>,
 		return this._value;
 	}
 
-	protected void updateValueFromDragPosition() {
-		double range = getRange();
-		double maxDragOffsetX = Math.max(1, ElementUtils.getElementOffsetSize(this.scalePanel.getElement()).getX());
-		double normalizedValue = getDragPositionRelativeToScalePanel().getX() / maxDragOffsetX;
-		double oldValue = this._value;
-		this._value = (normalizedValue * range) + this._minValue;
-		ValueChangeEvent.fireIfNotEqual(this, oldValue, this._value);
-	}
-
-	protected double getRange() {
-		return this._maxValue - this._minValue;
-	}
+	public boolean isShowText()
+    {
+        return this.valueText.isVisible();
+    }
 
 	public void setMaxValue(double maxValue) {
 		this._maxValue = maxValue;
@@ -163,6 +159,16 @@ public class Slider extends Composite implements HasValueChangeHandlers<Double>,
 		this._minValue = minValue;
 	}
 
+	public void setShowText(boolean showText)
+    {
+	    this.valueText.setVisible(showText);
+    }
+
+	public void setSliderWidth(String width)
+	{
+	    this.sliderPanel.setWidth(width);
+	}
+
 	@Override
 	public void setValue(Double value) {
 		this.setValue(value, true);
@@ -170,26 +176,76 @@ public class Slider extends Composite implements HasValueChangeHandlers<Double>,
 
 	@Override
 	public void setValue(Double value, boolean fireEvents) {
-		value = Math.min(this._maxValue, Math.max(this._minValue, value));
-		Double oldValue = this._value;
-		this._value = value;
-		double newDragX = (this._value - this._minValue) / this.getRange() * this.getMaxAllowedDragPosX();
-		Point2D pos = new Point2D((int)Math.round(newDragX), 0);
-		ElementUtils.setElementCSSPosition(this.dragButton.getElement(), pos);
-		if (fireEvents) {
-			ValueChangeEvent.fireIfNotEqual(this, oldValue, value);
-		}
+	    this.setValue(value, fireEvents, true, true);
 	}
 
-	protected int getMaxAllowedDragPosX() {
-		return this.scalePanel.getOffsetWidth() - this.dragButton.getOffsetWidth();
+	private void setValue(Double value, boolean fireEvents, boolean updateDragPosition, boolean updateText) {
+        value = Math.min(this._maxValue, Math.max(this._minValue, value));
+        Double oldValue = this._value;
+        this._value = value;
+        if (updateDragPosition) {
+            double newDragX = (this._value - this._minValue) / this.getRange() * this.getMaxAllowedDragPosX();
+            Point2D pos = new Point2D((int)Math.round(newDragX), 0);
+            ElementUtils.setElementCSSPosition(this.dragButton.getElement(), pos);
+        }
+        if (updateText) {
+            this.valueText.setText(value.toString());
+        }
+        if (fireEvents) {
+            ValueChangeEvent.fireIfNotEqual(this, oldValue, value);
+        }
 	}
 
-	protected Point2D getDragPositionRelativeToScalePanel() {
+	@Override
+    protected void onLoad()
+    {
+        super.onLoad();
+        final int scalePanelWidth = this.scalePanel.getOffsetWidth();
+        final int dragButtonWidth = this.dragButton.getOffsetWidth();
+        this._valuesPerDragButtonWidth = Math.max(1, (int) Math.round((this.getRange() / scalePanelWidth) * dragButtonWidth));
+    }
+
+	private void changeOnScalePanelPress(final Point2D pos)
+    {
+        Rectangle dragButtonRect = ElementUtils.getElementAbsoluteRectangle(this.dragButton.getElement());
+        if (dragButtonRect.contains(pos)) {
+            return;
+        }
+        // we must use topLeft corner to handle working on the panel when it is rotated
+        Point2D scalePanelTopLeft = ElementUtils.getElementAbsoluteRectangle(this.scalePanel.getElement()).getCorners().topLeft;
+        Point2D dragButtonTopLeft = dragButtonRect.getCorners().topLeft;
+        boolean isIncrease = 0 < (pos.minus(scalePanelTopLeft).getRadius() - dragButtonTopLeft.minus(scalePanelTopLeft).getRadius());
+        int direction = isIncrease ? 1 : -1;
+        setValue(getValue() + direction * this._valuesPerDragButtonWidth);
+    }
+
+	private Point2D getDragPositionRelativeToScalePanel() {
 		return ElementUtils.getElementAbsolutePosition(this.dragButton.getElement()).minus(ElementUtils.getElementAbsolutePosition(this.scalePanel.getElement()));
 	}
 
-	protected void startDragging() {
+	private int getMaxAllowedDragPosX() {
+		return this.scalePanel.getOffsetWidth() - this.dragButton.getOffsetWidth();
+	}
+
+	private double getRange() {
+		return this._maxValue - this._minValue;
+	}
+
+    private void handleScalePanelPressed()
+    {
+        stopScalePanelDrag();
+        _scalePanelPressed = true;
+        final Point2D pos = EventUtils.getCurrentMousePos();
+        changeOnScalePanelPress(pos);
+        this.scalePanelPressedRegs.add(SchedulerUtils.scheduleFixedPeriod(new RepeatingCommand() {
+            @Override public boolean execute() {
+                changeOnScalePanelPress(pos);
+                return _scalePanelPressed;
+            }
+        }, SCALE_PANEL_CHANGE_DELAY));
+    }
+
+    private void startDragging() {
 	    this._isDragging = true;
 		this.dragRegs.add(Event.addNativePreviewHandler(new NativePreviewHandler() {
 			@Override public void onPreviewNativeEvent(NativePreviewEvent event) {
@@ -208,7 +264,13 @@ public class Slider extends Composite implements HasValueChangeHandlers<Double>,
 		}));
 	}
 
-	protected void updateDragPosition(Point2D mousePos) {
+    private void stopScalePanelDrag()
+    {
+        _scalePanelPressed = false;
+        this.scalePanelPressedRegs.clear();
+    }
+
+    private void updateDragPosition(Point2D mousePos) {
 		Point2D pos = mousePos.minus(ElementUtils.getElementAbsolutePosition(this.scalePanel.getElement()));
 		Point2D maxPos = new Point2D(this.getMaxAllowedDragPosX(), 0);
 		pos = Point2D.min(maxPos, Point2D.max(Point2D.zero, pos));
@@ -216,37 +278,11 @@ public class Slider extends Composite implements HasValueChangeHandlers<Double>,
 		updateValueFromDragPosition();
 	}
 
-    private void handleScalePanelPressed()
-    {
-        stopScalePanelDrag();
-        _scalePanelPressed = true;
-        final Point2D pos = EventUtils.getCurrentMousePos();
-        changeOnScalePanelPress(pos);
-        this.scalePanelPressedRegs.add(SchedulerUtils.scheduleFixedPeriod(new RepeatingCommand() {
-            @Override public boolean execute() {
-                changeOnScalePanelPress(pos);
-                return _scalePanelPressed;
-            }
-        }, SCALE_PANEL_CHANGE_DELAY));
-    }
+    private void updateValueFromDragPosition() {
+		double range = getRange();
+		double maxDragOffsetX = Math.max(1, ElementUtils.getElementOffsetSize(this.scalePanel.getElement()).getX());
+		double normalizedValue = getDragPositionRelativeToScalePanel().getX() / maxDragOffsetX;
+		this.setValue((normalizedValue * range) + this._minValue, true, false, true);
+	}
 
-    private void stopScalePanelDrag()
-    {
-        _scalePanelPressed = false;
-        this.scalePanelPressedRegs.clear();
-    }
-
-    private void changeOnScalePanelPress(final Point2D pos)
-    {
-        Rectangle dragButtonRect = ElementUtils.getElementAbsoluteRectangle(this.dragButton.getElement());
-        if (dragButtonRect.contains(pos)) {
-            return;
-        }
-        // we must use topLeft corner to handle working on the panel when it is rotated
-        Point2D scalePanelTopLeft = ElementUtils.getElementAbsoluteRectangle(this.scalePanel.getElement()).getCorners().topLeft;
-        Point2D dragButtonTopLeft = dragButtonRect.getCorners().topLeft;
-        boolean isIncrease = 0 < (pos.minus(scalePanelTopLeft).getRadius() - dragButtonTopLeft.minus(scalePanelTopLeft).getRadius());
-        int direction = isIncrease ? 1 : -1;
-        setValue(getValue() + direction * this._valuesPerDragButtonWidth);
-    }
 }

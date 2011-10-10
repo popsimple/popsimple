@@ -402,6 +402,12 @@
 	margin-right: 3px;
 }
 
+.canvasToolbar .slider {
+	width: 100px;
+}
+
+
+/*---------------------------------------------------*/
 
 .textBoxCreateModeCanvasStyle {
 	cursor: text;
@@ -1058,13 +1064,16 @@
 .colorPickerButton {
 	cursor: pointer;
 	height: 18px;
-    margin: 0;
+    margin: 0 0 1px;
     padding: 0;
     vertical-align: middle;
     width: 18px;
     background-image: none;
     overflow: hidden;
     font-size: 0;
+    border-style: solid;
+    border-color: #aaaaaa;
+    border-width: 1px;
 }
 
 /*------------------------------------------------------------*/
@@ -1138,3 +1147,13 @@
 	background-color: #bbb;
 }
 
+.sliderValueText {
+	width: 30px;
+	vertical-align: middle;
+	margin: 0 0 1px;
+    padding: 0;
+}
+
+.sliderWrapper {
+	display:inline-block;
+}

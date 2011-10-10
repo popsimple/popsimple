@@ -17,10 +17,12 @@
         <g:HTMLPanel ui:field="paintOptionsPanel" addStyleNames="{res.main.canvasToolbarItemWrapper}">
             <span class="{res.main.canvasToolbarItemTitle}">Color:</span>
             <w:ColorPicker ui:field="paintColor"></w:ColorPicker>
-            <w:Slider ui:field="paintWidthSlider" width="100px" maxValue="100" minValue="1"/>
+            <span class="{res.main.canvasToolbarItemTitle}">Pen size:</span>
+            <w:Slider ui:field="paintWidthSlider" maxValue="100" minValue="1" showText="true"/>
         </g:HTMLPanel>
         <g:HTMLPanel ui:field="eraseOptionsPanel" addStyleNames="{res.main.canvasToolbarItemWrapper}">
-            <w:Slider ui:field="eraseWidthSlider"  width="100px" maxValue="100"  minValue="1"/>
+            <span class="{res.main.canvasToolbarItemTitle}">Eraser size:</span>
+            <w:Slider ui:field="eraseWidthSlider" maxValue="100"  minValue="1"  showText="true"/>
         </g:HTMLPanel>
         <g:HTMLPanel ui:field="spiroOptionsPanel" addStyleNames="{res.main.canvasToolbarItemWrapper}">
         </g:HTMLPanel>

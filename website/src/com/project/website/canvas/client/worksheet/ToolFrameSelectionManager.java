@@ -123,8 +123,8 @@ public class ToolFrameSelectionManager {
 
 	private void selectFramesByRectangle(Rectangle selectionRectangle, HashSet<CanvasToolFrame> selectedFrameSet) {
 		for (CanvasToolFrame toolFrame : this._worksheetView.getToolFrames()) {
-			if (selectionRectangle.isOverlapping(ElementUtils
-					.getElementOffsetRectangle(toolFrame.asWidget().getElement()))) {
+			if (selectionRectangle.isOverlapping(ElementUtils.getElementOffsetRectangle(toolFrame.asWidget().getElement())))
+			{
 				if (false == this._worksheetView.isToolFrameSelected(toolFrame)) {
 					selectedFrameSet.add(toolFrame);
 					this._worksheetView.selectToolFrame(toolFrame);
