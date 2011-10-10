@@ -14,8 +14,10 @@
      		<g:FlowPanel ui:field="header" addStyleNames="{res.main.taskListHeader}">
      			<my:HoverTextBox ui:field="title">My Task List</my:HoverTextBox>
     		</g:FlowPanel>
-    		<g:HTMLPanel ui:field="panelTaskList" addStyleNames="{res.main.taskListBody}">
-    		</g:HTMLPanel>
+    		<div class="{res.main.taskListBodyWrapper}">
+	    		<g:HTMLPanel ui:field="panelTaskList" addStyleNames="{res.main.taskListBody}">
+	    		</g:HTMLPanel>
+    		</div>
     		<g:HTMLPanel ui:field="footer" addStyleNames="{res.main.taskListFooter}">
     			<g:Button ui:field="buttonAdd">Add...</g:Button>
     		</g:HTMLPanel>

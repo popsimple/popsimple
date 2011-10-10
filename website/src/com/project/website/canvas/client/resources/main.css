@@ -428,6 +428,15 @@
 	padding: 1px;
 }
 
+.taskRow{
+	display: table-row;
+	width: 100%;
+}
+
+.taskCell{
+	display: table-cell;
+}
+
 .taskImageChecked {
 	opacity: 0.2;
 }
@@ -453,6 +462,11 @@
 	display: inline-block;
 }
 
+.taskCheckbox{
+	width: 16px;
+	vertical-align: middle;
+}
+
 .taskListTextChecked {
 	border-style: none;
 	text-decoration: line-through;
@@ -461,9 +475,10 @@
 
 .taskListBody {
 	position: relative;
-	padding: 5px 5px 5px 5px;
 	border-bottom-left-radius: 5px;
 	border-bottom-right-radius: 5px;
+	display: table;
+	width: 100%;
 }
 
 .taskListHeader {
@@ -474,6 +489,11 @@
 	text-align: center;
 	padding-top: 5px;
 	padding-bottom: 5px;
+}
+
+.taskListBodyWrapper
+{
+	padding: 5px;
 }
 
 .taskListFooter {
