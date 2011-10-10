@@ -3,6 +3,7 @@ package com.project.website.canvas.client.canvastools.base;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -352,33 +353,38 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
      */
     @Override
     public Point2D setToolSize(Point2D size) {
-        Element toolElement = this.tool.asWidget().getElement();
-        Point2D newSize = Point2D.zero;
+        Point2D newSize = this.setResolvedToolSize(size);
 
-        switch (this.tool.getResizeMode())
-    	{
-    	    case BOTH:
-    	        newSize = size;
-    	        break;
-    	    case WIDTH_ONLY:
-    	        newSize = new Point2D(size.getX(), this.getToolSize().getY());
-    	        break;
-    	    case HEIGHT_ONLY:
-    	        newSize = new Point2D(this.getToolSize().getX(), size.getY());
-                break;
-    	    case RELATIVE:
-    	        int uniformSize = (size.getX() + size.getY()) / 2;
-    	        newSize = new Point2D(uniformSize, uniformSize);
-                break;
-    	    case NONE:
-    	    default:
-    	        return this.getToolSize();
-    	}
-        ElementUtils.setElementSize(toolElement, newSize);
         this.onResize();
 
         return newSize;
     }
+
+    private Point2D setResolvedToolSize(Point2D desiredSize)
+    {
+        Element toolElement = this.tool.asWidget().getElement();
+        switch (this.tool.getResizeMode())
+        {
+            case BOTH:
+                ElementUtils.setElementSize(toolElement, desiredSize);
+                return desiredSize;
+            case WIDTH_ONLY:
+                toolElement.getStyle().setWidth(desiredSize.getX(), Unit.PX);
+                return new Point2D(desiredSize);
+            case HEIGHT_ONLY:
+                toolElement.getStyle().setHeight(desiredSize.getY(), Unit.PX);
+                return new Point2D(this.getToolSize().getX(), desiredSize.getY());
+            case RELATIVE:
+                int uniformSize = (desiredSize.getX() + desiredSize.getY()) / 2;
+                Point2D newSize = new Point2D(uniformSize, uniformSize);
+                ElementUtils.setElementSize(toolElement, newSize);
+                return newSize;
+            case NONE:
+            default:
+                return this.getToolSize();
+        }
+    }
+
 
     @Override
 	public int getTabIndex() {
