@@ -136,4 +136,11 @@ public interface CanvasResources extends ClientBundle {
 
     @Source("com/project/website/shared/client/resources/images/bitmaps/sliderDrag_10.png")
     ImageResource sliderIconDrag();
+
+    @Source("com/project/website/shared/client/resources/images/bitmaps/web_pointer_24.png")
+    ImageResource web_pointer_24();
+
+    @Source("com/project/website/shared/client/resources/images/bitmaps/web_search_24.png")
+    ImageResource web_search_24();
+
 }

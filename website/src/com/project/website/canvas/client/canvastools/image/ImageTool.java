@@ -124,8 +124,8 @@ public class ImageTool extends Composite implements CanvasTool<ImageData> {
         Scheduler.get().scheduleDeferred(new ScheduledCommand() {
             @Override
             public void execute() {
-                selectImageDialog.setFocus(true);
                 dialogContainer.center();
+                selectImageDialog.setFocus(true);
             }
         });
     }

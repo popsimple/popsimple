@@ -146,22 +146,22 @@ public class SelectVideoDialog extends Composite implements TakesValue<VideoInfo
 
     @Override
     public int getTabIndex() {
-        return this.urlTextBox.getTabIndex();
+        return this.mediaSearchPanel.getTabIndex();
     }
 
     @Override
     public void setAccessKey(char key) {
-        this.urlTextBox.setAccessKey(key);
+        this.mediaSearchPanel.setAccessKey(key);
     }
 
     @Override
     public void setFocus(boolean focused) {
-        this.urlTextBox.setFocus(focused);
+        this.mediaSearchPanel.setFocus(focused);
     }
 
     @Override
     public void setTabIndex(int index) {
-        this.urlTextBox.setTabIndex(index);
+        this.mediaSearchPanel.setTabIndex(index);
     }
 
     private void setSearchData(MediaInfo mediaInfo)

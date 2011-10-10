@@ -568,6 +568,21 @@
     border-radius: 2px;
 }
 
+
+@sprite .selectMediaSearchHeader {
+    gwt-image: "web_search_24";
+    padding-left: 28px;
+    width: auto !important;
+}
+
+@sprite .selectMediaURLHeader {
+    gwt-image: "web_pointer_24";
+    padding-left: 28px;
+    width: auto !important;
+}
+
+
+
 .displayNone {
 	display: none;
 }

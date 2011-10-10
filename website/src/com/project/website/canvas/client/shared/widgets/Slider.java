@@ -36,7 +36,7 @@ import com.project.shared.data.Rectangle;
 
 public class Slider extends Composite implements HasValueChangeHandlers<Double>, HasValue<Double> {
 
-	private static final int SCALE_PANEL_CHANGE_DELAY = 200;
+	private static final int SCALE_PANEL_CHANGE_DELAY = 10;
     private static final int MORE_LESS_BUTTON_STEPS = 10;
 
 	interface SliderUiBinder extends UiBinder<Widget, Slider> {
