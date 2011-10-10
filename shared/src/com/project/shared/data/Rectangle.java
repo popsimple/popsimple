@@ -4,16 +4,16 @@ import java.io.Serializable;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 import com.project.shared.interfaces.ICloneable;
+import com.project.shared.utils.PointUtils;
 
 
 public class Rectangle implements ICloneable<Rectangle>, Serializable, IsSerializable {
     public class Corners {
         public final Point2D topRight;
-
         public final Point2D bottomRight;
-
         public final Point2D bottomLeft;
         public final Point2D topLeft;
+        
         public Corners(Point2D topRight, Point2D bottomRight, Point2D bottomLeft, Point2D topLeft)
         {
             this.topRight = topRight;
@@ -21,6 +21,7 @@ public class Rectangle implements ICloneable<Rectangle>, Serializable, IsSeriali
             this.bottomLeft = bottomLeft;
             this.topLeft = topLeft;
         }
+        
         public Point2D[] asArray()
         {
             return new Point2D[] { this.topRight, this.bottomRight, this.bottomLeft, this.topLeft };
@@ -75,7 +76,10 @@ public class Rectangle implements ICloneable<Rectangle>, Serializable, IsSeriali
     }
 
     public boolean contains(Point2D point) {
-    	Point2D rotatedPoint = point.getRotated(-Math.toRadians(rotation), getCenter(), true);
+    	// We compare by rotating the point to axis of the rectangle.
+    	// An alternative implementation using crossing number or winding number may be more efficient
+    	// see http://softsurfer.com/Archive/algorithm_0103/algorithm_0103.htm
+    	Point2D rotatedPoint = point.getRotated(-Math.toRadians(rotation), getCenter());
     	int px = rotatedPoint.getX();
     	int py = rotatedPoint.getY();
     	return ((px >= left) && (px <= right) && (py <= bottom) && (py >= top));
@@ -133,7 +137,7 @@ public class Rectangle implements ICloneable<Rectangle>, Serializable, IsSeriali
             new Point2D(left, top)
         };
         for (int i = 0; i < corners.length; i++) {
-            corners[i] = corners[i].getRotated(Math.toRadians(rotation), getCenter(), true);
+            corners[i] = corners[i].getRotated(Math.toRadians(rotation), getCenter());
         }
         return new Corners(corners[0], corners[1], corners[2], corners[3]);
     }
@@ -174,10 +178,61 @@ public class Rectangle implements ICloneable<Rectangle>, Serializable, IsSeriali
         return this.getCenter().minus(other.getCenter()).getRadius() < (this.externalRadius() + other.externalRadius());
     }
 
+    /**
+     * Returns true of the two rectangles overlap.
+     * @See <a href="http://stackoverflow.com/questions/115426/algorithm-to-detect-intersection-of-two-rectangles">http://stackoverflow.com/questions/115426/algorithm-to-detect-intersection-of-two-rectangles</a>
+     */
     public boolean isOverlapping(Rectangle rect)
     {
-        return this.hasCornerInOther(rect) || rect.hasCornerInOther(this);
+    	Point2D[] myCorners = this.getCorners().asArray();
+    	Point2D[] myEdges = PointUtils.getEdgeVectors(myCorners);
+    	
+    	Point2D[] otherCorners = rect.getCorners().asArray();
+    	Point2D[] otherEdges = PointUtils.getEdgeVectors(otherCorners);
+    	
+    	int numCorners = myCorners.length;
+		for (int i = 0; i < numCorners; i++) {
+    		if (isSeparatingEdge(myCorners, myEdges, otherCorners, i)) {
+    			return false;
+    		}
+    		if (isSeparatingEdge(otherCorners, otherEdges, myCorners, i)) {
+    			return false;
+    		}
+    	}
+		return true;
     }
+
+	private static boolean isSeparatingEdge(Point2D[] myCorners, Point2D[] myEdges, Point2D[] otherCorners, int i) 
+	{
+		int numCorners = myCorners.length;
+		Point2D edgeNormal = myEdges[i].getRotatedBy90Deg();
+		Point2D cornerOnOpposingEdge = myCorners[(i + 2) % numCorners];
+		Point2D edgeVertex = myCorners[i];
+		// Check what side of the edge a vertex of this rect belongs to
+		int mySide = getSideOfPointOnEdge(edgeVertex, edgeNormal, cornerOnOpposingEdge);
+		// Check the first corner of the other rect to see its side
+		int otherRectSide = getSideOfPointOnEdge(edgeVertex, edgeNormal, otherCorners[0]);
+		if (mySide == otherRectSide) {
+			// the edge is NOT a separating line, because one of our vertices
+			// and the other rect's vertices are on the same side.
+			return false;
+		}
+		for (int j = 1; j < numCorners; j++) {
+			if (otherRectSide != getSideOfPointOnEdge(edgeVertex, edgeNormal, otherCorners[j])) {
+				// the edge is NOT a separating line, because two vertices of the other rect 
+				// are on two different sides of the edge.
+				return false;
+			}
+		}
+		return true;
+	}
+
+    /**
+     * Returns the side of a point relative to the given edge. 
+     */
+	private static int getSideOfPointOnEdge(Point2D edgeVertex, Point2D edgeNormal, Point2D testPoint) {
+		return Integer.signum(edgeNormal.dotProduct(testPoint.minus(edgeVertex)));
+	}
 
     public Rectangle move(Point2D target)
     {
@@ -211,30 +266,4 @@ public class Rectangle implements ICloneable<Rectangle>, Serializable, IsSeriali
     {
     	this.top = top;
     }
-
-    private boolean hasCornerInOther(Rectangle rect)
-    {
-        for (Point2D corner : this.getCorners().asArray()) {
-            if (rect.contains(corner)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-//    public boolean isOverlapping(Rectangle rect) {
-//        if (this.right < rect.left) {
-//            return false;
-//        }
-//        if (this.left > rect.right) {
-//            return false;
-//        }
-//        if (this.bottom < rect.top) {
-//            return false;
-//        }
-//        if (this.top > rect.bottom) {
-//            return false;
-//        }
-//        return true;
-//    }
 }

@@ -101,7 +101,7 @@ public class ToolFrameSelectionManager {
                 ElementUtils.setElementRectangle(selectionElement,
                         RectangleUtils.Build(initialPosition, pos));
 
-                selectFramesByRectangle(ElementUtils.getElementOffsetRectangle(selectionElement), newlySelectedFrames);
+                selectFramesByRectangle(ElementUtils.getElementAbsoluteRectangle(selectionElement), newlySelectedFrames);
             }
 
             @Override public void onCancel() {
@@ -123,7 +123,7 @@ public class ToolFrameSelectionManager {
 
 	private void selectFramesByRectangle(Rectangle selectionRectangle, HashSet<CanvasToolFrame> selectedFrameSet) {
 		for (CanvasToolFrame toolFrame : this._worksheetView.getToolFrames()) {
-			if (selectionRectangle.isOverlapping(ElementUtils.getElementOffsetRectangle(toolFrame.asWidget().getElement())))
+			if (selectionRectangle.isOverlapping(ElementUtils.getElementAbsoluteRectangle(toolFrame.asWidget().getElement())))
 			{
 				if (false == this._worksheetView.isToolFrameSelected(toolFrame)) {
 					selectedFrameSet.add(toolFrame);
