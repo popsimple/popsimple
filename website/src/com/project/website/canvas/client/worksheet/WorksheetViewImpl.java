@@ -262,7 +262,8 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         tempRegs.add(toolFrame.asWidget().addAttachHandler(new AttachEvent.Handler() {
             @Override public void onAttachOrDetach(AttachEvent event) {
                 if (event.isAttached()) {
-                    setToolFrameTransform(toolFrame, transform, additionalOffset.minus(addFrameInnerOffset ? toolFrame.getToolOffsetInFrame() : Point2D.zero));
+                    final Point2D innerFrameOffset = addFrameInnerOffset ? toolFrame.getToolOffsetInFrame() : Point2D.zero;
+                    setToolFrameTransform(toolFrame, transform, additionalOffset.minus(innerFrameOffset));
                     tempRegs.clear();
                 }
             }
@@ -838,18 +839,18 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         final Point2D floatingWidgetCreationOffset = toolFactory.getFloatingWidgetCreationOffset();
         MouseMoveOperationHandler handler = new MouseMoveOperationHandler() {
             @Override public void onStop(Point2D pos) {
-                _toolCreationRequestEvent.dispatch(new ToolCreationRequest(that._toolFrameTransformer.applySnapToGrid(pos), toolFactory));
+                _toolCreationRequestEvent.dispatch(new ToolCreationRequest(this.calcTargetPos(pos), toolFactory));
             }
 
             @Override public void onStart() { }
 
             @Override public void onMouseMove(Point2D pos) {
-                ElementUtils.setElementCSSPosition(that._floatingWidget.getElement(), this.calcTargetPos(pos));
+                ElementUtils.setElementCSSPosition(that._floatingWidget.getElement(), this.calcTargetPos(pos).plus(floatingWidgetCreationOffset));
             }
 
             private Point2D calcTargetPos(Point2D pos)
             {
-                return that._toolFrameTransformer.applySnapToGrid(pos.plus(floatingWidgetCreationOffset));
+                return that._toolFrameTransformer.applySnapToGrid(pos);
             }
 
             @Override public void onCancel() { }

@@ -2,13 +2,13 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:g="urn:import:com.google.gwt.user.client.ui">
     <ui:with field='res' type='com.project.website.canvas.client.resources.CanvasResources'/>
 	<ui:style>
-		
+
 	</ui:style>
 	<g:HTMLPanel addStyleNames="{res.main.slider}">
 	   <g:Button ui:field="lessButton" addStyleNames="{res.main.sliderLess}"/>
-	   <div ui:field="scalePanel" class="{res.main.sliderScale}">
+	   <g:FlowPanel ui:field="scalePanel" addStyleNames="{res.main.sliderScale}">
            <g:Button ui:field="dragButton" addStyleNames="{res.main.sliderDrag}"/>
-	   </div>
+	   </g:FlowPanel>
        <g:Button ui:field="moreButton" addStyleNames="{res.main.sliderMore}"/>
 	</g:HTMLPanel>
-</ui:UiBinder> 
+</ui:UiBinder>
