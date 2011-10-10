@@ -142,13 +142,17 @@ public interface MainStyles extends CssResource {
 
     String sliderScale();
 
-    String taskCell();
+    String sliderValueText();
 
-    String taskCheckboxWrapper();
+    String sliderWrapper();
 
-	String taskImageChecked();
+	String taskCell();
 
-	String taskImageContainer();
+	String taskCheckboxWrapper();
+
+    String taskImageChecked();
+
+    String taskImageContainer();
 
     String taskImageWrapper();
 
@@ -188,11 +192,11 @@ public interface MainStyles extends CssResource {
 
     String textEditNotFocused();
 
-    String textEditToolbarFontFamilyList();
+	String textEditToolbarFontFamilyList();
 
     String textSelectionDisabled();
 
-	String toolbox();
+    String toolbox();
 
     String toolboxCommonIconStyle();
 

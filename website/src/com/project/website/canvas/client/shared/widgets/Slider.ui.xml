@@ -4,11 +4,14 @@
 	<ui:style>
 
 	</ui:style>
-	<g:HTMLPanel addStyleNames="{res.main.slider}">
-	   <g:Button ui:field="lessButton" addStyleNames="{res.main.sliderLess}"/>
-	   <g:FlowPanel ui:field="scalePanel" addStyleNames="{res.main.sliderScale}">
-           <g:Button ui:field="dragButton" addStyleNames="{res.main.sliderDrag}"/>
-	   </g:FlowPanel>
-       <g:Button ui:field="moreButton" addStyleNames="{res.main.sliderMore}"/>
-	</g:HTMLPanel>
+     <g:HTMLPanel addStyleNames="{res.main.sliderWrapper}">
+        <g:TextBox ui:field="valueText" addStyleNames="{res.main.sliderValueText}"></g:TextBox>
+    	<g:HTMLPanel ui:field="sliderPanel" addStyleNames="{res.main.slider}">
+    	   <g:Button ui:field="lessButton" addStyleNames="{res.main.sliderLess}"/>
+    	   <g:FlowPanel ui:field="scalePanel" addStyleNames="{res.main.sliderScale}">
+               <g:Button ui:field="dragButton" addStyleNames="{res.main.sliderDrag}"/>
+    	   </g:FlowPanel>
+           <g:Button ui:field="moreButton" addStyleNames="{res.main.sliderMore}"/>
+    	</g:HTMLPanel>
+    </g:HTMLPanel>
 </ui:UiBinder>
