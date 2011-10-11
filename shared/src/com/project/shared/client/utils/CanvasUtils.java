@@ -35,6 +35,7 @@ public class CanvasUtils
         if (clearDestRectBeforeCopy) {
             destContext.clearRect(0, 0, source.getCoordinateSpaceWidth(), source.getCoordinateSpaceHeight());
         }
+        String compositeOperation = destContext.getGlobalCompositeOperation();
         destContext.setGlobalCompositeOperation(composite);
 //        destContext.setTransform(1, 0, 0, 1, 0, 0);
 //        destContext.beginPath();
@@ -44,6 +45,7 @@ public class CanvasUtils
 //        // we should have just done drawImage with destination width/height set:
 //        // but both firefox & IE seem to be doing it wrong and clear out the whole of dest if using COPY (or is the problem elsewhere? did not investigate)
         destContext.drawImage(source.getCanvasElement(), 0, 0, source.getCoordinateSpaceWidth(), source.getCoordinateSpaceHeight());
+        destContext.setGlobalCompositeOperation(compositeOperation);
         destContext.restore();
     }
 

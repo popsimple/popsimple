@@ -6,7 +6,6 @@ import com.google.common.base.Function;
 import com.google.common.base.Objects;
 import com.google.common.base.Predicate;
 import com.project.shared.data.Pair;
-import com.project.website.canvas.client.canvastools.sketch.SketchTool.SpiroCurveType;
 
 public class ArrayUtils
 {
@@ -43,7 +42,7 @@ public class ArrayUtils
     /**
      * Returns the index of the given value in the array (using .equals), or -1 if it was not found.
      */
-    public static <T> int indexOf(T[] array, SpiroCurveType value)
+    public static <T> int indexOf(T[] array, T value)
     {
         for (int i = 0; i < array.length; i++) {
             if (Objects.equal(array[i], value)) {
