@@ -107,6 +107,9 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
 
     private double _spiroCurveParameter = 0;
 
+    //TODO: Use Widget.isAttached instead (which currently doesn't seem to work - always returns false)
+    private boolean _isAttached;
+
     public SketchTool(int width, int height)
     {
         this._imageElement = ImageElement.as(this._image.getElement());
@@ -229,10 +232,22 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
         this.updateViewMode();
     }
 
+
+    @Override
+    protected void onAttach() {
+        super.onAttach();
+        this._isAttached = true;
+    }
+
+    @Override
+    protected void onDetach() {
+        this._isAttached = false;
+        super.onDetach();
+    }
+
     @Override
     protected void onLoad()
     {
-        Logger.info(this, "onLoad");
         super.onLoad();
         ElementUtils.setTextSelectionEnabled(this.getElement(), false);
         this.refreshCanvasFromData();
@@ -242,7 +257,6 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
     @Override
     protected void onUnload()
     {
-        Logger.info(this, "onUnload");
         this.updateDataFromCanvas();
         this.registrationsManager.clear();
         UndoManager.get().removeOwner(this);
@@ -489,8 +503,6 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
 
     private void refreshCanvasFromData()
     {
-        Logger.info(this, "--> refreshCanvasFromData: " + this.data.imageData);
-
         this._imageElement.setSrc(Strings.nullToEmpty(this.data.imageData));
         if (null == this._context) {
             return;
@@ -500,9 +512,10 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
         if (null != data.transform.size) {
             CanvasUtils.setCoordinateSpaceSize(_canvas, data.transform.size);
         }
-        _context.drawImage(_imageElement, 0, 0);
-        redraw(false);
-        Logger.info(this, "<-- refreshCanvasFromData: " + this.data.imageData);
+        if (this._isAttached){
+            _context.drawImage(_imageElement, 0, 0);
+            redraw(false);
+        }
     }
 
     private void setContextConstantProperties()
@@ -668,7 +681,6 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
 
     private void updateDataFromCanvas()
     {
-        Logger.info(this, "--> updateDataFromCanvas: " + this.data.imageData);
         if (null != this._canvas) {
 
             // TODO: for some reasno adding a condition about isAttached always returns false here
@@ -679,7 +691,6 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
             this.data.imageData = dataUrl;
             this._image.setUrl(dataUrl);
         }
-        Logger.info(this, "<-- updateDataFromCanvas: " + this.data.imageData);
     }
 
     private void updateImageVisibilty()
