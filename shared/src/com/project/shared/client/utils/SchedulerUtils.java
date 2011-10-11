@@ -51,6 +51,27 @@ public class SchedulerUtils {
                 }
             });
 	    }
+
+	    public AsyncFunc<Void, Void> getScheduleDeferredOnceFunc(final ScheduledCommand command)
+	    {
+            if (_pendingCommands.contains(command)) {
+                return AsyncFunc.immediate();
+            }
+            _pendingCommands.add(command);
+	        return new AsyncFunc<Void, Void>() {
+                @Override protected <S, E> void run(Void arg, final Func<Void, S> successHandler, Func<Throwable, E> errorHandler) {
+                    Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+                        @Override
+                        public void execute()
+                        {
+                            _pendingCommands.remove(command);
+                            command.execute();
+                            successHandler.apply(null);
+                        }
+                    });
+                }
+            };
+	    }
 	}
 
 	public static interface StoppableRepeatingCommand extends RepeatingCommand {

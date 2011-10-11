@@ -6,14 +6,17 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.canvas.dom.client.Context2d.Composite;
 import com.google.gwt.canvas.dom.client.Context2d.LineCap;
 import com.google.gwt.canvas.dom.client.Context2d.LineJoin;
-import com.google.gwt.core.client.Scheduler.RepeatingCommand;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.event.dom.client.HumanInputEvent;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.event.dom.client.MouseUpEvent;
+import com.google.gwt.event.dom.client.TouchEndEvent;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Event.NativePreviewEvent;
+import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -21,13 +24,13 @@ import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.utils.CanvasUtils;
 import com.project.shared.client.utils.ElementUtils;
-import com.project.shared.client.utils.SchedulerUtils;
-import com.project.shared.client.utils.SchedulerUtils.OneTimeScheduler;
+import com.project.shared.client.utils.EventUtils;
 import com.project.shared.client.utils.widgets.WidgetUtils;
 import com.project.shared.data.Pair;
 import com.project.shared.data.Point2D;
 import com.project.shared.data.Rectangle;
 import com.project.shared.utils.PointUtils;
+import com.project.shared.utils.loggers.Logger;
 import com.project.website.canvas.client.canvastools.base.CanvasToolEvents;
 import com.project.website.canvas.client.canvastools.base.ResizeMode;
 import com.project.website.canvas.client.canvastools.base.interfaces.CanvasTool;
@@ -73,7 +76,7 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
     private SketchData data = null;
 
     private final RegistrationsManager registrationsManager = new RegistrationsManager();
-    private final RegistrationsManager untilMouseOverRegs = new RegistrationsManager();
+    private final RegistrationsManager untilMovementStopRegs = new RegistrationsManager();
     private final SketchToolbar _toolbar = new SketchToolbar();
 
     private final PointUtils.MovingAverage _averageVelocity = new PointUtils.MovingAverage(VELOCITY_SMOOTHING);
@@ -103,24 +106,6 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
     private Image _image = new Image();
 
     private double _spiroCurveParameter = 0;
-
-    private final RepeatingCommand terminateDrawingCommand = new RepeatingCommand() {
-        @Override public boolean execute() {
-            // make sure that if we are drawing, the line will continue until the border
-            terminateDrawingPath();
-            redraw(false);
-            return false;
-        }
-    };
-
-    private final ScheduledCommand drawFromImageCommand = new ScheduledCommand() {
-        @Override
-        public void execute()
-        {
-            CanvasUtils.setCoordinateSpaceSize(_canvas, data.transform.size);
-            _context.drawImage(_imageElement, 0, 0);
-        }
-    };
 
     public SketchTool(int width, int height)
     {
@@ -189,7 +174,7 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
             // we can't change anything.
             return this.data;
         }
-        this.data.imageData = this._context.getCanvas().toDataUrl("image/png");
+        this.updateDataFromCanvas();
         return this.data;
     }
 
@@ -247,6 +232,8 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
     @Override
     protected void onLoad()
     {
+        Logger.info(this, "onLoad");
+        super.onLoad();
         ElementUtils.setTextSelectionEnabled(this.getElement(), false);
         this.refreshCanvasFromData();
         this.updateViewMode();
@@ -255,7 +242,8 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
     @Override
     protected void onUnload()
     {
-        this.updateImageFromCanvas();
+        Logger.info(this, "onUnload");
+        this.updateDataFromCanvas();
         this.registrationsManager.clear();
         UndoManager.get().removeOwner(this);
         super.onUnload();
@@ -501,23 +489,20 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
 
     private void refreshCanvasFromData()
     {
-        final String imageData = this.data.imageData;
-        if (null != imageData) {
-            this._imageElement.setSrc(imageData);
-        } else {
-            if (null != this._canvas) {
-                CanvasUtils.clear(this._canvas);
-                CanvasUtils.clear(this._resizeCanvas1);
-            }
-            return;
-        }
+        Logger.info(this, "--> refreshCanvasFromData: " + this.data.imageData);
 
+        this._imageElement.setSrc(Strings.nullToEmpty(this.data.imageData));
         if (null == this._context) {
             return;
         }
         // For some reason, the canvas does not get updated after a page reload if not using deferred command in IE (at
         // least, maybe also others)
-        OneTimeScheduler.get().scheduleDeferredOnce(drawFromImageCommand);
+        if (null != data.transform.size) {
+            CanvasUtils.setCoordinateSpaceSize(_canvas, data.transform.size);
+        }
+        _context.drawImage(_imageElement, 0, 0);
+        redraw(false);
+        Logger.info(this, "<-- refreshCanvasFromData: " + this.data.imageData);
     }
 
     private void setContextConstantProperties()
@@ -566,14 +551,12 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
 
         this.registrationsManager.add(this.addDomHandler(new MouseOutHandler() {
             @Override public void onMouseOut(MouseOutEvent event) {
-                that.untilMouseOverRegs.add(SchedulerUtils.scheduleFixedPeriod(terminateDrawingCommand, PATH_TERMINATION_ON_MOUSE_OUT_DELAY_MSECS));
                 that.handleMovementEvent();
                 that.redraw(false); // cursor left the canvas area, need to redraw without it
             }
         }, MouseOutEvent.getType()));
         this.registrationsManager.add(this.addDomHandler(new MouseOverHandler() {
             @Override public void onMouseOver(MouseOverEvent event) {
-                that.untilMouseOverRegs.clear();
                 if (that.isDrawingActive()) {
                     // restart the path to prevent drawing line from mouse-out pos to mouse-over pos
                     that.startPathDraw();
@@ -581,7 +564,15 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
             }}, MouseOverEvent.getType()));
         this.registrationsManager.add(WidgetUtils.addMovementStartHandler(this, new Handler<HumanInputEvent<?>>() {
             @Override public void onFire(HumanInputEvent<?> arg) {
-                that.untilMouseOverRegs.clear();
+                that.untilMovementStopRegs.clear();
+                that.untilMovementStopRegs.add(Event.addNativePreviewHandler(new NativePreviewHandler(){
+                    @Override public void onPreviewNativeEvent(NativePreviewEvent event) {
+                        if (EventUtils.nativePreviewEventTypeIsAny(event, MouseUpEvent.getType(), TouchEndEvent.getType())) {
+                            that.untilMovementStopRegs.clear();
+                            terminateDrawingPath();
+                            redraw(false);
+                        }
+                    }}));
                 // TODO request to be activated instead of doing this forcefully?
                 // we want the tool frame to know it is activated.
                 that.setActive(true);
@@ -590,7 +581,7 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
         }));
         this.registrationsManager.add(WidgetUtils.addMovementStopHandler(this, new Handler<HumanInputEvent<?>>() {
             @Override public void onFire(HumanInputEvent<?> arg) {
-                that.untilMouseOverRegs.clear();
+                that.untilMovementStopRegs.clear();
                 if (that.isDrawingActive()) {
                     that.terminateDrawingPath();
                 }
@@ -599,7 +590,7 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
 
         this.registrationsManager.add(WidgetUtils.addMovementMoveHandler(this, new Handler<HumanInputEvent<?>>() {
             @Override public void onFire(HumanInputEvent<?> arg) {
-                that.untilMouseOverRegs.clear();
+                //that.untilMouseOverRegs.clear();
                 that.handleMovementEvent();
                 that.redraw(); // to update both the drawn graphics and the cursor
             }
@@ -675,18 +666,27 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
         return String.valueOf(height) + "px";
     }
 
-    private void updateImageFromCanvas()
+    private void updateDataFromCanvas()
     {
-        if ((null != this._canvas) && (this._canvas.isAttached())) {
-            this._image.setUrl(Strings.nullToEmpty(this._canvas.toDataUrl()));
+        Logger.info(this, "--> updateDataFromCanvas: " + this.data.imageData);
+        if (null != this._canvas) {
+
+            // TODO: for some reasno adding a condition about isAttached always returns false here
+            //&& (this._canvas.isAttached())) {
+            // Browser bug?
+
+            final String dataUrl = Strings.nullToEmpty(this._canvas.toDataUrl());
+            this.data.imageData = dataUrl;
+            this._image.setUrl(dataUrl);
         }
+        Logger.info(this, "<-- updateDataFromCanvas: " + this.data.imageData);
     }
 
     private void updateImageVisibilty()
     {
         final boolean imageVisible = this._inViewMode || (null == _canvas);
         if (imageVisible) {
-            this.updateImageFromCanvas();
+            this.updateDataFromCanvas();
         }
         this._image.setVisible(imageVisible);
         this._cursorCanvas.setVisible((false == this._inViewMode) && (null != _canvas));
