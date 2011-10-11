@@ -6,7 +6,6 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.canvas.dom.client.Context2d.Composite;
 import com.google.gwt.canvas.dom.client.Context2d.LineCap;
 import com.google.gwt.canvas.dom.client.Context2d.LineJoin;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.RepeatingCommand;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.ImageElement;
@@ -41,6 +40,8 @@ import com.project.website.canvas.shared.data.SketchOptions;
 
 public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
 {
+    private static final int PATH_TERMINATION_ON_MOUSE_OUT_DELAY_MSECS = 500;
+
     public enum SpiroCurveType {
         Sine("Wave"),
         Circle("Curl");
@@ -267,10 +268,7 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
      */
     private void handleMovementEvent()
     {
-        if (false == this._active) {
-            return;
-        }
-        if (false == drawingPathExists()) {
+        if (false == isDrawingActive()) {
             return;
         }
         Point2D pos = ElementUtils.getMousePositionRelativeToElement(this.getElement());
@@ -340,8 +338,7 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
             return;
         }
         // -----------
-        Pair<Point2D, Point2D> controlPoints = PointUtils.getBezierControlPoints(this._prevDrawPos2,
-                this._prevDrawPos1, finalPos, DEFAULT_SPLINE_TENSION);
+        Pair<Point2D, Point2D> controlPoints = PointUtils.getBezierControlPoints(this._prevDrawPos2, this._prevDrawPos1, finalPos, DEFAULT_SPLINE_TENSION);
         Point2D cp0 = this._prevControlPoint;
         Point2D cp1 = controlPoints.getA();
         Point2D cp2 = controlPoints.getB();
@@ -352,8 +349,7 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
 
         this._context.beginPath();
         this._context.moveTo(this._prevDrawPos2.getX(), this._prevDrawPos2.getY());
-        this._context.bezierCurveTo(cp0.getX(), cp0.getY(), cp1.getX(), cp1.getY(), this._prevDrawPos1.getX(),
-                this._prevDrawPos1.getY());
+        this._context.bezierCurveTo(cp0.getX(), cp0.getY(), cp1.getX(), cp1.getY(), this._prevDrawPos1.getX(), this._prevDrawPos1.getY());
         this._context.stroke();
     }
 
@@ -368,7 +364,7 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
         Context2d cursorContext = this._cursorCanvas.getContext2d();
         if (this.isErasing()) {
             String eraserStrokeColor = "black";
-            if (this.drawingPathExists()) {
+            if (this.isDrawingActive()) {
                 eraserStrokeColor = "red";
             }
             cursorContext.setStrokeStyle(eraserStrokeColor);
@@ -380,7 +376,7 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
                                this.data.sketchOptions.eraserWidth,
                                this.data.sketchOptions.eraserWidth);
             cursorContext.closePath();
-            if (this.drawingPathExists()) {
+            if (this.isDrawingActive()) {
                 cursorContext.fill();
             }
             cursorContext.stroke();
@@ -402,9 +398,9 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
                           this.data.sketchOptions.eraserWidth);
     }
 
-    private boolean drawingPathExists()
+    private boolean isDrawingActive()
     {
-        return this._drawingPathExists;// null != this._currentPath;
+        return this._active && this._drawingPathExists;// null != this._currentPath;
     }
 
     private void drawLinearInterpolatedSteps(Point2D pos)
@@ -559,9 +555,7 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
         this.registrationsManager.clear();
 
         this.registrationsManager.add(this._toolbar.addOptionsChangedHandler(new Handler<SketchOptions>() {
-            @Override
-            public void onFire(SketchOptions arg)
-            {
+            @Override public void onFire(SketchOptions arg) {
                 that.setOptions(arg);
             }
         }));
@@ -572,7 +566,7 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
 
         this.registrationsManager.add(this.addDomHandler(new MouseOutHandler() {
             @Override public void onMouseOut(MouseOutEvent event) {
-                that.untilMouseOverRegs.add(SchedulerUtils.scheduleFixedPeriod(terminateDrawingCommand, 500));
+                that.untilMouseOverRegs.add(SchedulerUtils.scheduleFixedPeriod(terminateDrawingCommand, PATH_TERMINATION_ON_MOUSE_OUT_DELAY_MSECS));
                 that.handleMovementEvent();
                 that.redraw(false); // cursor left the canvas area, need to redraw without it
             }
@@ -580,6 +574,10 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
         this.registrationsManager.add(this.addDomHandler(new MouseOverHandler() {
             @Override public void onMouseOver(MouseOverEvent event) {
                 that.untilMouseOverRegs.clear();
+                if (that.isDrawingActive()) {
+                    // restart the path to prevent drawing line from mouse-out pos to mouse-over pos
+                    that.startPathDraw();
+                }
             }}, MouseOverEvent.getType()));
         this.registrationsManager.add(WidgetUtils.addMovementStartHandler(this, new Handler<HumanInputEvent<?>>() {
             @Override public void onFire(HumanInputEvent<?> arg) {
@@ -593,10 +591,9 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
         this.registrationsManager.add(WidgetUtils.addMovementStopHandler(this, new Handler<HumanInputEvent<?>>() {
             @Override public void onFire(HumanInputEvent<?> arg) {
                 that.untilMouseOverRegs.clear();
-                if ((false == that._active) || (false == that.drawingPathExists())) {
-                    return;
+                if (that.isDrawingActive()) {
+                    that.terminateDrawingPath();
                 }
-                that.terminateDrawingPath();
             }
         }));
 
@@ -680,7 +677,9 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
 
     private void updateImageFromCanvas()
     {
-        this._image.setUrl(Strings.nullToEmpty(this._canvas.toDataUrl()));
+        if ((null != this._canvas) && (this._canvas.isAttached())) {
+            this._image.setUrl(Strings.nullToEmpty(this._canvas.toDataUrl()));
+        }
     }
 
     private void updateImageVisibilty()
