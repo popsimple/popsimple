@@ -7,8 +7,10 @@ import com.project.shared.interfaces.ICloneable;
 
 public class Point2D implements Serializable, IsSerializable, ICloneable<Point2D> {
     private static final long serialVersionUID = 1L;
-
+    /** x = 0, y = 0 */
     public static final Point2D zero = new Point2D(0, 0);
+    /** x = 1, y = 1 */
+    public static final Point2D ones = new Point2D(1, 1);
 
     // These should have been 'final', but then they will not be serialized.
     private int _x;
@@ -78,7 +80,14 @@ public class Point2D implements Serializable, IsSerializable, ICloneable<Point2D
     public int dotProduct(Point2D other) {
     	return (this._x * other._x + this._y * other._y);
     }
-    
+
+    /**
+     * Returns x + y (equivalent to p.{@link #dotProduct}({@link #ones}))
+     */
+    public int sumCoords() {
+        return this._x + this._y;
+    }
+
     public double getRadians() {
         return Math.atan2(this._y, this._x);
     }
@@ -88,11 +97,18 @@ public class Point2D implements Serializable, IsSerializable, ICloneable<Point2D
         return Math.sqrt(this._x * this._x + this._y * this._y);
     }
 
+    /**
+     * Returns max(x, y)
+     */
+    public int getMaxCoord() {
+        return Math.max(this._x, this._y);
+    }
+
     public Point2D getRotated(double radians)
     {
     	return this.getRotated(radians, 0, 0);
     }
-    
+
     /**
      * Returns the result of rotating this point by 90 degrees.
      * This method is much faster than using {@link #getRotated(double)} or its variants for these angles.

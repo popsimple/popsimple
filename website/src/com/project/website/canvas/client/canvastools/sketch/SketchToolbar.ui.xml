@@ -6,25 +6,33 @@
     >
     <ui:with field='res' type='com.project.website.canvas.client.resources.CanvasResources'/>
     <ui:style>
+        .inline {
+	       display: inline-block;
 
+	   }
     </ui:style>
     <g:HTMLPanel ui:field="rootPanel" addStyleNames="{res.main.canvasToolbar}">
         <w:ToggleButtonPanel ui:field="toolTogglePanel" addStyleNames="{res.main.canvasToolbarItemWrapper}">
             <g:ToggleButton ui:field="paintButton" addStyleNames="{res.main.canvasToolbarButton}">Paint</g:ToggleButton>
             <g:ToggleButton ui:field="spiroButton" addStyleNames="{res.main.canvasToolbarButton}">Spiro</g:ToggleButton>
             <g:ToggleButton ui:field="eraseButton" addStyleNames="{res.main.canvasToolbarButton}">Erase</g:ToggleButton>
-        </w:ToggleButtonPanel>
-        <g:HTMLPanel ui:field="paintOptionsPanel" addStyleNames="{res.main.canvasToolbarItemWrapper}">
-            <span class="{res.main.canvasToolbarItemTitle}">Color:</span>
-            <w:ColorPicker ui:field="paintColor"></w:ColorPicker>
-            <span class="{res.main.canvasToolbarItemTitle}">Pen size:</span>
-            <w:Slider ui:field="paintWidthSlider" maxValue="100" minValue="1" showText="true"/>
-        </g:HTMLPanel>
-        <g:HTMLPanel ui:field="eraseOptionsPanel" addStyleNames="{res.main.canvasToolbarItemWrapper}">
+        </w:ToggleButtonPanel><g:HTMLPanel ui:field="paintOptionsPanel" addStyleNames="{style.inline}">
+            <!-- keep above without whitespace -->
+            <div class="{res.main.canvasToolbarItemWrapper}">
+                <span class="{res.main.canvasToolbarItemTitle}">Color:</span>
+                <w:ColorPicker ui:field="paintColor"></w:ColorPicker>
+            </div>
+            <div class="{res.main.canvasToolbarItemWrapper}">
+                <span class="{res.main.canvasToolbarItemTitle}">Thickness:</span>
+                <w:Slider ui:field="paintWidthSlider" maxValue="100" minValue="1" showText="true"/>
+            </div>
+        </g:HTMLPanel><g:HTMLPanel ui:field="eraseOptionsPanel" addStyleNames="{res.main.canvasToolbarItemWrapper}">
+            <!-- keep above without whitespace -->
             <span class="{res.main.canvasToolbarItemTitle}">Eraser size:</span>
             <w:Slider ui:field="eraseWidthSlider" maxValue="100"  minValue="1"  showText="true"/>
-        </g:HTMLPanel>
-        <g:HTMLPanel ui:field="spiroOptionsPanel" addStyleNames="{res.main.canvasToolbarItemWrapper}">
+        </g:HTMLPanel><g:HTMLPanel ui:field="spiroOptionsPanel" addStyleNames="{res.main.canvasToolbarItemWrapper}">
+            <!-- keep above without whitespace -->
+            <g:ListBox ui:field="spiroTypeListBox"/>
         </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

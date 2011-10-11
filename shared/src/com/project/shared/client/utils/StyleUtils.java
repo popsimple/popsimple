@@ -321,14 +321,34 @@ public class StyleUtils
     }-*/;
 
 
+    public enum UserSelectionMode {
+        None,
+        Text,
+        @Deprecated
+        /** Badly supported */
+        Toggle,
+        @Deprecated
+        /** Badly supported */
+        Element,
+        @Deprecated
+        /** Badly supported */
+        Elements,
+        All,
+        @Deprecated
+        /** Badly supported */
+        Inherit
+    }
 
-    public static void setTextSelectionEnabled(Style style, boolean isEnabled)
+    /**
+     * Sets the user-select css property.
+     * @See <a href="http://www.w3.org/TR/2000/WD-css3-userint-20000216.html#user-select">CSS 3 Spec.</a>
+     */
+    public static void setUserSelectionMode(Style style, UserSelectionMode mode)
     {
-        if (isEnabled) {
-            clearPropertyForAllVendors(style, "userSelect");
-        }
-        else {
-            setPropertyForAllVendors(style, "userSelect", "none");
+        setPropertyForAllVendors(style, "userSelect", mode.name().toLowerCase());
+        if (UserSelectionMode.None == mode) {
+            // see https://developer.mozilla.org/en/CSS/-moz-user-select
+            style.setProperty("MozUserSelect", "-moz-none");
         }
     }
 

@@ -12,10 +12,13 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent;
+import com.project.shared.utils.ArrayUtils;
 import com.project.shared.utils.StringUtils;
+import com.project.website.canvas.client.canvastools.sketch.SketchTool.SpiroCurveType;
 import com.project.website.canvas.client.shared.widgets.ColorPicker;
 import com.project.website.canvas.client.shared.widgets.Slider;
 import com.project.website.canvas.client.shared.widgets.ToggleButtonPanel;
@@ -53,6 +56,8 @@ public class SketchToolbar extends Composite
     Slider paintWidthSlider;
     @UiField
     Slider eraseWidthSlider;
+    @UiField
+    ListBox spiroTypeListBox;
 
     private final SimpleEvent<SketchOptions> optionsChangedEvent = new SimpleEvent<SketchOptions>();
     private final HashMap<ToggleButton, DrawingTool> buttonToolMap = new HashMap<ToggleButton, DrawingTool>();
@@ -69,23 +74,32 @@ public class SketchToolbar extends Composite
         buttonToolMap.put(this.paintButton, DrawingTool.PAINT);
         buttonToolMap.put(this.spiroButton, DrawingTool.SPIRO);
 
-        this.paintOptionsPanel.add(paintWidthSlider);
-        this.eraseOptionsPanel.add(eraseWidthSlider);
-
+        for (SpiroCurveType spiroType : SpiroCurveType.values()) {
+            spiroTypeListBox.addItem(spiroType.getFriendlyName(), spiroType.name());
+        }
+        spiroTypeListBox.addChangeHandler(new ChangeHandler() {
+            @Override public void onChange(ChangeEvent event) {
+                updateOptionsFromToolbar();
+                handleOptionChanged(true);
+            }
+        });
 
         ValueChangeHandler<Double> barValueChangedHandler = new ValueChangeHandler<Double>() {
 			@Override public void onValueChange(ValueChangeEvent<Double> event) {
+		        updateOptionsFromToolbar();
                 handleOptionChanged(true);
 			}};
 
         ValueChangeHandler<Boolean> optionsChangedHandleBool = new ValueChangeHandler<Boolean>() {
             @Override public void onValueChange(ValueChangeEvent<Boolean> event) {
+                updateOptionsFromToolbar();
                 handleOptionChanged(true);
             }
         };
 
         this.paintColor.addChangeHandler(new ChangeHandler() {
             @Override public void onChange(ChangeEvent event) {
+                updateOptionsFromToolbar();
                 handleOptionChanged(true);
             }
         });
@@ -105,31 +119,45 @@ public class SketchToolbar extends Composite
 
     protected void handleOptionChanged(boolean fireEvent)
     {
-        this.updateOptionsFromToolbar();
         hideAllOptionPanels();
         switch (this._sketchOptions.drawingTool) {
         case ERASE:
-            this.eraseButton.setValue(true, false);
         	this.eraseOptionsPanel.setVisible(true);
         	break;
         case SPIRO:
-            this.spiroButton.setValue(true, false);
         	this.spiroOptionsPanel.setVisible(true);
         	// fall through
         case PAINT:
         	// fall through
     	default:
-            this.paintButton.setValue(true, false);
         	this.paintOptionsPanel.setVisible(true);
         	break;
         }
+        this.updateButtonStatesFromOptions();
         this.paintColor.setColor(StringUtils.defaultIfNullOrEmpty(this._sketchOptions.penColor, DEFAULT_STROKE_COLOR));
         this.paintWidthSlider.setValue(Double.valueOf(this._sketchOptions.penWidth), false);
         this.eraseWidthSlider.setValue(Double.valueOf(this._sketchOptions.eraserWidth), false);
+        this.spiroTypeListBox.setItemSelected(ArrayUtils.indexOf(SpiroCurveType.values(), this._sketchOptions.spiroCurveType), true);
         if (fireEvent) {
             this.optionsChangedEvent.dispatch(new SketchOptions(this._sketchOptions));
         }
     }
+
+	private void updateButtonStatesFromOptions() {
+		switch (this._sketchOptions.drawingTool) {
+        case ERASE:
+            this.eraseButton.setValue(true, false);
+        	break;
+        case SPIRO:
+            this.spiroButton.setValue(true, false);
+            break;
+        case PAINT:
+        	// fall through
+    	default:
+            this.paintButton.setValue(true, false);
+        	break;
+        }
+	}
 
 	protected void hideAllOptionPanels() {
 		this.eraseOptionsPanel.setVisible(false);
@@ -148,11 +176,11 @@ public class SketchToolbar extends Composite
 
     private void updateOptionsFromToolbar()
     {
-        ToggleButton activeButton = toolTogglePanel.getActiveButton();
-        this._sketchOptions.drawingTool = this.buttonToolMap.get(activeButton);
+        this._sketchOptions.drawingTool = this.buttonToolMap.get(toolTogglePanel.getActiveButton());
         this._sketchOptions.penWidth = Math.max(1, this.paintWidthSlider.getValue().intValue());
         this._sketchOptions.penColor = this.paintColor.getColor();
         this._sketchOptions.eraserWidth = Math.max(1, this.eraseWidthSlider.getValue().intValue());
+        this._sketchOptions.spiroCurveType = SpiroCurveType.valueOf(spiroTypeListBox.getValue(spiroTypeListBox.getSelectedIndex()));
     }
 
     /**
