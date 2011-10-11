@@ -30,7 +30,6 @@ import com.project.shared.data.Pair;
 import com.project.shared.data.Point2D;
 import com.project.shared.data.Rectangle;
 import com.project.shared.utils.PointUtils;
-import com.project.shared.utils.loggers.Logger;
 import com.project.website.canvas.client.canvastools.base.CanvasToolEvents;
 import com.project.website.canvas.client.canvastools.base.ResizeMode;
 import com.project.website.canvas.client.canvastools.base.interfaces.CanvasTool;
@@ -43,8 +42,6 @@ import com.project.website.canvas.shared.data.SketchOptions;
 
 public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
 {
-    private static final int PATH_TERMINATION_ON_MOUSE_OUT_DELAY_MSECS = 500;
-
     public enum SpiroCurveType {
         Sine("Wave"),
         Circle("Curl");
