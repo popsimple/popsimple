@@ -3,6 +3,7 @@ package com.project.website.canvas.client.canvastools.sketch;
 import com.project.shared.data.Point2D;
 import com.project.website.canvas.client.canvastools.base.CanvasToolFactoryBase;
 import com.project.website.canvas.client.canvastools.base.interfaces.CanvasToolFactory;
+import com.project.website.canvas.client.canvastools.sketch.SketchTool.SpiroCurveType;
 import com.project.website.canvas.shared.data.SketchData;
 import com.project.website.canvas.shared.data.SketchOptions;
 
@@ -23,7 +24,8 @@ public class SketchToolFactory extends CanvasToolFactoryBase<SketchTool>
                                                                    DEFAULT_ERASER_WIDTH,
                                                                    DEFAULT_DRAWING_TOOL,
                                                                    "black",
-                                                                   false);
+                                                                   false,
+                                                                   SpiroCurveType.Circle);
 
 
     @Override

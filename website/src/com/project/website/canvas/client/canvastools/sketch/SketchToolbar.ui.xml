@@ -32,6 +32,7 @@
             <w:Slider ui:field="eraseWidthSlider" maxValue="100"  minValue="1"  showText="true"/>
         </g:HTMLPanel><g:HTMLPanel ui:field="spiroOptionsPanel" addStyleNames="{res.main.canvasToolbarItemWrapper}">
             <!-- keep above without whitespace -->
+            <g:ListBox ui:field="spiroTypeListBox"/>
         </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

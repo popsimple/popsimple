@@ -386,6 +386,7 @@
 .canvasToolbarItemWrapper {
     display: inline-block;
     margin: 0 3px;
+    vertical-align: top;
 }
 
 .canvasToolbarListBox
@@ -1152,6 +1153,7 @@
 	width: 30px;
 	vertical-align: top;
     padding: 0;
+    margin: 0;
 }
 
 .sliderWrapper {
