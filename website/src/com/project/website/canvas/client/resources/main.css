@@ -244,6 +244,7 @@
 	float: left;
 	width: toolboxWidth;
 	height: 100%;
+	overflow: auto;
 }
 
 .toolboxHeader {
