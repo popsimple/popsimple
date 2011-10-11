@@ -480,6 +480,13 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         toolFrame.asWidget().removeStyleName(CanvasResources.INSTANCE.main().selected());
     }
 
+    @Override
+    protected void onLoad()
+    {
+        super.onLoad();
+        ElementUtils.setTextSelectionEnabled(this.worksheetBackground.getElement(), false);
+    }
+
     private void addEditModeRegistrations()
     {
         final WorksheetViewImpl that = this;

@@ -16,6 +16,7 @@ import com.google.gwt.user.client.Random;
 import com.google.gwt.user.client.ui.Image;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.net.ImageLoader;
+import com.project.shared.client.utils.StyleUtils.UserSelectionMode;
 import com.project.shared.data.KeyValue;
 import com.project.shared.data.Point2D;
 import com.project.shared.data.Rectangle;
@@ -146,7 +147,7 @@ public abstract class ElementUtils
 
     public static void setTextSelectionEnabled(Element element, boolean isEnabled)
     {
-        StyleUtils.setTextSelectionEnabled(element.getStyle(), isEnabled);
+        StyleUtils.setUserSelectionMode(element.getStyle(), isEnabled ? UserSelectionMode.Text : UserSelectionMode.None);
         ElementUtils.setDisabledOnDragHandler(element, false == isEnabled);
         ElementUtils.setDisabledOnSelectStartHandler(element, false == isEnabled);
     }

@@ -24,6 +24,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.handlers.RegistrationsManager;
+import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.HandlerUtils;
 import com.project.shared.client.utils.StyleUtils;
 import com.project.shared.client.utils.UrlUtils;
@@ -89,6 +90,13 @@ public class ImageTool extends Composite implements CanvasTool<ImageData> {
         this.registerHandlers();
         this.setViewMode(viewMode); // do whatever bindings necessary for our
                                     // mode
+    }
+
+    @Override
+    protected void onLoad()
+    {
+        super.onLoad();
+        ElementUtils.setTextSelectionEnabled(this.getElement(), false);
     }
 
     private void registerHandlers() {

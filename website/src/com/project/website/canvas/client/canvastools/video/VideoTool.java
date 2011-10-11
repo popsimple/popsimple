@@ -103,6 +103,13 @@ public class VideoTool extends Composite implements CanvasTool<VideoData>
         this.setViewMode(viewMode); // do whatever bindings necessary for our mode
     }
 
+    @Override
+    protected void onLoad()
+    {
+        super.onLoad();
+        ElementUtils.setTextSelectionEnabled(this.getElement(), false);
+    }
+
     private void registerGeneralHandlers() {
         registrationsManager.add(this.videoFrame.addLoadHandler(new LoadHandler() {
             @Override

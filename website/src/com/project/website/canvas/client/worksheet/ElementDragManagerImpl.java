@@ -156,6 +156,8 @@ public class ElementDragManagerImpl implements ElementDragManager
     private void stopMouseMoveOperation(Element targetElement, RegistrationsManager regs)
     {
         ElementUtils.removeClassName(targetElement, this._targetDragStyleName);
+        // TODO: restore the previous state of text selection enabled from before the mouse operation, instead of
+        // forcing it to "true"
         ElementUtils.setTextSelectionEnabled(_container.getElement(), true);
         _dragPanel.setVisible(false);
         regs.clear();

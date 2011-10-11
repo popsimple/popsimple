@@ -219,6 +219,9 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
 
     private void initEditable()
     {
+        // TODO: this seems to have no effect if a parent element has disabled text selection
+        // therefore we must be sure no parent has disabled it for this tool to work.
+        // ElementUtils.setTextSelectionEnabled(this.getElement(), true);
         this._editorReady = true;
         this.registerHandlers();
         if (null != this._data) {

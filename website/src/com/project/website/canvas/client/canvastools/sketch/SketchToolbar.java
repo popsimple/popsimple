@@ -69,10 +69,6 @@ public class SketchToolbar extends Composite
         buttonToolMap.put(this.paintButton, DrawingTool.PAINT);
         buttonToolMap.put(this.spiroButton, DrawingTool.SPIRO);
 
-        this.paintOptionsPanel.add(paintWidthSlider);
-        this.eraseOptionsPanel.add(eraseWidthSlider);
-
-
         ValueChangeHandler<Double> barValueChangedHandler = new ValueChangeHandler<Double>() {
 			@Override public void onValueChange(ValueChangeEvent<Double> event) {
 		        updateOptionsFromToolbar();

@@ -124,8 +124,6 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
         WidgetUtils.stopClickPropagation(this.moveBackLink.asWidget());
         WidgetUtils.stopClickPropagation(this.moveFrontLink.asWidget());
 
-        ElementUtils.setTextSelectionEnabled(this.buttonsPanel.getElement(), false);
-
         this.loadingPanel.setVisible(false);
         this.rotatePanel.setVisible(tool.canRotate());
         this.resizePanel.setVisible(tool.getResizeMode() != ResizeMode.NONE);
@@ -136,6 +134,11 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
     protected void onLoad()
     {
         super.onLoad();
+
+        ElementUtils.setTextSelectionEnabled(this.buttonsPanel.getElement(), false);
+        ElementUtils.setTextSelectionEnabled(this.rotatePanel.getElement(), false);
+        ElementUtils.setTextSelectionEnabled(this.resizePanel.getElement(), false);
+
         this.initToolbar();
         this.reRegisterFrameHandlers();
         this.registerTransformHandlers();
@@ -144,13 +147,14 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
     @Override
     protected void onUnload()
     {
-        super.onUnload();
         this.frameRegs.clear();
         this.toolRegs.clear();
         if (null != this.floatingToolbar) {
             this.floatingToolbar.setEditedWidget(null);
             this.floatingToolbar.removeFromParent();
         }
+
+        super.onUnload();
     }
 
     private void initToolbar()
