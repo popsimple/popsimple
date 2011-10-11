@@ -753,6 +753,8 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         regs.add(this.worksheetPanel.addDomHandler(new MouseDownHandler() {
             @Override public void onMouseDown(final MouseDownEvent event) {
                 dispatchToolCreationWithoutFloatingWidget(toolboxItem, event);
+                event.stopPropagation();
+                event.preventDefault();
             }
         }, MouseDownEvent.getType()));
 
