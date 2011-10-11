@@ -228,15 +228,20 @@ public class VideoTool extends Composite implements CanvasTool<VideoData>
     public void setViewMode(boolean isViewMode)
     {
         this.viewMode = isViewMode;
+        this.refreshVisibility();
         if (isViewMode) {
-            this._editModeRegistrations.clear();
-            if (StringUtils.isWhitespaceOrNull(this.data.videoInformation.url)) {
-                this.setVisible(false);
-            }
             this._editModeRegistrations.clear();
         }
         else {
             this.registerEditModeHandlers();
+        }
+    }
+
+    private void refreshVisibility() {
+        if ((this.viewMode) && (StringUtils.isWhitespaceOrNull(this.data.videoInformation.url))) {
+            this.setVisible(false);
+        } else {
+            this.setVisible(true);
         }
     }
 
@@ -246,6 +251,8 @@ public class VideoTool extends Composite implements CanvasTool<VideoData>
     }
 
     private void setVideo(boolean autoSize) {
+        this.refreshVisibility();
+
         if (StringUtils.isWhitespaceOrNull(this.data.videoInformation.url)) {
             this.clearData();
             return;
