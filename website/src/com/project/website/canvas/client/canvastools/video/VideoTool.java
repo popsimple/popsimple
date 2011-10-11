@@ -62,7 +62,6 @@ public class VideoTool extends Composite implements CanvasTool<VideoData>
     @UiField
     Frame videoFrame;
 
-    private static final Point2D DEFAULT_SIZE = new Point2D(425, 349);
     private static final String OPTIONS_LABEL_VIDEO_SET = "Change video...";
 
     private CanvasToolEvents _toolEvents = new CanvasToolEvents(this);
@@ -186,8 +185,13 @@ public class VideoTool extends Composite implements CanvasTool<VideoData>
         }
         //Make sure we don't set arbitrary html or invalid urls
         videoInformation.url = UrlUtils.encodeOnce(videoInformation.url);
+        boolean autoSize = false;
+        if (data.videoInformation.size.equals(Point2D.zero))
+        {
+            autoSize = true;
+        }
         data.videoInformation = videoInformation;
-        setVideo(true);
+        setVideo(autoSize);
     }
 
     @Override
@@ -224,15 +228,20 @@ public class VideoTool extends Composite implements CanvasTool<VideoData>
     public void setViewMode(boolean isViewMode)
     {
         this.viewMode = isViewMode;
+        this.refreshVisibility();
         if (isViewMode) {
-            this._editModeRegistrations.clear();
-            if (StringUtils.isWhitespaceOrNull(this.data.videoInformation.url)) {
-                this.setVisible(false);
-            }
             this._editModeRegistrations.clear();
         }
         else {
             this.registerEditModeHandlers();
+        }
+    }
+
+    private void refreshVisibility() {
+        if ((this.viewMode) && (StringUtils.isWhitespaceOrNull(this.data.videoInformation.url))) {
+            this.setVisible(false);
+        } else {
+            this.setVisible(true);
         }
     }
 
@@ -242,6 +251,8 @@ public class VideoTool extends Composite implements CanvasTool<VideoData>
     }
 
     private void setVideo(boolean autoSize) {
+        this.refreshVisibility();
+
         if (StringUtils.isWhitespaceOrNull(this.data.videoInformation.url)) {
             this.clearData();
             return;
@@ -249,7 +260,7 @@ public class VideoTool extends Composite implements CanvasTool<VideoData>
         // Make sure we don't set arbitrary html or invalid urls
         String url = UrlUtils.encodeOnce(this.data.videoInformation.url);
         if (autoSize) {
-            prepareAutoSizeHandler();
+            WidgetUtils.setWidgetSize(this, this.data.videoInformation.size);
         }
         // Only set the url if it changed, because there will be a refresh of the iframe
         if (autoSize || (false == UrlUtils.areEquivalent(url, videoFrame.getUrl()))) {
@@ -269,31 +280,9 @@ public class VideoTool extends Composite implements CanvasTool<VideoData>
         this.videoFrame.setUrl("");
     }
 
-    private void prepareAutoSizeHandler() {
-        final RegistrationsManager regs = new RegistrationsManager();
-        final VideoTool that = this;
-        regs.add(this.videoFrame.addLoadHandler(new LoadHandler() {
-            @Override
-            public void onLoad(LoadEvent event) {
-                Point2D videoFrameSize = ElementUtils.getElementOffsetSize(videoFrame.getElement());
-                WidgetUtils.setWidgetSize(that, videoFrameSize);
-                videoFrame.setWidth("");
-                videoFrame.setHeight("");
-                regs.clear();
-            }
-        }));
-        Point2D currentFrameSize = ElementUtils.getElementOffsetSize(videoFrame.getElement());
-        if ((false == videoFrame.isVisible()) || currentFrameSize.equals(Point2D.zero)) {
-            WidgetUtils.setWidgetSize(this, DEFAULT_SIZE);
-        }
-        else {
-            WidgetUtils.setWidgetSize(this, ElementUtils.getElementOffsetSize(videoFrame.getElement()));
-        }
-    }
-
     @Override
     public void onResize() {
-        // TODO Auto-generated method stub
+     // TODO Auto-generated method stub
     }
 
     @Override
