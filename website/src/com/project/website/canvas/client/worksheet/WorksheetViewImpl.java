@@ -18,7 +18,6 @@ import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
-import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
@@ -750,13 +749,12 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     private void setActiveToolboxItemWithoutFloatingWidget(final ToolboxItem toolboxItem) {
         final RegistrationsManager regs = new RegistrationsManager();
 
-        regs.add(this.worksheetPanel.addDomHandler(new MouseDownHandler() {
-            @Override public void onMouseDown(final MouseDownEvent event) {
+        regs.add(WidgetUtils.addMovementStopHandler(this.worksheetPanel, new Handler<HumanInputEvent<?>>() {
+            @Override public void onFire(HumanInputEvent<?> event) {
                 dispatchToolCreationWithoutFloatingWidget(toolboxItem, event);
                 event.stopPropagation();
                 event.preventDefault();
-            }
-        }, MouseDownEvent.getType()));
+            }}));
 
         this._floatingWidgetTerminated.addHandler(new Handler<Void>() {
             @Override public void onFire(Void arg) {
@@ -855,7 +853,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         };
         this._floatingWidgetTerminated.addHandler(this._floatingWidgetDragManager.startMouseMoveOperation(
                 null, this.worksheetPanel.getElement(), Point2D.zero,
-                handler, ElementDragManager.StopCondition.STOP_CONDITION_MOUSE_CLICK));
+                handler, ElementDragManager.StopCondition.STOP_CONDITION_MOVEMENT_STOP));
     }
 
     private void startDraggingSelectedToolFrames()
@@ -863,9 +861,9 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         _toolFrameTransformer.startDragCanvasToolFrames(IterableUtils.<CanvasToolFrame, CanvasToolFrame>upCast(_selectedTools));
     }
 
-    private void dispatchToolCreationWithoutFloatingWidget(final ToolboxItem toolboxItem, final MouseEvent<?> event)
+    private void dispatchToolCreationWithoutFloatingWidget(final ToolboxItem toolboxItem, final HumanInputEvent<?> event)
     {
-        Point2D position = ElementUtils.getRelativePosition(event, worksheetPanel.getElement());
+        Point2D position = ElementUtils.getMousePositionRelativeToElement(worksheetPanel.getElement());
         _toolCreationRequestEvent.dispatch(new ToolCreationRequest(position, toolboxItem.getToolFactory()) {
             @Override public void toolCreated(CanvasTool<? extends ElementData> tool) {
                 super.toolCreated(tool);

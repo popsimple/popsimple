@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.HumanInputEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
@@ -14,6 +13,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.utils.ElementUtils;
+import com.project.shared.client.utils.widgets.WidgetUtils;
 import com.project.website.canvas.client.canvastools.base.BuiltinTools;
 import com.project.website.canvas.client.canvastools.base.interfaces.ToolboxItem;
 import com.project.website.canvas.client.resources.CanvasResources;
@@ -59,12 +59,11 @@ public class Toolbox extends Composite {
 
         elem.addStyleName(CanvasResources.INSTANCE.main().toolboxInnerIconStyle());
         elem.addStyleName(toolboxItem.getToolboxIconStyle());
-        elem.addClickHandler(new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        WidgetUtils.addMovementStartHandler(elem, new SimpleEvent.Handler<HumanInputEvent<?>>() {
+            @Override public void onFire(HumanInputEvent<?> arg) {
                 setActiveTool(toolboxItem);
-                event.stopPropagation();
-            }
-        });
+                arg.stopPropagation();
+            }});
     }
 
     public void setActiveTool(ToolboxItem toolboxItem) {
