@@ -678,7 +678,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
                     //Must be in the Preview handler since we want to cancel the event after handling it
                     //otherwise in some browsers the whole page is selected (e.g. firefox) and it interrupts dragging.
                     this.selectAllTools();
-                    event.cancel();
+                    event.getNativeEvent().preventDefault();
                     return;
                 default:
                     //do nothing
@@ -689,6 +689,9 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         {
             case KeyCodes.KEY_ESCAPE:
                 _stopOperationEvent.dispatch(null);
+
+                //Prevent default otherwise all Animated Gifs (loading circle and user selected) are stopped.
+                event.getNativeEvent().preventDefault();
                 break;
             default:
                 break;
