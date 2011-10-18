@@ -184,17 +184,14 @@ public class ImageTool extends Composite implements CanvasTool<ImageData> {
 
     private void updateImageFromData(boolean autoSize) {
         this.refreshVisibility();
+        StyleUtils.clearBackground(this.getElement().getStyle());
+
         if (StringUtils.isWhitespaceOrNull(this.data.imageInformation.url)) {
             this.addStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
             this.removeStyleName(CanvasResources.INSTANCE.main().imageToolSet());
             return;
         }
         this.removeStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
-        StyleUtils.clearBackground(this.getElement().getStyle());
-
-        if (Strings.isNullOrEmpty(this.data.imageInformation.url)) {
-            return;
-        }
 
         this._toolEvents.dispatchLoadStartedEvent(new LoadStartedEventArgs(false));
 
