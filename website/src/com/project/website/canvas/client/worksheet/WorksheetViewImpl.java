@@ -739,6 +739,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         if (false == (this._activeToolboxItem instanceof MoveToolboxItem)) {
             return;
         }
+        //TODO: Move all of this to MoveCursor logic.
         CanvasToolFrame highestToolUnderMouse = null;
         int highestZIndex = -1;
         for (CanvasToolFrame frame : this._overToolFrames) {
@@ -749,6 +750,9 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
             }
         }
         this._toolFrameSelectionManager.forceToolFrameSelection(highestToolUnderMouse);
+        //Make sure the tool is not activated by the mouse click since we only want to move it.
+        highestToolUnderMouse.setActive(false);
+
         this.startDraggingSelectedToolFrames();
         event.stopPropagation();
         event.preventDefault();
