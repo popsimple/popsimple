@@ -85,7 +85,6 @@ public class ElementDragManagerImpl implements ElementDragManager
         if (false == setStopConditionHandlers(targetElement, referenceElem, handler, stopConditions, regs)) {
             throw new RuntimeException("Must specify at least one stop condition. The bitfield was: " + stopConditions);
         }
-        ElementUtils.setTextSelectionEnabled(_container.getElement(), false);
 
         final MouseDragHandler dragHandler = new MouseDragHandler(
                 EventUtils.getCurrentMousePos(), this._dragStartSensitivity);
@@ -94,13 +93,11 @@ public class ElementDragManagerImpl implements ElementDragManager
                 ElementUtils.addClassName(targetElement, _targetDragStyleName);
                 _dragPanel.setVisible(true);
                 handler.onStart();
-                arg.preventDefault();
             }
         }));
         regs.add(dragHandler.addDragHandler(new SimpleEvent.Handler<HumanInputEvent<?>>() {
             @Override public void onFire(HumanInputEvent<?> arg) {
                 handleMouseMove(referenceElem, referenceOffset, handler);
-                arg.preventDefault();
             }
         }));
 
@@ -156,9 +153,6 @@ public class ElementDragManagerImpl implements ElementDragManager
     private void stopMouseMoveOperation(Element targetElement, RegistrationsManager regs)
     {
         ElementUtils.removeClassName(targetElement, this._targetDragStyleName);
-        // TODO: restore the previous state of text selection enabled from before the mouse operation, instead of
-        // forcing it to "true"
-        ElementUtils.setTextSelectionEnabled(_container.getElement(), true);
         _dragPanel.setVisible(false);
         regs.clear();
     }

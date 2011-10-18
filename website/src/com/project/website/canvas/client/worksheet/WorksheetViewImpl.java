@@ -17,7 +17,6 @@ import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
-import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
@@ -492,14 +491,16 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     {
         super.onLoad();
         ElementUtils.setTextSelectionEnabled(this.worksheetBackground.getElement(), false);
+//        ElementUtils.setTextSelectionEnabled(this.worksheetPanel.getElement(), false);
     }
 
     private void addEditModeRegistrations()
     {
         final WorksheetViewImpl that = this;
-        this._editModeRegistrations.add(this.worksheetPanel.addDomHandler(new MouseDownHandler() {
+
+        WidgetUtils.addMovementStartHandler(this.worksheetPanel, new Handler<HumanInputEvent<?>>() {
             @Override
-            public void onMouseDown(MouseDownEvent event) {
+            public void onFire(HumanInputEvent<?> arg) {
                 Point2D posRelativeToWorksheet = ElementUtils.getMousePositionRelativeToElement(worksheetPanel.getElement());
                 if (null == posRelativeToWorksheet) {
                     return;
@@ -509,13 +510,13 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
                     return;
                 }
                 if (that._overToolFrames.isEmpty()) {
-                    onClearAreaClicked(event);
+                    onClearAreaClicked(arg);
                 }
                 else {
-                    onOverToolFrameAreaClicked(event);
+                    onOverToolFrameAreaClicked(arg);
                 }
             }
-        }, MouseDownEvent.getType()));
+        });
 
         for (CanvasToolFrame toolFrame : this._toolFrameRegistrations.keySet()) {
             this.setToolFrameRegistrations(toolFrame);
@@ -674,12 +675,6 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
                 case (int)'Y':
                     UndoManager.get().redo();
                     return;
-                case (int)'A':
-                    //Must be in the Preview handler since we want to cancel the event after handling it
-                    //otherwise in some browsers the whole page is selected (e.g. firefox) and it interrupts dragging.
-                    this.selectAllTools();
-                    event.getNativeEvent().preventDefault();
-                    return;
                 default:
                     //do nothing
                     break;
@@ -712,6 +707,10 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
                     return;
                 case (int)'V':
                     this.onPasteToolsRequest();
+                    event.preventDefault();
+                    return;
+                case (int)'A':
+                    this.selectAllTools();
                     event.preventDefault();
                     return;
                 default:

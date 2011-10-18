@@ -198,11 +198,19 @@ public class WidgetUtils {
         RegistrationsManager regs = new RegistrationsManager();
         regs.add(widget.addDomHandler(new MouseDownHandler() {
             @Override public void onMouseDown(MouseDownEvent event) {
+                //Prevent default event handling in order to block native browser drag events
+                //(such as text dragging when using Select All - Ctrl+A)
+                event.preventDefault();
+
                 handler.onFire(event);
             }
         }, MouseDownEvent.getType()));
         regs.add(widget.addDomHandler(new TouchStartHandler() {
             @Override public void onTouchStart(TouchStartEvent event) {
+                //Prevent default event handling in order to block native browser drag events
+                //(such as text dragging when using Select All - Ctrl+A)
+                event.preventDefault();
+
                 handler.onFire(event);
             }
         }, TouchStartEvent.getType()));
@@ -214,11 +222,19 @@ public class WidgetUtils {
         RegistrationsManager regs = new RegistrationsManager();
         regs.add(widget.addDomHandler(new MouseUpHandler() {
             @Override public void onMouseUp(MouseUpEvent event) {
+                //Prevent default event handling in order to block native browser drag events
+                //(such as text dragging when using Select All - Ctrl+A)
+                event.preventDefault();
+
                 handler.onFire(event);
             }
         }, MouseUpEvent.getType()));
         regs.add(widget.addDomHandler(new TouchEndHandler() {
             @Override public void onTouchEnd(TouchEndEvent event) {
+                //Prevent default event handling in order to block native browser drag events
+                //(such as text dragging when using Select All - Ctrl+A)
+                event.preventDefault();
+
                 handler.onFire(event);
             }
         }, TouchEndEvent.getType()));
@@ -230,11 +246,19 @@ public class WidgetUtils {
         RegistrationsManager regs = new RegistrationsManager();
         regs.add(widget.addDomHandler(new MouseMoveHandler() {
             @Override public void onMouseMove(MouseMoveEvent event) {
+                //Prevent default event handling in order to block native browser drag events
+                //(such as text dragging when using Select All - Ctrl+A)
+                event.preventDefault();
+
                 handler.onFire(event);
             }
         }, MouseMoveEvent.getType()));
         regs.add(widget.addDomHandler(new TouchMoveHandler() {
             @Override public void onTouchMove(TouchMoveEvent event) {
+                //Prevent default event handling in order to block native browser drag events
+                //(such as text dragging when using Select All - Ctrl+A)
+                event.preventDefault();
+
                 handler.onFire(event);
             }
         }, TouchMoveEvent.getType()));

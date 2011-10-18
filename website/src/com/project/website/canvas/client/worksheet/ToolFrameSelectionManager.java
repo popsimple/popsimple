@@ -74,8 +74,6 @@ public class ToolFrameSelectionManager {
 	}
 
 	public void startSelectionDrag(HumanInputEvent<?> event) {
-        ElementUtils.setTextSelectionEnabled(_container.getElement(), false);
-
 		if (false == event.isControlKeyDown()) {
 			this._worksheetView.clearToolFrameSelection();
 		}
