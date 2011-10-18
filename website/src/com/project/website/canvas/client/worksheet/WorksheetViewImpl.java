@@ -298,6 +298,11 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         }
     }
 
+    public void selectAllTools() {
+        for (CanvasToolFrame toolFrame : this.getToolFrames())
+            this.selectToolFrame(toolFrame);
+    }
+
     @Override
     public void clearToolFrameSelection() {
         ArrayList<CanvasToolFrame> framesToClear = new ArrayList<CanvasToolFrame>(this._selectedTools);
@@ -668,6 +673,12 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
                     return;
                 case (int)'Y':
                     UndoManager.get().redo();
+                    return;
+                case (int)'A':
+                    //Must be in the Preview handler since we want to cancel the event after handling it
+                    //otherwise in some browsers the whole page is selected (e.g. firefox) and it interrupts dragging.
+                    this.selectAllTools();
+                    event.cancel();
                     return;
                 default:
                     //do nothing
