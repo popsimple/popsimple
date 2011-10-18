@@ -53,6 +53,7 @@ import com.project.shared.client.utils.HandlerUtils;
 import com.project.shared.client.utils.widgets.WidgetUtils;
 import com.project.shared.data.Point2D;
 import com.project.shared.utils.IterableUtils;
+import com.project.shared.utils.StringUtils;
 import com.project.website.canvas.client.canvastools.CursorToolboxItem;
 import com.project.website.canvas.client.canvastools.MoveToolboxItem;
 import com.project.website.canvas.client.canvastools.base.interfaces.CanvasTool;
@@ -127,6 +128,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     @UiField
     CheckBox gridCheckBox;
 
+    public static final String DEFAULT_PUBLIC_NAME = "Guest";
 
     private ToolboxItem _activeToolboxItem;
     private Widget _floatingWidget;
@@ -427,7 +429,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     public void setUserProfile(UserProfile userProfile)
     {
         boolean canInvite = false;
-        String publicName = "Guest";
+        String publicName = "";
         String email = "";
         if (null != userProfile) {
             canInvite = userProfile.canInvite;
@@ -435,7 +437,8 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
             email = userProfile.email;
         }
         this.linkInvite.setVisible(canInvite);
-        this.userWelcomeLabel.setText(publicName);
+        this.userWelcomeLabel.setText(
+                StringUtils.defaultIfNullOrEmpty(publicName, DEFAULT_PUBLIC_NAME));
         this.userWelcomeLabel.setTitle(email);
     }
 
