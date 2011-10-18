@@ -965,12 +965,13 @@
 }
 
 .selectionPanelStyle {
-	background-color: transparent;
+	background-color: rgba(50, 120, 240, 0.2);
 	border-style: dotted;
 	border-width: 1px;
 	width: 0px;
 	height: 0px;
 	position: absolute;
+	z-index: 1000;
 }
 
 @url loadingIconUrl loadingIcon;
