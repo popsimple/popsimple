@@ -491,7 +491,6 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     {
         super.onLoad();
         ElementUtils.setTextSelectionEnabled(this.worksheetBackground.getElement(), false);
-//        ElementUtils.setTextSelectionEnabled(this.worksheetPanel.getElement(), false);
     }
 
     private void addEditModeRegistrations()
@@ -501,6 +500,12 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         WidgetUtils.addMovementStartHandler(this.worksheetPanel, new Handler<HumanInputEvent<?>>() {
             @Override
             public void onFire(HumanInputEvent<?> arg) {
+                //Prevent default behavior since some browser (e.g. FireFox drags selected page in mouse down when
+                //selecting all text using Select All) and set the focus to clear any other selection in the page
+                //and since preventDefault will cause it not to be called by the browser.
+                arg.preventDefault();
+                focusPanel.setFocus(true);
+
                 Point2D posRelativeToWorksheet = ElementUtils.getMousePositionRelativeToElement(worksheetPanel.getElement());
                 if (null == posRelativeToWorksheet) {
                     return;

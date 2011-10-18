@@ -37,6 +37,9 @@ public class Toolbox extends Composite {
         initWidget(uiBinder.createAndBindUi(this));
 
         ElementUtils.setTextSelectionEnabled(this.getElement(), false);
+        //Prevent default behavior since some browser (e.g. FireFox drags selected page in mouse down when
+        //selecting all text using Select All)
+        WidgetUtils.mouseDownPreventDefault(this);
 
         for (ToolboxItem toolboxItem : BuiltinTools.getTools()) {
             this.addTool(toolboxItem);
@@ -63,6 +66,7 @@ public class Toolbox extends Composite {
             @Override public void onFire(HumanInputEvent<?> arg) {
                 setActiveTool(toolboxItem);
                 arg.stopPropagation();
+                arg.preventDefault();
             }});
     }
 
