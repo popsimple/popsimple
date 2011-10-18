@@ -52,16 +52,16 @@
 			top: 0px;
 		}
 		.cropSiteBox {
-			outline: none; /* prevent Google Chrome yelloe outline on selection */
+			outline: none; /* prevent Google Chrome yellow outline on selection */
 		}
 
     </ui:style>
-    <g:FocusPanel ui:field="rootPanel" addStyleNames="{style.cropSiteBox}">
+    <g:FlowPanel ui:field="rootPanel" addStyleNames="{style.cropSiteBox}">
         <g:FlowPanel ui:field="frameContainer" addStyleNames="{style.frameContainer}">
 	       	<g:HTMLPanel ui:field="selectionPanel" addStyleNames="{style.selectionPanel}" />
 	       	<g:HTMLPanel ui:field="blockPanel" addStyleNames="{style.blockPanel}"></g:HTMLPanel>
 	       	<g:HTMLPanel ui:field="dragPanel" addStyleNames="{style.dragPanel}"></g:HTMLPanel>
 			<g:Frame ui:field="siteFrame" addStyleNames="{style.cropSiteFrame}"></g:Frame>
        	</g:FlowPanel>
-    </g:FocusPanel>
+    </g:FlowPanel >
 </ui:UiBinder>

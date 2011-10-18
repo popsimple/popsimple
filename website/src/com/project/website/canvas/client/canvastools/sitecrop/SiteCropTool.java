@@ -14,9 +14,9 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.Frame;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -25,8 +25,8 @@ import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.handlers.MouseButtonDownHandler;
 import com.project.shared.client.handlers.RegistrationsManager;
-import com.project.shared.client.handlers.SpecificKeyPressHandler;
 import com.project.shared.client.utils.ElementUtils;
+import com.project.shared.client.utils.EventUtils;
 import com.project.shared.client.utils.SchedulerUtils.OneTimeScheduler;
 import com.project.shared.client.utils.UrlUtils;
 import com.project.shared.client.utils.WindowUtils;
@@ -71,7 +71,7 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
     //#region UiFields
 
     @UiField
-    FocusPanel rootPanel;
+    FlowPanel rootPanel;
 
     @UiField
     Frame siteFrame;
@@ -184,11 +184,13 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
         this._modeRegistrations.add(this._cropRegistrationManager.asSingleRegistration());
         this._modeRegistrations.add(this._moveRegistrationManager.asSingleRegistration());
 
-        this._modeRegistrations.add(this.rootPanel.addKeyPressHandler(
-                new SpecificKeyPressHandler(KeyCodes.KEY_ESCAPE) {
+        this._modeRegistrations.add(EventUtils.addNativePreviewEvent(
+                KeyPressEvent.getType(), new Handler<NativePreviewEvent>() {
             @Override
-            public void onSpecificKeyPress(KeyPressEvent event) {
-                clearSelection();
+            public void onFire(NativePreviewEvent arg) {
+                if (KeyCodes.KEY_ESCAPE == arg.getNativeEvent().getKeyCode()) {
+                    clearSelection();
+                }
             }
         }));
 
@@ -544,6 +546,7 @@ public class SiteCropTool extends Composite implements CanvasTool<SiteCropElemen
             return;
         }
         this._isActive = isActive;
+        this.clearSelection();
         if (false == isActive)
         {
             this._modeRegistrations.clear();
