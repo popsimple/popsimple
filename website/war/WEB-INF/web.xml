@@ -23,12 +23,12 @@
 
   <servlet-mapping>
     <servlet-name>authenticationServlet</servlet-name>
-    <url-pattern>Login/authentication</url-pattern>
+    <url-pattern>/Login/authentication</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>
     <servlet-name>authenticationServlet</servlet-name>
-    <url-pattern>Canvas/authentication</url-pattern>
+    <url-pattern>/Canvas/authentication</url-pattern>
   </servlet-mapping>
 
 
