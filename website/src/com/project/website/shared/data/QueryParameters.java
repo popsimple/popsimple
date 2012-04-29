@@ -7,4 +7,5 @@ public class QueryParameters
     public static final String INVITE_ID = "inviteId";
     public static final String PAGE_ID = "page";
     public static final String VIEW_MODE_FLAG = "view";
+    public static final String PAGE_KEY = "key";
 }

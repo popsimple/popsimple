@@ -46,7 +46,8 @@ public class Canvas implements EntryPoint {
                 QueryString queryString = QueryString.parse(UrlUtils.getUrlEncoder(), event.getValue());
             	String idStr = queryString.get(QueryParameters.PAGE_ID);
             	boolean viewMode = queryString.contains(QueryParameters.VIEW_MODE_FLAG);
-                canvasContainer.getWorksheet().load(idStr, viewMode);
+            	String pageKey = queryString.get(QueryParameters.PAGE_KEY);
+                canvasContainer.getWorksheet().load(idStr, viewMode, pageKey);
             }
         });
 

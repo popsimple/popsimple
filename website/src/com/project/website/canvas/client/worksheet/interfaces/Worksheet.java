@@ -14,8 +14,9 @@ public interface Worksheet {
 
     void save();
 
-    void load(String id);
+    void load(String id, String pageKey);
 
-	void load(String idStr, boolean viewMode);
+	void load(String idStr, boolean viewMode, String pageKey);
+
 
 }

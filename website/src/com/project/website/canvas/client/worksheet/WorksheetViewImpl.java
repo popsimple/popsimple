@@ -130,6 +130,9 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
     public static final String DEFAULT_PUBLIC_NAME = "Guest";
 
+    private static final String SAVE_PAGE_EDITABLE = "Save";
+    private static final String SAVE_PAGE_NON_EDITABLE = "Save as new page";
+
     private ToolboxItem _activeToolboxItem;
     private Widget _floatingWidget;
     private CanvasPageOptions _pageOptions;
@@ -494,6 +497,14 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         ElementUtils.setTextSelectionEnabled(this.worksheetBackground.getElement(), false);
     }
 
+
+    @Override
+    public void setPageEditable(boolean isEditable) {
+        this.saveButton.setText(isEditable ? SAVE_PAGE_EDITABLE : SAVE_PAGE_NON_EDITABLE);
+    }
+
+    /*----------------------------------------------------------------------------------------*/
+    
     private void addEditModeRegistrations()
     {
         final WorksheetViewImpl that = this;
@@ -888,5 +899,4 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
             }
         });
     }
-
 }

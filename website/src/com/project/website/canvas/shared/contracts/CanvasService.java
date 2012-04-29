@@ -9,7 +9,20 @@ import com.project.website.canvas.shared.data.CanvasPage;
  */
 @RemoteServiceRelativePath("canvas")
 public interface CanvasService extends RemoteService {
-    CanvasPage savePage(CanvasPage page);
+    
+    public class AccessDeniedException extends Exception {
+        public AccessDeniedException() { super(); }
+        public AccessDeniedException(String string) {
+            super(string);
+        }
+
+        private static final long serialVersionUID = 1L;
+    }
+
+    public static int CANVAS_PAGE_SAVE_KEY_LENGTH = 16;
+
+    
+    CanvasPage savePage(CanvasPage page) throws AccessDeniedException;
 
     CanvasPage getPage(long id);
 

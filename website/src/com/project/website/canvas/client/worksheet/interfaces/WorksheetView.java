@@ -130,4 +130,6 @@ public interface WorksheetView extends IsWidget
 
     void setViewLinkTargetHistoryToken(String targetHistoryToken);
 
+    void setPageEditable(boolean isEditable);
+
 }

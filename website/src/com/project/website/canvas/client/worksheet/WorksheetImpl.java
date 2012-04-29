@@ -23,6 +23,7 @@ import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.UrlUtils;
 import com.project.shared.data.Point2D;
 import com.project.shared.utils.QueryString;
+import com.project.shared.utils.StringUtils;
 import com.project.shared.utils.ThrowableUtils;
 import com.project.website.canvas.client.ToolFactories;
 import com.project.website.canvas.client.canvastools.base.CanvasToolFrameImpl;
@@ -72,7 +73,7 @@ public class WorksheetImpl implements Worksheet
         super();
         this.view = view;
         AuthenticationServiceAsync service = getAuthService();
-        updateUserSpecificInfo(view, service);
+        //updateUserSpecificInfo(view, service);
         setRegistrations();
 
         this.setDefaultPageOptions();
@@ -91,20 +92,20 @@ public class WorksheetImpl implements Worksheet
     }
 
     @Override
-    public void load(String idStr)
+    public void load(String idStr, String pageKey)
     {
-        load(parsePageIdStr(idStr));
+        load(parsePageIdStr(idStr), pageKey);
     }
 
     @Override
-	public void load(String idStr, boolean viewMode) {
+	public void load(String idStr, boolean viewMode, String pageKey) {
         if (viewMode) {
             this.setModeView();
         }
         else {
             this.setModeEdit();
         }
-		this.load(idStr);
+		this.load(idStr, pageKey);
 	}
 
     @Override
@@ -119,6 +120,10 @@ public class WorksheetImpl implements Worksheet
         }
         this.page.elements.clear();
         this.page.elements.addAll(activeElems);
+        if (false == this.pageIsEditable()) {
+            this.page.id = null;
+            this.page.key = null;
+        }
 
         CanvasServiceAsync service = (CanvasServiceAsync) GWT.create(CanvasService.class);
 
@@ -141,6 +146,10 @@ public class WorksheetImpl implements Worksheet
                 Window.Location.replace(buildPageUrl(result.id, false));
             }
         });
+    }
+
+    private boolean pageIsEditable() {
+        return false == StringUtils.isWhitespaceOrNull(this.page.key);
     }
 
     @Override
@@ -314,6 +323,7 @@ public class WorksheetImpl implements Worksheet
 	private void load(CanvasPage newPage)
     {
         this.page = newPage;
+        view.setPageEditable(pageIsEditable());
         this.updateOptions(this.page.options);
         this.updateHistoryToken();
 
@@ -346,7 +356,7 @@ public class WorksheetImpl implements Worksheet
         }
     }
 
-    private void load(Long id)
+    private void load(Long id, String pageKey)
     {
         CanvasServiceAsync service = (CanvasServiceAsync) GWT.create(CanvasService.class);
         this.updateViewForPageId(id);
@@ -557,12 +567,14 @@ public class WorksheetImpl implements Worksheet
                 invite();
             }
         });
-
+        
+        /*
+        // TODO: Allow passing a pageKey here too
         view.addLoadHandler(new Handler<String>() {
             @Override public void onFire(String idStr) {
                 updateLoadedPageURL(idStr);
             }
-        });
+        });*/
 
         view.addCopyToolHandler(new Handler<ArrayList<CanvasToolFrame>>() {
             @Override public void onFire(ArrayList<CanvasToolFrame> arg) {
@@ -611,7 +623,7 @@ public class WorksheetImpl implements Worksheet
         History.newItem(buildPageQueryString(id, this._inViewMode).toString(), false);
         this.updateViewForPageId(id);
     }
-
+/*
     private void updateLoadedPageURL(String idStr)
     {
         Long id = parsePageIdStr(idStr);
@@ -625,9 +637,9 @@ public class WorksheetImpl implements Worksheet
             return;
         }
         // Page id not changed, just reload
-        this.load(idStr);
+        this.load(idStr, ???);
     }
-
+*/
     private void setDefaultPageOptions()
     {
         this.page.options.backgroundImage.options = ImageOptionsProviderUtils.getImageOptions(
@@ -651,7 +663,7 @@ public class WorksheetImpl implements Worksheet
         toolData.transform = new Transform2D(ElementUtils.getElementOffsetPosition(frameElement),
                 toolFrame.getToolSize(), ElementUtils.getRotation(frameElement));
     }
-
+/*
     private void updateUserSpecificInfo(WorksheetView view, AuthenticationServiceAsync service)
     {
         this.view.setUserProfile(null);
@@ -667,7 +679,7 @@ public class WorksheetImpl implements Worksheet
                 that.view.setUserProfile(result);
             }
         });
-    }
+    }*/
 
     private void handleToolCreationRequest(ToolCreationRequest toolCreationRequest)
     {

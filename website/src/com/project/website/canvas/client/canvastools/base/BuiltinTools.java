@@ -12,7 +12,6 @@ import com.project.website.canvas.client.canvastools.image.ImageToolboxItem;
 import com.project.website.canvas.client.canvastools.map.MapToolboxItem;
 import com.project.website.canvas.client.canvastools.sitecrop.SiteCropToolboxItem;
 import com.project.website.canvas.client.canvastools.sketch.SketchToolboxItem;
-import com.project.website.canvas.client.canvastools.tasklist.TaskListToolboxItem;
 import com.project.website.canvas.client.canvastools.textedit.TextEditToolboxItem;
 import com.project.website.canvas.client.canvastools.video.VideoToolboxItem;
 import com.project.website.canvas.shared.data.ElementData;
@@ -43,9 +42,9 @@ public class BuiltinTools
         BuiltinTools.addToolboxItemWithFactory(new ImageToolboxItem());
         BuiltinTools.addToolboxItemWithFactory(new VideoToolboxItem());
         BuiltinTools.addToolboxItemWithFactory(new MapToolboxItem());
-        BuiltinTools.addToolboxItemWithFactory(new SiteCropToolboxItem());
         BuiltinTools.addToolboxItemWithFactory(new SketchToolboxItem());
-        BuiltinTools.addToolboxItemWithFactory(new TaskListToolboxItem());
+        BuiltinTools.addToolboxItemWithFactory(new SiteCropToolboxItem());
+//        BuiltinTools.addToolboxItemWithFactory(new TaskListToolboxItem());
     }
 
     public static Iterable<ToolboxItem> getTools()

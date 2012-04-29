@@ -16,4 +16,6 @@ public class CanvasPage implements Serializable {
     public CanvasPageOptions options = new CanvasPageOptions();
 
     public List<ElementData> elements = new ArrayList<ElementData>();
+    
+    public String key = null; 
 }
