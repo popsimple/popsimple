@@ -428,7 +428,7 @@ public class WorksheetImpl implements Worksheet
 
     private void updateViewForPageId(Long id, String key)
     {
-        this.view.setViewLinkTargetHistoryToken(this.buildPageQueryString(id, key, true).toString());
+        this.view.setViewLinkTargetHistoryToken(this.buildPageQueryString(id, null, true).toString());
     }
 
     private void logout()
