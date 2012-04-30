@@ -27,7 +27,10 @@ public class CanvasServiceImpl extends RemoteServiceServlet implements CanvasSer
 //            elemIds.add(elem.id);
 //        }
 
-        if (null != page.id) {
+        if (null == page.id) {
+            page.key = RandomUtils.randomString(CanvasService.CANVAS_PAGE_SAVE_KEY_LENGTH);
+        }
+        else {
             CanvasPage existingPage = datastore.load(CanvasPage.class, page.id);
             
             if (false == existingPage.key.equals(page.key)) {
@@ -44,16 +47,20 @@ public class CanvasServiceImpl extends RemoteServiceServlet implements CanvasSer
             // TODO: deal with the removed elements.
             // we have to check if any other page is still using them.
         }
-        
-        page.key = RandomUtils.randomString(CanvasService.CANVAS_PAGE_SAVE_KEY_LENGTH);
 
         datastore.store(page);
 
-        return this.getPage(page.id);
+        return this.loadPageFromDataStore(page.id);
     }
 
     @Override
     public CanvasPage getPage(long id) {
+        CanvasPage page = loadPageFromDataStore(id);
+        page.key = null;
+        return page;
+    }
+
+    private CanvasPage loadPageFromDataStore(long id) {
         ObjectDatastore datastore = new AnnotationObjectDatastore();
         CanvasPage page = datastore.load(CanvasPage.class, id);
         return page;

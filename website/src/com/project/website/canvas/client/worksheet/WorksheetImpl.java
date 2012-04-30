@@ -50,7 +50,6 @@ import com.project.website.shared.client.widgets.authentication.invite.InviteWid
 import com.project.website.shared.contracts.authentication.AuthenticationService;
 import com.project.website.shared.contracts.authentication.AuthenticationServiceAsync;
 import com.project.website.shared.data.QueryParameters;
-import com.project.website.shared.data.UserProfile;
 
 public class WorksheetImpl implements Worksheet
 {
@@ -120,7 +119,9 @@ public class WorksheetImpl implements Worksheet
         }
         this.page.elements.clear();
         this.page.elements.addAll(activeElems);
+        
         if (false == this.pageIsEditable()) {
+            // Make sure the service generates a new id and key for this page
             this.page.id = null;
             this.page.key = null;
         }
@@ -322,8 +323,9 @@ public class WorksheetImpl implements Worksheet
 
 	private void load(CanvasPage newPage)
     {
-        this.page = newPage;
-        view.setPageEditable(pageIsEditable());
+	    this.replaceCurrentPage(newPage);
+	    
+        this.view.setPageEditable(pageIsEditable());
         this.updateOptions(this.page.options);
         this.updateHistoryToken();
 
@@ -354,6 +356,19 @@ public class WorksheetImpl implements Worksheet
         for (ElementData newElement : this.sortByZIndex(newElements.values())) {
             this.createToolInstanceFromData(newElement);
         }
+    }
+
+    private void replaceCurrentPage(CanvasPage newPage) {
+        // The server never send us the page key, unless this is the first time the page is saved.
+	    // To make sure we don't lose the key we save it aside first.
+	    String key = this.page.key;
+        this.page = newPage;
+        // If the loaded page doesn't contain a key, but has the same ID as the current page, reuse the same key
+	    if ((null != this.page) && (newPage.id.equals(this.page.id)) && (null == newPage.key)) 
+	    {
+	        // If our current page has the same id as the newly loaded page, use the same key
+	        this.page.key = key;
+	    }
     }
 
     private void load(Long id, String pageKey)
