@@ -378,7 +378,7 @@ public class WorksheetImpl implements Worksheet
     {
         CanvasServiceAsync service = (CanvasServiceAsync) GWT.create(CanvasService.class);
 
-        this.updateViewForPageId(id, pageKey);
+        this.updateViewForPageId(id, pageKey); 
 
         if (null == id) {
             if (null != this.page.id) {

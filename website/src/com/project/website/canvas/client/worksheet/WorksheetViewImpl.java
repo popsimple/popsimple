@@ -190,6 +190,9 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
         this.addRegistrations();
         this.setViewMode(false);
+        
+        // TODO: remove when users feature is fully implemented
+        this.linkLogout.setVisible(false);
     }
 
     @Override
