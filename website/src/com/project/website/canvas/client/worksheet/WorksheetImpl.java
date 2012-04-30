@@ -144,7 +144,7 @@ public class WorksheetImpl implements Worksheet
                 // TODO: see issue #92
                 load(result);
                 view.onSaveOperationChange(OperationStatus.SUCCESS, null);
-                Window.Location.replace(buildPageUrl(result.id, false));
+                Window.Location.replace(buildPageUrl(result.id, result.key, false));
             }
         });
     }
@@ -167,11 +167,14 @@ public class WorksheetImpl implements Worksheet
         }
     }
 
-    private QueryString buildPageQueryString(Long pageId, boolean viewMode)
+    private QueryString buildPageQueryString(Long pageId, String key, boolean viewMode)
     {
         QueryString query = QueryString.create(UrlUtils.getUrlEncoder());
         if (null != pageId) {
             query.append(QueryParameters.PAGE_ID, pageId);
+        }
+        if (null != key) {
+            query.append(QueryParameters.PAGE_KEY, key);
         }
         if (viewMode) {
             query.append(QueryParameters.VIEW_MODE_FLAG, (String)null);
@@ -179,9 +182,9 @@ public class WorksheetImpl implements Worksheet
         return query;
     }
 
-    private String buildPageUrl(long pageId, boolean viewMode)
+    private String buildPageUrl(long pageId, String key, boolean viewMode)
     {
-        QueryString query = buildPageQueryString(pageId, viewMode);
+        QueryString query = buildPageQueryString(pageId, key, viewMode);
         String newURL = Window.Location.createUrlBuilder().setHash(query.toString()).buildString();
         return newURL;
     }
@@ -374,7 +377,8 @@ public class WorksheetImpl implements Worksheet
     private void load(Long id, String pageKey)
     {
         CanvasServiceAsync service = (CanvasServiceAsync) GWT.create(CanvasService.class);
-        this.updateViewForPageId(id);
+
+        this.updateViewForPageId(id, pageKey);
 
         if (null == id) {
             if (null != this.page.id) {
@@ -388,6 +392,16 @@ public class WorksheetImpl implements Worksheet
 
         if (Objects.equal(id, this.page.id)) {
             return;
+        }
+        
+        if (null != this.page.id)
+        {
+            // Page is being replaced.
+            this.page = new CanvasPage();
+        }
+        
+        if (StringUtils.isWhitespaceOrNull(this.page.key)) {
+            this.page.key = pageKey;
         }
 
         view.onLoadOperationChange(OperationStatus.PENDING, null);
@@ -412,9 +426,9 @@ public class WorksheetImpl implements Worksheet
         });
     }
 
-    private void updateViewForPageId(Long id)
+    private void updateViewForPageId(Long id, String key)
     {
-        this.view.setViewLinkTargetHistoryToken(this.buildPageQueryString(id, true).toString());
+        this.view.setViewLinkTargetHistoryToken(this.buildPageQueryString(id, key, true).toString());
     }
 
     private void logout()
@@ -634,9 +648,14 @@ public class WorksheetImpl implements Worksheet
 
 	private void updateHistoryToken()
     {
-	    Long id = null == this.page ? null : this.page.id;
-        History.newItem(buildPageQueryString(id, this._inViewMode).toString(), false);
-        this.updateViewForPageId(id);
+	    Long id = null;
+	    String key = null;
+	    if (null != this.page) {
+	        id = this.page.id;
+	        key = this.page.key;
+	    }
+        History.newItem(this.buildPageQueryString(id, key, this._inViewMode).toString(), false);
+        this.updateViewForPageId(id, key);
     }
 /*
     private void updateLoadedPageURL(String idStr)

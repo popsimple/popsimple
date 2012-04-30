@@ -168,6 +168,8 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     private boolean _viewMode;
     private boolean _modeInitialized = false;
 
+    private boolean _pageEditable;
+
 
 
     public WorksheetViewImpl() {
@@ -344,7 +346,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
     @Override
     public void onSaveOperationChange(OperationStatus status, String reason) {
-        this.changeStatusLabel(saveButton, status, "Saving...", "Save");
+        this.changeStatusLabel(saveButton, status, "Saving...", this.getSaveButtonText());
         if (OperationStatus.FAILURE == status) {
             Window.alert("Save failed. Reason: " + reason);
         }
@@ -500,7 +502,12 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
     @Override
     public void setPageEditable(boolean isEditable) {
-        this.saveButton.setText(isEditable ? SAVE_PAGE_EDITABLE : SAVE_PAGE_NON_EDITABLE);
+        this._pageEditable = isEditable;
+        this.saveButton.setText(this.getSaveButtonText());
+    }
+
+    private String getSaveButtonText() {
+        return this._pageEditable ? SAVE_PAGE_EDITABLE : SAVE_PAGE_NON_EDITABLE;
     }
 
     /*----------------------------------------------------------------------------------------*/
