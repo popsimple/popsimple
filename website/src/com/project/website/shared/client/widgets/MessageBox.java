@@ -19,6 +19,7 @@ import com.project.shared.client.utils.widgets.DialogWithZIndex;
 import com.project.shared.data.funcs.AsyncFunc;
 import com.project.shared.data.funcs.Func;
 
+// TODO create a shared styles package and move this to Shared project
 public class MessageBox extends Composite {
 
     private static InviteWidgetUiBinder uiBinder = GWT.create(InviteWidgetUiBinder.class);
