@@ -31,9 +31,24 @@ public abstract class AsyncFunc<A, B>  {
 
     public <C> AsyncFunc<A, C> then(final AsyncFunc<B, C> success, final AsyncFunc<Throwable, C> recover)
     {
-        return AsyncFunc.<A,B,C>chain(this, success, recover);
+        return this.thenSelect(AsyncFunc.<B,AsyncFunc<B,C>>constFunc(success), recover);
     }
 
+    public <C> AsyncFunc<A, C> thenSelect(final AsyncFunc<B, AsyncFunc<B, C>> successSelector, final AsyncFunc<Throwable, C> recover)
+    {
+        return AsyncFunc.<A,B,C>chain(this, successSelector, recover);
+    }
+
+    public <C> AsyncFunc<A, C> thenSelect(final AsyncFunc<B, AsyncFunc<B,C>> successSelector)
+    {
+        return this.thenSelect(successSelector, null);
+    }
+
+    public <C> AsyncFunc<A, C> thenSelect(final Func<B, AsyncFunc<B,C>> successSelector)
+    {
+        return this.thenSelect(AsyncFunc.fromFunc(successSelector), null);
+    }
+    
     public AsyncFunc<A, Pair<B,B>> and(final AsyncFunc<A,B> other)
     {
         return AsyncFunc.<A,B>both(this, other);
@@ -62,7 +77,7 @@ public abstract class AsyncFunc<A, B>  {
             }};
     }
 
-    private static <A,B,C> AsyncFunc<A, C> chain(final AsyncFunc<A, B> first, final AsyncFunc<B, C> success, final AsyncFunc<Throwable, C> recover)
+    private static <A,B,C> AsyncFunc<A, C> chain(final AsyncFunc<A, B> first, final AsyncFunc<B, AsyncFunc<B, C>> secondSelector, final AsyncFunc<Throwable, C> recover)
     {
         return new AsyncFunc<A,C>(){
             @Override
@@ -71,17 +86,26 @@ public abstract class AsyncFunc<A, B>  {
                 //Logger.log("Starting chained ('then') AsyncFunc with arg: " + arg);
                 first.run(arg, new Action<B>() {
                     @Override
-                    public void exec(B arg)
+                    public void exec(final B arg)
                     {
                         //Logger.log("Chained AsyncFunc succeeded, next in chain with arg: " + arg);
-                        if (null != success) {
-                            success.run(arg, successHandler, errorHandler);
-                        }
+                        secondSelector.run(arg, new Func<AsyncFunc<B,C>,S>(){
+                            @Override public S apply(final AsyncFunc<B, C> success) {
+                                //Logger.log("Chained AsyncFunc succeeded, next in chain with arg: " + arg);
+                                if (null != success) {
+                                    success.run(arg, successHandler, errorHandler);
+                                }
+                                return null;
+                            }}, new Action<Throwable> () {
+                            @Override public void exec(Throwable arg) {
+                                //Logger.log("Chained AsyncFunc failed, next in chain with arg: " + arg);
+                                if (null != recover) {
+                                    recover.run(arg, successHandler, errorHandler);
+                                }
+                            }});
                     }
                 }, new Action<Throwable>() {
-
-                    @Override
-                    public void exec(Throwable arg)
+                    @Override public void exec(Throwable arg)
                     {
                         //Logger.log("Chained AsyncFunc failed, next in chain with arg: " + arg);
                         if (null != recover) {
