@@ -17,6 +17,7 @@
                     <g:InlineLabel ui:field="userWelcomeLabel"/>
                 </div>
                 <g:Anchor ui:field="linkInvite">Invite a friend</g:Anchor>
+                <g:Anchor ui:field="newButton">New Page</g:Anchor>
                 <g:Anchor ui:field="linkLogout" addStyleNames="{res.main.worksheetHeaderLogoutLink}">Logout</g:Anchor>
                 |
                 <g:HTMLPanel addStyleNames="{res.main.worksheetButtons}">

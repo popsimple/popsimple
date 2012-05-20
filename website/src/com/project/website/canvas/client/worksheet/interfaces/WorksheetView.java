@@ -68,6 +68,8 @@ public interface WorksheetView extends IsWidget
 
     HandlerRegistration addSaveHandler(SimpleEvent.Handler<Void> handler);
 
+    HandlerRegistration addNewPageHandler(Handler<Void> handler);
+    
     HandlerRegistration addLogoutHandler(Handler<Void> handler);
 
     HandlerRegistration addInviteHandler(Handler<Void> handler);
@@ -131,5 +133,6 @@ public interface WorksheetView extends IsWidget
     void setViewLinkTargetHistoryToken(String targetHistoryToken);
 
     void setPageEditable(boolean isEditable);
+
 
 }

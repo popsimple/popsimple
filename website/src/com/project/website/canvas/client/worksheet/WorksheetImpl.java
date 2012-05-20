@@ -22,6 +22,9 @@ import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.UrlUtils;
 import com.project.shared.data.Point2D;
+import com.project.shared.data.funcs.AsyncFunc;
+import com.project.shared.data.funcs.Func;
+import com.project.shared.utils.GenericUtils;
 import com.project.shared.utils.QueryString;
 import com.project.shared.utils.StringUtils;
 import com.project.shared.utils.ThrowableUtils;
@@ -45,6 +48,8 @@ import com.project.website.canvas.shared.data.CanvasPage;
 import com.project.website.canvas.shared.data.CanvasPageOptions;
 import com.project.website.canvas.shared.data.ElementData;
 import com.project.website.canvas.shared.data.Transform2D;
+import com.project.website.shared.client.widgets.MessageBox;
+import com.project.website.shared.client.widgets.MessageBox.Result;
 import com.project.website.shared.client.widgets.authentication.invite.InviteWidget;
 import com.project.website.shared.client.widgets.authentication.invite.InviteWidget.InviteRequestData;
 import com.project.website.shared.contracts.authentication.AuthenticationService;
@@ -71,7 +76,7 @@ public class WorksheetImpl implements Worksheet
     {
         super();
         this.view = view;
-        AuthenticationServiceAsync service = getAuthService();
+        //AuthenticationServiceAsync service = getAuthService();
         //updateUserSpecificInfo(view, service);
         setRegistrations();
 
@@ -110,47 +115,54 @@ public class WorksheetImpl implements Worksheet
     @Override
     public void save()
     {
-        // TODO: Defrag zIndex of all tools before saving.
-        ArrayList<ElementData> activeElems = new ArrayList<ElementData>();
-        for (Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo> entry : toolInfoMap.entrySet()) {
-            ToolInstanceInfo toolInfo = entry.getValue();
-            this.updateToolData(toolInfo.toolFrame);
-            activeElems.add(toolInfo.toolFrame.getTool().getValue());
-        }
-        this.page.elements.clear();
-        this.page.elements.addAll(activeElems);
-        
-        if (false == this.pageIsEditable()) {
-            // Make sure the service generates a new id and key for this page
-            this.page.id = null;
-            this.page.key = null;
-        }
+        this.getSaveFunc()
+            .run(null);
+    }
 
-        CanvasServiceAsync service = (CanvasServiceAsync) GWT.create(CanvasService.class);
-
-        view.onSaveOperationChange(OperationStatus.PENDING, null);
-
-        service.savePage(page, new AsyncCallback<CanvasPage>() {
-            @Override
-            public void onFailure(Throwable caught)
+    public AsyncFunc<Void, CanvasPage> getSaveFunc()
+    {
+        return new AsyncFunc<Void, CanvasPage>() {
+            @Override protected <S, E> void run(Void arg,
+                                                Func<CanvasPage, S> successHandler,
+                                                Func<Throwable, E> errorHandler) 
             {
-                view.onSaveOperationChange(OperationStatus.FAILURE,
-                        ThrowableUtils.joinStackTrace(caught));
-            }
+                performSave(successHandler, errorHandler);
+            }};
+    }
 
-            @Override
-            public void onSuccess(CanvasPage result)
-            {
-                // TODO: see issue #92
-                load(result);
-                view.onSaveOperationChange(OperationStatus.SUCCESS, null);
-                Window.Location.replace(buildPageUrl(result.id, result.key, false));
-            }
-        });
+    protected void newPage() {
+        final WorksheetImpl that = this;
+        AsyncFunc<Void, MessageBox.Result> shouldSaveFirst = null; 
+        if (this.pageIsEditable()) {
+            shouldSaveFirst = MessageBox.getShowFunc("Save before leaving page?", "Do you want to save your changes before leaving this page? If not, any unsaved changes will be gone forever.");
+        }
+        else {
+            shouldSaveFirst = AsyncFunc.constFunc(MessageBox.Result.YES);
+        }
+        shouldSaveFirst.thenSelect(new Func<MessageBox.Result, AsyncFunc<MessageBox.Result,Void>>() {
+                  @Override public AsyncFunc<MessageBox.Result, Void> apply(Result arg) {
+                      switch (arg) {
+                      case YES: return that.getSaveFunc()
+                                           .<MessageBox.Result>constArg(null)
+                                           .constResult(null);
+                      case NO: return AsyncFunc.constFunc(null);
+                      default: throw new RuntimeException();
+                  }}})
+          .then(new Func.VoidAction(){
+                @Override public void exec() {
+                    navigateToNewPage();
+                }})
+          .run(null);
+    }
+
+
+    private void navigateToNewPage() {
+        History.newItem("");
+        this.load(new CanvasPage());
     }
 
     private boolean pageIsEditable() {
-        return false == StringUtils.isWhitespaceOrNull(this.page.key);
+        return (null == this.page.id) || (false == StringUtils.isWhitespaceOrNull(this.page.key));
     }
 
     @Override
@@ -367,7 +379,7 @@ public class WorksheetImpl implements Worksheet
 	    String key = this.page.key;
         this.page = newPage;
         // If the loaded page doesn't contain a key, but has the same ID as the current page, reuse the same key
-	    if ((null != this.page) && (newPage.id.equals(this.page.id)) && (null == newPage.key)) 
+	    if ((null != this.page) && (GenericUtils.areEqual(newPage.id, this.page.id)) && (null == newPage.key)) 
 	    {
 	        // If our current page has the same id as the newly loaded page, use the same key
 	        this.page.key = key;
@@ -586,6 +598,12 @@ public class WorksheetImpl implements Worksheet
                 save();
             }
         });
+        view.addNewPageHandler(new Handler<Void>(){
+            @Override public void onFire(Void arg) {
+                newPage();
+            }
+        });
+        
         view.addLogoutHandler(new Handler<Void>() {
             @Override public void onFire(Void arg) {
                 logout();
@@ -637,7 +655,7 @@ public class WorksheetImpl implements Worksheet
 		});
     }
 
-    private Collection<ElementData> sortByZIndex(Collection<ElementData> elements)
+        private Collection<ElementData> sortByZIndex(Collection<ElementData> elements)
     {
         TreeMap<Integer, ElementData> elementsByZIndex = new TreeMap<Integer, ElementData>();
         for (ElementData element : elements) {
@@ -731,6 +749,50 @@ public class WorksheetImpl implements Worksheet
             setActiveToolboxItem(activeToolboxItem);
         }
         toolCreationRequest.toolCreated(toolFrame.getTool());
+    }
+
+    private <S, E> void performSave(final Func<CanvasPage, S> successHandler, final Func<Throwable, E> errorHandler) 
+    {
+        // TODO: Defrag zIndex of all tools before saving.
+        ArrayList<ElementData> activeElems = new ArrayList<ElementData>();
+        for (Entry<CanvasTool<? extends ElementData>, ToolInstanceInfo> entry : toolInfoMap.entrySet()) {
+            ToolInstanceInfo toolInfo = entry.getValue();
+            this.updateToolData(toolInfo.toolFrame);
+            activeElems.add(toolInfo.toolFrame.getTool().getValue());
+        }
+        this.page.elements.clear();
+        this.page.elements.addAll(activeElems);
+        
+        if (false == this.pageIsEditable()) {
+            // Make sure the service generates a new id and key for this page
+            this.page.id = null;
+            this.page.key = null;
+        }
+
+        CanvasServiceAsync service = (CanvasServiceAsync) GWT.create(CanvasService.class);
+
+        view.onSaveOperationChange(OperationStatus.PENDING, null);
+
+                
+        service.savePage(page, new AsyncCallback<CanvasPage>() {
+            @Override
+            public void onFailure(Throwable caught)
+            {
+                view.onSaveOperationChange(OperationStatus.FAILURE,
+                        ThrowableUtils.joinStackTrace(caught));
+                errorHandler.apply(caught);
+            }
+
+            @Override
+            public void onSuccess(CanvasPage result)
+            {
+                // TODO: see issue #92
+                load(result);
+                view.onSaveOperationChange(OperationStatus.SUCCESS, null);
+                Window.Location.replace(buildPageUrl(result.id, result.key, false));
+                successHandler.apply(result);
+            }
+        });
     }
 }
 

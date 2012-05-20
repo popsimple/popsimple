@@ -97,6 +97,9 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
     @UiField
     Anchor saveButton;
+    
+    @UiField
+    Anchor newButton;
 
     @UiField
     Hyperlink viewButton;
@@ -246,6 +249,11 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     @Override
     public HandlerRegistration addSaveHandler(Handler<Void> handler) {
         return saveButton.addClickHandler(HandlerUtils.asClickHandler(handler));
+    }
+
+    @Override
+    public HandlerRegistration addNewPageHandler(Handler<Void> handler) {
+        return newButton.addClickHandler(HandlerUtils.asClickHandler(handler));
     }
 
     @Override
