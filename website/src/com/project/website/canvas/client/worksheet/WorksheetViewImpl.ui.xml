@@ -6,6 +6,7 @@
        	<g:HTMLPanel addStyleNames="{res.main.worksheetHeader}" ui:field="worksheetHeader">
             <div class="{res.main.worksheetHeaderLeft}">
     			<span class="{res.main.worksheetHeaderTitle}">Worksheet</span>
+
                 <g:HTMLPanel addStyleNames="{res.main.worksheetOptions}">
                 	<g:Anchor ui:field="optionsBackground" addStyleNames="{res.main.worksheetGridOption}">Change background</g:Anchor>
                     <g:CheckBox ui:field="gridCheckBox" addStyleNames="{res.main.worksheetGridOption}">Snap to Grid</g:CheckBox>
@@ -17,7 +18,10 @@
 <!--                     <g:InlineLabel ui:field="userWelcomeLabel"/> -->
 <!--                 </div> -->
 <!--                 <g:Anchor ui:field="linkInvite">Invite a friend</g:Anchor> -->
+                <div style="vertical-align:text-top; display:inline-block;">
+                    <div class="g-plusone" data-size="small" data-count="false"></div>
                 </div>
+                |
                 <g:Anchor ui:field="newButton">New Page</g:Anchor>
                 <g:Anchor ui:field="linkLogout" addStyleNames="{res.main.worksheetHeaderLogoutLink}">Logout</g:Anchor>
                 |

@@ -7,6 +7,7 @@ import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.project.shared.client.loggers.FirebugLogger;
 import com.project.shared.client.loggers.GwtLogger;
+import com.project.shared.client.net.DynamicSourceLoader;
 import com.project.shared.client.utils.UrlUtils;
 import com.project.shared.utils.QueryString;
 import com.project.shared.utils.loggers.Logger;
@@ -30,6 +31,11 @@ public class Canvas implements EntryPoint {
         // start loading the maps, aloha apis immediately, in case it will be needed later.
         MapToolStaticUtils.loadApi();
         //AlohaEditor.loadApi();
+        
+        // Load Google +1 button script (asynchronously)
+        DynamicSourceLoader.getLoadAsyncFunc("https://apis.google.com/js/plusone.js")
+                           .run(null);
+
 
         // Make sure we have all resources loaded
         CanvasResources.INSTANCE.main().ensureInjected();
