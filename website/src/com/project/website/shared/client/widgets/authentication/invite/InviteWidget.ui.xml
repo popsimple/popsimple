@@ -11,14 +11,14 @@
 			<g:FormPanel ui:field="inviteForm">
 				<g:HTMLPanel addStyleNames="{res.main.registrationPanel}">
 					<p>
-						<g:Label addStyleNames="{res.main.formLabel}">Name: </g:Label>
-						<g:TextBox ui:field="textName" addStyleNames="{res.main.textBox}"></g:TextBox>
-					</p>
-					<p>
 						<g:Label addStyleNames="{res.main.formLabel}">Email: </g:Label>
 						<g:TextBox ui:field="textEmail" addStyleNames="{res.main.textBox}"></g:TextBox>
 						<g:Label ui:field="emailErrorLabel" addStyleNames="{res.main.inputErrorLabel}"></g:Label>
 					</p>
+                    <p>
+                        <g:Label addStyleNames="{res.main.formLabel}">What's Your Name?</g:Label>
+                        <g:TextBox ui:field="textName" addStyleNames="{res.main.textBox}"></g:TextBox>
+                    </p>
 					<p>
 						<g:Label addStyleNames="{res.main.formLabel}">Additional message (optional):</g:Label>
 						<g:TextArea ui:field="textMessage" addStyleNames="{res.main.invitationMessageArea}"></g:TextArea>

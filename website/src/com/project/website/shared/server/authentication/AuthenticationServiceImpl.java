@@ -143,7 +143,6 @@ public class AuthenticationServiceImpl extends RemoteServiceServlet implements A
         HttpAuthentication.clearAuthCookies(getThreadLocalRequest(), getThreadLocalResponse());
     }
 
-
     @Override
     public void invite(String email, String message, String name)
     {
@@ -170,8 +169,8 @@ public class AuthenticationServiceImpl extends RemoteServiceServlet implements A
             Message msg = new MimeMessage(session);
             msg.setFrom(new InternetAddress("no-reply@popsimple.com", "PopSimple.com"));
             msg.addRecipient(Message.RecipientType.TO, new InternetAddress(email));
-            msg.setSubject("You're invited to PopSimple.com!");
-            String messageWrapped = StringUtils.isWhitespaceOrNull(message) ? "" : ("Here's a message from the person who invited you:\r\n"
+            msg.setSubject(name + " has invited you to PopSimple.com");
+            String messageWrapped = StringUtils.isWhitespaceOrNull(message) ? "" : ("Here's a message from " + name + ":\r\n"
                                                                                     + "'" + message + "'\r\n");
             String text = "Your invitation is waiting at " + inviteUrl + "\r\n"
                         + messageWrapped + "\r\n"
