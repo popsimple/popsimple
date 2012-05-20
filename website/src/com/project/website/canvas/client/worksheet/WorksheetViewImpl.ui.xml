@@ -13,10 +13,11 @@
             </div>
             <div class="{res.main.worksheetHeaderRight}">
                 <g:InlineLabel ui:field="statusLabel"/>
-                <div class="{res.main.worksheetWelcomeLabelHolder}">
-                    <g:InlineLabel ui:field="userWelcomeLabel"/>
+<!--                 <div class="{res.main.worksheetWelcomeLabelHolder}"> -->
+<!--                     <g:InlineLabel ui:field="userWelcomeLabel"/> -->
+<!--                 </div> -->
+<!--                 <g:Anchor ui:field="linkInvite">Invite a friend</g:Anchor> -->
                 </div>
-                <g:Anchor ui:field="linkInvite">Invite a friend</g:Anchor>
                 <g:Anchor ui:field="newButton">New Page</g:Anchor>
                 <g:Anchor ui:field="linkLogout" addStyleNames="{res.main.worksheetHeaderLogoutLink}">Logout</g:Anchor>
                 |

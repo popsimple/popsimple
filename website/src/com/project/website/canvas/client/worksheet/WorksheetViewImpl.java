@@ -92,8 +92,8 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     @UiField
     Anchor linkLogout;
 
-    @UiField
-    Anchor linkInvite;
+//    @UiField
+//    Anchor linkInvite;
 
     @UiField
     Anchor saveButton;
@@ -122,8 +122,8 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     @UiField
     HTMLPanel selectionPanel;
 
-    @UiField
-    Label userWelcomeLabel;
+//    @UiField
+//    Label userWelcomeLabel;
 
     @UiField
     Label statusLabel;
@@ -211,7 +211,8 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     @Override
     public HandlerRegistration addInviteHandler(Handler<Void> handler)
     {
-        return this.linkInvite.addClickHandler(HandlerUtils.asClickHandler(handler));
+//        return this.linkInvite.addClickHandler(HandlerUtils.asClickHandler(handler));
+        return null;
     }
 
     @Override
@@ -457,10 +458,10 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
             publicName = userProfile.publicName;
             email = userProfile.email;
         }
-        this.linkInvite.setVisible(canInvite);
-        this.userWelcomeLabel.setText(
-                StringUtils.defaultIfNullOrEmpty(publicName, DEFAULT_PUBLIC_NAME));
-        this.userWelcomeLabel.setTitle(email);
+        //this.linkInvite.setVisible(canInvite);
+//        this.userWelcomeLabel.setText(
+//                StringUtils.defaultIfNullOrEmpty(publicName, DEFAULT_PUBLIC_NAME));
+//        this.userWelcomeLabel.setTitle(email);
     }
 
     @Override
