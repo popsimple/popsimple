@@ -15,9 +15,9 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.events.SimpleEvent.Handler;
+import com.project.shared.client.utils.widgets.DialogWithZIndex;
 import com.project.shared.data.funcs.AsyncFunc;
 import com.project.shared.data.funcs.Func;
-import com.project.website.canvas.client.shared.widgets.DialogWithZIndex;
 
 public class MessageBox extends Composite {
 

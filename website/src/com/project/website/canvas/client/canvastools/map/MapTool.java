@@ -31,6 +31,7 @@ import com.project.shared.client.events.SingleEvent;
 import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.HandlerUtils;
+import com.project.shared.client.utils.widgets.DialogWithZIndex;
 import com.project.shared.client.utils.widgets.WidgetUtils;
 import com.project.shared.data.Location;
 import com.project.shared.data.Point2D;
@@ -43,7 +44,6 @@ import com.project.website.canvas.client.canvastools.base.ResizeMode;
 import com.project.website.canvas.client.canvastools.base.interfaces.CanvasTool;
 import com.project.website.canvas.client.canvastools.base.interfaces.ICanvasToolEvents;
 import com.project.website.canvas.client.resources.CanvasResources;
-import com.project.website.canvas.client.shared.widgets.DialogWithZIndex;
 import com.project.website.canvas.shared.data.ElementData;
 import com.project.website.canvas.shared.data.MapData;
 

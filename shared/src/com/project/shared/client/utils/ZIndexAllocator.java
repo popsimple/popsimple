@@ -1,4 +1,4 @@
-package com.project.website.canvas.client.shared;
+package com.project.shared.client.utils;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -6,7 +6,6 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import com.google.gwt.dom.client.Element;
-import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.utils.MapUtils;
 
 //TODO: Think about a better design.

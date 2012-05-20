@@ -21,6 +21,8 @@ import com.project.shared.client.events.SimpleEvent.Handler;
 import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.UrlUtils;
+import com.project.shared.client.utils.ZIndexAllocator;
+import com.project.shared.client.utils.widgets.DialogWithZIndex;
 import com.project.shared.data.Point2D;
 import com.project.shared.data.funcs.AsyncFunc;
 import com.project.shared.data.funcs.Func;
@@ -36,8 +38,6 @@ import com.project.website.canvas.client.canvastools.base.interfaces.CanvasToolF
 import com.project.website.canvas.client.canvastools.base.interfaces.ToolboxItem;
 import com.project.website.canvas.client.shared.ImageOptionTypes;
 import com.project.website.canvas.client.shared.ImageOptionsProviderUtils;
-import com.project.website.canvas.client.shared.ZIndexAllocator;
-import com.project.website.canvas.client.shared.widgets.DialogWithZIndex;
 import com.project.website.canvas.client.worksheet.interfaces.Worksheet;
 import com.project.website.canvas.client.worksheet.interfaces.WorksheetView;
 import com.project.website.canvas.client.worksheet.interfaces.WorksheetView.OperationStatus;

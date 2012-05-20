@@ -27,6 +27,7 @@ import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.UrlUtils;
+import com.project.shared.client.utils.widgets.DialogWithZIndex;
 import com.project.shared.client.utils.widgets.WidgetUtils;
 import com.project.shared.data.Point2D;
 import com.project.shared.utils.StringUtils;
@@ -39,7 +40,6 @@ import com.project.website.canvas.client.canvastools.base.interfaces.ICanvasTool
 import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.client.shared.dialogs.SelectVideoDialog;
 import com.project.website.canvas.client.shared.searchProviders.interfaces.VideoSearchProvider;
-import com.project.website.canvas.client.shared.widgets.DialogWithZIndex;
 import com.project.website.canvas.shared.data.ElementData;
 import com.project.website.canvas.shared.data.VideoData;
 import com.project.website.canvas.shared.data.VideoInformation;
