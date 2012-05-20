@@ -4,4 +4,9 @@ public class GenericUtils {
     public static <T> T defaultIfNull(T obj, T _default) {
         return obj != null ? obj : _default;
     }
+    
+    public static <T> boolean areEqual(T obj1, T obj2)
+    {
+        return (obj1 != null) && obj1.equals(obj2);
+    }
 }
