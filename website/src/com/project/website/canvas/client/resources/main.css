@@ -76,10 +76,9 @@
 }
 
 .worksheet {
-	height: 100%;
 	margin-left: toolboxWidth;
-	border-left: 2px solid black;
 	position: relative;
+    height: 100%;	
 }
 
 /* Worksheet when in full-view mode */
@@ -172,6 +171,9 @@
 	width: 100%;
 	position: absolute;
 	overflow: hidden;
+
+    overflow-y: scroll;
+    min-height: 620px;
 }
 
 .worksheetBackground {
@@ -244,7 +246,9 @@
 	float: left;
 	width: toolboxWidth;
 	height: 100%;
-	overflow: auto;
+	min-height:620px;
+	overflow: none;
+	border-right: 2px solid black;
 }
 
 .toolboxHeader {
