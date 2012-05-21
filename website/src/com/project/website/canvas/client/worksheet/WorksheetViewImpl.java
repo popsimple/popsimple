@@ -574,6 +574,9 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     }
 
     protected void onAddSpaceRequest() {
+        int newHeight = this.worksheetPanel.getOffsetHeight() + PAGE_SIZE_ADDITIONAL_AMOUNT.getY();
+        this.worksheetPanel.setHeight(String.valueOf(newHeight) + "px");
+        this._pageOptions.size = new Point2D(this._pageOptions.size.getX(), newHeight);
         for (CanvasToolFrame toolFrame : this._toolFrameRegistrations.keySet()) {
             Point2D newPos = ElementUtils.getElementOffsetPosition(toolFrame.asWidget().getElement())
                                          .plus(PAGE_SIZE_ADDITIONAL_AMOUNT);
