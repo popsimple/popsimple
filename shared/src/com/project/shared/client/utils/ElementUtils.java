@@ -32,6 +32,19 @@ public abstract class ElementUtils
     {
         return NodeUtils.fromNodeList(element.getChildNodes());
     }
+    
+    public static ArrayList<Element> getChildElements(Element element)
+    {
+        ArrayList<Element> elements = new ArrayList<Element>();
+        for (Node childNode : ElementUtils.getChildNodes(element)) {
+            if (Node.ELEMENT_NODE != childNode.getNodeType())
+            {
+                continue;
+            }
+            elements.add(Element.as(childNode));
+        }
+        return elements;
+    }
 
     public static boolean areOverlappingElements(Element element1, Element element2) {
         // TODO: fix bugs in Rectangle and use isOverlapping instead of isExternalCircleOverlapping
