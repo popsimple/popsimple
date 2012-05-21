@@ -82,6 +82,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
     private static WorksheetViewImplUiBinder uiBinder = GWT.create(WorksheetViewImplUiBinder.class);
 
+    
     @UiField
     HTMLPanel dragPanel;
 
@@ -132,6 +133,9 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     @UiField
     CheckBox gridCheckBox;
 
+    private static final Point2D PAGE_SIZE_ADDITIONAL_AMOUNT = new Point2D(0, 300);
+    private static final int PAGE_SIZE_ADD_ANIMATION_DURATION = 500;
+    
     public static final String DEFAULT_PUBLIC_NAME = "Guest";
 
     private static final String SAVE_PAGE_EDITABLE = "Save";
@@ -559,8 +563,21 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
             }
         }, MouseDownEvent.getType()));
 
+        this._editModeRegistrations.add(this.addSpaceButton.addClickHandler(new ClickHandler() {
+            @Override public void onClick(ClickEvent event) {
+                onAddSpaceRequest();
+            }
+        }));
         for (CanvasToolFrame toolFrame : this._toolFrameRegistrations.keySet()) {
             this.setToolFrameRegistrations(toolFrame);
+        }
+    }
+
+    protected void onAddSpaceRequest() {
+        for (CanvasToolFrame toolFrame : this._toolFrameRegistrations.keySet()) {
+            Point2D newPos = ElementUtils.getElementOffsetPosition(toolFrame.asWidget().getElement())
+                                         .plus(PAGE_SIZE_ADDITIONAL_AMOUNT);
+            this._toolFrameTransformer.setToolFramePosition(toolFrame, newPos, PAGE_SIZE_ADD_ANIMATION_DURATION);
         }
     }
 

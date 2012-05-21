@@ -5,15 +5,16 @@ import com.project.website.canvas.client.canvastools.base.interfaces.CanvasToolF
 
 public interface ToolFrameTransformer
 {
-     ElementDragManager getElementDragManager();
+    ElementDragManager getElementDragManager();
 
-     void startDragCanvasToolFrame(CanvasToolFrame toolFrame);
-     void startDragCanvasToolFrames(Iterable<CanvasToolFrame> toolFrames);
+    void startDragCanvasToolFrame(CanvasToolFrame toolFrame);
+    void startDragCanvasToolFrames(Iterable<CanvasToolFrame> toolFrames);
 
-     void startResizeCanvasToolFrame(CanvasToolFrame toolFrame);
-     void startRotateCanvasToolFrame(CanvasToolFrame toolFrame);
+    void startResizeCanvasToolFrame(CanvasToolFrame toolFrame);
+    void startRotateCanvasToolFrame(CanvasToolFrame toolFrame);
 
-     void setToolFramePosition(CanvasToolFrame toolFrame, Point2D pos);
+    void setToolFramePosition(CanvasToolFrame toolFrame, Point2D pos);
+    void setToolFramePosition(CanvasToolFrame toolFrame, Point2D pos, int animationDuration);
 
     double getGridResolution();
     void setGridResolution(double gridResolution);
@@ -22,4 +23,5 @@ public interface ToolFrameTransformer
     void setSnapToGrid(boolean snapToGrid);
 
     Point2D applySnapToGrid(Point2D sizeDelta);
+
 }

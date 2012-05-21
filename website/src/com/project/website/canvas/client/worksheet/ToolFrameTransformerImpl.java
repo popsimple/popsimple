@@ -55,7 +55,8 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
         this.setToolFramePosition(toolFrame, pos, 0);
     }
 
-    private void setToolFramePosition(final CanvasToolFrame toolFrame, Point2D pos, int animationDuration)
+    @Override
+    public void setToolFramePosition(final CanvasToolFrame toolFrame, Point2D pos, int animationDuration)
     {
         ElementUtils.setElementCSSPosition(toolFrame.asWidget().getElement(), limitPosToContainer(pos, toolFrame.asWidget()), animationDuration);
         toolFrame.onTransformed();

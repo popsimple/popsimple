@@ -58,8 +58,6 @@ import com.project.website.shared.data.QueryParameters;
 
 public class WorksheetImpl implements Worksheet
 {
-    private static final Point2D PAGE_SIZE_ADDITIONAL_AMOUNT = new Point2D(0, 300);
-    
     private CanvasPage page = new CanvasPage();
     private final SimpleEvent<Void> _defaultToolboxItemRequestEvent = new SimpleEvent<Void>();
     private final SimpleEvent<Boolean> viewModeEvent = new SimpleEvent<Boolean>();
@@ -618,7 +616,6 @@ public class WorksheetImpl implements Worksheet
         });
         view.addAddSpaceHandler(new Handler<Void>() {
             @Override public void onFire(Void arg) {
-                addMorePageSize();
             }
         });
         
@@ -660,11 +657,6 @@ public class WorksheetImpl implements Worksheet
 				removeToolInstances(arg);
 			}
 		});
-    }
-
-    protected void addMorePageSize() {
-        this.page.options.size = this.page.options.size.plus(PAGE_SIZE_ADDITIONAL_AMOUNT);
-        this.view.pageSizeUpdated();
     }
 
     private Collection<ElementData> sortByZIndex(Collection<ElementData> elements)
