@@ -55,7 +55,6 @@ import com.project.shared.client.utils.widgets.DialogWithZIndex;
 import com.project.shared.client.utils.widgets.WidgetUtils;
 import com.project.shared.data.Point2D;
 import com.project.shared.utils.IterableUtils;
-import com.project.shared.utils.StringUtils;
 import com.project.website.canvas.client.canvastools.CursorToolboxItem;
 import com.project.website.canvas.client.canvastools.MoveToolboxItem;
 import com.project.website.canvas.client.canvastools.base.interfaces.CanvasTool;
@@ -124,6 +123,8 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
 //    @UiField
 //    Label userWelcomeLabel;
+    @UiField
+    Anchor addSpaceButton;
 
     @UiField
     Label statusLabel;
@@ -246,6 +247,12 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     public HandlerRegistration addRemoveToolsRequest(Handler<ArrayList<CanvasToolFrame>> handler) {
         return this._removeToolsRequest.addHandler(handler);
     }
+    
+    @Override
+    public HandlerRegistration addAddSpaceHandler(Handler<Void> handler) {
+        return this.addSpaceButton.addClickHandler(HandlerUtils.asClickHandler(handler));
+    }
+
 
     @Override
     public HandlerRegistration addSaveHandler(Handler<Void> handler) {
@@ -450,14 +457,14 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     @Override
     public void setUserProfile(UserProfile userProfile)
     {
-        boolean canInvite = false;
-        String publicName = "";
-        String email = "";
-        if (null != userProfile) {
-            canInvite = userProfile.canInvite;
-            publicName = userProfile.publicName;
-            email = userProfile.email;
-        }
+//        boolean canInvite = false;
+//        String publicName = "";
+//        String email = "";
+//        if (null != userProfile) {
+//            canInvite = userProfile.canInvite;
+//            publicName = userProfile.publicName;
+//            email = userProfile.email;
+//        }
         //this.linkInvite.setVisible(canInvite);
 //        this.userWelcomeLabel.setText(
 //                StringUtils.defaultIfNullOrEmpty(publicName, DEFAULT_PUBLIC_NAME));
@@ -520,6 +527,11 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
     private String getSaveButtonText() {
         return this._pageEditable ? SAVE_PAGE_EDITABLE : SAVE_PAGE_NON_EDITABLE;
+    }
+
+    @Override
+    public void pageSizeUpdated() {
+        this.worksheetPanel.setHeight(String.valueOf(this._pageOptions.size.getY()) + "px");
     }
 
     /*----------------------------------------------------------------------------------------*/
@@ -918,4 +930,5 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
             }
         });
     }
+
 }

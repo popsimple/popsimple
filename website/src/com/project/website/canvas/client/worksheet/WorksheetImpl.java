@@ -58,6 +58,8 @@ import com.project.website.shared.data.QueryParameters;
 
 public class WorksheetImpl implements Worksheet
 {
+    private static final Point2D PAGE_SIZE_ADDITIONAL_AMOUNT = new Point2D(0, 300);
+    
     private CanvasPage page = new CanvasPage();
     private final SimpleEvent<Void> _defaultToolboxItemRequestEvent = new SimpleEvent<Void>();
     private final SimpleEvent<Boolean> viewModeEvent = new SimpleEvent<Boolean>();
@@ -78,7 +80,7 @@ public class WorksheetImpl implements Worksheet
         this.view = view;
         //AuthenticationServiceAsync service = getAuthService();
         //updateUserSpecificInfo(view, service);
-        setRegistrations();
+        this.setRegistrations();
 
         this.setDefaultPageOptions();
     }
@@ -614,6 +616,11 @@ public class WorksheetImpl implements Worksheet
                 invite();
             }
         });
+        view.addAddSpaceHandler(new Handler<Void>() {
+            @Override public void onFire(Void arg) {
+                addMorePageSize();
+            }
+        });
         
         /*
         // TODO: Allow passing a pageKey here too
@@ -655,7 +662,12 @@ public class WorksheetImpl implements Worksheet
 		});
     }
 
-        private Collection<ElementData> sortByZIndex(Collection<ElementData> elements)
+    protected void addMorePageSize() {
+        this.page.options.size = this.page.options.size.plus(PAGE_SIZE_ADDITIONAL_AMOUNT);
+        this.view.pageSizeUpdated();
+    }
+
+    private Collection<ElementData> sortByZIndex(Collection<ElementData> elements)
     {
         TreeMap<Integer, ElementData> elementsByZIndex = new TreeMap<Integer, ElementData>();
         for (ElementData element : elements) {

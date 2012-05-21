@@ -8,6 +8,7 @@
     			<span class="{res.main.worksheetHeaderTitle}">Worksheet</span>
 
                 <g:HTMLPanel addStyleNames="{res.main.worksheetOptions}">
+                    <g:Anchor ui:field="addSpaceButton" addStyleNames="{res.main.worksheetGridOption}">Add space</g:Anchor>
                 	<g:Anchor ui:field="optionsBackground" addStyleNames="{res.main.worksheetGridOption}">Change background</g:Anchor>
                     <g:CheckBox ui:field="gridCheckBox" addStyleNames="{res.main.worksheetGridOption}">Snap to Grid</g:CheckBox>
                 </g:HTMLPanel>

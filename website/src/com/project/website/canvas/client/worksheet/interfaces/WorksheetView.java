@@ -94,6 +94,8 @@ public interface WorksheetView extends IsWidget
 
     HandlerRegistration addUndoRequestHandler(SimpleEvent.Handler<Void> handler);
 
+    HandlerRegistration addAddSpaceHandler(Handler<Void> handler);
+    
     /**
      * Adds a new toolFrame to the view. The view will call setToolFrameTransform by itself then the frame is attached and ready to transform.
      * @param toolFrame
@@ -134,5 +136,5 @@ public interface WorksheetView extends IsWidget
 
     void setPageEditable(boolean isEditable);
 
-
+    void pageSizeUpdated();
 }
