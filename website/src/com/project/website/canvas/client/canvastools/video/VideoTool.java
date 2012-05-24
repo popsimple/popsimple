@@ -216,7 +216,9 @@ public class VideoTool extends Composite implements CanvasTool<VideoData>
 
     @Override
     public boolean canRotate() {
-        return true;
+        // TODO: The only reason this is disabled is because Chrome doesn't properly rotate videos.
+        // if chrome's bug is fixed, this should be enabled.
+        return false;
     }
 
     @Override
