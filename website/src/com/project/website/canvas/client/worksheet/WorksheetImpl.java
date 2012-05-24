@@ -28,7 +28,6 @@ import com.project.shared.data.Point2D;
 import com.project.shared.data.funcs.AsyncFunc;
 import com.project.shared.data.funcs.Func;
 import com.project.shared.utils.GenericUtils;
-import com.project.shared.utils.MapUtils;
 import com.project.shared.utils.QueryString;
 import com.project.shared.utils.StringUtils;
 import com.project.shared.utils.ThrowableUtils;
@@ -152,11 +151,11 @@ public class WorksheetImpl implements Worksheet
             shouldSaveFirst = MessageBox.<NewPageDialogResults>getShowFunc(
                     "Save before leaving page?", 
                     "Do you want to save your changes before leaving this page? If not, any unsaved changes will be gone forever.",
-                    MapUtils.create(new NewPageResultLabels[] {
+                    new NewPageResultLabels[] {
                             new NewPageResultLabels(NewPageDialogResults.NEW_BUT_SAVE_FIRST, "Save & New"),
                             new NewPageResultLabels(NewPageDialogResults.NEW_WITHOUT_SAVING, "Don't save, just start a new page"),
                             new NewPageResultLabels(NewPageDialogResults.CANCEL, "Cancel - stay on current page"),
-                    }),
+                    },
                     NewPageDialogResults.NEW_BUT_SAVE_FIRST);
         }
         else {
