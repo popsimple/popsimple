@@ -1,5 +1,6 @@
 package com.project.shared.utils;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -32,4 +33,10 @@ public abstract class MapUtils {
         }
         return map;
     }
+    
+    public static <K,V> HashMap<K,V> create(Pair<K,V>[] keyValuePairs)
+    {
+        return MapUtils.putPairs(new HashMap<K,V>(), keyValuePairs);
+    }
+    
 }
