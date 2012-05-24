@@ -23,10 +23,12 @@ import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.UrlUtils;
 import com.project.shared.client.utils.ZIndexAllocator;
 import com.project.shared.client.utils.widgets.DialogWithZIndex;
+import com.project.shared.data.Pair;
 import com.project.shared.data.Point2D;
 import com.project.shared.data.funcs.AsyncFunc;
 import com.project.shared.data.funcs.Func;
 import com.project.shared.utils.GenericUtils;
+import com.project.shared.utils.MapUtils;
 import com.project.shared.utils.QueryString;
 import com.project.shared.utils.StringUtils;
 import com.project.shared.utils.ThrowableUtils;
@@ -49,7 +51,6 @@ import com.project.website.canvas.shared.data.CanvasPageOptions;
 import com.project.website.canvas.shared.data.ElementData;
 import com.project.website.canvas.shared.data.Transform2D;
 import com.project.website.shared.client.widgets.MessageBox;
-import com.project.website.shared.client.widgets.MessageBox.Result;
 import com.project.website.shared.client.widgets.authentication.invite.InviteWidget;
 import com.project.website.shared.client.widgets.authentication.invite.InviteWidget.InviteRequestData;
 import com.project.website.shared.contracts.authentication.AuthenticationService;
@@ -71,6 +72,10 @@ public class WorksheetImpl implements Worksheet
 
     //TODO: Think about something else. (Hadas)
     private final WorksheetImageOptionsProvider _imageOptionsProvider = new WorksheetImageOptionsProvider();
+    private AsyncFunc<Void,Void> newPageAction = AsyncFunc.fromFunc(new Func.VoidAction(){
+        @Override public void exec() {
+            navigateToNewPage();
+    }});
 
     public WorksheetImpl(WorksheetView view)
     {
@@ -130,28 +135,47 @@ public class WorksheetImpl implements Worksheet
             }};
     }
 
+    protected enum NewPageDialogResults {
+        CANCEL,
+        NEW_BUT_SAVE_FIRST,
+        NEW_WITHOUT_SAVING,
+    }
+    protected class NewPageResultLabels extends Pair<NewPageDialogResults, String> {
+        private static final long serialVersionUID = 1L;
+        public NewPageResultLabels(NewPageDialogResults a, String b) { super(a, b); } 
+    }
+    
     protected void newPage() {
         final WorksheetImpl that = this;
-        AsyncFunc<Void, MessageBox.Result> shouldSaveFirst = null; 
+        AsyncFunc<Void, NewPageDialogResults> shouldSaveFirst = null; 
         if (this.pageIsEditable()) {
-            shouldSaveFirst = MessageBox.getShowFunc("Save before leaving page?", "Do you want to save your changes before leaving this page? If not, any unsaved changes will be gone forever.");
+            shouldSaveFirst = MessageBox.<NewPageDialogResults>getShowFunc(
+                    "Save before leaving page?", 
+                    "Do you want to save your changes before leaving this page? If not, any unsaved changes will be gone forever.",
+                    MapUtils.create(new NewPageResultLabels[] {
+                            new NewPageResultLabels(NewPageDialogResults.NEW_BUT_SAVE_FIRST, "Save & New"),
+                            new NewPageResultLabels(NewPageDialogResults.NEW_WITHOUT_SAVING, "Don't save, just start a new page"),
+                            new NewPageResultLabels(NewPageDialogResults.CANCEL, "Cancel - stay on current page"),
+                    }),
+                    NewPageDialogResults.NEW_BUT_SAVE_FIRST);
         }
         else {
-            shouldSaveFirst = AsyncFunc.constFunc(MessageBox.Result.YES);
+            shouldSaveFirst = AsyncFunc.constFunc(NewPageDialogResults.NEW_BUT_SAVE_FIRST);
         }
-        shouldSaveFirst.thenSelect(new Func<MessageBox.Result, AsyncFunc<MessageBox.Result,Void>>() {
-                  @Override public AsyncFunc<MessageBox.Result, Void> apply(Result arg) {
+        shouldSaveFirst.thenSelect(new Func<NewPageDialogResults, AsyncFunc<NewPageDialogResults,Void>>() {
+                  @Override public AsyncFunc<NewPageDialogResults, Void> apply(NewPageDialogResults arg) {
                       switch (arg) {
-                      case YES: return that.getSaveFunc()
-                                           .<MessageBox.Result>constArg(null)
-                                           .constResult(null);
-                      case NO: return AsyncFunc.constFunc(null);
+                      case NEW_BUT_SAVE_FIRST: 
+                          return that.getSaveFunc()
+                                     .<Void>constResult(null)
+                                     .then(newPageAction)
+                                     .constArg(null);
+                      case NEW_WITHOUT_SAVING: 
+                          return newPageAction.constArg(null);
+                      case CANCEL:
+                          return AsyncFunc.constFunc(null);
                       default: throw new RuntimeException();
                   }}})
-          .then(new Func.VoidAction(){
-                @Override public void exec() {
-                    navigateToNewPage();
-                }})
           .run(null);
     }
 
