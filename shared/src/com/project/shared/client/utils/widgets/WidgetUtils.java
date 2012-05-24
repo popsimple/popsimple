@@ -104,6 +104,10 @@ public class WidgetUtils {
 	        final SimpleEvent.Handler<Void> loadHandler, final SimpleEvent.Handler<Void> errorHandler)
     {
 	    widget.getElement().getStyle().clearBackgroundImage();
+	    if (Strings.isNullOrEmpty(imageUrl)) {
+	        loadHandler.onFire(null);
+	        return;
+	    }
 	    WidgetUtils.addNonEmptyStyleName(widget, loadingStyleName);
 
         ElementUtils.setBackgroundImageAsync(widget.getElement(), imageUrl, errorImageUrl, autoSize,
