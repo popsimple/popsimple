@@ -6,18 +6,13 @@
 		<div>
 			<g:Label ui:field="labelTitle" addStyleNames="{res.main.captionLabel}"></g:Label>
 		</div>
-		<g:HTMLPanel ui:field="containerPanel" addStyleNames="{res.main.containerPanel}">
-			<g:FormPanel ui:field="messageBoxForm">
-				<g:HTMLPanel addStyleNames="{res.main.registrationPanel}">
-					<p>
-						<g:Label ui:field="labelContent" addStyleNames="{res.main.formLabel}"></g:Label>
-					</p>
-					<p class="{res.main.buttonRow}">
-						<g:SubmitButton ui:field="buttonYes" addStyleNames="{res.main.button}">Yes</g:SubmitButton>
-                        <g:Button ui:field="buttonNo" addStyleNames="{res.main.button} ">No</g:Button>
-					</p>
-				</g:HTMLPanel>
-			</g:FormPanel>
-		</g:HTMLPanel>
+		<g:FormPanel ui:field="messageBoxForm">
+			<g:HTMLPanel addStyleNames="{res.main.registrationPanel}">
+				<p>
+					<g:Label ui:field="labelContent" addStyleNames="{res.main.formLabel}"></g:Label>
+				</p>
+				<g:FlowPanel addStyleNames="{res.main.buttonRow}" ui:field="buttonsPanel"/>
+			</g:HTMLPanel>
+		</g:FormPanel>
 	</g:HTMLPanel>
 </ui:UiBinder>
