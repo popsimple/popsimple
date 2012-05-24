@@ -105,6 +105,7 @@ public class WidgetUtils {
     {
 	    widget.getElement().getStyle().clearBackgroundImage();
 	    if (Strings.isNullOrEmpty(imageUrl)) {
+            WidgetUtils.removeNonEmptyStyleName(widget, loadingStyleName);
 	        loadHandler.onFire(null);
 	        return;
 	    }
