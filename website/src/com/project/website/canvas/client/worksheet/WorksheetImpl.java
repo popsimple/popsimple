@@ -364,7 +364,7 @@ public class WorksheetImpl implements Worksheet
 	    this.replaceCurrentPage(newPage);
 	    
         this.view.setPageEditable(pageIsEditable());
-        this.updateOptions(this.page.options);
+        view.setOptions(newPage.options);
         this.updateHistoryToken();
 
         HashMap<String, ElementData> newElements = new HashMap<String, ElementData>();
