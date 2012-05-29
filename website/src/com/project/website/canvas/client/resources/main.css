@@ -171,6 +171,7 @@
 
 .worksheetPanel {
 	height: 600px; /* This will later be changed dynamically */
+	min-height: 100%;
 	width: 100%;
 	position: absolute;
 }

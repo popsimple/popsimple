@@ -430,6 +430,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         this._pageOptions = value;
 
         this.worksheetBackground.addStyleName(CanvasResources.INSTANCE.main().imageLoadingStyle());
+        this.pageSizeUpdated();
 
         WidgetUtils.setBackgroundImageAsync(this.worksheetBackground, value.backgroundImage.url,
                 CanvasResources.INSTANCE.imageUnavailable().getSafeUri().asString(), false,
@@ -535,7 +536,10 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
     @Override
     public void pageSizeUpdated() {
-        this.worksheetPanel.setHeight(String.valueOf(this._pageOptions.size.getY()) + "px");
+        // Never make the page height less than what is currently visible on the screen
+        // to prevent truncation of the background before the vertical edge of the window
+        int currentHeight = this.focusPanel.getOffsetHeight();
+        this.worksheetPanel.setHeight(String.valueOf(Math.max(currentHeight, this._pageOptions.size.getY())) + "px");
     }
 
     /*----------------------------------------------------------------------------------------*/
@@ -728,6 +732,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     {
         if (event.getNativeEvent().getCtrlKey())
         {
+            // TODO: When text is being edited, don't do this 
             switch (event.getNativeEvent().getKeyCode())
             {
                 case (int)'Z':
