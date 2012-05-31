@@ -5,7 +5,7 @@
    	<g:HTMLPanel ui:field="worksheetContainer" addStyleNames="{res.main.worksheet}">
        	<g:HTMLPanel addStyleNames="{res.main.worksheetHeader}" ui:field="worksheetHeader">
             <div class="{res.main.worksheetHeaderLeft}">
-    			<span class="{res.main.worksheetHeaderTitle}">Worksheet</span>
+    			<span class="{res.main.worksheetHeaderTitle}"></span>
 
                 <g:HTMLPanel addStyleNames="{res.main.worksheetOptions}">
                     <g:Anchor ui:field="addSpaceButton" addStyleNames="{res.main.worksheetGridOption}">Add space</g:Anchor>

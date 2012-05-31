@@ -208,6 +208,8 @@ public interface MainStyles extends CssResource {
 
     String toolboxHeader();
 
+    String toolboxHeaderWrap();
+    
     String toolboxImageIconStyle();
 
     String toolboxInnerIconStyle();

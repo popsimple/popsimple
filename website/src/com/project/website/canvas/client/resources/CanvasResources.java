@@ -143,4 +143,7 @@ public interface CanvasResources extends ClientBundle {
     @Source("com/project/website/shared/client/resources/images/bitmaps/web_search_24.png")
     ImageResource web_search_24();
 
+    @Source("com/project/website/shared/client/resources/images/bitmaps/header.png")
+    ImageResource header();
+
 }

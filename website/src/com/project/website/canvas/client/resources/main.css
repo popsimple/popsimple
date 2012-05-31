@@ -261,9 +261,9 @@
 	border-right: 2px solid black;
 }
 
-.toolboxHeader {
-	cursor: default;
-	height: topBarHeight;
+.toolboxHeaderWrap {
+    cursor: default;
+    height: topBarHeight;
     padding: topBarPadding;
     font-size: topBarTitleFontSize;
 
@@ -271,7 +271,15 @@
     /*color: toolboxHeaderTextColor;*/
     color: topBarTitleTextColor;
 
-	text-align: center;
+    text-align: center;
+    position: relative;
+}
+
+@sprite .toolboxHeader {
+	gwt-image: "header";
+	position: absolute;
+	z-index: 1;
+    left: 0;
 }
 
 .toolboxTools {
