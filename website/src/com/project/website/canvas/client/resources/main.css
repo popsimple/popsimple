@@ -73,6 +73,7 @@
 .canvasContainer {
 	height: 100%;
 	width: 100%;
+	position: relative;
 }
 
 .worksheet {
@@ -93,6 +94,10 @@
 
 .worksheetFullView .worksheetFocusPanel {
 	top: 0;
+}
+
+.worksheetFullView .worksheetPanel {
+    margin: 0 toolboxWidth;
 }
 
 .worksheetFullView .worksheetBackground {
@@ -160,7 +165,8 @@
 .worksheetFocusPanel {
 	top: topBarHeightWithPadding;
 	bottom: 0px;
-	width: 100%;
+	left: 0;
+	right: 0;
 	position: absolute;
 	overflow: hidden;
 	outline: 0;
@@ -172,7 +178,8 @@
 .worksheetPanel {
 	height: 600px; /* This will later be changed dynamically */
 	min-height: 100%;
-	width: 100%;
+	left:0;
+	right:0;
 	position: absolute;
 }
 
@@ -242,8 +249,11 @@
 	bottom: 0;
 }
 
+/***************************************************/
+
 .toolbox {
-	float: left;
+	position: absolute;
+	left: 0;
 	width: toolboxWidth;
 	height: 100%;
 	min-height:620px;
