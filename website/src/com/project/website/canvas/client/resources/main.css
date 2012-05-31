@@ -17,12 +17,12 @@
 @def zIndexOverAllToolFrames 100;
 
 @def topBarHeight 21px;
-@def topBarPadding 5px;
-@def topBarHeightWithPadding 31px;
+@def topBarPadding 0 5px 5px 5px;
+@def topBarHeightWithPadding 26px;
 @def topBarTitleFontSize 1.3em;
 @def topBarTitleTextColor #aaa;
 @def topBarBackgroundColor #222;
-@def topBarTextColor #ddd;
+@def topBarTextColor #777;
 
 @def toolboxHeaderBackgroundColor #222;
 @def toolboxHeaderTextColor #ddd;
@@ -110,7 +110,6 @@
 }
 
 .worksheetGridOption {
-	margin-left: 5px;
 }
 
 /*************************************/
@@ -124,7 +123,7 @@
 .worksheetHeader {
     height: topBarHeight;
     padding: topBarPadding;
-    padding-left: 30px;
+    padding-left: 10px;
     background-color: topBarBackgroundColor;
     color: topBarTextColor;
     font-size: 1em;
@@ -140,7 +139,6 @@
 
 
 .worksheetOptions {
-	margin-left: 4px;
 	display: inline-block;
 }
 
@@ -148,6 +146,7 @@
 	cursor: pointer;
 	text-decoration: underline;
 	color:#aaaaff;
+	margin: 0 3px;
 }
 
 
@@ -194,6 +193,7 @@
 .worksheetButtons {
 	display: inline-block;
 }
+
 .worksheetButtons a {
 	text-align: center;
 	display: inline-block;
@@ -211,7 +211,7 @@
 }
 
 .worksheetHeaderRight a, .worksheetHeaderRight span, .worksheetHeaderRight div {
-	margin: 0 5px;
+	
 }
 
 @sprite .worksheetWelcomeLabelHolder {
@@ -226,6 +226,11 @@
     color: topBarTextColor;
     cursor: default;
     vertical-align: text-top;
+}
+
+.worksheetHeaderImageButton {
+	height: topBarHeightWithPadding;
+	margin-top: 5px; 
 }
 
 
@@ -279,8 +284,8 @@
 	gwt-image: "header";
 	position: absolute;
 	z-index: 1;
-    left: 4px;
-    top: 2px;
+	top: -5px;
+	left: -2px;
 }
 
 .toolboxTools {

@@ -7,6 +7,13 @@
             <div class="{res.main.worksheetHeaderLeft}">
     			<span class="{res.main.worksheetHeaderTitle}"></span>
 
+                <g:HTMLPanel addStyleNames="{res.main.worksheetButtons}">
+                    <g:Anchor ui:field="saveButton"  addStyleNames="{res.main.worksheetSaveButton}">Save</g:Anchor>
+                    <g:InlineHyperlink ui:field="viewButton" >View</g:InlineHyperlink>
+                </g:HTMLPanel>
+                |
+                <g:Anchor ui:field="newButton">New Page</g:Anchor>
+                |
                 <g:HTMLPanel addStyleNames="{res.main.worksheetOptions}">
                     <g:Anchor ui:field="addSpaceButton" addStyleNames="{res.main.worksheetGridOption}">Add space</g:Anchor>
                 	<g:Anchor ui:field="optionsBackground" addStyleNames="{res.main.worksheetGridOption}">Change background</g:Anchor>
@@ -19,17 +26,11 @@
 <!--                     <g:InlineLabel ui:field="userWelcomeLabel"/> -->
 <!--                 </div> -->
 <!--                 <g:Anchor ui:field="linkInvite">Invite a friend</g:Anchor> -->
-                <div style="vertical-align:text-top; display:inline-block;">
+                <g:Anchor ui:field="linkLogout" addStyleNames="{res.main.worksheetHeaderLogoutLink}">Logout</g:Anchor>
+                
+                <div class="{res.main.worksheetHeaderImageButton}">
                     <div class="g-plusone" data-size="small" data-count="false"></div>
                 </div>
-                |
-                <g:Anchor ui:field="newButton">New Page</g:Anchor>
-                <g:Anchor ui:field="linkLogout" addStyleNames="{res.main.worksheetHeaderLogoutLink}">Logout</g:Anchor>
-                |
-                <g:HTMLPanel addStyleNames="{res.main.worksheetButtons}">
-                    <g:InlineHyperlink ui:field="viewButton" >View</g:InlineHyperlink>
-                    <g:Anchor ui:field="saveButton"  addStyleNames="{res.main.worksheetSaveButton}">Save</g:Anchor>
-                </g:HTMLPanel>
             </div>
 		</g:HTMLPanel>
 		<g:FocusPanel ui:field="focusPanel" addStyleNames="{res.main.worksheetFocusPanel}">

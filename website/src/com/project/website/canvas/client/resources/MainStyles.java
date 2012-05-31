@@ -288,10 +288,12 @@ public interface MainStyles extends CssResource {
 
     String worksheetHeader();
 
+    String worksheetHeaderImageButton();
+    
     String worksheetHeaderLeft();
 
     String worksheetHeaderLogoutLink();
-
+    
     String worksheetHeaderRight();
 
     String worksheetHeaderTitle();
