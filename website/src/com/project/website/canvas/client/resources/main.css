@@ -124,7 +124,7 @@
 .worksheetHeader {
     height: topBarHeight;
     padding: topBarPadding;
-    padding-left: 10px;
+    padding-left: 30px;
     background-color: topBarBackgroundColor;
     color: topBarTextColor;
     font-size: 1em;
@@ -279,7 +279,8 @@
 	gwt-image: "header";
 	position: absolute;
 	z-index: 1;
-    left: 0;
+    left: 4px;
+    top: 2px;
 }
 
 .toolboxTools {

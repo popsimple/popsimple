@@ -17,7 +17,16 @@
    inkscape:version="0.48.1 r9760"
    sodipodi:docname="header.svg">
   <defs
-     id="defs4" />
+     id="defs4">
+    <filter
+       inkscape:collect="always"
+       id="filter5131">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="2.8376153"
+         id="feGaussianBlur5133" />
+    </filter>
+  </defs>
   <sodipodi:namedview
      id="base"
      pagecolor="#ffffff"
@@ -2067,12 +2076,15 @@ XmIJ3LroH2z4QGHDd2Pl9q7EaPH/AUYJsWf9Wb/qAAAAAElFTkSuQmCC
        height="70.022507"
        width="51"
        inkscape:export-filename="/home/noam/repos/canvas/website/src/com/project/website/shared/client/resources/images/bitmaps/header.png"
-       inkscape:export-xdpi="33.150002"
-       inkscape:export-ydpi="33.150002" />
+       inkscape:export-xdpi="34.650002"
+       inkscape:export-ydpi="34.650002" />
     <flowRoot
        xml:space="preserve"
        id="flowRoot4298"
-       style="font-size:300px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"><flowRegion
+       style="font-size:300px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       inkscape:export-filename="/home/noam/repos/canvas/website/src/com/project/website/shared/client/resources/images/bitmaps/header.png"
+       inkscape:export-xdpi="34.650002"
+       inkscape:export-ydpi="34.650002"><flowRegion
          id="flowRegion4300"><rect
            id="rect4302"
            width="1371.4286"
@@ -2084,10 +2096,10 @@ XmIJ3LroH2z4QGHDd2Pl9q7EaPH/AUYJsWf9Wb/qAAAAAElFTkSuQmCC
          style="font-size:300px">PopSimple</flowPara></flowRoot>    <flowRoot
        xml:space="preserve"
        id="flowRoot4306"
-       style="font-size:72px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ff6600;fill-opacity:1;stroke:none;font-family:Ubuntu;-inkscape-font-specification:Ubuntu Bold"
+       style="font-size:72px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ff8b24;fill-opacity:1;stroke:#000000;font-family:Ubuntu;-inkscape-font-specification:Ubuntu Bold;stroke-width:2.36643996000000012;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.57560974"
        transform="matrix(0.84515138,0,0,0.84515138,7.959998,1.3692507)"
-       inkscape:export-xdpi="33.150002"
-       inkscape:export-ydpi="33.150002"
+       inkscape:export-xdpi="34.650002"
+       inkscape:export-ydpi="34.650002"
        inkscape:export-filename="/home/noam/repos/canvas/website/src/com/project/website/shared/client/resources/images/bitmaps/header.png"><flowRegion
          id="flowRegion4308"><rect
            id="rect4310"
@@ -2095,7 +2107,7 @@ XmIJ3LroH2z4QGHDd2Pl9q7EaPH/AUYJsWf9Wb/qAAAAAElFTkSuQmCC
            height="134.28572"
            x="102.85714"
            y="0.93361121"
-           style="font-size:72px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#ff6600;font-family:Ubuntu;-inkscape-font-specification:Ubuntu Bold" /></flowRegion><flowPara
+           style="font-size:72px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#ff8b24;font-family:Ubuntu;-inkscape-font-specification:Ubuntu Bold;fill-opacity:1;stroke-width:2.36643996000000012;stroke-miterlimit:4;stroke-dasharray:none;stroke:#000000;stroke-opacity:0.57560974" /></flowRegion><flowPara
          id="flowPara4312"
-         style="font-size:72px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:-5.91610003px;writing-mode:lr-tb;text-anchor:start;fill:#ff6600;font-family:Ubuntu;-inkscape-font-specification:Ubuntu Bold">PopSimple</flowPara></flowRoot>  </g>
+         style="font-size:72px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:-5.91610002999999995px;writing-mode:lr-tb;text-anchor:start;fill:#ff8b24;font-family:Ubuntu;-inkscape-font-specification:Ubuntu Bold;fill-opacity:1;stroke-width:2.36643996000000012;stroke-miterlimit:4;stroke-dasharray:none;stroke:#000000;stroke-opacity:0.57560974">PopSimple</flowPara></flowRoot>  </g>
 </svg>
