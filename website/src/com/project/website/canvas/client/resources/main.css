@@ -4,10 +4,19 @@
 
 @def emptyToolBackgroundColor #e5e3df;
 
+@def worksheetMinWidth 1024px;
+
 @def toolboxIconSize 48px;
 @def toolboxIconExpandedSize 48px;
 @def toolboxIconExpandedSizeWithPadding 58px;
-@def toolboxWidth 90px;
+@def toolboxWidth 92px;
+@def toolboxZIndex 9999;
+
+@def toolboxBorderWidth 2px;
+
+/* TODO calculate this instead of hard coding the difference...*/
+@def negativeToolboxWidth -92px;
+@def toolboxWidthWithoutBorder 90px;
 
 @def imageToolDefaultWidth 200px;
 @def imageToolDefaultHeight 200px;
@@ -77,7 +86,6 @@
 }
 
 .worksheet {
-	margin-left: toolboxWidth;
 	position: relative;
     height: 100%;	
 }
@@ -85,7 +93,6 @@
 /* Worksheet when in full-view mode */
 .worksheetFullView {
 	border-style: none;
-	margin: 0;
 }
 
 .worksheetFullView .worksheetHeader {
@@ -97,7 +104,6 @@
 }
 
 .worksheetFullView .worksheetPanel {
-    margin: 0 toolboxWidth;
 }
 
 .worksheetFullView .worksheetBackground {
@@ -124,6 +130,7 @@
     height: topBarHeight;
     padding: topBarPadding;
     padding-left: 10px;
+    margin-left: toolboxWidth;
     background-color: topBarBackgroundColor;
     color: topBarTextColor;
     font-size: 1em;
@@ -170,16 +177,23 @@
 	overflow: hidden;
 	outline: 0;
 
-    overflow-x: hidden;
+    overflow-x: auto;
     overflow-y: scroll;
 }
 
 .worksheetPanel {
 	height: 600px; /* This will later be changed dynamically */
 	min-height: 100%;
-	left:0;
-	right:0;
-	position: absolute;
+/*	left:0;*/
+	/*right:0;*/
+	/*position: absolute;*/
+	position: relative;
+	
+    /*margin: 0 0 0 negativeToolboxWidth;
+    left: toolboxWidth;*/
+    width: worksheetMinWidth;
+    margin: 0 auto;
+
 }
 
 .worksheetBackground {
@@ -188,6 +202,7 @@
 	top: 0;
 	bottom: 0;
 	width: 100%;
+	min-width: worksheetMinWidth;
 }
 
 .worksheetButtons {
@@ -259,12 +274,14 @@
 .toolbox {
 	position: absolute;
 	left: 0;
-	width: toolboxWidth;
+	width: toolboxWidthWithoutBorder;
 	height: 100%;
 	min-height: 100%;
 	overflow-x: none;
 	/* TODO: add nice scrollbar and then allow overflow-y: auto; ? */
-	border-right: 2px solid black;
+	border-right: toolboxBorderWidth solid black;
+	background-color: rgba(255,255,255,0.6);
+	z-index: toolboxZIndex;
 }
 
 .toolboxHeaderWrap {
