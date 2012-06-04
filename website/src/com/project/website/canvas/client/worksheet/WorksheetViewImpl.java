@@ -544,7 +544,8 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
                    .then(new Func.VoidAction() {
                        @Override public void exec() {
                            performPageSizeUpdate();
-                    }});
+                    }})
+                   .run(null);
     }
     /*----------------------------------------------------------------------------------------*/
 
