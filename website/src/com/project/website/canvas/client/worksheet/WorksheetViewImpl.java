@@ -58,6 +58,7 @@ import com.project.shared.client.utils.widgets.WidgetUtils;
 import com.project.shared.data.Point2D;
 import com.project.shared.data.funcs.Func;
 import com.project.shared.utils.IterableUtils;
+import com.project.shared.utils.loggers.Logger;
 import com.project.website.canvas.client.canvastools.CursorToolboxItem;
 import com.project.website.canvas.client.canvastools.MoveToolboxItem;
 import com.project.website.canvas.client.canvastools.base.interfaces.CanvasTool;
@@ -540,7 +541,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
     @Override
     public void pageSizeUpdated() {
-        WidgetUtils.getOnAttachAsyncFunc(this.focusPanel)
+        WidgetUtils.getOnAttachAsyncFunc(this.worksheetPanel)
                    .then(new Func.VoidAction() {
                        @Override public void exec() {
                            performPageSizeUpdate();
@@ -553,6 +554,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         // Never make the page height less than what is currently visible on the screen
         // to prevent truncation of the background before the vertical edge of the window
         int currentHeight = this.focusPanel.getOffsetHeight();
+        Logger.info("Updating page size. Current height: " + String.valueOf(currentHeight));
         this.worksheetPanel.setHeight(String.valueOf(Math.max(currentHeight, this._pageOptions.size.getY())) + "px");
         this.worksheetBackground.setHeight(String.valueOf(Math.max(currentHeight, this._pageOptions.size.getY())) + "px");
     }
