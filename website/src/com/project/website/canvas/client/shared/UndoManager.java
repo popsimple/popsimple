@@ -24,6 +24,12 @@ public class UndoManager
     {
         return UndoManager.INSTANCE;
     }
+    
+    public void clear()
+    {
+        this._future.clear();
+        this._past.clear();
+    }
 
     public void addAndRedo(Object owner, UndoRedoPair undoRedoPair)
     {

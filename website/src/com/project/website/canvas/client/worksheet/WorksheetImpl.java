@@ -39,6 +39,7 @@ import com.project.website.canvas.client.canvastools.base.interfaces.CanvasToolF
 import com.project.website.canvas.client.canvastools.base.interfaces.ToolboxItem;
 import com.project.website.canvas.client.shared.ImageOptionTypes;
 import com.project.website.canvas.client.shared.ImageOptionsProviderUtils;
+import com.project.website.canvas.client.shared.UndoManager;
 import com.project.website.canvas.client.worksheet.interfaces.Worksheet;
 import com.project.website.canvas.client.worksheet.interfaces.WorksheetView;
 import com.project.website.canvas.client.worksheet.interfaces.WorksheetView.OperationStatus;
@@ -361,6 +362,7 @@ public class WorksheetImpl implements Worksheet
 
 	private void load(CanvasPage newPage)
     {
+	    UndoManager.get().clear();
 	    this.replaceCurrentPage(newPage);
 	    
         this.view.setPageEditable(pageIsEditable());
