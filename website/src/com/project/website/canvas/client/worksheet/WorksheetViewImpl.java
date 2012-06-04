@@ -64,6 +64,7 @@ import com.project.website.canvas.client.canvastools.base.interfaces.ToolboxItem
 import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.client.shared.ImageInformationUtils;
 import com.project.website.canvas.client.shared.UndoManager;
+import com.project.website.canvas.client.shared.UndoManager.UndoRedoPair;
 import com.project.website.canvas.client.shared.dialogs.SelectImageDialog;
 import com.project.website.canvas.client.shared.searchProviders.SearchProviders;
 import com.project.website.canvas.client.worksheet.interfaces.ElementDragManager;
@@ -578,12 +579,27 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     }
 
     protected void onAddSpaceRequest() {
-        int newHeight = this.worksheetPanel.getOffsetHeight() + PAGE_SIZE_ADDITIONAL_AMOUNT.getY();
+        UndoManager.get().addAndRedo(this, new UndoRedoPair() {
+            @Override
+            public void undo() {
+                performAddSpace(-1);
+            }
+            
+            @Override
+            public void redo() {
+                performAddSpace(1);
+            }
+        });
+    }
+
+    private void performAddSpace(int direction) {
+        Point2D transformVector = PAGE_SIZE_ADDITIONAL_AMOUNT.mul(direction);
+        int newHeight = this.worksheetPanel.getOffsetHeight() + transformVector.getY();
         this.worksheetPanel.setHeight(String.valueOf(newHeight) + "px");
         this._pageOptions.size = new Point2D(this._pageOptions.size.getX(), newHeight);
         for (CanvasToolFrame toolFrame : this._toolFrameRegistrations.keySet()) {
             Point2D newPos = ElementUtils.getElementOffsetPosition(toolFrame.asWidget().getElement())
-                                         .plus(PAGE_SIZE_ADDITIONAL_AMOUNT);
+                                         .plus(transformVector);
             this._toolFrameTransformer.setToolFramePosition(toolFrame, newPos, PAGE_SIZE_ADD_ANIMATION_DURATION);
         }
     }
