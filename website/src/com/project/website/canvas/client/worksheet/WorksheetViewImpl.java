@@ -54,6 +54,7 @@ import com.project.shared.client.utils.ZIndexAllocator;
 import com.project.shared.client.utils.widgets.DialogWithZIndex;
 import com.project.shared.client.utils.widgets.WidgetUtils;
 import com.project.shared.data.Point2D;
+import com.project.shared.data.funcs.Func;
 import com.project.shared.utils.IterableUtils;
 import com.project.website.canvas.client.canvastools.CursorToolboxItem;
 import com.project.website.canvas.client.canvastools.MoveToolboxItem;
@@ -537,14 +538,21 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
     @Override
     public void pageSizeUpdated() {
+        WidgetUtils.getOnAttachAsyncFunc(this.focusPanel)
+                   .then(new Func.VoidAction() {
+                       @Override public void exec() {
+                           performPageSizeUpdate();
+                    }});
+    }
+    /*----------------------------------------------------------------------------------------*/
+
+    private void performPageSizeUpdate() {
         // Never make the page height less than what is currently visible on the screen
         // to prevent truncation of the background before the vertical edge of the window
         int currentHeight = this.focusPanel.getOffsetHeight();
         this.worksheetPanel.setHeight(String.valueOf(Math.max(currentHeight, this._pageOptions.size.getY())) + "px");
     }
 
-    /*----------------------------------------------------------------------------------------*/
-    
     private void setEditModeRegistrations()
     {
         final WorksheetViewImpl that = this;
