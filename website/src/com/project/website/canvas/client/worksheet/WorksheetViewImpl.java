@@ -615,6 +615,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
                                          .plus(transformVector);
             this._toolFrameTransformer.setToolFramePosition(toolFrame, newPos, PAGE_SIZE_ADD_ANIMATION_DURATION);
         }
+        this.pageSizeUpdated();
     }
 
     private void addOverToolFrame(final CanvasToolFrame toolFrame)
