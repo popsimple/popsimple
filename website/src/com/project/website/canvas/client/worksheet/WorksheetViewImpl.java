@@ -25,6 +25,8 @@ import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.event.logical.shared.AttachEvent;
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -551,6 +553,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         // to prevent truncation of the background before the vertical edge of the window
         int currentHeight = this.focusPanel.getOffsetHeight();
         this.worksheetPanel.setHeight(String.valueOf(Math.max(currentHeight, this._pageOptions.size.getY())) + "px");
+        this.worksheetBackground.setHeight(String.valueOf(Math.max(currentHeight, this._pageOptions.size.getY())) + "px");
     }
 
     private void setEditModeRegistrations()
@@ -661,6 +664,12 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         this._allModesRegistrations.add(this.gridCheckBox.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
             @Override public void onValueChange(ValueChangeEvent<Boolean> event) {
                 that._toolFrameTransformer.setSnapToGrid(event.getValue());
+            }
+        }));
+        
+        this._allModesRegistrations.add(Window.addResizeHandler(new ResizeHandler() {
+            @Override public void onResize(ResizeEvent event) {
+                that.pageSizeUpdated();
             }
         }));
     }
