@@ -502,7 +502,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
             this.removeStyleName(CanvasResources.INSTANCE.main().worksheetModeEditable());
 
         } else {
-            this.addEditModeRegistrations();
+            this.setEditModeRegistrations();
 
             this.worksheetHeader.removeStyleName(CanvasResources.INSTANCE.main().displayNone());
             this.removeStyleName(CanvasResources.INSTANCE.main().worksheetFullView());
@@ -545,9 +545,10 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
     /*----------------------------------------------------------------------------------------*/
     
-    private void addEditModeRegistrations()
+    private void setEditModeRegistrations()
     {
         final WorksheetViewImpl that = this;
+        this._editModeRegistrations.clear();
         this._editModeRegistrations.add(this.worksheetPanel.addDomHandler(new MouseDownHandler() {
             @Override
             public void onMouseDown(MouseDownEvent event) {
@@ -613,7 +614,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     }
 
     private void addRegistrations() {
-        this.addEditModeRegistrations();
+        this.setEditModeRegistrations();
         final WorksheetViewImpl that = this;
 
         this._allModesRegistrations.add(this.optionsBackground.addClickHandler(new ClickHandler() {
