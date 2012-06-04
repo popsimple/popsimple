@@ -16,9 +16,13 @@ public class ImageInformationUtils
         StyleUtils.setBackgroundRepeat(style, imageOptions.repeat);
         StyleUtils.setBackgroundStretch(style,
                 imageOptions.stretchWidth, imageOptions.stretchHeight);
-        if (imageOptions.center)
+        if (imageOptions.centerX)
         {
-            StyleUtils.setBackgroundCenter(style);
+            StyleUtils.setBackgroundCenterX(style);
+        }
+        if (imageOptions.centerY)
+        {
+            StyleUtils.setBackgroundCenterY(style);
         }
     }
 }

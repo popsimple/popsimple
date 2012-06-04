@@ -280,6 +280,8 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
     {
         UndoManager.get().add(toolFrame, new UndoRedoPair() {
             @Override public void undo() {
+                //Point2D currentPos = ElementUtils.getElementAbsolutePosition(toolFrame.asWidget().getElement());
+                //.minus(targetPos).plus(currentPos)
                 setToolFramePosition(toolFrame, initialPos, DEFAULT_ANIMATION_DURATION);
             }
 

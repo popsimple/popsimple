@@ -7,6 +7,7 @@ public class CssProperties
 
     public static final String BACKGROUND = "background";
     public static final String BACKGROUND_REPEAT = "backgroundRepeat";
-    public static final String BACKGROUND_POSITION = "backgroundPosition";
+    public static final String BACKGROUND_POSITION_X = "backgroundPositionX";
+    public static final String BACKGROUND_POSITION_Y = "backgroundPositionY";
     public static final String BACKGROUND_SIZE = "backgroundSize";
 }

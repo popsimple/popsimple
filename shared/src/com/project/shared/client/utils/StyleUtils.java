@@ -231,7 +231,8 @@ public class StyleUtils
     {
         style.clearProperty(CssProperties.BACKGROUND);
         style.clearProperty(CssProperties.BACKGROUND_REPEAT);
-        style.clearProperty(CssProperties.BACKGROUND_POSITION);
+        style.clearProperty(CssProperties.BACKGROUND_POSITION_X);
+        style.clearProperty(CssProperties.BACKGROUND_POSITION_Y);
         style.clearBackgroundColor();
         style.clearBackgroundImage();
     }
@@ -255,12 +256,26 @@ public class StyleUtils
 
     public static void clearBackgroundPosition(Style style)
     {
-        style.clearProperty(CssProperties.BACKGROUND_POSITION);
+        style.clearProperty(CssProperties.BACKGROUND_POSITION_X);
+        style.clearProperty(CssProperties.BACKGROUND_POSITION_Y);
     }
 
-    public static void setBackgroundCenter(Style style)
+    public static void setBackgroundPositionX(Style style, int value)
     {
-        style.setProperty(CssProperties.BACKGROUND_POSITION, "center center");
+        style.setProperty(CssProperties.BACKGROUND_POSITION_X, String.valueOf(value) + "px");
+    }
+    public static void setBackgroundPositionY(Style style, int value)
+    {
+        style.setProperty(CssProperties.BACKGROUND_POSITION_Y, String.valueOf(value) + "px");
+    }
+    public static void setBackgroundCenterX(Style style)
+    {
+        style.setProperty(CssProperties.BACKGROUND_POSITION_X, "center");
+    }
+
+    public static void setBackgroundCenterY(Style style)
+    {
+        style.setProperty(CssProperties.BACKGROUND_POSITION_Y, "center");
     }
 
     public static void clearBackgroundSize(Style style)

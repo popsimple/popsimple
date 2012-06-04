@@ -24,7 +24,8 @@ public class WorksheetImageOptionsProvider implements ImageOptionsProvider
         ImageOptions options = new ImageOptions();
         options.stretchHeight = true;
         options.stretchWidth = true;
-        options.center = false;
+        options.centerX = false;
+        options.centerY = false;
         options.repeat = false;
         options.useOriginalSize = false;
         return options;
@@ -35,7 +36,8 @@ public class WorksheetImageOptionsProvider implements ImageOptionsProvider
         ImageOptions options = new ImageOptions();
         options.stretchHeight = false;
         options.stretchWidth = false;
-        options.center = false;
+        options.centerX = false;
+        options.centerY = false;
         options.repeat = true;
         options.useOriginalSize = false;
         return options;
@@ -46,7 +48,8 @@ public class WorksheetImageOptionsProvider implements ImageOptionsProvider
         ImageOptions options = new ImageOptions();
         options.stretchHeight = false;
         options.stretchWidth = false;
-        options.center = true;
+        options.centerX = true;
+        options.centerY = false;
         options.repeat = false;
         options.useOriginalSize = true;
         return options;

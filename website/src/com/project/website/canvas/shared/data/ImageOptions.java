@@ -9,7 +9,8 @@ public class ImageOptions implements Serializable, IsSerializable, ICloneable<Im
     private static final long serialVersionUID = 1L;
 
     public boolean repeat = false;
-    public boolean center = false;
+    public boolean centerX = false;
+    public boolean centerY = false;
     public boolean stretchWidth = false;
     public boolean stretchHeight = false;
     public boolean useOriginalSize = false;
@@ -26,7 +27,10 @@ public class ImageOptions implements Serializable, IsSerializable, ICloneable<Im
         if (this.repeat != other.repeat){
             return false;
         }
-        if (this.center != other.center){
+        if (this.centerX != other.centerX){
+            return false;
+        }
+        if (this.centerY != other.centerY){
             return false;
         }
         if (this.stretchWidth != other.stretchWidth){
@@ -47,7 +51,8 @@ public class ImageOptions implements Serializable, IsSerializable, ICloneable<Im
     {
         this();
         this.repeat = other.repeat;
-        this.center = other.center;
+        this.centerX = other.centerX;
+        this.centerY = other.centerY;
         this.stretchWidth = other.stretchWidth;
         this.stretchHeight = other.stretchHeight;
         this.useOriginalSize = other.useOriginalSize;
