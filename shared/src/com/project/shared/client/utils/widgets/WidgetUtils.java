@@ -21,6 +21,7 @@ import com.google.gwt.event.dom.client.TouchMoveHandler;
 import com.google.gwt.event.dom.client.TouchStartEvent;
 import com.google.gwt.event.dom.client.TouchStartHandler;
 import com.google.gwt.event.logical.shared.AttachEvent;
+import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.HasEnabled;
@@ -214,6 +215,11 @@ public class WidgetUtils {
         return regs.asSingleRegistration();
     }
 
+    private static class Container<T> {
+        public T value;
+        public Container() {}
+    }
+    
     public static HandlerRegistration addMovementStopHandler(Widget widget, final SimpleEvent.Handler<HumanInputEvent<?>> handler)
     {
         RegistrationsManager regs = new RegistrationsManager();
@@ -222,9 +228,18 @@ public class WidgetUtils {
                 handler.onFire(event);
             }
         }, MouseUpEvent.getType()));
+        
+        // This mess is here because touch end events don't contain the touch information of the last position in the movement.
+        final Container<TouchMoveEvent> lastTouchMoveEventContainer = new Container<TouchMoveEvent>(); 
+        regs.add(widget.addDomHandler(new TouchMoveHandler() {
+            @Override public void onTouchMove(TouchMoveEvent event) {
+                lastTouchMoveEventContainer.value = event;
+            }
+        }, TouchMoveEvent.getType()));
+        
         regs.add(widget.addDomHandler(new TouchEndHandler() {
-            @Override public void onTouchEnd(TouchEndEvent event) {
-                handler.onFire(event);
+            @Override public void onTouchEnd(final TouchEndEvent event) {
+                handler.onFire(lastTouchMoveEventContainer.value);
             }
         }, TouchEndEvent.getType()));
         return regs.asSingleRegistration();

@@ -42,6 +42,7 @@ public class EventUtils
             return null;
         }
         if (EventUtils.hasTouches(currentEvent)) {
+            Logger.info(ElementUtils.class, "mouse event has touches: " + String.valueOf(currentEvent.getTouches().length()));
             if (0 < currentEvent.getTouches().length()) {
             	Touch touch = currentEvent.getTouches().get(0);
             	Logger.info(ElementUtils.class, "touch: " + touch.getClientX());
