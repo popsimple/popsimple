@@ -25,7 +25,12 @@ public class Logger
             return;
         }
         for (ILogger logger : _loggers) {
-            logger.log(str, level);
+            try {
+                logger.log(str, level);
+            }
+            catch (Throwable e) {
+                // Ignore exceptions in loggers.
+            }
         }
     }
 
