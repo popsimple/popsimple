@@ -15,7 +15,9 @@ public class GwtLogger implements ILogger
     @Override
     public void log(String str, Level level)
     {
-        GWT.log(str);
+        if (false == GWT.isProdMode()) {
+            GWT.log(str);
+        }
     }
 
 }
