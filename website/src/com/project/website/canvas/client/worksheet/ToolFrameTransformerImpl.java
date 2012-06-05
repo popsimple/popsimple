@@ -218,6 +218,8 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
     {
         Point2D margin = new Point2D(20, 20);
         Point2D maxPos = ElementUtils.getElementOffsetSize(this._container.getElement()).minus(margin);
+        // Do not limit the Y position
+        maxPos = new Point2D(maxPos.getX(), pos.getY());
         Point2D minPos = Point2D.zero.minus(ElementUtils.getElementOffsetSize(elem.getElement()).minus(margin));
         return Point2D.max(minPos, Point2D.min(maxPos, pos));
     }
