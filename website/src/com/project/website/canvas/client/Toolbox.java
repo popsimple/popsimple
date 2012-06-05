@@ -4,14 +4,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HumanInputEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent;
+import com.project.shared.client.loggers.HTMLLogger;
 import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.widgets.WidgetUtils;
 import com.project.website.canvas.client.canvastools.base.BuiltinTools;
@@ -28,6 +32,9 @@ public class Toolbox extends Composite {
     @UiField
     FlowPanel toolsPanel;
 
+    @UiField
+    FlowPanel toolboxHeader;
+    
     final HashMap<ToolboxItem, Widget> toolboxItems = new HashMap<ToolboxItem, Widget>();
     final SimpleEvent<ToolboxItem> toolChosenEvent = new SimpleEvent<ToolboxItem>();
 
@@ -41,6 +48,12 @@ public class Toolbox extends Composite {
         for (ToolboxItem toolboxItem : BuiltinTools.getTools()) {
             this.addTool(toolboxItem);
         }
+        this.toolboxHeader.addDomHandler(new ClickHandler() {
+            @Override public void onClick(ClickEvent event) {
+                if (false == RootPanel.get().remove(HTMLLogger.INSTANCE.getLogWidget())) {
+                    RootPanel.get().add(HTMLLogger.INSTANCE.getLogWidget());
+                }
+            }} , ClickEvent.getType());
     }
 
     public SimpleEvent<ToolboxItem> getToolChosenEvent() {

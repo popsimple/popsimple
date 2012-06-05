@@ -8,7 +8,7 @@ import com.project.shared.utils.ThrowableUtils;
 
 public class Logger
 {
-
+    private static final boolean disableInProduction = false;
     private static ArrayList<ILogger> _loggers = new ArrayList<ILogger>();
 
     public static void addLogger(ILogger logger) {
@@ -19,8 +19,9 @@ public class Logger
         Logger.log(str, Level.INFO);
     }
 
+    @SuppressWarnings("unused")
     public static void log(String str, Level level) {
-        if (GWT.isProdMode()) {
+        if (disableInProduction && GWT.isProdMode()) {
             return;
         }
         for (ILogger logger : _loggers) {

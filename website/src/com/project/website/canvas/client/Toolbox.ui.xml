@@ -4,7 +4,7 @@
     <ui:with field='res' type='com.project.website.canvas.client.resources.CanvasResources'/>
 	<g:HTMLPanel addStyleNames="{res.main.toolbox}">
 	   <div class="{res.main.toolboxHeaderWrap}">
-	       <div class="{res.main.toolboxHeader}"></div>
+	       <g:FlowPanel ui:field="toolboxHeader" addStyleNames="{res.main.toolboxHeader}"/>
 	   </div>
 	   <g:FlowPanel ui:field="toolsPanel" addStyleNames="{res.main.toolboxTools}"></g:FlowPanel>
 	</g:HTMLPanel>
