@@ -35,6 +35,8 @@ public class EventUtils
         return (Objects.equal(nativePreviewEvent.getNativeEvent().getType(), domEventType.getName()));
     }
 
+    private static Point2D _lastKnownTouch = null;
+    
     public static Point2D getCurrentMousePos()
     {
         Event currentEvent = Event.getCurrentEvent();
@@ -42,13 +44,14 @@ public class EventUtils
             return null;
         }
         if (EventUtils.hasTouches(currentEvent)) {
-            Logger.info(ElementUtils.class, "mouse event has touches: " + String.valueOf(currentEvent.getTouches().length()));
+            Logger.info(ElementUtils.class, "mouse event " + currentEvent.toString() + " has touches: " + String.valueOf(currentEvent.getTouches().length()));
             if (0 < currentEvent.getTouches().length()) {
             	Touch touch = currentEvent.getTouches().get(0);
             	Logger.info(ElementUtils.class, "touch: " + touch.getClientX());
             	Logger.info(ElementUtils.class, touch.toString());
-            	return new Point2D(touch.getClientX(), touch.getClientY());
+            	_lastKnownTouch = new Point2D(touch.getClientX(), touch.getClientY());
             }
+            return _lastKnownTouch;
         }
         return new Point2D(currentEvent.getClientX(), currentEvent.getClientY());
     }
