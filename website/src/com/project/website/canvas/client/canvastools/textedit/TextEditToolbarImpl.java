@@ -21,6 +21,7 @@ import com.google.gwt.event.dom.client.DomEvent;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseUpEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Event;
@@ -33,6 +34,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.html5.Range;
 import com.project.shared.client.html5.impl.RangeUtils;
@@ -67,6 +69,8 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
     private ArrayList<Func<Void,Void>> onUnloadFuncs = new ArrayList<Func<Void,Void>>();
 
     private HashSet<Range> savedRanges = new HashSet<Range>();
+    
+    private final SimpleEvent<Void> _buttonAppliedEvent = new SimpleEvent<Void>();
 
     public TextEditToolbarImpl()
     {
@@ -115,6 +119,11 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
         }
         super.onUnload();
     }
+    
+    public HandlerRegistration addButtonAppliedHandler(SimpleEvent.Handler<Void> handler)
+    {
+        return this._buttonAppliedEvent.addHandler(handler);
+    }
 
     private void clearRegistrations()
     {
@@ -143,7 +152,7 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
                     if (that.isActiveElementTree()) {
                         that.updateButtonStates();
                     }
-                    that.onEditedContentChanged();
+                    that._buttonAppliedEvent.dispatch(null);
                 }
             };
 
@@ -535,16 +544,10 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
         else {
             this.applyButtonOnSelectedRange(buttonInfo, editedElement.getElement());
         }
-        this.onEditedContentChanged();
+        this._buttonAppliedEvent.dispatch(null);
         this._editedWidget.getElement().focus();
     }
 
-    public void onEditedContentChanged() {
-        if (null == this._editedWidget) {
-            return;
-        }
-        TextEditUtils.autoSizeWidget(this._editedWidget, this._editedWidget.getElement().getInnerHTML(), false);
-    }
 
     private void saveSelectedRanges()
     {
