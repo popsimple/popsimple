@@ -536,6 +536,7 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
             this.applyButtonOnSelectedRange(buttonInfo, editedElement.getElement());
         }
         this.onEditedContentChanged();
+        this._editedWidget.getElement().focus();
     }
 
     public void onEditedContentChanged() {
@@ -543,7 +544,6 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
             return;
         }
         TextEditUtils.autoSizeWidget(this._editedWidget, this._editedWidget.getElement().getInnerHTML(), false);
-        this._editedWidget.getElement().focus();
     }
 
     private void saveSelectedRanges()
