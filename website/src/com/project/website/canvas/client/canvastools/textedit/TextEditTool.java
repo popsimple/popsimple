@@ -81,7 +81,7 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
     @Override
     public ResizeMode getResizeMode()
     {
-        return ResizeMode.WIDTH_ONLY;
+        return ResizeMode.NONE; //.WIDTH_ONLY;
     }
 
     @Override
