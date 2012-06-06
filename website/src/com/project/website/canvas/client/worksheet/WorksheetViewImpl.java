@@ -52,6 +52,7 @@ import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.EventUtils;
 import com.project.shared.client.utils.HandlerUtils;
+import com.project.shared.client.utils.SchedulerUtils;
 import com.project.shared.client.utils.ZIndexAllocator;
 import com.project.shared.client.utils.widgets.DialogWithZIndex;
 import com.project.shared.client.utils.widgets.WidgetUtils;
@@ -542,8 +543,10 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     @Override
     public void pageSizeUpdated() {
         WidgetUtils.getOnAttachAsyncFunc(this.worksheetPanel)
+                   .then(SchedulerUtils.getDeferredAsyncFunc())
                    .then(new Func.VoidAction() {
                        @Override public void exec() {
+                           
                            performPageSizeUpdate();
                     }})
                    .run(null);
