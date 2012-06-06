@@ -70,6 +70,7 @@ public class TextEditUtils {
         } else {
             width = currentWidth;
         }
+        widget.setWidth(Integer.toString(width) + "px");
         testWidget.getElement().setInnerHTML(""); // for security reasons don't
                                                   // leave hiding data...
         testWidget.getElement().getStyle().setDisplay(Display.NONE);

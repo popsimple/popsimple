@@ -10,6 +10,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.utils.CssProperties;
 import com.project.shared.client.utils.DocumentUtils;
 import com.project.shared.client.utils.ElementUtils;
+import com.project.shared.client.utils.SchedulerUtils;
 import com.project.shared.client.utils.StyleUtils;
 import com.project.shared.client.utils.widgets.WidgetUtils;
 import com.project.shared.data.funcs.Func;
@@ -49,13 +50,13 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
         this.setViewMode(false);
         final TextEditTool that = this;
         ElementUtils.generateId("textedit", this.getElement());
-        WidgetUtils.getOnAttachAsyncFunc(this).then(new Func.VoidAction() {
-            @Override
-            public void exec()
-            {
-                that.initEditable();
-            }
-        }).run(null);
+        WidgetUtils.getOnAttachAsyncFunc(this)
+                   .then(SchedulerUtils.getDeferredAsyncFunc())
+                   .then(new Func.VoidAction() {
+                       @Override public void exec() {
+                           that.initEditable();
+                       }})
+                   .run(null);
         this.addStyleName(CanvasResources.INSTANCE.main().textEditBox());
     }
 
@@ -103,7 +104,6 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
         if (false == _editorReady) {
             return;
         }
-        this.setContents(this._data.innerHtml);
         Style style = this._editedWidget.getElement().getStyle();
 
         // Never override the element's width/height with cssText data.
@@ -115,6 +115,8 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
 
         style.setProperty(CssProperties.WIDTH, width);
         style.setProperty(CssProperties.HEIGHT, height);
+        
+        this.setContents(this._data.innerHtml);
     }
 
     /**
@@ -131,6 +133,7 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
     {
         // TODO: sanitize
         this._editedWidget.getElement().setInnerHTML(text);
+        this._toolbar.onEditedContentChanged();
     }
 
     private void registerHandlers()
@@ -242,5 +245,6 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
         if (isEscape) {
             setActive(false);
         }
+        this._toolbar.onEditedContentChanged();
     }
 }

@@ -143,6 +143,7 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
                     if (that.isActiveElementTree()) {
                         that.updateButtonStates();
                     }
+                    that.onEditedContentChanged();
                 }
             };
 
@@ -161,7 +162,6 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
                 }
             }
         }));
-
         this.updateButtonStates();
     }
 
@@ -531,10 +531,19 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
 
         if (buttonInfo.isOnRootElemOnly()) {
             this.applyButtonOnRootElement(buttonInfo, editedElement.getElement());
+        }
+        else {
+            this.applyButtonOnSelectedRange(buttonInfo, editedElement.getElement());
+        }
+        this.onEditedContentChanged();
+    }
+
+    public void onEditedContentChanged() {
+        if (null == this._editedWidget) {
             return;
         }
-
-        this.applyButtonOnSelectedRange(buttonInfo, editedElement.getElement());
+        TextEditUtils.autoSizeWidget(this._editedWidget, this._editedWidget.getElement().getInnerHTML(), false);
+        this._editedWidget.getElement().focus();
     }
 
     private void saveSelectedRanges()
@@ -586,8 +595,6 @@ public class TextEditToolbarImpl extends Composite implements TextEditToolbar
         // TODO this kills the range's validity...
         this.pushStylesInChildren();
         ElementUtils.mergeSpans(editedElement);
-
-        editedElement.focus();
     }
 
     private boolean isSetInSelection(final ToolbarButtonInfo buttonInfo)

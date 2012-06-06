@@ -384,7 +384,7 @@
 
 .textEdit {
 	min-height: 17px;
-	width: auto; /*textEditInitialWidth;*/
+	width: textEditInitialWidth;
 	min-width: textEditInitialWidth;
     border-style: solid;
     border-width: 1px;
