@@ -135,6 +135,9 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
     @UiField
     Label statusLabel;
+    
+    @UiField
+    HTMLPanel toolsContainerPanel;
 
     @UiField
     CheckBox gridCheckBox;
@@ -305,7 +308,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
             this.setToolFrameRegistrations(toolFrame);
         }
 
-        this.worksheetPanel.add(toolFrame);
+        this.toolsContainerPanel.add(toolFrame);
     }
 
     @Override
@@ -383,7 +386,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
     @Override
     public void removeToolInstanceWidget(CanvasToolFrame toolFrame) {
-        this.worksheetPanel.remove(toolFrame);
+        this.toolsContainerPanel.remove(toolFrame);
         this.removeOverToolFrame(toolFrame);
         this._selectedTools.remove(toolFrame);
         RegistrationsManager regs = _toolFrameRegistrations.remove(toolFrame);
@@ -960,13 +963,16 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         final Point2D floatingWidgetCreationOffset = toolFactory.getFloatingWidgetCreationOffset();
         MouseMoveOperationHandler handler = new MouseMoveOperationHandler() {
             @Override public void onStop(Point2D pos) {
-                _toolCreationRequestEvent.dispatch(new ToolCreationRequest(this.calcTargetPos(pos), toolFactory));
+                Point2D snappedPos = this.calcTargetPos(pos);
+                Point2D creationPos = that.translateDragPanelPosToToolContainerPos(snappedPos);
+                _toolCreationRequestEvent.dispatch(new ToolCreationRequest(creationPos, toolFactory));
             }
 
             @Override public void onStart() { }
 
             @Override public void onMouseMove(Point2D pos) {
-                ElementUtils.setElementCSSPosition(that._floatingWidget.getElement(), this.calcTargetPos(pos).plus(floatingWidgetCreationOffset));
+                ElementUtils.setElementCSSPosition(that._floatingWidget.getElement(), 
+                                                   this.calcTargetPos(pos).plus(floatingWidgetCreationOffset));
             }
 
             private Point2D calcTargetPos(Point2D pos)
@@ -977,7 +983,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
             @Override public void onCancel() { }
         };
         this._floatingWidgetTerminated.addHandler(this._floatingWidgetDragManager.startMouseMoveOperation(
-                null, this.worksheetPanel.getElement(), Point2D.zero,
+                null, this.dragPanel.getElement(), Point2D.zero,
                 handler, ElementDragManager.StopCondition.STOP_CONDITION_MOVEMENT_STOP));
     }
 
@@ -988,13 +994,21 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
     private void dispatchToolCreationWithoutFloatingWidget(final ToolboxItem toolboxItem, final HumanInputEvent<?> event)
     {
-        Point2D position = ElementUtils.getMousePositionRelativeToElement(worksheetPanel.getElement());
+        Point2D position = ElementUtils.getMousePositionRelativeToElement(toolsContainerPanel.getElement());
         _toolCreationRequestEvent.dispatch(new ToolCreationRequest(position, toolboxItem.getToolFactory()) {
             @Override public void toolCreated(CanvasTool<? extends ElementData> tool) {
                 super.toolCreated(tool);
                 tool.asWidget().fireEvent(event);
             }
         });
+    }
+
+    private Point2D translateDragPanelPosToToolContainerPos(Point2D toolFramePos) 
+    {
+        // Transform the coordinates for creating a tool frame from a floating widget
+        // transforms them from the drag panel coordinates to the toolsContainerPanel coordinates
+        return toolFramePos.minus(ElementUtils.getElementOffsetPosition(this.toolsContainerPanel.getElement()))
+                           .plus(ElementUtils.getElementOffsetPosition(this.dragPanel.getElement()));
     }
 
 }

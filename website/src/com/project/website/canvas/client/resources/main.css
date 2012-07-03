@@ -191,9 +191,17 @@
 	
     /*margin: 0 0 0 negativeToolboxWidth;
     left: toolboxWidth;*/
-    width: worksheetMinWidth;
+    /*width: worksheetMinWidth;*/
     margin: 0 auto;
 
+}
+
+.worksheetToolsContainerPanel
+{
+	position: relative;
+	width: 1px;
+	margin: 0 auto;
+	overflow: visible;
 }
 
 .worksheetBackground {

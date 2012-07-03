@@ -307,6 +307,8 @@ public interface MainStyles extends CssResource {
     String worksheetPanel();
 
     String worksheetSaveButton();
+    
+    String worksheetToolsContainerPanel();
 
     String worksheetWelcomeLabelHolder();
 }

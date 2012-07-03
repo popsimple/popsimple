@@ -58,7 +58,7 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
     @Override
     public void setToolFramePosition(final CanvasToolFrame toolFrame, Point2D pos, int animationDuration)
     {
-        ElementUtils.setElementCSSPosition(toolFrame.asWidget().getElement(), limitPosToContainer(pos, toolFrame.asWidget()), animationDuration);
+        ElementUtils.setElementCSSPosition(toolFrame.asWidget().getElement(), pos, animationDuration);
         toolFrame.onTransformed();
     }
 
@@ -212,16 +212,6 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
         Point2D sizeOffset = rotatedSizeOffset.getRotated(-angle);
         Point2D size = Point2D.max(initialSize.plus(sizeOffset), Point2D.zero);
         return size;
-    }
-
-    private Point2D limitPosToContainer(Point2D pos, Widget elem)
-    {
-        Point2D margin = new Point2D(20, 20);
-        Point2D maxPos = ElementUtils.getElementOffsetSize(this._container.getElement()).minus(margin);
-        // Do not limit the Y position
-        maxPos = new Point2D(maxPos.getX(), pos.getY());
-        Point2D minPos = Point2D.zero.minus(ElementUtils.getElementOffsetSize(elem.getElement()).minus(margin));
-        return Point2D.max(minPos, Point2D.min(maxPos, pos));
     }
 
     private int roundedAngle(double rotation)
