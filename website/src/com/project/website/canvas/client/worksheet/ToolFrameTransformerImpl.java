@@ -2,6 +2,7 @@ package com.project.website.canvas.client.worksheet;
 
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.utils.ElementUtils;
@@ -76,7 +77,8 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
     {
         final Element toolFrameElement = toolFrame.asWidget().getElement();
         final Point2D initialPos =  ElementUtils.getElementCSSPosition(toolFrameElement);
-        final Point2D originalOffsetFromFramePos = ElementUtils.getMousePositionRelativeToElement(this._container.getElement()).minus(initialPos);
+        final Point2D originalOffsetFromFramePos = ElementUtils.getMousePositionRelativeToElement(RootPanel.getBodyElement())
+                                                               .minus(initialPos);
 
         MouseMoveOperationHandler handler = new MouseMoveOperationHandler() {
             @Override public void onStop(Point2D pos) {
@@ -98,7 +100,7 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
             }
         };
 
-        _elementDragManager.startMouseMoveOperation(toolFrameElement, _container.getElement(),
+        _elementDragManager.startMouseMoveOperation(toolFrameElement, RootPanel.getBodyElement(),
                 Point2D.zero, handler, ElementDragManager.StopCondition.STOP_CONDITION_MOVEMENT_STOP);
     }
 
@@ -121,7 +123,7 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
         final Element toolFrameElement = toolFrame.asWidget().getElement();
         final double angle = Math.toRadians(ElementUtils.getRotation(toolFrameElement));
         final Point2D initialSize = toolFrame.getToolSize();
-        final Point2D startDragPos = ElementUtils.getMousePositionRelativeToElement(_container.getElement());
+        final Point2D startDragPos = ElementUtils.getMousePositionRelativeToElement(RootPanel.getBodyElement());
 
         final Point2D startPos = startDragPos.minus(ElementUtils.getMousePositionRelativeToElement(toolFrameElement));
 
@@ -162,14 +164,14 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
         };
 
 
-        _elementDragManager.startMouseMoveOperation(toolFrameElement, _container.getElement(),
+        _elementDragManager.startMouseMoveOperation(toolFrameElement, RootPanel.getBodyElement(),
                 Point2D.zero, handler, ElementDragManager.StopCondition.STOP_CONDITION_MOVEMENT_STOP);
     }
 
     @Override
     public void startRotateCanvasToolFrame(final CanvasToolFrame toolFrame)
     {
-        Rectangle initialRect = ElementUtils.getElementOffsetRectangle(toolFrame.asWidget().getElement());
+        Rectangle initialRect = ElementUtils.getElementAbsoluteRectangle(toolFrame.asWidget().getElement());
 
         final Point2D initialCenter = initialRect.getCenter();
         Point2D unrotatedBottomLeftRelativeToCenter = initialRect.getSize().mulCoords(-0.5, 0.5);
@@ -201,7 +203,7 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
             }
         };
 
-        _elementDragManager.startMouseMoveOperation(toolFrame.asWidget().getElement(), _container.getElement(),
+        _elementDragManager.startMouseMoveOperation(toolFrame.asWidget().getElement(), RootPanel.getBodyElement(),
                 Point2D.zero, handler, ElementDragManager.StopCondition.STOP_CONDITION_MOVEMENT_STOP);
     }
 
