@@ -60,7 +60,7 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
     }
 
     private static final double DEFAULT_GLOBAL_ALPHA = 1;
-    private static final int DEFAULT_SHADOW_BLUR = 2;
+    private static final int DEFAULT_SHADOW_BLUR = 0;
 
     private static final double SPIRO_CURVE_WIDTH = 30;
     private static final double SPIRO_CURVE_SPEED_Y = 0.4;
