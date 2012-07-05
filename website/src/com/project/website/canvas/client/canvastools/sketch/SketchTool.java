@@ -30,6 +30,7 @@ import com.project.shared.data.Pair;
 import com.project.shared.data.Point2D;
 import com.project.shared.data.Rectangle;
 import com.project.shared.utils.PointUtils;
+import com.project.shared.utils.loggers.Logger;
 import com.project.website.canvas.client.canvastools.base.CanvasToolEvents;
 import com.project.website.canvas.client.canvastools.base.ResizeMode;
 import com.project.website.canvas.client.canvastools.base.interfaces.CanvasTool;
@@ -298,11 +299,16 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
         this.applyStrokeDrawingTool(mousePos, velocity, sketchOptions);
     }
 
+    private double velocityToWidthFactor(final Point2D velocity) {
+        return Math.log10(10 + velocity.getRadius());
+    }
+
     private void applyStrokeDrawingTool(final Point2D mousePos, Point2D velocity, SketchOptions sketchOptions)
     {
         Point2D finalPos = mousePos;
         this._averageVelocity.add(velocity);
         Point2D averageVelocity = this._averageVelocity.getAverage();
+        this._context.setLineWidth(sketchOptions.penWidth * velocityToWidthFactor(averageVelocity));
         if (DrawingTool.SPIRO == sketchOptions.drawingTool) {
             if (averageVelocity.getAbs().sumCoords() < 1) {
                 return;
