@@ -109,13 +109,14 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
     public void setValue(TextData data)
     {
         this._data = data;
-        if (false == _editorReady) {
-            return;
+        if (this._editorReady) {
+            this.applyData();
         }
+    }
+
+    private void applyData() {
         Style style = this._editedWidget.getElement().getStyle();
-
         // Never override the element's width/height with cssText data.
-
         String width = style.getWidth();
         String height = style.getHeight();
 
@@ -259,7 +260,7 @@ public class TextEditTool extends FocusPanel implements CanvasTool<TextData>
         this._editorReady = true;
         this.registerHandlers();
         if (null != this._data) {
-            this.setContents(this._data.innerHtml);
+            this.applyData();
         }
         this.setActive(this._isActive);
     }
