@@ -27,7 +27,6 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
 
     protected static final int DEFAULT_ANIMATION_DURATION = 300;
 
-    private final Widget _container;
     private final ElementDragManager _elementDragManager;
 
     private double gridResolution = GRID_RESOLUTION;
@@ -39,7 +38,6 @@ public class ToolFrameTransformerImpl implements ToolFrameTransformer
         _elementDragManager = new ElementDragManagerImpl(container, dragPanel,
                 CanvasResources.INSTANCE.main().drag(), stopOperationEvent);
         dragPanel.getElement();
-        _container = container;
     }
 
 
