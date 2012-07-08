@@ -16,6 +16,7 @@
 
         .providersOuterPanel {
 		    margin: 5px 0 10px 20px;
+		    display: inline-block;
         }
 
         .providersPanelLabel {
