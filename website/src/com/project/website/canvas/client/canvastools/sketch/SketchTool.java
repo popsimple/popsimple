@@ -271,6 +271,9 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
             return;
         }
         Point2D pos = ElementUtils.getMousePositionRelativeToElement(this.getElement());
+        if (null == pos) {
+            return;
+        }
         if (DrawingTool.PAINT != this.data.sketchOptions.drawingTool) {
             this.drawLinearInterpolatedSteps(pos);
         }
