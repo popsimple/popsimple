@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import com.google.gwt.http.client.UrlBuilder;
 import com.google.gwt.jsonp.client.JsonpRequestBuilder;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.project.gwtbing.client.options.JsonTypes;
 
 public class BingSearchRequest
 {

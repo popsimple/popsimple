@@ -1,4 +1,4 @@
-package com.project.gwtbing.client;
+package com.project.gwtbing.client.options;
 
 public class JsonTypes 
 {
