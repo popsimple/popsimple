@@ -7,4 +7,5 @@ public class SearchParameters
     public static final String SOURCES = "Sources";
     public static final String JSON_TYPE = "JsonType";
     public static final String CALLBACK = "JsonCallback";
+    public static final String ADULT = "Adult";
 }
