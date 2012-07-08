@@ -11,7 +11,7 @@
         	margin: 5px 0;
         	overflow: auto;
         	padding: 10px;
-        	width: 450px;
+        	width: 670px;
         }
 
         .providersOuterPanel {

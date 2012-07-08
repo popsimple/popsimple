@@ -23,6 +23,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.ScrollPanel;
@@ -72,7 +73,7 @@ public class MediaSearchPanel extends Composite implements Focusable {
     protected final RegistrationsManager registrationsManager = new RegistrationsManager();
     private MediaSearchProvider _selectedSearchProvider = null;
 
-    private InlineLabel selectedThumbnail;
+    private Image selectedThumbnail;
     private HashMap<MediaSearchProvider, RadioButtonPanel> _searchProviderMap = new HashMap<MediaSearchProvider, RadioButtonPanel>();
     private HashMap<RadioButton, MediaInfo> _sizeSelectionMap = new HashMap<RadioButton, MediaInfo>();
 
@@ -203,11 +204,10 @@ public class MediaSearchPanel extends Composite implements Focusable {
         if (null == imageResult) {
             return null;
         }
-        final InlineLabel image = new InlineLabel();
+        final Image image = new Image();
         image.setTitle(imageResult.getTitle());
         image.addStyleName(CanvasResources.INSTANCE.main().mediaSearchPanelResultImage());
-        image.getElement().getStyle()
-                .setBackgroundImage("url(" + imageResult.getThumbnailUrl() + ")");
+        image.setUrl(imageResult.getThumbnailUrl());
         this.registrationsManager.add(image.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -221,7 +221,7 @@ public class MediaSearchPanel extends Composite implements Focusable {
         return this.mediaPicked.addHandler(handler);
     }
 
-    public void imageSelected(final MediaResult imageResult, final InlineLabel image) {
+    public void imageSelected(final MediaResult imageResult, final Image image) {
         if (null != selectedThumbnail) {
             selectedThumbnail.removeStyleName(CanvasResources.INSTANCE.main().selected());
         }
