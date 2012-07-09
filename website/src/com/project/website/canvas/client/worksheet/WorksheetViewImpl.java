@@ -6,10 +6,18 @@ import java.util.HashSet;
 
 import com.google.common.base.Objects;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DataTransfer;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.DomEvent;
+import com.google.gwt.event.dom.client.DragEnterEvent;
+import com.google.gwt.event.dom.client.DragEnterHandler;
+import com.google.gwt.event.dom.client.DragEvent;
+import com.google.gwt.event.dom.client.DragOverEvent;
+import com.google.gwt.event.dom.client.DragOverHandler;
+import com.google.gwt.event.dom.client.DropEvent;
+import com.google.gwt.event.dom.client.DropHandler;
 import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.HumanInputEvent;
@@ -181,6 +189,8 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     private final SimpleEvent<CanvasToolFrame> _activeToolFrameChangedEvent = new SimpleEvent<CanvasToolFrame>();
 
     private HashSet<CanvasToolFrame> _selectedTools = new HashSet<CanvasToolFrame>();
+
+    private final boolean _dragSupported = DragEvent.isSupported();
 
     private boolean _viewMode;
     private boolean _modeInitialized = false;
@@ -594,11 +604,49 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
                 onAddSpaceRequest();
             }
         }));
+        /* TODO: comment out when onDropEvent is implemented
+        if (this._dragSupported) {
+            this._editModeRegistrations.add(this.addDomHandler(new DragEnterHandler() {
+                @Override public void onDragEnter(DragEnterEvent event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    that.dragPanel.setVisible(true);
+                }
+            }, DragEnterEvent.getType()));
+            this._editModeRegistrations.add(this.addDomHandler(new DragOverHandler() {
+                @Override public void onDragOver(DragOverEvent event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            }, DragOverEvent.getType()));
+            this._editModeRegistrations.add(this.dragPanel.addDomHandler(new DropHandler() {
+                @Override public void onDrop(DropEvent event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    that.dragPanel.setVisible(false);
+                    that.onDropEvent(event);
+                }
+            }, DropEvent.getType()));
+        }
+        */
         for (CanvasToolFrame toolFrame : this._toolFrameRegistrations.keySet()) {
             this.setToolFrameRegistrations(toolFrame);
         }
     }
 
+    protected void onDropEvent(DropEvent event) {
+        DataTransfer dataTransfer = event.getDataTransfer();
+        Logger.info(dataTransfer);
+        // TODO: Implement and call handleDrop(dataTransfer);
+    }
+    /* TODO: Implement reading the file data and creating an image 
+    protected static native void handleDrop(DataTransfer dataTransfer) 
+    *-{
+        $wnd.alert("hi.");
+        debugger; 
+    }-*;
+    */
+    
     protected void onAddSpaceRequest() {
         UndoManager.get().addAndRedo(this, new UndoRedoPair() {
             @Override
