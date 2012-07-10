@@ -6,6 +6,8 @@ import java.util.Map.Entry;
 import com.google.gwt.http.client.UrlBuilder;
 import com.google.gwt.jsonp.client.JsonpRequestBuilder;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.project.gwtbing.client.options.AdultOption;
+import com.project.gwtbing.client.options.JsonTypes;
 
 public class BingSearchRequest
 {
@@ -62,6 +64,7 @@ public class BingSearchRequest
         urlBuilder.setParameter(SearchParameters.QUERY, query);
         urlBuilder.setParameter(SearchParameters.SOURCES, source);
         urlBuilder.setParameter(SearchParameters.JSON_TYPE, JsonTypes.CALLBACK);
+        urlBuilder.setParameter(SearchParameters.ADULT, AdultOption.STRICT.toString());
         
         for (Entry<String, String> additionalParam : additionalParams.entrySet())
         {
