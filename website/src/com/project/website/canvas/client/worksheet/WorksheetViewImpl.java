@@ -11,13 +11,7 @@ import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.DomEvent;
-import com.google.gwt.event.dom.client.DragEnterEvent;
-import com.google.gwt.event.dom.client.DragEnterHandler;
-import com.google.gwt.event.dom.client.DragEvent;
-import com.google.gwt.event.dom.client.DragOverEvent;
-import com.google.gwt.event.dom.client.DragOverHandler;
 import com.google.gwt.event.dom.client.DropEvent;
-import com.google.gwt.event.dom.client.DropHandler;
 import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.HumanInputEvent;
@@ -190,7 +184,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
     private HashSet<CanvasToolFrame> _selectedTools = new HashSet<CanvasToolFrame>();
 
-    private final boolean _dragSupported = DragEvent.isSupported();
+    //private final boolean _dragSupported = DragEvent.isSupported();
 
     private boolean _viewMode;
     private boolean _modeInitialized = false;
