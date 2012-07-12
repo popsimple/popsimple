@@ -29,6 +29,8 @@ import com.project.shared.client.utils.widgets.WidgetUtils;
 import com.project.shared.data.Pair;
 import com.project.shared.data.Point2D;
 import com.project.shared.data.Rectangle;
+import com.project.shared.utils.GenericUtils;
+import com.project.shared.utils.NumberUtils;
 import com.project.shared.utils.PointUtils;
 import com.project.website.canvas.client.canvastools.base.CanvasToolEvents;
 import com.project.website.canvas.client.canvastools.base.ResizeMode;
@@ -66,6 +68,7 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
     private static final double SPIRO_CURVE_SPEED_Y = 0.4;
     private static final int VELOCITY_SMOOTHING = 10;
     private static final int POSITION_SMOOTHING = 2;
+    private static final int PEN_WIDTH_SMOOTHING = 4;
     private static final double DEFAULT_SPLINE_TENSION = 0.4;
     private static final double DEFAULT_SPIRO_RESOLUTION = 1;
 
@@ -78,6 +81,7 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
 
     private final PointUtils.MovingAverage _averageVelocity = new PointUtils.MovingAverage(VELOCITY_SMOOTHING);
     private final PointUtils.MovingAverage _averageDrawPos = new PointUtils.MovingAverage(POSITION_SMOOTHING);
+    private final NumberUtils.MovingAverage _averagePenWidth = new NumberUtils.MovingAverage(PEN_WIDTH_SMOOTHING);
 
     private final Canvas _canvas = Canvas.createIfSupported();
     private final Canvas _cursorCanvas = Canvas.createIfSupported();
@@ -277,7 +281,7 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
         if (DrawingTool.PAINT != this.data.sketchOptions.drawingTool) {
             this.drawLinearInterpolatedSteps(pos);
         }
-        this.applyDrawingTool(pos, pos.minus(PointUtils.nullToZero(this._prevMousePos)), movementIsStopping);
+        this.applyDrawingTool(pos, pos.minus(GenericUtils.defaultIfNull(this._prevMousePos, pos)), movementIsStopping);
         this._prevMousePos = pos;
     }
 
@@ -302,7 +306,7 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
     }
 
     private double velocityToWidthFactor(final Point2D velocity) {
-        return Math.log10(10 + velocity.getRadius());
+        return Math.log10(10 + velocity.getPower() / 3.0);
     }
 
     private void applyStrokeDrawingTool(final Point2D mousePos, Point2D velocity, SketchOptions sketchOptions, boolean isEndPos)
@@ -310,7 +314,10 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
         Point2D finalPos = mousePos;
         this._averageVelocity.add(velocity);
         Point2D averageVelocity = this._averageVelocity.getAverage();
-        this._context.setLineWidth(sketchOptions.penWidth * velocityToWidthFactor(averageVelocity));
+        
+        this._averagePenWidth.add(sketchOptions.penWidth * velocityToWidthFactor(averageVelocity));
+        this._context.setLineWidth(this._averagePenWidth.getAverage());
+        
         if (DrawingTool.SPIRO == sketchOptions.drawingTool) {
             if (averageVelocity.getAbs().sumCoords() < 1) {
                 return;
@@ -628,6 +635,7 @@ public class SketchTool extends FlowPanel implements CanvasTool<SketchData>
         this._context.beginPath();
         this._averageDrawPos.clear();
         this._averageVelocity.clear();
+        this._averagePenWidth.clear();
         this._prevMousePos = null;
         this._prevDrawPos1 = null;
         this._prevDrawPos2 = null;

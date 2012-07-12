@@ -80,6 +80,15 @@ public class Point2D implements Serializable, IsSerializable, ICloneable<Point2D
     public int dotProduct(Point2D other) {
     	return (this._x * other._x + this._y * other._y);
     }
+    
+    /***
+     * Returns x*x + y*y. Equivalent to point.dotProduct(point) or point.getRadius() squared.
+     * @return
+     */
+    public int getPower()
+    {
+        return this.dotProduct(this);
+    }
 
     /**
      * Returns x + y (equivalent to p.{@link #dotProduct}({@link #ones}))
@@ -94,7 +103,7 @@ public class Point2D implements Serializable, IsSerializable, ICloneable<Point2D
 
 
     public double getRadius() {
-        return Math.sqrt(this._x * this._x + this._y * this._y);
+        return Math.sqrt(this.getPower());
     }
 
     /**
