@@ -33,4 +33,13 @@ public class IterableUtils
     	return result;
     }
 
+    public static <T> ArrayList<T> toArrayList(Iterable<T> elems)
+    {
+        ArrayList<T> res = new ArrayList<T>();
+        for (T elem : elems)
+        {
+            res.add(elem);
+        }
+        return res;
+    }
 }

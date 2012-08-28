@@ -9,7 +9,15 @@ import com.project.shared.data.Pair;
 
 public class ArrayUtils
 {
-
+    public static <T> ArrayList<T> toList(T[] elems)
+    {
+        ArrayList<T> res = new ArrayList<T>();
+        for (T elem : elems) {
+            res.add(elem);
+        }
+        return res;
+    }
+    
     public static <T> ArrayList<T> filter(T[] elems, Function<T, Boolean> func) {
         ArrayList<T> res = new ArrayList<T>();
         for (T elem : elems) {

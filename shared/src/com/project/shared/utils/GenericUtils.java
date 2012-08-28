@@ -9,4 +9,18 @@ public class GenericUtils {
     {
         return (obj1 != null) && obj1.equals(obj2);
     }
+    
+    public static <T> String safeToString(T obj)
+    {
+        return GenericUtils.safeToString(obj, "<null>");
+    }
+    
+    public static <T> String safeToString(T obj, String nullString)
+    {
+        if (null == obj)
+        {
+            return nullString;
+        }
+        return obj.toString();
+    }
 }

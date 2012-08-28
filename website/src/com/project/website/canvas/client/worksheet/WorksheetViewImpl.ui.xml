@@ -1,11 +1,12 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+    xmlns:g="urn:import:com.google.gwt.user.client.ui"
+    xmlns:worksheet="urn:import:com.project.website.canvas.client.worksheet">
     <ui:with field='res' type='com.project.website.canvas.client.resources.CanvasResources'/>
-   	<g:HTMLPanel ui:field="worksheetContainer" addStyleNames="{res.main.worksheet}">
-       	<g:HTMLPanel addStyleNames="{res.main.worksheetHeader}" ui:field="worksheetHeader">
+    <g:HTMLPanel ui:field="worksheetContainer" addStyleNames="{res.main.worksheet}">
+        <g:HTMLPanel addStyleNames="{res.main.worksheetHeader}" ui:field="worksheetHeader">
             <div class="{res.main.worksheetHeaderLeft}">
-    			<span class="{res.main.worksheetHeaderTitle}"></span>
+                <span class="{res.main.worksheetHeaderTitle}"></span>
 
                 <g:HTMLPanel addStyleNames="{res.main.worksheetButtons}">
                     <g:Anchor ui:field="saveButton"  addStyleNames="{res.main.worksheetSaveButton}">Save</g:Anchor>
@@ -16,7 +17,7 @@
                 |
                 <g:HTMLPanel addStyleNames="{res.main.worksheetOptions}">
                     <g:Anchor ui:field="addSpaceButton" addStyleNames="{res.main.worksheetGridOption}">Add space</g:Anchor>
-                	<g:Anchor ui:field="optionsBackground" addStyleNames="{res.main.worksheetGridOption}">Change background</g:Anchor>
+                    <g:Anchor ui:field="optionsBackground" addStyleNames="{res.main.worksheetGridOption}">Change background</g:Anchor>
                     <g:CheckBox ui:field="gridCheckBox" addStyleNames="{res.main.worksheetGridOption}">Snap to Grid</g:CheckBox>
                 </g:HTMLPanel>
             </div>
@@ -32,16 +33,17 @@
                     <div class="g-plusone" data-size="small" data-count="false"></div>
                 </div>
             </div>
-		</g:HTMLPanel>
-		<g:FocusPanel ui:field="focusPanel" addStyleNames="{res.main.worksheetFocusPanel}">
-		  <g:HTMLPanel>
-		    <g:FlowPanel ui:field="worksheetBackground"  addStyleNames="{res.main.worksheetBackground}"/>
-			<g:FlowPanel ui:field="worksheetPanel" addStyleNames="{res.main.worksheetPanel}" >
-				<g:HTMLPanel ui:field="selectionPanel" addStyleNames="{res.main.selectionPanelStyle}"></g:HTMLPanel>
-				<g:HTMLPanel ui:field="dragPanel" addStyleNames="{res.main.worksheetDragPanel}"></g:HTMLPanel>
-				<g:HTMLPanel ui:field="toolsContainerPanel" addStyleNames="{res.main.worksheetToolsContainerPanel}"></g:HTMLPanel>
-			</g:FlowPanel>
-		  </g:HTMLPanel>
-		</g:FocusPanel>
-	</g:HTMLPanel>
+        </g:HTMLPanel>
+        <g:FocusPanel ui:field="focusPanel" addStyleNames="{res.main.worksheetFocusPanel}">
+          <g:HTMLPanel>
+            <g:FlowPanel ui:field="worksheetBackground"  addStyleNames="{res.main.worksheetBackground}"/>
+            <g:FlowPanel ui:field="worksheetPanel" addStyleNames="{res.main.worksheetPanel}" >
+                <g:HTMLPanel ui:field="selectionPanel" addStyleNames="{res.main.selectionPanelStyle}"></g:HTMLPanel>
+                <g:HTMLPanel ui:field="dragPanel" addStyleNames="{res.main.worksheetDragPanel}"></g:HTMLPanel>
+                <g:HTMLPanel ui:field="toolsContainerPanel" addStyleNames="{res.main.worksheetToolsContainerPanel}"></g:HTMLPanel>
+                <worksheet:WorksheetCanvasImpl ui:field="worksheetCanvas"/>
+            </g:FlowPanel>
+          </g:HTMLPanel>
+        </g:FocusPanel>
+    </g:HTMLPanel>
 </ui:UiBinder>

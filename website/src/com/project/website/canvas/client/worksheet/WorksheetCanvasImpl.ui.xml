@@ -1,0 +1,6 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+    xmlns:g="urn:import:com.google.gwt.user.client.ui">
+    <ui:with field='res' type='com.project.website.canvas.client.resources.CanvasResources'/>
+    <g:HTMLPanel ui:field="toolsContainerPanel" addStyleNames="{res.main.worksheetToolsContainerPanel}"></g:HTMLPanel>
+</ui:UiBinder>

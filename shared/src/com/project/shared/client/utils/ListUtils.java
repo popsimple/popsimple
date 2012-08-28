@@ -79,4 +79,23 @@ public class ListUtils
         }
         return (list.size() - 1) == index;
     }
+
+    public static <T> void addAll(ArrayList<T> list, Iterable<T> items) {
+        for (T item : items)
+        {
+            list.add(item);
+        }
+    }
+    
+    public static <T> ArrayList<T> create()
+    {
+        return new ArrayList<T>();
+    }
+    
+    public static <T> ArrayList<T> create(T item)
+    {
+        ArrayList<T> res = new ArrayList<T>();
+        res.add(item);
+        return res;
+    }
 }
