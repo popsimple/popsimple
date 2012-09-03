@@ -140,7 +140,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     CheckBox gridCheckBox;
     
     @UiField
-    WorksheetCanvasImpl worksheetCanvas;
+    ToolFramesContainerImpl toolFramesContainer;
 
     private static final Point2D PAGE_SIZE_ADDITIONAL_AMOUNT = new Point2D(0, 300);
     private static final int PAGE_SIZE_ADD_ANIMATION_DURATION = 500;
@@ -301,7 +301,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
             }
         }));
 
-        CanvasToolFrameInfo info = this.worksheetCanvas.addToolFrame(toolFrame);
+        CanvasToolFrameInfo info = this.toolFramesContainer.addToolFrame(toolFrame);
         
         this.setToolFrameRegistrations(toolFrame, info.getRegistrations().asRegistrationsManager(this));
 
@@ -348,7 +348,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
     @Override
     public ArrayList<CanvasToolFrame> getToolFrames() {
-        return IterableUtils.toArrayList(this.worksheetCanvas.getToolFrames());
+        return IterableUtils.toArrayList(this.toolFramesContainer.getToolFrames());
     }
 
     @Override
@@ -384,7 +384,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
     @Override
     public void removeToolInstanceWidget(CanvasToolFrame toolFrame) {
-        this.worksheetCanvas.removeToolFrame(toolFrame);
+        this.toolFramesContainer.removeToolFrame(toolFrame);
         this._selectedTools.remove(toolFrame);
     }
 
@@ -491,10 +491,10 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         }
         this._viewMode = isViewMode;
         this._modeInitialized = true;
-        for (CanvasToolFrame frame : this.worksheetCanvas.getToolFrames()) {
+        for (CanvasToolFrame frame : this.toolFramesContainer.getToolFrames()) {
             frame.setViewMode(isViewMode);
         }
-        this.worksheetCanvas.setIsEditMode(false == isViewMode);
+        this.toolFramesContainer.setIsEditMode(false == isViewMode);
         if (isViewMode) {
             this.clearEditModeRegistrations();
 
@@ -574,7 +574,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
                 {
                     return;
                 }
-                if (that.worksheetCanvas.getHoveredToolFrames().isEmpty()) {
+                if (that.toolFramesContainer.getHoveredToolFrames().isEmpty()) {
                     onClearAreaClicked(event);
                 }
                 else {
@@ -647,7 +647,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         int newHeight = this.worksheetPanel.getOffsetHeight() + transformVector.getY();
         this.worksheetPanel.setHeight(String.valueOf(newHeight) + "px");
         this._pageOptions.size = new Point2D(this._pageOptions.size.getX(), newHeight);
-        for (CanvasToolFrame toolFrame : this.worksheetCanvas.getToolFrames()) {
+        for (CanvasToolFrame toolFrame : this.toolFramesContainer.getToolFrames()) {
             Point2D newPos = ElementUtils.getElementOffsetPosition(toolFrame.asWidget().getElement())
                                          .plus(transformVector);
             this._toolFrameTransformer.setToolFramePosition(toolFrame, newPos, PAGE_SIZE_ADD_ANIMATION_DURATION);
@@ -868,7 +868,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         }
         CanvasToolFrame highestToolUnderMouse = null;
         int highestZIndex = -1;
-        for (CanvasToolFrame frame : this.worksheetCanvas.getHoveredToolFrames()) {
+        for (CanvasToolFrame frame : this.toolFramesContainer.getHoveredToolFrames()) {
             int zIndex = ZIndexAllocator.getElementZIndex(frame.asWidget().getElement());
             if (zIndex > highestZIndex) {
                 highestToolUnderMouse = frame;
@@ -968,7 +968,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
     private void dispatchToolCreationWithoutFloatingWidget(final ToolboxItem toolboxItem, final HumanInputEvent<?> event)
     {
-        Point2D position = ElementUtils.getMousePositionRelativeToElement(worksheetCanvas.getElement());
+        Point2D position = ElementUtils.getMousePositionRelativeToElement(toolFramesContainer.getElement());
         _toolCreationRequestEvent.dispatch(new ToolCreationRequest(position, toolboxItem.getToolFactory()) {
             @Override public void toolCreated(CanvasTool<? extends ElementData> tool) {
                 super.toolCreated(tool);
@@ -981,7 +981,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     {
         // Transform the coordinates for creating a tool frame from a floating widget
         // transforms them from the drag panel coordinates to the toolsContainerPanel coordinates
-        return toolFramePos.minus(ElementUtils.getElementOffsetPosition(this.worksheetCanvas.getElement()))
+        return toolFramePos.minus(ElementUtils.getElementOffsetPosition(this.toolFramesContainer.getElement()))
                            .plus(ElementUtils.getElementOffsetPosition(this.dragPanel.getElement()));
     }
 

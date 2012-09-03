@@ -21,11 +21,11 @@ import com.project.shared.data.funcs.Func;
 import com.project.shared.utils.ArrayUtils;
 import com.project.website.canvas.client.canvastools.base.interfaces.CanvasToolFrame;
 import com.project.website.canvas.client.worksheet.data.CanvasToolFrameInfo;
-import com.project.website.canvas.client.worksheet.interfaces.WorksheetCanvas;
+import com.project.website.canvas.client.worksheet.interfaces.ToolFramesContainer;
 
-public class WorksheetCanvasImpl extends Composite implements WorksheetCanvas 
+public class ToolFramesContainerImpl extends Composite implements ToolFramesContainer 
 {
-    interface WorksheetCanvasImplUiBinder extends UiBinder<Widget, WorksheetCanvasImpl> {
+    interface WorksheetCanvasImplUiBinder extends UiBinder<Widget, ToolFramesContainerImpl> {
     }
     private static WorksheetCanvasImplUiBinder uiBinder = GWT.create(WorksheetCanvasImplUiBinder.class);
 
@@ -39,7 +39,7 @@ public class WorksheetCanvasImpl extends Composite implements WorksheetCanvas
     
     
     
-    public WorksheetCanvasImpl() {
+    public ToolFramesContainerImpl() {
         super();
         initWidget(uiBinder.createAndBindUi(this));
         this.setIsEditMode(true);
