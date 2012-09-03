@@ -87,7 +87,13 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
 
     @UiField
     HTMLPanel loadingPanel;
+    
+    @UiField
+    HTMLPanel dragContainer;
 
+    @UiField
+    HTMLPanel toolArea;
+    
     protected final CanvasTool<?> tool;
 
     private FloatingToolbar floatingToolbar = null;
@@ -121,8 +127,15 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
         this.toolPanel.add(canvasTool);
 
         WidgetUtils.stopClickPropagation(this.closeLink.asWidget());
+        WidgetUtils.stopMouseMovePropagation(this.closeLink.asWidget());
         WidgetUtils.stopClickPropagation(this.moveBackLink.asWidget());
+        WidgetUtils.stopMouseMovePropagation(this.moveBackLink.asWidget());
         WidgetUtils.stopClickPropagation(this.moveFrontLink.asWidget());
+        WidgetUtils.stopMouseMovePropagation(this.moveFrontLink.asWidget());
+        
+        WidgetUtils.stopMouseMovePropagation(this.toolArea.asWidget());
+        WidgetUtils.stopMouseMovePropagation(this.rotatePanel);
+        WidgetUtils.stopMouseMovePropagation(this.resizePanel);
 
         this.loadingPanel.setVisible(false);
         this.rotatePanel.setVisible(tool.canRotate());
@@ -201,14 +214,16 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
 		frameRegs.add(WidgetUtils.addMovementStartHandler(this.resizePanel, new SimpleEvent.Handler<HumanInputEvent<?>>() {
             @Override public void onFire(HumanInputEvent<?> arg) {
                 that.resizeStartRequest.dispatch(null);
+                arg.stopPropagation();
             }}));
 
         frameRegs.add(WidgetUtils.addMovementStartHandler(this.rotatePanel, new SimpleEvent.Handler<HumanInputEvent<?>>() {
             @Override public void onFire(HumanInputEvent<?> arg) {
                 that.rotateStartRequest.dispatch(null);
+                arg.stopPropagation();
             }}));
 
-        frameRegs.add(WidgetUtils.addMovementStartHandler(this.frameHeader, new SimpleEvent.Handler<HumanInputEvent<?>>() {
+        frameRegs.add(WidgetUtils.addMovementStartHandler(this.dragContainer, new SimpleEvent.Handler<HumanInputEvent<?>>() {
             @Override public void onFire(HumanInputEvent<?> arg) {
                 moveStartRequest.dispatch(null);
         }}));

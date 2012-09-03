@@ -735,7 +735,6 @@
 
 .toolFrameBodyPanel {
 	cursor: default;
-	padding: 1px 5px 17px 5px;
 	display: inline-block;
 	position: relative;
 }
@@ -765,6 +764,11 @@
 
 .toolFrameButton {
 	cursor: pointer;
+}
+
+.toolDragContainer {
+	padding: 1px 5px 17px 5px;
+	cursor: move;
 }
 
 .toolFrameHeader {

@@ -311,5 +311,7 @@ public interface MainStyles extends CssResource {
     String worksheetToolsContainerPanel();
 
     String worksheetWelcomeLabelHolder();
+    
+    String toolDragContainer();
 }
 
