@@ -142,6 +142,6 @@ public class FloatingToolbar extends FlowPanel
                            .limitTo(Point2D.zero, maxToolbarPosInWindow);
         }
 
-        ElementUtils.setElementCSSPosition(this.getElement(), fixedTargetPos, 300);
+        ElementUtils.setElementCSSPosition(this.getElement(), fixedTargetPos);
     }
 }
