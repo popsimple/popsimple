@@ -257,9 +257,8 @@ public class WorksheetImpl implements Worksheet
         this.toolInfoMap.put(tool, toolInfo);
 
         RegistrationsManager regs = registerToolInstanceHandlers(toolFrame, toolInfo);
-
         Point2D creationOffset = useCreationOffset ? toolFactory.getCreationOffset() : Point2D.zero;
-		view.addToolInstanceWidget(toolFrame, transform, creationOffset, useCreationOffset);
+		view.addToolInstanceWidget(toolFrame, transform, creationOffset, true);
         toolInfo.killRegistration = tool.getToolEvents().addKillRequestEventHandler(
                 new SimpleEvent.Handler<Void>() {
             @Override

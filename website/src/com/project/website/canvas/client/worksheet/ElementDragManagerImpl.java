@@ -82,7 +82,7 @@ public class ElementDragManagerImpl implements ElementDragManager
             final MouseMoveOperationHandler handler, int stopConditions)
     {
         final RegistrationsManager regs = new RegistrationsManager();
-        if (false == setStopConditionHandlers(targetElement, referenceElem, handler, stopConditions, regs)) {
+        if (false == setStopConditionHandlers(targetElement, referenceElem, referenceOffset, handler, stopConditions, regs)) {
             throw new RuntimeException("Must specify at least one stop condition. The bitfield was: " + stopConditions);
         }
         ElementUtils.setTextSelectionEnabled(_container.getElement(), false);
@@ -123,14 +123,18 @@ public class ElementDragManagerImpl implements ElementDragManager
 
     }
 
-    private void operationEnded(final Element targetElement, final Element referenceElem, MouseMoveOperationHandler handler, RegistrationsManager regs)
+    private void operationEnded(final Element targetElement, final Element referenceElem, Point2D referenceOffset, MouseMoveOperationHandler handler, RegistrationsManager regs)
     {
+    	// Warning: MUST calculate the mouse pos BEFORE calling stopMouseMoveOperation
+    	// because stopMouseMoveOperation will cause changes to the DOM (such as hiding the referenceElem)
+    	// which will lead to wrong calculations.
+    	Point2D pos = calcMousePosition(referenceElem, referenceOffset);
         stopMouseMoveOperation(targetElement, regs);
-        handler.onStop(ElementUtils.getMousePositionRelativeToElement(referenceElem));
+        handler.onStop(pos);
     }
 
     private boolean setStopConditionHandlers(final Element targetElement,
-            final Element referenceElem, final MouseMoveOperationHandler handler,
+            final Element referenceElem, final Point2D referenceOffset, final MouseMoveOperationHandler handler,
             int stopConditions, final RegistrationsManager regs)
     {
         boolean stopConditionFound = false;
@@ -139,14 +143,14 @@ public class ElementDragManagerImpl implements ElementDragManager
             stopConditionFound = true;
             regs.add(WidgetUtils.addMovementStopHandler(_container, new Handler<HumanInputEvent<?>>() {
                 @Override public void onFire(HumanInputEvent<?> arg) {
-                    operationEnded(targetElement, referenceElem, handler, regs);
+                    operationEnded(targetElement, referenceElem, referenceOffset, handler, regs);
                 }}));
         }
         if (0 != (stopConditions & StopCondition.STOP_CONDITION_MOUSE_CLICK)) {
             stopConditionFound = true;
             regs.add(_container.addDomHandler(new ClickHandler() {
                 @Override public void onClick(ClickEvent event) {
-                    operationEnded(targetElement, referenceElem, handler, regs);
+                    operationEnded(targetElement, referenceElem, referenceOffset, handler, regs);
                 }
             }, ClickEvent.getType()));
         }
@@ -165,6 +169,11 @@ public class ElementDragManagerImpl implements ElementDragManager
 
     private void handleMouseMove(Element referenceElem, Point2D referenceOffset, MouseMoveOperationHandler handler)
     {
-        handler.onMouseMove(ElementUtils.getMousePositionRelativeToElement(referenceElem).minus(referenceOffset));
+        handler.onMouseMove(calcMousePosition(referenceElem, referenceOffset));
     }
+
+	private Point2D calcMousePosition(Element referenceElem, Point2D referenceOffset) 
+	{
+		return ElementUtils.getMousePositionRelativeToElement(referenceElem).minus(referenceOffset);
+	}
 }

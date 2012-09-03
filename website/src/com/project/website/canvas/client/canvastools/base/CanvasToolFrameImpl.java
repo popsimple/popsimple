@@ -348,7 +348,8 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
             offset = offset.plus(paddingRect.getCorners().topLeft);
         }
         return offset;*/
-        return ElementUtils.getElementAbsolutePosition(this.toolPanel.getElement()).minus(ElementUtils.getElementAbsolutePosition(this.getElement()));
+        return ElementUtils.getElementAbsolutePosition(this.toolPanel.getElement())
+        .minus(ElementUtils.getElementAbsolutePosition(this.getElement()));
     }
 
 
