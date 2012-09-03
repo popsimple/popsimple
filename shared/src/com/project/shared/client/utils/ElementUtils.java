@@ -245,6 +245,7 @@ public abstract class ElementUtils
         if (0 == animationDuration)
         {
             ElementUtils.setElementCSSPosition(element, pos);
+            return;
         }
         final Point2D oldPos = getElementOffsetPosition(element);
         PositionAnimation anim = new PositionAnimation(oldPos, pos, element);
