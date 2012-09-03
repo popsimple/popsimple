@@ -135,7 +135,7 @@ public class FloatingToolbar extends FlowPanel
         Point2D targetPos = minCorner.minus(new Point2D(0, mySize.getY() + TOOLBAR_MARGIN));
 
         Point2D fixedTargetPos = targetPos.limitTo(Point2D.zero, maxToolbarPosInWindow);
-        if (fixedTargetPos.getY() > minCorner.getY())
+        if (targetPos.getY() < 0)
         {
             // The toolbar will be inside the element, move it to below it instead of trying to fit it above.
             fixedTargetPos = new Point2D(fixedTargetPos.getX(), maxCorner.getY() + TOOLBAR_MARGIN)
