@@ -457,10 +457,18 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
         this.draggingStackDepth += isDragging ? 1 : -1;
         this.draggingStackDepth = Math.max(this.draggingStackDepth, 0);
         if (this.draggingStackDepth > 0) {
+            // Hide the floating toolbar while dragging
+            this.setFloatingToolbarVisible(false);
+            
             this.addStyleName(CanvasResources.INSTANCE.main().drag());
+            this.addStyleName(CanvasResources.INSTANCE.main().toolFrameDragged());
         }
         else {
+            this.removeStyleName(CanvasResources.INSTANCE.main().toolFrameDragged());
             this.removeStyleName(CanvasResources.INSTANCE.main().drag());
+            
+        	this.setFloatingToolbarVisible(true);
+        	
             this.updateToolActive();
 
             // heuristic - we assume we have just finished moving.

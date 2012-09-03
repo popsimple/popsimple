@@ -24,6 +24,10 @@
 @def textEditInitialWidth 150px;
 
 @def zIndexOverAllToolFrames 100;
+@def zIndexToolFrameDragged 101;
+@def zIndexFloatingTool 999;
+@def zIndexDragPanel 1000;
+@def zIndexSelectionPanel 1000;
 
 @def topBarHeight 21px;
 @def topBarPadding 0 5px 5px 5px;
@@ -62,6 +66,7 @@
 	color: #777;
 }
 
+/* General style for something that is being dragged */
 .drag {
 	opacity: 0.8;
 }
@@ -267,7 +272,7 @@
 }
 
 .worksheetDragPanel {
-	z-index: 1000;
+	z-index: zIndexDragPanel;
 	background-color: transparent;
 	opacity: 0.4;
 	position: absolute;
@@ -666,7 +671,7 @@
 }
 
 .floatingToolStyle {
-	z-index: 999;
+	z-index: zIndexFloatingTool;
 	position: absolute;
 	opacity: 0.4;
 }
@@ -684,6 +689,14 @@
 
 }
 
+/* Tool frame style while it is being dragged */
+.toolFrameDragged {
+	/* Uncomment the next line to have tool frames show on top of everything else
+	   while they are dragged. This behavior is not so good because when the dragging
+	   ends the tool may disappear if it was dragged to an area that is occupied by a tool
+	   that has a higher z-index */  
+	/*z-index: zIndexToolFrameDragged !important;*/
+}
 
 .toolFramePanel {
 	position: absolute;
@@ -1030,7 +1043,7 @@
 	width: 0px;
 	height: 0px;
 	position: absolute;
-	z-index: 1000;
+	z-index: zIndexSelectionPanel;
 }
 
 @url loadingIconUrl loadingIcon;

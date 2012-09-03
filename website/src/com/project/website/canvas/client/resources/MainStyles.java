@@ -313,5 +313,7 @@ public interface MainStyles extends CssResource {
     String worksheetWelcomeLabelHolder();
     
     String toolDragContainer();
+
+	String toolFrameDragged();
 }
 
