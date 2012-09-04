@@ -27,7 +27,6 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -40,15 +39,12 @@ import com.project.shared.client.handlers.RegistrationsManager;
 import com.project.shared.client.utils.DocumentUtils;
 import com.project.shared.client.utils.ElementUtils;
 import com.project.shared.client.utils.SchedulerUtils;
-import com.project.shared.client.utils.widgets.FramePanel;
-import com.project.shared.client.utils.widgets.FramePanel.FrameElements;
 import com.project.shared.client.utils.widgets.WidgetUtils;
 import com.project.shared.data.Point2D;
 import com.project.website.canvas.client.canvastools.base.eventargs.LoadStartedEventArgs;
 import com.project.website.canvas.client.canvastools.base.interfaces.CanvasTool;
 import com.project.website.canvas.client.canvastools.base.interfaces.CanvasToolFrame;
 import com.project.website.canvas.client.resources.CanvasResources;
-import com.project.website.canvas.client.shared.widgets.ElementWrapper;
 import com.project.website.canvas.client.shared.widgets.FloatingToolbar;
 import com.project.website.canvas.shared.data.ElementData;
 
@@ -93,7 +89,7 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
     HTMLPanel loadingPanel;
     
     @UiField
-    FramePanel dragContainer;
+    HTMLPanel dragContainer;
 
     @UiField
     HTMLPanel toolArea;
@@ -137,7 +133,7 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
         WidgetUtils.stopClickPropagation(this.moveFrontLink.asWidget());
         WidgetUtils.stopMouseMovePropagation(this.moveFrontLink.asWidget());
         
-        //WidgetUtils.stopMouseMovePropagation(this.toolArea.asWidget());
+        WidgetUtils.stopMouseMovePropagation(this.toolArea.asWidget());
         WidgetUtils.stopMouseMovePropagation(this.rotatePanel);
         WidgetUtils.stopMouseMovePropagation(this.resizePanel);
 
@@ -227,15 +223,10 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
                 arg.stopPropagation();
             }}));
 
-        FrameElements frameElements = this.dragContainer.getFrameElements();
-        for (Element frameElement : frameElements.getAll())
-        {
-        	ElementWrapper wrapper = ElementWrapper.of(frameElement);
-	        frameRegs.add(WidgetUtils.addMovementStartHandler(wrapper, new SimpleEvent.Handler<HumanInputEvent<?>>() {
-	            @Override public void onFire(HumanInputEvent<?> arg) {
-	                moveStartRequest.dispatch(null);
-	        }}));
-        }
+        frameRegs.add(WidgetUtils.addMovementStartHandler(this.dragContainer, new SimpleEvent.Handler<HumanInputEvent<?>>() {
+            @Override public void onFire(HumanInputEvent<?> arg) {
+                moveStartRequest.dispatch(null);
+        }}));
 
 		frameRegs.add(tool.getToolEvents().addSelfMoveRequestEventHandler(new Handler<Point2D>() {
 			@Override public void onFire(Point2D offset) {

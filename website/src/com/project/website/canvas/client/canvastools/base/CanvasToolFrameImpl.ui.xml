@@ -1,6 +1,5 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
-<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:g="urn:import:com.google.gwt.user.client.ui"
-		     xmlns:frame="urn:import:com.project.shared.client.utils.widgets">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:g="urn:import:com.google.gwt.user.client.ui">
 	<ui:with field='res' type='com.project.website.canvas.client.resources.CanvasResources' />
 	<ui:style>
 		.focusPanel {
@@ -11,25 +10,23 @@
 		<g:FocusPanel ui:field="focusPanel" addStyleNames="{style.focusPanel}">
 			<g:FlowPanel>
                 <g:FlowPanel addStyleNames="{res.main.toolFrameDragOverlayPanel}"/>
-                <frame:FramePanel ui:field="dragContainer" addStyleNames="{res.main.toolDragContainer}">
-                	<g:FlowPanel>
-						<g:HTMLPanel ui:field="frameHeader" addStyleNames="{res.main.toolFrameHeader} {res.main.toolFrameHoverVisibleElement}">
-							<g:FlowPanel ui:field="buttonsPanel" addStyleNames="{res.main.toolFrameButtonsPanel}">
-								<g:Anchor ui:field="moveBackLink" addStyleNames="{res.main.toolFrameBackLink} {res.main.toolFrameButton}" title="Place beneath"></g:Anchor>
-								<g:Anchor ui:field="moveFrontLink" addStyleNames="{res.main.toolFrameFrontLink} {res.main.toolFrameButton}" title="Place above"></g:Anchor>
-								<g:Anchor ui:field="closeLink" addStyleNames="{res.main.toolFrameCloseLink} {res.main.toolFrameButton}" title="Delete element"></g:Anchor>
-							</g:FlowPanel>
-						</g:HTMLPanel>
-						
-						<g:HTMLPanel ui:field="toolArea" addStyleNames="{res.main.toolFrameBodyPanel}">
-							<g:HTMLPanel ui:field="toolPanel" />
-							<g:HTMLPanel ui:field="loadingPanel" addStyleNames="{res.main.loadingFiller}"/>
-						</g:HTMLPanel>
-		
-						<g:HTMLPanel ui:field="resizePanel" addStyleNames="{res.main.toolFrameBottomRightResize} {res.main.toolFrameHoverVisibleElement}" title="Scale" />
-						<g:HTMLPanel ui:field="rotatePanel" addStyleNames="{res.main.toolFrameBottomLeftRotate}  {res.main.toolFrameHoverVisibleElement}" title="Rotate" />
-					</g:FlowPanel>
-				</frame:FramePanel>
+                <g:HTMLPanel ui:field="dragContainer" addStyleNames="{res.main.toolDragContainer}">
+					<g:HTMLPanel ui:field="frameHeader" addStyleNames="{res.main.toolFrameHeader} {res.main.toolFrameHoverVisibleElement}">
+						<g:FlowPanel ui:field="buttonsPanel" addStyleNames="{res.main.toolFrameButtonsPanel}">
+							<g:Anchor ui:field="moveBackLink" addStyleNames="{res.main.toolFrameBackLink} {res.main.toolFrameButton}" title="Place beneath"></g:Anchor>
+							<g:Anchor ui:field="moveFrontLink" addStyleNames="{res.main.toolFrameFrontLink} {res.main.toolFrameButton}" title="Place above"></g:Anchor>
+							<g:Anchor ui:field="closeLink" addStyleNames="{res.main.toolFrameCloseLink} {res.main.toolFrameButton}" title="Delete element"></g:Anchor>
+						</g:FlowPanel>
+					</g:HTMLPanel>
+					
+					<g:HTMLPanel ui:field="toolArea" addStyleNames="{res.main.toolFrameBodyPanel}">
+						<g:HTMLPanel ui:field="toolPanel" />
+						<g:HTMLPanel ui:field="loadingPanel" addStyleNames="{res.main.loadingFiller}"/>
+					</g:HTMLPanel>
+	
+					<g:HTMLPanel ui:field="resizePanel" addStyleNames="{res.main.toolFrameBottomRightResize} {res.main.toolFrameHoverVisibleElement}" title="Scale" />
+					<g:HTMLPanel ui:field="rotatePanel" addStyleNames="{res.main.toolFrameBottomLeftRotate}  {res.main.toolFrameHoverVisibleElement}" title="Rotate" />
+				</g:HTMLPanel>
 			</g:FlowPanel>
 		</g:FocusPanel>
 	</g:FlowPanel>
