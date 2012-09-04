@@ -228,6 +228,8 @@ public interface MainStyles extends CssResource {
 
     String toolboxVideoIconStyle();
 
+    String toolDragContainer();
+
     String toolFrameBackLink();
 
     String toolFrameBodyPanel();
@@ -241,6 +243,8 @@ public interface MainStyles extends CssResource {
     String toolFrameButtonsPanel();
 
     String toolFrameCloseLink();
+
+    String toolFrameDragged();
 
     String toolFrameDragOverlayPanel();
 
@@ -280,20 +284,22 @@ public interface MainStyles extends CssResource {
 
     String worksheetDragPanel();
 
+    String worksheetDropTarget();
+
     String worksheetFocusPanel();
 
     String worksheetFullView();
-
+    
     String worksheetGridOption();
 
     String worksheetHeader();
-
-    String worksheetHeaderImageButton();
     
+    String worksheetHeaderImageButton();
+
     String worksheetHeaderLeft();
 
     String worksheetHeaderLogoutLink();
-    
+
     String worksheetHeaderRight();
 
     String worksheetHeaderTitle();
@@ -301,19 +307,15 @@ public interface MainStyles extends CssResource {
     String worksheetModeEditable();
 
     String worksheetModeViewOnly();
-
+    
     String worksheetOptions();
 
     String worksheetPanel();
-
+    
     String worksheetSaveButton();
-    
-    String worksheetToolsContainerPanel();
 
-    String worksheetWelcomeLabelHolder();
-    
-    String toolDragContainer();
+	String worksheetToolsContainerPanel();
 
-	String toolFrameDragged();
+	String worksheetWelcomeLabelHolder();
 }
 

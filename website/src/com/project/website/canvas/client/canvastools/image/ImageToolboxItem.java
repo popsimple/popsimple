@@ -7,7 +7,7 @@ import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.shared.data.ElementData;
 
 public class ImageToolboxItem implements ToolboxItem {
-    private static ImageToolFactory factory = new ImageToolFactory();
+    private static ImageToolFactory factory = ImageToolFactory.INSTANCE;
 
     public String getToolboxIconStyle() {
         return CanvasResources.INSTANCE.main().toolboxImageIconStyle();

@@ -10,8 +10,10 @@ public class ImageToolFactory extends CanvasToolFactoryBase<ImageTool>
 {
     public static final String UNIQUE_ID = "ImageToolFactory";
 
-    private ImageToolOptionsProvider _optionsProvider = new ImageToolOptionsProvider();
+    private final ImageToolOptionsProvider _optionsProvider = new ImageToolOptionsProvider();
 
+    public static final ImageToolFactory INSTANCE = new ImageToolFactory(); 
+    
     public ImageTool create()
     {
         ImageTool imageTool = new ImageTool(SearchProviders.getDefaultImageSearchProviders());

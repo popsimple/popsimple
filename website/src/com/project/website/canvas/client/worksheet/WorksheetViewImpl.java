@@ -10,7 +10,13 @@ import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.DomEvent;
+import com.google.gwt.event.dom.client.DragEnterEvent;
+import com.google.gwt.event.dom.client.DragEnterHandler;
+import com.google.gwt.event.dom.client.DragEvent;
+import com.google.gwt.event.dom.client.DragOverEvent;
+import com.google.gwt.event.dom.client.DragOverHandler;
 import com.google.gwt.event.dom.client.DropEvent;
+import com.google.gwt.event.dom.client.DropHandler;
 import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.HumanInputEvent;
@@ -133,7 +139,9 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
     @UiField
     Label statusLabel;
-    
+
+    @UiField
+    HTMLPanel dropTarget;
 
     @UiField
     CheckBox gridCheckBox;
@@ -171,6 +179,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     private final SimpleEvent<CanvasPageOptions> _optionsUpdatedEvent = new SimpleEvent<CanvasPageOptions>();
     private final SimpleEvent<Void> _stopOperationEvent = new SimpleEvent<Void>();
     private final SimpleEvent<Void> _undoRequestEvent = new SimpleEvent<Void>();
+    private final SimpleEvent<ImageDropInfo> _imageDropEvent = new SimpleEvent<ImageDropInfo>();
     private final SimpleEvent<ArrayList<CanvasToolFrame>> _removeToolsRequest = new SimpleEvent<ArrayList<CanvasToolFrame>>();
     private final SimpleEvent<ArrayList<CanvasToolFrame>> _copyToolsRequest = new SimpleEvent<ArrayList<CanvasToolFrame>>();
     private final SimpleEvent<Void> _pasteToolsRequest = new SimpleEvent<Void>();
@@ -179,7 +188,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
     private HashSet<CanvasToolFrame> _selectedTools = new HashSet<CanvasToolFrame>();
 
-    //private final boolean _dragSupported = DragEvent.isSupported();
+    private final boolean _dragSupported = DragEvent.isSupported();
 
     private boolean _viewMode;
     private boolean _modeInitialized = false;
@@ -193,6 +202,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
 
         this._toolFrameTransformer = new ToolFrameTransformerImpl(worksheetPanel, dragPanel, _stopOperationEvent);
         this.dragPanel.setVisible(false);
+        this.dropTarget.setVisible(false);
 
         this._toolFrameSelectionManager = new ToolFrameSelectionManager(this, worksheetPanel, dragPanel, selectionPanel, _stopOperationEvent);
         this.selectionPanel.setVisible(false);
@@ -264,6 +274,12 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     public HandlerRegistration addAddSpaceHandler(Handler<Void> handler) {
         return this.addSpaceButton.addClickHandler(HandlerUtils.asClickHandler(handler));
     }
+    
+    @Override
+    public HandlerRegistration addImageDropHandler(Handler<ImageDropInfo> handler) {
+        return this._imageDropEvent.addHandler(handler);
+    }
+    
 
 
     @Override
@@ -428,7 +444,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         this.worksheetBackground.addStyleName(CanvasResources.INSTANCE.main().imageLoadingStyle());
         this.pageSizeUpdated();
 
-        WidgetUtils.setBackgroundImageAsync(this.worksheetBackground, value.backgroundImage.url,
+        WidgetUtils.setBackgroundImageAsync(this.worksheetBackground, value.backgroundImage.getUrl(),
                 CanvasResources.INSTANCE.imageUnavailable().getSafeUri().asString(), false,
                 CanvasResources.INSTANCE.main().imageLoadingStyle(),
                 new SimpleEvent.Handler<Void>() {
@@ -582,45 +598,78 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
                 onAddSpaceRequest();
             }
         }));
-        /* TODO: comment out when onDropEvent is implemented
         if (this._dragSupported) {
             this._editModeRegistrations.add(this.addDomHandler(new DragEnterHandler() {
                 @Override public void onDragEnter(DragEnterEvent event) {
                     event.preventDefault();
                     event.stopPropagation();
-                    that.dragPanel.setVisible(true);
+                    Logger.info("drag enter");
+                    that.dropTarget.setVisible(true);
                 }
             }, DragEnterEvent.getType()));
             this._editModeRegistrations.add(this.addDomHandler(new DragOverHandler() {
                 @Override public void onDragOver(DragOverEvent event) {
                     event.preventDefault();
                     event.stopPropagation();
+                    Logger.info("drag over");
+                    that.dropTarget.setVisible(true);
                 }
             }, DragOverEvent.getType()));
-            this._editModeRegistrations.add(this.dragPanel.addDomHandler(new DropHandler() {
+            this._editModeRegistrations.add(this.dropTarget.addDomHandler(new DropHandler() {
                 @Override public void onDrop(DropEvent event) {
                     event.preventDefault();
                     event.stopPropagation();
-                    that.dragPanel.setVisible(false);
+                    Logger.info("drop");
+                    that.dropTarget.setVisible(false);
                     that.onDropEvent(event);
                 }
             }, DropEvent.getType()));
         }
-        */
+        
     }
 
     protected void onDropEvent(DropEvent event) {
         DataTransfer dataTransfer = event.getDataTransfer();
         Logger.info(dataTransfer);
-        // TODO: Implement and call handleDrop(dataTransfer);
+        this.handleDrop(dataTransfer, ElementUtils.getMousePositionRelativeToElement(toolFramesContainer.getElement()));
     }
-    /* TODO: Implement reading the file data and creating an image 
-    protected static native void handleDrop(DataTransfer dataTransfer) 
-    *-{
-        $wnd.alert("hi.");
-        debugger; 
-    }-*;
-    */
+    
+    protected void createImageFromDataUrl(String dataUrl, Point2D pos)
+    {
+    	// TODO: Currently the image dataUrl is limited in size on the server side (google app engine limitation + the fact that we save base64 encoded data instead of binary)
+    	this._imageDropEvent.dispatch(new ImageDropInfo(dataUrl, pos));
+    }
+    
+    // see: http://www.html5rocks.com/en/tutorials/file/dndfiles/
+    protected native void handleDrop(DataTransfer dataTransfer, Point2D pos) 
+    /*-{
+    	var _this = this;
+    	var _pos = pos;
+        var files = dataTransfer.files;
+		// Loop through the FileList and render image files as thumbnails.
+        for (var i = 0, f; f = files[i]; i++) 
+        {
+			$wnd.console.log(f.name + ', ' + (f.type || 'n/a') + ', ' + f.size + ' bytes, last modified: ' + (f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a'));
+			// Only process image files.
+			if (!f.type.match('image.*')) {
+				continue;
+			}
+			
+			var reader = new FileReader();
+			
+			// Closure to capture the file information.
+			reader.onload = (function(theFile) {
+			  return function(e) {
+			  	var dataUrl = e.target.result.toString();
+				_this.@com.project.website.canvas.client.worksheet.WorksheetViewImpl::createImageFromDataUrl(Ljava/lang/String;Lcom/project/shared/data/Point2D;)(dataUrl, _pos);
+			  };
+			})(f);
+			
+			// Read in the image file as a data URL.
+			reader.readAsDataURL(f);
+	    }
+    }-*/;
+    
     
     protected void onAddSpaceRequest() {
         UndoManager.get().addAndRedo(this, new UndoRedoPair() {

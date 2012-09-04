@@ -3,7 +3,6 @@ package com.project.website.canvas.client.shared.searchProviders;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.project.website.canvas.client.shared.searchProviders.bing.BingSearchProvider;
 import com.project.website.canvas.client.shared.searchProviders.flickr.FlickrSearchProvider;
 import com.project.website.canvas.client.shared.searchProviders.interfaces.ImageSearchProvider;
 import com.project.website.canvas.client.shared.searchProviders.interfaces.VideoSearchProvider;
@@ -21,7 +20,9 @@ public class SearchProviders
     private static List<ImageSearchProvider> createDefaultImageSearchProviderList()
     {
         ArrayList<ImageSearchProvider> searchProvides = new ArrayList<ImageSearchProvider>();
-        searchProvides.add(new BingSearchProvider(ApiKeys.BING_SEARCH));
+        // TODO: Fix the bing search API client, it is broken since Microsfot moved it
+        // to Azure Marketplace and changed the API (now it requires OAuth or HTTP authentication)
+        // searchProvides.add(new BingSearchProvider(ApiKeys.BING_SEARCH));
         searchProvides.add(new FlickrSearchProvider(ApiKeys.FLICKR_SEARCH));
         return searchProvides;
     }

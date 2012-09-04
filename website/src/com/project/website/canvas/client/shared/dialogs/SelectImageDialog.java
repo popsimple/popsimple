@@ -154,7 +154,7 @@ public class SelectImageDialog extends Composite implements TakesValue<ImageInfo
 
     private void bindData()
     {
-        this.urlTextBox.setText(this._imageInformation.url);
+        this.urlTextBox.setText(this._imageInformation.getUrl());
         switch (ImageOptionsProviderUtils.getImageOptionType(
                 this._imageOptionsProvider, this._imageInformation.options))
         {
@@ -222,9 +222,9 @@ public class SelectImageDialog extends Composite implements TakesValue<ImageInfo
 
     private void setSearchData(MediaInfo mediaInfo)
     {
-        this._imageInformation.url = mediaInfo.getMediaUrl();
+        this._imageInformation.setUrl(mediaInfo.getMediaUrl());
         this._imageInformation.size = new Point2D(mediaInfo.getWidth(), mediaInfo.getHeight());
-        this.urlTextBox.setText(this._imageInformation.url);
+        this.urlTextBox.setText(this._imageInformation.getUrl());
     }
 
     private void setManualUrl(String url)
@@ -234,7 +234,7 @@ public class SelectImageDialog extends Composite implements TakesValue<ImageInfo
             return;
         }
         if (url.isEmpty() || UrlUtils.isValidUrl(url, false)) {
-            this._imageInformation.url = url;
+            this._imageInformation.setUrl(url);
             this._imageInformation.size = new Point2D();
         } else {
             Window.alert("Invalid url.");

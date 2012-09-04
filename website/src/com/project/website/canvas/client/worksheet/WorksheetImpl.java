@@ -37,11 +37,14 @@ import com.project.website.canvas.client.canvastools.base.interfaces.CanvasTool;
 import com.project.website.canvas.client.canvastools.base.interfaces.CanvasToolFactory;
 import com.project.website.canvas.client.canvastools.base.interfaces.CanvasToolFrame;
 import com.project.website.canvas.client.canvastools.base.interfaces.ToolboxItem;
+import com.project.website.canvas.client.canvastools.image.ImageTool;
+import com.project.website.canvas.client.canvastools.image.ImageToolFactory;
 import com.project.website.canvas.client.shared.ImageOptionTypes;
 import com.project.website.canvas.client.shared.ImageOptionsProviderUtils;
 import com.project.website.canvas.client.shared.UndoManager;
 import com.project.website.canvas.client.worksheet.interfaces.Worksheet;
 import com.project.website.canvas.client.worksheet.interfaces.WorksheetView;
+import com.project.website.canvas.client.worksheet.interfaces.WorksheetView.ImageDropInfo;
 import com.project.website.canvas.client.worksheet.interfaces.WorksheetView.OperationStatus;
 import com.project.website.canvas.client.worksheet.interfaces.WorksheetView.ToolCreationRequest;
 import com.project.website.canvas.shared.contracts.CanvasService;
@@ -681,9 +684,20 @@ public class WorksheetImpl implements Worksheet
 				removeToolInstances(arg);
 			}
 		});
+        view.addImageDropHandler(new Handler<WorksheetView.ImageDropInfo>() {
+			@Override public void onFire(ImageDropInfo arg) {
+				addImageFromDragAndDrop(arg);
+		}});
     }
 
-    private Collection<ElementData> sortByZIndex(Collection<ElementData> elements)
+    protected void addImageFromDragAndDrop(ImageDropInfo imageDropInfo) {
+    	ImageTool imageTool = ImageToolFactory.INSTANCE.create();
+    	imageTool.getValue().imageInformation.setUrl(imageDropInfo.getDataUrl());
+    	imageTool.getValue().transform.translation = imageDropInfo.getPosition();
+    	this.setActiveToolInstance(this.createToolInstanceFromData(imageTool.getValue()));
+	}
+
+	private Collection<ElementData> sortByZIndex(Collection<ElementData> elements)
     {
         TreeMap<Integer, ElementData> elementsByZIndex = new TreeMap<Integer, ElementData>();
         for (ElementData element : elements) {

@@ -171,7 +171,7 @@ public class ImageTool extends Composite implements CanvasTool<ImageData> {
             return;
         }
         // Make sure we don't set arbitrary html or invalid urls
-        imageInformation.url = UrlUtils.encodeOnce(imageInformation.url);
+        imageInformation.setUrl(UrlUtils.encodeOnce(imageInformation.getUrl()));
         this.data.imageInformation = imageInformation;
         this.updateImageFromData(imageInformation.options.useOriginalSize);
     }
@@ -185,7 +185,7 @@ public class ImageTool extends Composite implements CanvasTool<ImageData> {
         this.refreshVisibility();
         StyleUtils.clearBackground(this.getElement().getStyle());
 
-        if (StringUtils.isWhitespaceOrNull(this.data.imageInformation.url)) {
+        if (StringUtils.isWhitespaceOrNull(this.data.imageInformation.getUrl())) {
             this.addStyleName(CanvasResources.INSTANCE.main().imageToolEmpty());
             this.removeStyleName(CanvasResources.INSTANCE.main().imageToolSet());
             return;
@@ -194,7 +194,7 @@ public class ImageTool extends Composite implements CanvasTool<ImageData> {
 
         this._toolEvents.dispatchLoadStartedEvent(new LoadStartedEventArgs(false));
 
-        WidgetUtils.setBackgroundImageAsync(this, this.data.imageInformation.url, CanvasResources.INSTANCE
+        WidgetUtils.setBackgroundImageAsync(this, this.data.imageInformation.getUrl(), CanvasResources.INSTANCE
                 .imageUnavailable().getSafeUri().asString(), autoSize,
                 CanvasResources.INSTANCE.main().imageToolLoading(),
                 new SimpleEvent.Handler<Void>() {
@@ -251,7 +251,7 @@ public class ImageTool extends Composite implements CanvasTool<ImageData> {
     }
 
     private void refreshVisibility() {
-        if ((this.viewMode) && (StringUtils.isWhitespaceOrNull(this.data.imageInformation.url))) {
+        if ((this.viewMode) && (StringUtils.isWhitespaceOrNull(this.data.imageInformation.getUrl()))) {
             this.setVisible(false);
         } else {
             this.setVisible(true);

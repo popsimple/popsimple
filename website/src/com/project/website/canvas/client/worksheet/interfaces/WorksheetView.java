@@ -23,6 +23,23 @@ public interface WorksheetView extends IsWidget
         FAILURE, PENDING, SUCCESS,
     }
 
+    public class ImageDropInfo {
+    	private final String dataUrl;
+    	private final Point2D position;
+		public String getDataUrl() {
+			return dataUrl;
+		}
+		public Point2D getPosition() {
+			return position;
+		}
+		public ImageDropInfo(String dataUrl, Point2D position) {
+			super();
+			this.dataUrl = dataUrl;
+			this.position = position;
+		}
+    	
+    }
+    
     public class ToolCreationRequest
     {
         private final CanvasToolFactory<? extends CanvasTool<? extends ElementData>> factory;
@@ -91,6 +108,12 @@ public interface WorksheetView extends IsWidget
     HandlerRegistration addCopyToolHandler(SimpleEvent.Handler<ArrayList<CanvasToolFrame>> handler);
 
     HandlerRegistration addPasteToolHandler(SimpleEvent.Handler<Void> handler);
+    
+    /**
+     * Triggered when the user drops an image file onto the worksheet using drag-and-drop
+     * The DataUrl-format image binary data is passed as the String argument to the handler
+     */
+    HandlerRegistration addImageDropHandler(SimpleEvent.Handler<ImageDropInfo> handler);
 
     HandlerRegistration addUndoRequestHandler(SimpleEvent.Handler<Void> handler);
 
