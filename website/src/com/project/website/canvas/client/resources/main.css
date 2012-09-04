@@ -808,6 +808,7 @@
 	padding: 2px 0 0 0;
 	visibility: hidden;
 	text-align: right;
+	position: relative; /* required for the header to be above the dragOverlayPanel */
 }
 
 

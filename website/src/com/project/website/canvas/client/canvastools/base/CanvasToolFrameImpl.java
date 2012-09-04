@@ -228,6 +228,11 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
             @Override public void onFire(HumanInputEvent<?> arg) {
                 moveStartRequest.dispatch(null);
         }}));
+        
+        frameRegs.add(WidgetUtils.addMovementStartHandler(this.frameHeader, new SimpleEvent.Handler<HumanInputEvent<?>>() {
+            @Override public void onFire(HumanInputEvent<?> arg) {
+                moveStartRequest.dispatch(null);
+        }}));
 
 		frameRegs.add(tool.getToolEvents().addSelfMoveRequestEventHandler(new Handler<Point2D>() {
 			@Override public void onFire(Point2D offset) {
