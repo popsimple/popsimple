@@ -533,7 +533,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     protected void onLoad()
     {
         super.onLoad();
-        ElementUtils.setTextSelectionEnabled(this.worksheetBackground.getElement(), false);
+        ElementUtils.setTextSelectionEnabled(this.getElement(), false);
     }
 
 

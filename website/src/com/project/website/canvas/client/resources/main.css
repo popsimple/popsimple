@@ -748,8 +748,7 @@
 	left: 0;
 	right: 0;
 	cursor: move;
-	display: none;
-	z-index: 1;
+	z-index: 0;
 }
 
 .toolFramePanel.drag .toolFrameDragOverlayPanel {
@@ -771,6 +770,7 @@
 	cursor: default;
 	display: inline-block;
 	position: relative;
+	margin: 1px 5px 17px 5px;
 }
 
 @sprite .toolFrameCloseLink {
@@ -800,10 +800,6 @@
 	cursor: pointer;
 }
 
-.toolDragContainer {
-	padding: 1px 5px 17px 5px;
-	cursor: move;
-}
 
 .toolFrameHeader {
 	background-color: rgba(200, 200, 200, 0.7);

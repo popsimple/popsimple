@@ -228,8 +228,6 @@ public interface MainStyles extends CssResource {
 
     String toolboxVideoIconStyle();
 
-    String toolDragContainer();
-
     String toolFrameBackLink();
 
     String toolFrameBodyPanel();

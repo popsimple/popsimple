@@ -89,10 +89,10 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
     HTMLPanel loadingPanel;
     
     @UiField
-    HTMLPanel dragContainer;
-
-    @UiField
     HTMLPanel toolArea;
+    
+    @UiField
+    FlowPanel dragOverlayPanel;
     
     protected final CanvasTool<?> tool;
 
@@ -133,7 +133,6 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
         WidgetUtils.stopClickPropagation(this.moveFrontLink.asWidget());
         WidgetUtils.stopMouseMovePropagation(this.moveFrontLink.asWidget());
         
-        WidgetUtils.stopMouseMovePropagation(this.toolArea.asWidget());
         WidgetUtils.stopMouseMovePropagation(this.rotatePanel);
         WidgetUtils.stopMouseMovePropagation(this.resizePanel);
 
@@ -148,6 +147,8 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
     {
         super.onLoad();
 
+        ElementUtils.setTextSelectionEnabled(this.dragOverlayPanel.getElement(), false);
+        ElementUtils.setTextSelectionEnabled(this.frameHeader.getElement(), false);
         ElementUtils.setTextSelectionEnabled(this.buttonsPanel.getElement(), false);
         ElementUtils.setTextSelectionEnabled(this.rotatePanel.getElement(), false);
         ElementUtils.setTextSelectionEnabled(this.resizePanel.getElement(), false);
@@ -223,7 +224,7 @@ public class CanvasToolFrameImpl extends Composite implements CanvasToolFrame {
                 arg.stopPropagation();
             }}));
 
-        frameRegs.add(WidgetUtils.addMovementStartHandler(this.dragContainer, new SimpleEvent.Handler<HumanInputEvent<?>>() {
+        frameRegs.add(WidgetUtils.addMovementStartHandler(this.dragOverlayPanel, new SimpleEvent.Handler<HumanInputEvent<?>>() {
             @Override public void onFire(HumanInputEvent<?> arg) {
                 moveStartRequest.dispatch(null);
         }}));
