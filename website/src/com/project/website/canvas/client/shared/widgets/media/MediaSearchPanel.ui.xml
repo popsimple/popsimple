@@ -21,6 +21,7 @@
 
         .providersPanelLabel {
 		    display: inline-block;
+		    color: #ccc;
         }
 
         .providersPanel {

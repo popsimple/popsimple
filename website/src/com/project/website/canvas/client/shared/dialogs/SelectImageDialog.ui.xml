@@ -13,13 +13,17 @@
 	</ui:style>
 	<g:FlowPanel ui:field="formPanel"  addStyleNames="{res.main.dialogContentPanel}">
 		<g:HTMLPanel>
+			<div class="{res.main.dialogSectionPanel}">
+			    <g:Label addStyleNames="{res.main.dialogSectionPanelHeader}">Tip: Drag and drop a file</g:Label>
+			    Drag a file from your computer onto the worksheet to add an image (you must first close this dialog; currently limited to 1MB in size)
+		    </div>
             <div class="{res.main.dialogSectionPanel}">
 			    <g:Label addStyleNames="{res.main.dialogSectionPanelHeader} {res.main.selectMediaSearchHeader}">Image Search</g:Label>
 				<my:MediaSearchPanel ui:field="mediaSearchPanel"/>
 			</div>
             <div class="{res.main.dialogSectionPanel}">
-                <g:Label addStyleNames="{res.main.dialogSectionPanelHeader} {res.main.selectMediaURLHeader}">Get by URL</g:Label>
-                Paste a link to the image here:
+                <g:Label addStyleNames="{res.main.dialogSectionPanelHeader} {res.main.selectMediaURLHeader}">From the web</g:Label>
+                Paste a link (url) to the image here:
                 <g:HTMLPanel addStyleNames="{style.urlPanel}">
                     <g:TextBox ui:field="urlTextBox" addStyleNames="{res.main.urlTextBox}"/>
                     <g:Button ui:field="clearButton">Clear</g:Button>

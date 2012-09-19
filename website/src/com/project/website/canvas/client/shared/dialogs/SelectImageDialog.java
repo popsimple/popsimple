@@ -25,6 +25,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.project.shared.client.events.SimpleEvent;
 import com.project.shared.client.handlers.SpecificKeyPressHandler;
 import com.project.shared.client.utils.UrlUtils;
+import com.project.shared.client.utils.widgets.TextBoxUtils;
 import com.project.shared.data.Point2D;
 import com.project.website.canvas.client.shared.ImageOptionTypes;
 import com.project.website.canvas.client.shared.ImageOptionsProvider;
@@ -77,6 +78,7 @@ public class SelectImageDialog extends Composite implements TakesValue<ImageInfo
 
     public SelectImageDialog() {
         initWidget(uiBinder.createAndBindUi(this));
+        TextBoxUtils.setPlaceHolder(this.urlTextBox, "http://...");
         this.clearButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
