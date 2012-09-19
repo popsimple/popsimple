@@ -10,7 +10,9 @@
 @def toolboxIconExpandedSize 48px;
 @def toolboxIconExpandedSizeWithPadding 58px;
 @def toolboxWidth 92px;
-@def toolboxZIndex 9999;
+@def toolboxZIndex 2000;
+@def dialogZIndex 3000;
+@def gwtPopUpPanelGlassZIndex 2999;
 
 @def toolboxBorderWidth 2px;
 
@@ -42,7 +44,8 @@
 
 @def minimalTouchButtonSize 40px;
 
-@external gwt-RadioButton, gwt-ToggleButton;
+@external gwt-RadioButton, gwt-ToggleButton, gwt-PopupPanelGlass, gwt-DialogBox;
+
 .monospace {
 	font-family: monospace;
 }
@@ -51,7 +54,12 @@
 
 }
 
-
+.gwt-PopupPanelGlass {
+	z-index: gwtPopUpPanelGlassZIndex;
+}
+.gwt-DialogBox {
+	z-index: dialogZIndex;
+}
 
 .textSelectionDisabled {
 	-webkit-user-select: none;
@@ -742,13 +750,17 @@
 
 .toolFrameDragOverlayPanel {
 	position: absolute;
-	background-color: rgba(255,255,255,0.2);
+	
 	top: 0;
 	bottom: 0;
 	left: 0;
 	right: 0;
 	cursor: move;
 	z-index: 0;
+}
+.toolFrameDragOverlayPanel:hover, .toolFrameDragOverlayPanel.drag, .toolFrameDragOverlayPanel.selected 
+{
+	background-color: rgba(255,255,255,0.2);
 }
 
 .toolFramePanel.drag .toolFrameDragOverlayPanel {
