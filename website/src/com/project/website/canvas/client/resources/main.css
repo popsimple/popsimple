@@ -265,8 +265,11 @@
 }
 
 .worksheetHeaderImageButton {
-	height: topBarHeightWithPadding;
-	margin-top: 5px; 
+	max-height: topBarHeightWithPadding;
+	margin-top: 2px; 
+	display: inline-block;
+	vertical-align: top;
+	line-height: topBarHeightWithPadding;
 }
 
 

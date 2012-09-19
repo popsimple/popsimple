@@ -29,9 +29,14 @@
 <!--                 <g:Anchor ui:field="linkInvite">Invite a friend</g:Anchor> -->
                 <g:Anchor ui:field="linkLogout" addStyleNames="{res.main.worksheetHeaderLogoutLink}">Logout</g:Anchor>
                 
+                
                 <div class="{res.main.worksheetHeaderImageButton}">
                     <div class="g-plusone" data-size="small" data-count="false"></div>
                 </div>
+                <div class="{res.main.worksheetHeaderImageButton}">
+                	<iframe src="//www.facebook.com/plugins/like.php?href=http%3A%2F%2Fwww.popsimple.com&amp;send=false&amp;layout=button_count&amp;width=90&amp;show_faces=true&amp;action=like&amp;colorscheme=dark&amp;font&amp;height=21" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:90px; height:21px;" allowTransparency="true"></iframe>
+               	</div>
+                	
             </div>
         </g:HTMLPanel>
         <g:FocusPanel ui:field="focusPanel" addStyleNames="{res.main.worksheetFocusPanel}">
@@ -48,5 +53,7 @@
             </g:FlowPanel>
           </g:HTMLPanel>
         </g:FocusPanel>
+
+
     </g:HTMLPanel>
 </ui:UiBinder>
