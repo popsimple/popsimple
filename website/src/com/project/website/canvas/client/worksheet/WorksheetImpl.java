@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
@@ -365,6 +366,20 @@ public class WorksheetImpl implements Worksheet
 	private void load(CanvasPage newPage)
     {
 	    UndoManager.get().clear();
+	    
+	    if (false == pageIsEditable()) {
+	    	newPage.id = null;
+	    	newPage.key = null;
+	    	List<ElementData> elements = newPage.elements;
+	    	newPage.elements = new ArrayList<ElementData>();
+            // TODO: elements may contain sub-objects in them that are also persisted with an ID. So this cloning may not ensure
+	    	// that saving the elements later won't overwrite that data.
+            for (ElementData elem : elements)
+            {
+            	newPage.elements.add(elem.getCloneable().getClone());
+            }
+	    }
+	    
 	    this.replaceCurrentPage(newPage);
 	    
         this.view.setPageEditable(pageIsEditable());
