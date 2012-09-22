@@ -55,10 +55,11 @@
 }
 
 .gwt-PopupPanelGlass {
-	z-index: gwtPopUpPanelGlassZIndex;
+	z-index: gwtPopUpPanelGlassZIndex !important;
 }
 .gwt-DialogBox {
-	z-index: dialogZIndex;
+	z-index: dialogZIndex !important;
+	max-width: 95%;
 }
 
 .textSelectionDisabled {
