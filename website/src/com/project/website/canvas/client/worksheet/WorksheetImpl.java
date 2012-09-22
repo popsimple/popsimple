@@ -152,7 +152,7 @@ public class WorksheetImpl implements Worksheet
     protected void newPage() {
         final WorksheetImpl that = this;
         AsyncFunc<Void, NewPageDialogResults> shouldSaveFirst = null; 
-        if (this.pageIsEditable()) {
+        if (this.currentPageIsEditable()) {
             shouldSaveFirst = MessageBox.<NewPageDialogResults>getShowFunc(
                     "Save before leaving page?", 
                     "Do you want to save your changes before leaving this page? If not, any unsaved changes will be gone forever.",
@@ -189,9 +189,15 @@ public class WorksheetImpl implements Worksheet
         this.load(new CanvasPage());
     }
 
-    private boolean pageIsEditable() {
-        return (null == this.page.id) || (false == StringUtils.isWhitespaceOrNull(this.page.key));
+    private boolean currentPageIsEditable() {
+        return pageIsEditable(this.page);
     }
+
+	private static boolean pageIsEditable(CanvasPage page) {
+		// If page has no id, it's a new page and we can do whatever we want (edit and save it)
+		// If the page has an id but also has a key, then again we can save it. 
+		return (null == page.id) || (false == StringUtils.isWhitespaceOrNull(page.key));
+	}
 
     @Override
     public void setActiveToolboxItem(ToolboxItem toolboxItem)
@@ -366,10 +372,10 @@ public class WorksheetImpl implements Worksheet
 	private void load(CanvasPage newPage)
     {
 	    UndoManager.get().clear();
-	    
-	    if (false == pageIsEditable()) {
-	    	newPage.id = null;
-	    	newPage.key = null;
+
+	    this.replaceCurrentPage(newPage);
+
+	    if (false == WorksheetImpl.pageIsEditable(newPage)) {
 	    	List<ElementData> elements = newPage.elements;
 	    	newPage.elements = new ArrayList<ElementData>();
             // TODO: elements may contain sub-objects in them that are also persisted with an ID. So this cloning may not ensure
@@ -380,9 +386,8 @@ public class WorksheetImpl implements Worksheet
             }
 	    }
 	    
-	    this.replaceCurrentPage(newPage);
 	    
-        this.view.setPageEditable(pageIsEditable());
+        this.view.setPageEditable(this.currentPageIsEditable());
         view.setOptions(newPage.options);
         this.updateHistoryToken();
 
@@ -820,7 +825,7 @@ public class WorksheetImpl implements Worksheet
         this.page.elements.clear();
         this.page.elements.addAll(activeElems);
         
-        if (false == this.pageIsEditable()) {
+        if (false == this.currentPageIsEditable()) {
             // Make sure the service generates a new id and key for this page
             this.page.id = null;
             this.page.key = null;
