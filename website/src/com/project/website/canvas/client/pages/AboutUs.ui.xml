@@ -1,0 +1,19 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+    xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+		.panel {
+			width: 500px;
+			heigh: 90%;
+
+		}
+		h1 {
+			text-align: center;
+
+		}
+	</ui:style>
+	<g:HTMLPanel addStyleNames="{style.panel}">
+		<h1>About Us</h1>
+		<img src="small-logo.png"/>
+	</g:HTMLPanel>
+</ui:UiBinder>

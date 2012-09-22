@@ -69,6 +69,7 @@ import com.project.website.canvas.client.canvastools.base.interfaces.CanvasTool;
 import com.project.website.canvas.client.canvastools.base.interfaces.CanvasToolFactory;
 import com.project.website.canvas.client.canvastools.base.interfaces.CanvasToolFrame;
 import com.project.website.canvas.client.canvastools.base.interfaces.ToolboxItem;
+import com.project.website.canvas.client.pages.AboutUs;
 import com.project.website.canvas.client.resources.CanvasResources;
 import com.project.website.canvas.client.shared.ImageInformationUtils;
 import com.project.website.canvas.client.shared.UndoManager;
@@ -149,6 +150,9 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     @UiField
     ToolFramesContainerImpl toolFramesContainer;
 
+    @UiField
+    Anchor aboutUsLink;
+    
     private static final Point2D PAGE_SIZE_ADDITIONAL_AMOUNT = new Point2D(0, 300);
     private static final int PAGE_SIZE_ADD_ANIMATION_DURATION = 500;
     
@@ -219,6 +223,8 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         
         // TODO: remove when users feature is fully implemented
         this.linkLogout.setVisible(false);
+
+        this.addAboutUsHandler();
     }
 
     @Override
@@ -573,6 +579,7 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
     {
         final WorksheetViewImpl that = this;
         this._editModeRegistrations.clear();
+        
         this._editModeRegistrations.add(this.worksheetPanel.addDomHandler(new MouseDownHandler() {
             @Override
             public void onMouseDown(MouseDownEvent event) {
@@ -1065,4 +1072,18 @@ public class WorksheetViewImpl extends Composite implements WorksheetView {
         return res;
     }
 
+
+	private void addAboutUsHandler() {
+		this.aboutUsLink.addClickHandler(new ClickHandler() {
+			@Override public void onClick(ClickEvent event) {
+				showAboutUs();
+			}});
+	}
+
+	private void showAboutUs() {
+		DialogWithZIndex dialog = new DialogWithZIndex(true, true);
+		AboutUs aboutUsWidget = new AboutUs();
+		dialog.add(aboutUsWidget);
+		dialog.center();
+	}
 }
