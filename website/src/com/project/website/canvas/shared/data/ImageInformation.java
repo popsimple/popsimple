@@ -26,6 +26,7 @@ public class ImageInformation implements Serializable, IsSerializable, ICloneabl
     {
         this();
         this.url = imageInformation.url;
+        this.urlData = imageInformation.urlData;
         this.size = imageInformation.size.getClone();
         this.options = imageInformation.options.getClone();
 
